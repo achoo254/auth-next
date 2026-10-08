@@ -1,32 +1,41 @@
 import express, { type Express, type RequestHandler } from "express";
-import type Provider from "oidc-provider";
+import { createAccountRouter } from "./account-portal/account-routes.js";
+import { createAssetsRouter } from "./assets.js";
 import type { Env } from "./config/env.js";
 import { createErrorHandler } from "./http/error-handler.js";
-import { interactionPlaceholder } from "./http/interaction-placeholder.js";
 import {
 	type RateLimitRule,
 	applySecurity,
 	forwardTrustedClientInfo,
 	requireKnownHost,
 } from "./http/security.js";
-import type { Logger } from "./logger.js";
+import { createInteractionRouter } from "./interactions/interaction-router.js";
+import { createResetRouter } from "./interactions/reset-password-page.js";
+import { createUpstreamCallbackRouter } from "./interactions/upstream-start.js";
 import { INTERACTION_PATH } from "./oidc/provider.js";
+import type { AppServices } from "./services.js";
+import { createTelegramLinkRouter } from "./telegram/link-routes.js";
+import { RESET_PATH } from "./telegram/reset-link-service.js";
+import { createTelegramWebhookRouter } from "./telegram/webhook-routes.js";
 
 export interface AppOptions {
-	readonly provider: Provider;
-	readonly logger: Logger;
+	readonly services: AppServices;
 	readonly env: Pick<Env, "ISSUER" | "TRUST_PROXY" | "ALLOWED_HOSTS">;
 	/**
-	 * Handles `/interaction/*` (login, consent, device approval). Defaults to
-	 * the 501 placeholder until the login UI exists.
+	 * Replaces the interaction pages under /interaction. Tests only: the
+	 * automatic sign-in helper never ships in production wiring.
 	 */
 	readonly interactions?: RequestHandler;
 	readonly rateLimits?: readonly RateLimitRule[];
 }
 
-/** Express shell: security layer, /healthz, interactions, then the provider. */
+/**
+ * Express shell: security layer, /healthz, static assets, the
+ * server-rendered pages (interactions, /account, password reset, OAuth
+ * callbacks, Telegram webhook), then the provider for everything else.
+ */
 export function createApp(options: AppOptions): Express {
-	const { provider, logger, env } = options;
+	const { services, env } = options;
 	const app = express();
 	app.disable("x-powered-by");
 	applySecurity(app, {
@@ -47,13 +56,22 @@ export function createApp(options: AppOptions): Express {
 	// Interaction handlers call provider.interactionDetails/Finished, which
 	// read the same forwarded headers as the provider itself.
 	app.use(forwardTrustedClientInfo);
-	app.use(INTERACTION_PATH, options.interactions ?? interactionPlaceholder);
+	app.use("/assets", createAssetsRouter());
+	app.use(
+		INTERACTION_PATH,
+		options.interactions ?? createInteractionRouter(services),
+	);
+	app.use("/oauth", createUpstreamCallbackRouter(services));
+	app.use("/account/telegram", createTelegramLinkRouter(services));
+	app.use("/account", createAccountRouter(services));
+	app.use(RESET_PATH, createResetRouter(services));
+	app.use(createTelegramWebhookRouter(services));
 
-	const callback = provider.callback();
+	const callback = services.provider.callback();
 	app.use((req, res, next) => {
 		callback(req, res).catch(next);
 	});
 
-	app.use(createErrorHandler(logger));
+	app.use(createErrorHandler(services.logger));
 	return app;
 }

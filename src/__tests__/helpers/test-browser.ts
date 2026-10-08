@@ -55,6 +55,13 @@ export class TestBrowser {
 		throw new Error(`Too many redirects, last at ${current.href}`);
 	}
 
+	/** Drops cookies whose name starts with `prefix` (e.g. "_session"). */
+	forgetCookies(prefix: string): void {
+		for (const name of [...this.cookies.keys()]) {
+			if (name.startsWith(prefix)) this.cookies.delete(name);
+		}
+	}
+
 	private storeCookies(response: Response): void {
 		for (const header of response.headers.getSetCookie()) {
 			const [pair = "", ...attributes] = header.split(";");

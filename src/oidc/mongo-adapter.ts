@@ -176,6 +176,13 @@ export async function ensureOidcIndexes(db: Db): Promise<void> {
 				// a regenerated id before the other's destroy runs.
 				await collection.createIndex({ uid: 1 }, { sparse: true });
 			}
+			if (model === "Session" || model === "Grant") {
+				// The account page lists a user's sessions and grants.
+				await collection.createIndex(
+					{ "payload.accountId": 1 },
+					{ sparse: true },
+				);
+			}
 		}),
 	);
 }

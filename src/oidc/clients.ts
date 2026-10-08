@@ -13,7 +13,12 @@ export const STATIC_CLIENT_IDS = {
 	localmanWeb: "localman-web",
 	tuneloCli: "tunelo-cli",
 	tuneloWeb: "tunelo-web",
+	/** The IdP's own /account pages; signs the user in, never redeems a code. */
+	accountPortal: "hoandat-account",
 } as const;
+
+/** Where the IdP sends the browser back after signing in for /account. */
+export const ACCOUNT_PORTAL_CALLBACK_PATH = "/account/callback";
 
 const STATIC_ID_SET: ReadonlySet<string> = new Set(
 	Object.values(STATIC_CLIENT_IDS),
@@ -92,6 +97,19 @@ export function buildStaticClients(env: Env): ClientMetadata[] {
 				TUNNEL_SCOPES,
 			),
 			[ALLOWED_RESOURCES_PROPERTY]: [RESOURCES.tunnel],
+		},
+		{
+			// Public client with PKCE: /account starts an ordinary
+			// authorization request so sign-in goes through the same login
+			// pages, then only the IdP session cookie matters.
+			client_id: STATIC_CLIENT_IDS.accountPortal,
+			client_name: "Tài khoản hoandat",
+			token_endpoint_auth_method: "none",
+			grant_types: ["authorization_code"],
+			response_types: ["code"],
+			redirect_uris: [appUrl(env.ISSUER, ACCOUNT_PORTAL_CALLBACK_PATH)],
+			scope: "openid",
+			[ALLOWED_RESOURCES_PROPERTY]: [],
 		},
 	];
 }

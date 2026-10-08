@@ -1,0 +1,107 @@
+import type { RequestHandler, Router } from "express";
+import { isUpstreamProvider } from "../accounts/user-model.js";
+import { routeParam } from "../http/form.js";
+import { startUpstream } from "../interactions/upstream-start.js";
+import type { AppServices } from "../services.js";
+import { GRANT_META_COLLECTION, revokeGrant } from "./grant-directory.js";
+import type { PortalHandler } from "./portal-session.js";
+import { grantIdsOf, revokeGrants } from "./revoke-access.js";
+import { revokeSession } from "./session-directory.js";
+
+/**
+ * /account actions that grant or take away access: link and unlink
+ * Google/GitHub, revoke sessions, Tunelo devices and authorized apps.
+ */
+export function registerAccessRoutes(
+	router: Router,
+	services: AppServices,
+	write: (handler: PortalHandler) => RequestHandler,
+	sensitive: (handler: PortalHandler) => RequestHandler,
+): void {
+	router.post(
+		"/link/:provider",
+		sensitive(async (req, res, { account }) => {
+			const name = routeParam(req, "provider");
+			const client = isUpstreamProvider(name)
+				? services.upstreams.get(name)
+				: undefined;
+			if (!client) {
+				res.sendStatus(404);
+				return;
+			}
+			await startUpstream(services, res, client, "link", {
+				accountId: account._id,
+			});
+		}),
+	);
+
+	router.post(
+		"/unlink/:provider",
+		sensitive(async (req, res, { account }) => {
+			const name = routeParam(req, "provider");
+			if (!isUpstreamProvider(name)) {
+				res.sendStatus(404);
+				return;
+			}
+			const write = await services.accounts.links.unlinkProvider(
+				account._id,
+				name,
+			);
+			res.redirect(
+				303,
+				`/account?notice=${write.applied ? "unlinked" : "last-method"}`,
+			);
+		}),
+	);
+
+	router.post(
+		"/sessions/:uid/revoke",
+		write(async (req, res, { account }) => {
+			const done = await revokeSession(
+				services.provider,
+				services.db,
+				services.logger,
+				account._id,
+				routeParam(req, "uid"),
+			);
+			res.redirect(
+				303,
+				`/account?notice=${done ? "session-revoked" : "not-found"}`,
+			);
+		}),
+	);
+
+	router.post(
+		"/devices/:grantId/revoke",
+		write(async (req, res, { account }) => {
+			const grantId = routeParam(req, "grantId");
+			const done = await revokeGrant(services.provider, account._id, grantId);
+			if (done)
+				await services.db
+					.collection<{ _id: string }>(GRANT_META_COLLECTION)
+					.deleteOne({ _id: grantId });
+			res.redirect(
+				303,
+				`/account?notice=${done ? "device-revoked" : "not-found"}`,
+			);
+		}),
+	);
+
+	router.post(
+		"/apps/:clientId/revoke",
+		write(async (req, res, { account }) => {
+			const clientId = routeParam(req, "clientId");
+			// Every grant of the client, not just those shown on the page.
+			const grants = await grantIdsOf(services.db, account._id, clientId);
+			await revokeGrants(services, account._id, grants);
+			services.logger.info(
+				{ accountId: account._id, clientId, grants: grants.length },
+				"App access revoked",
+			);
+			res.redirect(
+				303,
+				`/account?notice=${grants.length > 0 ? "app-revoked" : "not-found"}`,
+			);
+		}),
+	);
+}

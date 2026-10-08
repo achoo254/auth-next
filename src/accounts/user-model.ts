@@ -1,0 +1,171 @@
+import { randomBytes } from "node:crypto";
+import type { Collection, Db } from "mongodb";
+import type { AccountProfile } from "../oidc/claims.js";
+
+export const UPSTREAM_PROVIDERS = ["google", "github"] as const;
+export type UpstreamProvider = (typeof UPSTREAM_PROVIDERS)[number];
+
+export function isUpstreamProvider(value: unknown): value is UpstreamProvider {
+	return value === "google" || value === "github";
+}
+
+export interface ProviderDetail {
+	/** The email the provider verified when the link was made. */
+	email?: string;
+	/** GitHub login (username at GitHub). */
+	login?: string;
+	linkedAt: Date;
+}
+
+/** One account in the `accounts` collection; `_id` is the OIDC `sub`. */
+export interface AccountDocument {
+	_id: string;
+	/** Lowercase, `^[a-z0-9_]{3,30}$`, unique. */
+	username: string;
+	/**
+	 * Normalised (trimmed, lowercase), unique when present. Absent after a
+	 * Google/GitHub user proved they own it and reclaimed it (see
+	 * `reclaimedEmail`); the account still signs in by username.
+	 */
+	email?: string;
+	/** Who vouched for `email`; null for a typed-in, unverified address. */
+	emailVerifiedBy: UpstreamProvider | null;
+	/** argon2id PHC string; absent for accounts created through Google/GitHub. */
+	passwordHash?: string;
+	/**
+	 * Bumped by every security-relevant change: password set/reset/change,
+	 * linking or unlinking Google/GitHub/Telegram, new recovery codes, an
+	 * email reclaimed, a security review started or finished. Account-bound
+	 * one-time tokens carry the value they were issued at and stop working
+	 * once it moves on (account-tokens.ts). Absent means 0.
+	 */
+	securityVersion?: number;
+	/** Last password set/reset/change; device cookies are signed with it. */
+	credentialsChangedAt?: Date;
+	/** argon2id hashes of the unused one-time recovery codes. */
+	recoveryCodeHashes: string[];
+	/** When the current set of recovery codes was generated. */
+	recoveryCodesCreatedAt?: Date;
+	/**
+	 * Set by a password reset: until the owner confirms the security review
+	 * (linked providers, Telegram, recovery codes), sign-ins stop there.
+	 */
+	securityReviewPendingSince?: Date;
+	name?: string;
+	picture?: string;
+	/** Provider-side account ids (Google `sub`, GitHub numeric id). */
+	providers: { google?: string; github?: string };
+	/**
+	 * What each provider said at link time, shown on /account and the
+	 * security review: its verified email and (GitHub) login. Links made
+	 * before this field existed have none ("không rõ").
+	 */
+	providerDetails?: {
+		google?: ProviderDetail;
+		github?: ProviderDetail;
+	};
+	telegram?: {
+		chatId: string;
+		linkedAt: Date;
+		/** Telegram @username and display name at link time, for the account page. */
+		username?: string;
+		name?: string;
+	};
+	/** The unverified email this account lost to its verified owner. */
+	reclaimedEmail?: { email: string; at: Date };
+	createdAt: Date;
+	disabledAt?: Date;
+}
+
+export const ACCOUNTS_COLLECTION = "accounts";
+export const USERNAME_PATTERN = /^[a-z0-9_]{3,30}$/;
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const MAX_EMAIL_LENGTH = 254;
+
+export function accountsCollection(db: Db): Collection<AccountDocument> {
+	return db.collection<AccountDocument>(ACCOUNTS_COLLECTION);
+}
+
+export function normalizeEmail(value: string): string {
+	return value.trim().toLowerCase();
+}
+
+export function normalizeUsername(value: string): string {
+	return value.trim().toLowerCase().replace(/^@/, "");
+}
+
+export function isValidEmail(value: string): boolean {
+	return value.length <= MAX_EMAIL_LENGTH && EMAIL_PATTERN.test(value);
+}
+
+export function isValidUsername(value: string): boolean {
+	return USERNAME_PATTERN.test(value);
+}
+
+/** Opaque, never-reused subject identifier. */
+export function newAccountId(): string {
+	return `acc_${randomBytes(16).toString("base64url")}`;
+}
+
+/** Ways to sign in; Telegram only resets passwords, so it does not count. */
+export function loginMethodCount(account: AccountDocument): number {
+	return (
+		(account.passwordHash ? 1 : 0) +
+		(account.providers.google ? 1 : 0) +
+		(account.providers.github ? 1 : 0)
+	);
+}
+
+export function toAccountProfile(account: AccountDocument): AccountProfile {
+	return {
+		sub: account._id,
+		username: account.username,
+		email: account.email,
+		emailVerified: account.emailVerifiedBy !== null,
+		name: account.name,
+		picture: account.picture,
+		telegramLinked: account.telegram !== undefined,
+		securityReviewPending: account.securityReviewPendingSince !== undefined,
+	};
+}
+
+/** Unique indexes back the "unique" rules; partial ones skip unset fields. */
+export async function ensureAccountIndexes(db: Db): Promise<void> {
+	const accounts = accountsCollection(db);
+	// Early databases had a plain unique index on email, which cannot hold
+	// several accounts without an email; replace it with the partial one.
+	const legacy = await accounts.indexExists("email_1").catch(() => false);
+	if (legacy) await accounts.dropIndex("email_1");
+	await Promise.all([
+		accounts.createIndex({ username: 1 }, { unique: true }),
+		accounts.createIndex(
+			{ email: 1 },
+			{
+				unique: true,
+				name: "email_unique_when_set",
+				partialFilterExpression: { email: { $type: "string" } },
+			},
+		),
+		accounts.createIndex(
+			{ "providers.google": 1 },
+			{
+				unique: true,
+				partialFilterExpression: { "providers.google": { $type: "string" } },
+			},
+		),
+		accounts.createIndex(
+			{ "providers.github": 1 },
+			{
+				unique: true,
+				partialFilterExpression: { "providers.github": { $type: "string" } },
+			},
+		),
+		accounts.createIndex(
+			{ "telegram.chatId": 1 },
+			{
+				unique: true,
+				partialFilterExpression: { "telegram.chatId": { $type: "string" } },
+			},
+		),
+	]);
+}

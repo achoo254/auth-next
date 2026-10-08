@@ -14,6 +14,8 @@ export interface AccountProfile {
 	readonly name?: string;
 	readonly picture?: string;
 	readonly telegramLinked: boolean;
+	/** A password reset is waiting for its security review (not a claim). */
+	readonly securityReviewPending?: boolean;
 }
 
 /**

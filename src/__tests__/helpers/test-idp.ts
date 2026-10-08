@@ -5,6 +5,7 @@ import type { RequestHandler } from "express";
 import { type Db, MongoClient } from "mongodb";
 import type Provider from "oidc-provider";
 import { inject } from "vitest";
+import { AccountRepository } from "../../accounts/account-repository.js";
 import { createApp } from "../../app.js";
 import { type Env, parseEnv } from "../../config/env.js";
 import type { RateLimitRule } from "../../http/security.js";
@@ -16,6 +17,11 @@ import {
 import { type SigningJwks, generateSigningJwk } from "../../oidc/jwks.js";
 import { ensureOidcIndexes } from "../../oidc/mongo-adapter.js";
 import { createProvider } from "../../oidc/provider.js";
+import {
+	type AppServices,
+	createServices,
+	ensureAccountLayerIndexes,
+} from "../../services.js";
 import { createAutoInteractions } from "./auto-interactions.js";
 
 export const TEST_ACCOUNT: AccountProfile = {
@@ -38,16 +44,21 @@ export interface TestIdp {
 	readonly provider: Provider;
 	readonly db: Db;
 	readonly jwks: SigningJwks;
+	readonly services: AppServices;
 	close(): Promise<void>;
 }
 
 export interface TestIdpOptions {
 	/**
-	 * "auto" signs TEST_ACCOUNT in; "placeholder" keeps the production 501; a
-	 * handler replaces both.
+	 * "auto" signs TEST_ACCOUNT in without pages; "real" serves the real
+	 * login and consent pages against MongoDB accounts; a handler replaces
+	 * the interaction pages.
 	 */
-	readonly interactions: "auto" | "placeholder" | RequestHandler;
+	readonly interactions: "auto" | "real" | RequestHandler;
 	readonly rateLimits?: readonly RateLimitRule[];
+	/** Extra environment, e.g. Google/GitHub/Telegram credentials. */
+	readonly env?: Readonly<Record<string, string>>;
+	readonly formPostsPerMinute?: number;
 }
 
 function resolveInteractions(
@@ -56,7 +67,7 @@ function resolveInteractions(
 ): RequestHandler | undefined {
 	if (choice === "auto")
 		return createAutoInteractions(provider, TEST_ACCOUNT.sub);
-	return choice === "placeholder" ? undefined : choice;
+	return choice === "real" ? undefined : choice;
 }
 
 function listenOnRandomPort(server: Server): Promise<number> {
@@ -78,6 +89,7 @@ export async function startTestIdp(options: TestIdpOptions): Promise<TestIdp> {
 	await mongo.connect();
 	const db = mongo.db();
 	await ensureOidcIndexes(db);
+	await ensureAccountLayerIndexes(db);
 
 	const server = createServer();
 	const port = await listenOnRandomPort(server);
@@ -91,22 +103,34 @@ export async function startTestIdp(options: TestIdpOptions): Promise<TestIdp> {
 		LOCALMAN_WEB_CLIENT_SECRET: LOCALMAN_WEB_SECRET,
 		TUNELO_WEB_CLIENT_SECRET: TUNELO_WEB_SECRET,
 		LOG_LEVEL: "silent",
+		...options.env,
 	});
 	// Two keys: the first signs, the second is published for verification.
 	const jwks: SigningJwks = {
 		keys: [await generateSigningJwk(), await generateSigningJwk()],
 	};
 	const logger = createLogger(env.LOG_LEVEL);
+	const accounts = new AccountRepository(db);
 	const provider = createProvider({
 		env,
 		db,
 		jwks,
-		accountStore: createInMemoryAccountStore([TEST_ACCOUNT]),
+		accountStore:
+			options.interactions === "real"
+				? accounts
+				: createInMemoryAccountStore([TEST_ACCOUNT]),
 		logger,
 	});
-	const app = createApp({
+	const services = createServices({
+		env,
+		db,
 		provider,
 		logger,
+		accounts,
+		formPostsPerMinute: options.formPostsPerMinute ?? 1_000,
+	});
+	const app = createApp({
+		services,
 		env,
 		rateLimits: options.rateLimits,
 		interactions: resolveInteractions(options.interactions, provider),
@@ -119,6 +143,7 @@ export async function startTestIdp(options: TestIdpOptions): Promise<TestIdp> {
 		provider,
 		db,
 		jwks,
+		services,
 		close: async () => {
 			server.closeAllConnections();
 			await new Promise<void>((resolve) => server.close(() => resolve()));

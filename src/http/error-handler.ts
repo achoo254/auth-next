@@ -5,6 +5,11 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 	return typeof value === "object" && value !== null;
 }
 
+/** Reset links carry a bearer token in the path; keep it out of logs. */
+export function redactPath(path: string): string {
+	return path.replace(/^\/reset\/[^/]+/i, "/reset/[redacted]");
+}
+
 /**
  * Last-resort handler for errors raised by Express routes (the provider
  * renders its own errors). Client errors keep their status; everything else
@@ -28,7 +33,7 @@ export function createErrorHandler(logger: Logger): ErrorRequestHandler {
 			return;
 		}
 		logger.error(
-			{ err, method: req.method, path: req.path },
+			{ err, method: req.method, path: redactPath(req.path) },
 			"Unhandled request error",
 		);
 		res.status(500).json({ error: "server_error" });

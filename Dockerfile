@@ -29,6 +29,8 @@ WORKDIR /app
 # Files stay root-owned so the service user cannot modify its own code.
 COPY --from=prod-deps /app/node_modules ./node_modules
 COPY --from=build /app/dist ./dist
+# Stylesheets served under /assets; fonts come from @fontsource in node_modules.
+COPY static ./static
 COPY package.json ./
 USER node
 EXPOSE 4500

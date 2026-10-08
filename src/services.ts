@@ -1,0 +1,113 @@
+import type { Db } from "mongodb";
+import type Provider from "oidc-provider";
+import { GRANT_META_COLLECTION } from "./account-portal/grant-directory.js";
+import {
+	SESSION_META_COLLECTION,
+	trackSessions,
+} from "./account-portal/session-directory.js";
+import type { AccountRepository } from "./accounts/account-repository.js";
+import { AccountTokens } from "./accounts/account-tokens.js";
+import {
+	IDENTIFIER_POLICY,
+	LoginThrottle,
+	ensureLoginThrottleIndexes,
+} from "./accounts/login-throttle.js";
+import {
+	OneTimeTokenStore,
+	ensureOneTimeTokenIndexes,
+} from "./accounts/one-time-tokens.js";
+import { type Upstreams, createUpstreams } from "./accounts/upstream-client.js";
+import { ensureAccountIndexes } from "./accounts/user-model.js";
+import type { Env } from "./config/env.js";
+import { telegramBotConfig } from "./config/integrations-env.js";
+import { type Csrf, createCsrf } from "./http/csrf.js";
+import { type DeviceMemory, createDeviceMemory } from "./http/device-cookie.js";
+import type { Logger } from "./logger.js";
+import { type TelegramBot, createTelegramBot } from "./telegram/bot-client.js";
+
+/** Everything the server-rendered pages need, built once per process. */
+export interface AppServices {
+	readonly issuer: string;
+	readonly host: string;
+	readonly db: Db;
+	readonly provider: Provider;
+	readonly logger: Logger;
+	readonly accounts: AccountRepository;
+	/** Tokens not bound to an account (OAuth sign-in state, pending profiles). */
+	readonly tokens: OneTimeTokenStore;
+	/** Account-bound one-time tokens, checked against `securityVersion`. */
+	readonly accountTokens: AccountTokens;
+	readonly csrf: Csrf;
+	/** Browsers that signed in to an account before (exempt from its lock). */
+	readonly devices: DeviceMemory;
+	/** Wrong passwords (login, link, change password). */
+	readonly passwordThrottle: LoginThrottle;
+	/** Wrong recovery codes. */
+	readonly recoveryThrottle: LoginThrottle;
+	/** Telegram reset requests, so nobody can flood someone's chat. */
+	readonly telegramResetThrottle: LoginThrottle;
+	readonly upstreams: Upstreams;
+	readonly telegram?: TelegramBot;
+	/** Per-IP budget for form POSTs (login, signup, reset...). */
+	readonly formPostsPerMinute: number;
+}
+
+export interface ServiceDependencies {
+	readonly env: Env;
+	readonly db: Db;
+	readonly provider: Provider;
+	readonly logger: Logger;
+	readonly accounts: AccountRepository;
+	/** Replaces the env-derived Telegram bot (tests). */
+	readonly telegram?: TelegramBot;
+	/** Replaces the env-derived Google/GitHub clients (tests). */
+	readonly upstreams?: Upstreams;
+	readonly formPostsPerMinute?: number;
+}
+
+export function createServices(deps: ServiceDependencies): AppServices {
+	const { env, db } = deps;
+	const telegramConfig = telegramBotConfig(env);
+	const secureCookies = new URL(env.ISSUER).protocol === "https:";
+	trackSessions(deps.provider, db, deps.logger);
+	return {
+		issuer: env.ISSUER,
+		host: new URL(env.ISSUER).host,
+		db,
+		provider: deps.provider,
+		logger: deps.logger,
+		accounts: deps.accounts,
+		tokens: new OneTimeTokenStore(db),
+		accountTokens: new AccountTokens(db, deps.accounts),
+		csrf: createCsrf(env.COOKIE_KEYS, secureCookies),
+		devices: createDeviceMemory(env.COOKIE_KEYS, secureCookies),
+		passwordThrottle: new LoginThrottle(db, "password"),
+		recoveryThrottle: new LoginThrottle(db, "recovery"),
+		telegramResetThrottle: new LoginThrottle(db, "telegram-reset", {
+			...IDENTIFIER_POLICY,
+			maxAttempts: 3,
+		}),
+		upstreams: deps.upstreams ?? createUpstreams(env),
+		formPostsPerMinute: deps.formPostsPerMinute ?? 30,
+		telegram:
+			deps.telegram ??
+			(telegramConfig ? createTelegramBot(telegramConfig) : undefined),
+	};
+}
+
+/** Collections owned by the account layer; idempotent, run at startup. */
+export async function ensureAccountLayerIndexes(db: Db): Promise<void> {
+	await Promise.all([
+		ensureAccountIndexes(db),
+		ensureOneTimeTokenIndexes(db),
+		ensureLoginThrottleIndexes(db),
+		...[SESSION_META_COLLECTION, GRANT_META_COLLECTION].map((name) =>
+			db
+				.collection(name)
+				.createIndex(
+					{ expiresAt: 1 },
+					{ expireAfterSeconds: 0, name: "expiresAt_ttl" },
+				),
+		),
+	]);
+}

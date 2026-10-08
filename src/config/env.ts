@@ -1,4 +1,8 @@
 import { z } from "zod";
+import {
+	checkIntegrationGroups,
+	integrationEnvShape,
+} from "./integrations-env.js";
 import { type TrustProxy, parseTrustProxy } from "./trust-proxy.js";
 
 const port = z.coerce.number().int().min(1).max(65_535);
@@ -92,8 +96,10 @@ const envSchema = z
 		LOG_LEVEL: z
 			.enum(["fatal", "error", "warn", "info", "debug", "trace", "silent"])
 			.default("info"),
+		...integrationEnvShape,
 	})
 	.superRefine((env, ctx) => {
+		checkIntegrationGroups(env, ctx);
 		if (env.NODE_ENV !== "production") return;
 		for (const key of PRODUCTION_URLS) {
 			if (!isPublicHttpsUrl(env[key])) {

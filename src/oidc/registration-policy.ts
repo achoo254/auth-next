@@ -3,7 +3,7 @@ import {
 	type KoaContextWithOIDC,
 	errors,
 } from "oidc-provider";
-import { isStaticClientId } from "./clients.js";
+import { STATIC_CLIENT_IDS, isStaticClientId } from "./clients.js";
 import {
 	ALLOWED_RESOURCES_PROPERTY,
 	LOCALMAN_SCOPES,
@@ -179,8 +179,14 @@ export function validateClientMetadata(
 		enforceDynamicClientPolicy(metadata);
 		return;
 	}
+	// Static clients list known resources; only the account portal, which
+	// never receives an access token, may list none.
 	const resources = stringList(metadata[ALLOWED_RESOURCES_PROPERTY]);
-	if (resources.length === 0 || !resources.every(isResourceIndicator)) {
+	const mayBeEmpty = metadata.client_id === STATIC_CLIENT_IDS.accountPortal;
+	if (
+		(resources.length === 0 && !mayBeEmpty) ||
+		!resources.every(isResourceIndicator)
+	) {
 		throw new errors.InvalidClientMetadata(
 			`${ALLOWED_RESOURCES_PROPERTY} must list known resource indicators`,
 		);

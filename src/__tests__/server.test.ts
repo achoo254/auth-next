@@ -1,6 +1,5 @@
 import * as client from "openid-client";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { INTERACTION_PLACEHOLDER_MESSAGE } from "../http/interaction-placeholder.js";
 import { STATIC_CLIENT_IDS } from "../oidc/clients.js";
 import { discoverClient } from "./helpers/flows.js";
 import { getWithHost } from "./helpers/request-with-host.js";
@@ -15,8 +14,8 @@ import {
 let idp: TestIdp;
 
 beforeAll(async () => {
-	// Production wiring: no test interactions, the login UI is a 501.
-	idp = await startTestIdp({ interactions: "placeholder" });
+	// Production wiring: the real interaction pages, no automatic sign-in.
+	idp = await startTestIdp({ interactions: "real" });
 });
 
 afterAll(async () => {
@@ -115,8 +114,8 @@ describe("discovery", () => {
 	});
 });
 
-describe("interaction placeholder", () => {
-	it("stops a real authorization request at a 501 page", async () => {
+describe("interaction pages without a session", () => {
+	it("stops a real authorization request at the login page", async () => {
 		const config = await discoverClient(
 			idp,
 			STATIC_CLIENT_IDS.localmanWeb,
@@ -136,12 +135,15 @@ describe("interaction placeholder", () => {
 			LOCALMAN_CALLBACK,
 		);
 		expect(location).toBeUndefined();
-		expect(response.status).toBe(501);
+		expect(response.status).toBe(200);
 		expect(new URL(response.url).pathname).toMatch(/^\/interaction\//);
-		expect(await response.text()).toBe(INTERACTION_PLACEHOLDER_MESSAGE);
+		const page = await response.text();
+		expect(page).toContain("Đăng nhập");
+		expect(page).toContain('name="csrf"');
+		expect(response.headers.get("cache-control")).toBe("no-store");
 	});
 
-	it("never completes a device approval", async () => {
+	it("never completes a device approval without signing in", async () => {
 		const config = await discoverClient(
 			idp,
 			STATIC_CLIENT_IDS.tuneloCli,
@@ -159,6 +161,14 @@ describe("interaction placeholder", () => {
 				form: { xsrf, user_code: authorization.user_code, confirm: "yes" },
 			},
 		);
-		expect(response.status).toBe(501);
+		expect(response.status).toBe(200);
+		expect(await response.text()).toContain("Đăng nhập để duyệt thiết bị");
+		await expect(
+			client.genericGrantRequest(
+				config,
+				"urn:ietf:params:oauth:grant-type:device_code",
+				{ device_code: authorization.device_code },
+			),
+		).rejects.toMatchObject({ error: "authorization_pending" });
 	});
 });

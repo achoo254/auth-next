@@ -1,6 +1,20 @@
 import type { Db } from "mongodb";
-import Provider, { type Configuration } from "oidc-provider";
+import Provider, { type Configuration, errors } from "oidc-provider";
 import type { Env } from "../config/env.js";
+import {
+	DEVICE_NAME_PARAM,
+	isValidDeviceName,
+} from "../interactions/device-info.js";
+import {
+	deviceSuccessSource,
+	userCodeConfirmSource,
+	userCodeInputSource,
+} from "../interactions/device-verify-page.js";
+import { renderProviderError } from "../interactions/error-page.js";
+import {
+	logoutSource,
+	postLogoutSuccessSource,
+} from "../interactions/logout-page.js";
 import type { Logger } from "../logger.js";
 import {
 	type AccountStore,
@@ -12,6 +26,8 @@ import {
 	buildStaticClients,
 	isStaticClientId,
 } from "./clients.js";
+import { cookieConfig } from "./cookies.js";
+import { buildInteractionPolicy } from "./interaction-policy.js";
 import { SIGNING_ALG, type SigningJwks } from "./jwks.js";
 import { createMongoAdapterFactory } from "./mongo-adapter.js";
 import { validateClientMetadata } from "./registration-policy.js";
@@ -21,6 +37,11 @@ import {
 	defaultResource,
 	getResourceServerInfo,
 } from "./resources.js";
+import {
+	GRANT_IDLE_SECONDS,
+	createRotateAndSlideGrant,
+	refreshTokenTtl,
+} from "./sliding-grants.js";
 
 /**
  * Endpoint paths, declared once so the HTTP layer (rate limits) and the
@@ -50,41 +71,12 @@ export const TTL_SECONDS = {
 	AccessToken: 15 * MINUTE,
 	AuthorizationCode: MINUTE,
 	DeviceCode: 10 * MINUTE,
-	Grant: 30 * DAY,
+	/** Initial lifetime; refreshes slide it up to 90 days (sliding-grants.ts). */
+	Grant: GRANT_IDLE_SECONDS,
 	IdToken: 15 * MINUTE,
 	Interaction: 30 * MINUTE,
-	RefreshToken: 30 * DAY,
 	Session: 30 * DAY,
 } as const;
-
-/**
- * Over https every cookie is Secure. The session cookie lives on "/" and
- * takes the `__Host-` prefix; interaction cookies are scoped to their
- * interaction path, which `__Host-` forbids, so they use `__Secure-`.
- */
-export function cookieConfig(
-	issuer: string,
-	keys: readonly string[],
-): NonNullable<Configuration["cookies"]> {
-	const secure = new URL(issuer).protocol === "https:";
-	const options = { httpOnly: true, sameSite: "lax", secure } as const;
-	return {
-		keys: [...keys],
-		long: options,
-		short: options,
-		names: secure
-			? {
-					session: "__Host-session",
-					interaction: "__Secure-interaction",
-					resume: "__Secure-interaction_resume",
-				}
-			: {
-					session: "_session",
-					interaction: "_interaction",
-					resume: "_interaction_resume",
-				},
-	};
-}
 
 export interface ProviderDependencies {
 	readonly env: Env;
@@ -121,13 +113,24 @@ export function buildProviderConfiguration(
 		pkce: { required: () => true },
 		routes: OIDC_ROUTES,
 		interactions: {
+			policy: buildInteractionPolicy(accountStore),
 			url: async (_ctx, interaction) =>
 				`${INTERACTION_PATH}/${interaction.uid}`,
 		},
+		// Tunelo CLI names the machine so the approval page can show it.
+		extraParams: {
+			[DEVICE_NAME_PARAM]: (_ctx, value) => {
+				if (value !== undefined && !isValidDeviceName(value)) {
+					throw new errors.InvalidRequest(`${DEVICE_NAME_PARAM} is invalid`);
+				}
+			},
+		},
+		renderError: renderProviderError,
 		cookies: cookieConfig(env.ISSUER, env.COOKIE_KEYS),
-		ttl: { ...TTL_SECONDS },
-		// Every refresh rotates; presenting a consumed one revokes the grant.
-		rotateRefreshToken: true,
+		ttl: { ...TTL_SECONDS, RefreshToken: refreshTokenTtl },
+		// Every refresh rotates (presenting a consumed one revokes the grant)
+		// and slides the grant: 30 days idle, 90 days at most.
+		rotateRefreshToken: createRotateAndSlideGrant(db),
 		// MCP clients cannot request offline_access (their scopes are fixed),
 		// yet still need refresh tokens to outlive the 15-minute access token.
 		issueRefreshToken: async (_ctx, client, code) =>
@@ -135,7 +138,12 @@ export function buildProviderConfiguration(
 			(code.scopes.has("offline_access") || !isStaticClientId(client.clientId)),
 		features: {
 			devInteractions: { enabled: false },
-			deviceFlow: { enabled: true },
+			deviceFlow: {
+				enabled: true,
+				userCodeInputSource,
+				userCodeConfirmSource,
+				successSource: deviceSuccessSource,
+			},
 			revocation: { enabled: true },
 			introspection: {
 				enabled: true,
@@ -145,7 +153,11 @@ export function buildProviderConfiguration(
 					token.clientId === client.clientId ||
 					TRUSTED_INTROSPECTION_CLIENT_IDS.has(client.clientId),
 			},
-			rpInitiatedLogout: { enabled: true },
+			rpInitiatedLogout: {
+				enabled: true,
+				logoutSource,
+				postLogoutSuccessSource,
+			},
 			backchannelLogout: { enabled: true },
 			userinfo: { enabled: true },
 			registration: { enabled: true, initialAccessToken: false },

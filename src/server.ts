@@ -1,14 +1,15 @@
 import type { Server } from "node:http";
 import type { Express } from "express";
 import type { MongoClient } from "mongodb";
+import { AccountRepository } from "./accounts/account-repository.js";
 import { createApp } from "./app.js";
 import { type Env, parseEnv } from "./config/env.js";
 import { connectMongo } from "./db/connect-mongo.js";
 import { type Logger, createLogger } from "./logger.js";
-import { createInMemoryAccountStore } from "./oidc/claims.js";
 import { loadSigningJwks } from "./oidc/jwks.js";
 import { ensureOidcIndexes } from "./oidc/mongo-adapter.js";
 import { createProvider } from "./oidc/provider.js";
+import { createServices, ensureAccountLayerIndexes } from "./services.js";
 
 const SHUTDOWN_TIMEOUT_MS = 10_000;
 
@@ -88,19 +89,30 @@ try {
 	const connection = await connectMongo(env.MONGO_URL, logger);
 	mongo = connection.client;
 	await ensureOidcIndexes(connection.db);
+	await ensureAccountLayerIndexes(connection.db);
+	const accounts = new AccountRepository(connection.db);
 	const provider = createProvider({
 		env,
 		db: connection.db,
 		jwks,
-		// No account can sign in until the login UI and user model exist.
-		accountStore: createInMemoryAccountStore([]),
+		accountStore: accounts,
 		logger,
 	});
-	server = await listen(
-		createApp({ provider, logger, env }),
-		env.HOST,
-		env.PORT,
+	const services = createServices({
+		env,
+		db: connection.db,
+		provider,
+		logger,
+		accounts,
+	});
+	logger.info(
+		{
+			upstreams: [...services.upstreams.keys()],
+			telegram: services.telegram !== undefined,
+		},
+		"Sign-in integrations",
 	);
+	server = await listen(createApp({ services, env }), env.HOST, env.PORT);
 	logger.info(
 		{ host: env.HOST, port: env.PORT, issuer: env.ISSUER },
 		"hoandat-auth listening",

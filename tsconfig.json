@@ -15,5 +15,11 @@
 		"noFallthroughCasesInSwitch": true,
 		"types": ["node"]
 	},
-	"include": ["src", "scripts", "vitest.config.ts"]
+	"include": [
+		"src",
+		"scripts",
+		"e2e",
+		"vitest.config.ts",
+		"playwright.config.ts"
+	]
 }

@@ -53,9 +53,10 @@ export interface SecurityOptions {
 }
 
 /**
- * CSP for the provider's own pages and the server-rendered forms that come
- * with the login UI: no inline script (oidc-provider adds a hash for its
- * form_post page itself), inline styles allowed, no framing. form-action must
+ * CSP for the provider's own pages and the server-rendered forms: no inline
+ * script (oidc-provider adds a hash for its form_post page itself), no
+ * inline style (every page uses the self-hosted stylesheets), no framing.
+ * Images may be https (Google/GitHub avatars). form-action must
  * also allow the redirect chain after a form post (back to https apps and
  * loopback MCP clients), because browsers apply it to redirects too.
  */
@@ -69,7 +70,7 @@ function contentSecurityPolicy(issuer: string): Parameters<typeof helmet>[0] {
 				baseUri: ["'self'"],
 				scriptSrc: ["'self'"],
 				scriptSrcAttr: ["'none'"],
-				styleSrc: ["'self'", "'unsafe-inline'"],
+				styleSrc: ["'self'"],
 				imgSrc: ["'self'", "data:", "https:"],
 				fontSrc: ["'self'"],
 				connectSrc: ["'self'"],

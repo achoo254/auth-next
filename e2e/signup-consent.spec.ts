@@ -1,0 +1,87 @@
+import { expect, test } from "@playwright/test";
+import * as client from "openid-client";
+import { MCP_CALLBACK } from "./support/e2e-config.js";
+import { logIn, newUser, registerMcpClient, signUp } from "./support/flows.js";
+
+test("sign up, consent and return to the client; then sign in again", async ({
+	browser,
+}) => {
+	const mcp = await registerMcpClient("Claude Code");
+	const user = newUser();
+
+	// 1. A coding agent sends the user to the IdP; they have no account yet.
+	const first = await browser.newContext();
+	const page = await first.newPage();
+	const { url, checks } = await mcp.authorizationUrl();
+	await page.goto(url.href);
+	await expect(page).toHaveTitle(/Đăng nhập · hoandat/);
+	await expect(page.locator('[data-id="idp-brand"]')).toContainText(
+		"hoandat · Tài khoản",
+	);
+	const codes = await signUp(page, user);
+	expect(new Set(codes).size).toBe(8);
+
+	// 2. Consent: a DCR client is always labelled as unverified.
+	await expect(
+		page.getByRole("heading", { name: "Cấp quyền cho ứng dụng" }),
+	).toBeVisible();
+	await expect(page.locator('[data-id="consent-client-name"]')).toHaveText(
+		"Claude Code",
+	);
+	await expect(page.locator('[data-id="consent-unverified"]')).toHaveText(
+		"Ứng dụng bên thứ ba chưa xác minh",
+	);
+	await expect(page.locator('[data-id="consent-redirect-host"]')).toHaveText(
+		"127.0.0.1:4591",
+	);
+	await expect(page.locator('[data-id="consent-scopes"]')).toContainText(
+		"Tạo, sửa và xoá mock API trên Localman",
+	);
+	await page.locator('[data-id="consent-allow"]').click();
+
+	// 3. Back at the client with a code it can redeem.
+	await page.waitForURL(`${MCP_CALLBACK}?**`);
+	const tokens = await client.authorizationCodeGrant(
+		mcp.config,
+		new URL(page.url()),
+		checks,
+	);
+	expect(tokens.access_token).toEqual(expect.any(String));
+	await first.close();
+
+	// 4. A fresh browser: sign in with the password; consent is asked again.
+	const second = await browser.newContext();
+	const again = await second.newPage();
+	const next = await mcp.authorizationUrl();
+	await again.goto(next.url.href);
+	await logIn(again, user.username, "sai-mat-khau");
+	await expect(again.locator('[data-id="alert-error"]')).toHaveText(
+		"Email/username hoặc mật khẩu không đúng.",
+	);
+	await logIn(again, user.email.toLowerCase(), user.password);
+	await expect(again.locator('[data-id="consent-unverified"]')).toBeVisible();
+	await again.locator('[data-id="consent-allow"]').click();
+	await again.waitForURL(`${MCP_CALLBACK}?**`);
+	const secondTokens = await client.authorizationCodeGrant(
+		mcp.config,
+		new URL(again.url()),
+		next.checks,
+	);
+	expect(secondTokens.access_token).toEqual(expect.any(String));
+	await second.close();
+});
+
+test("denying consent sends access_denied back to the client", async ({
+	browser,
+}) => {
+	const mcp = await registerMcpClient("Some Agent");
+	const context = await browser.newContext();
+	const page = await context.newPage();
+	const { url } = await mcp.authorizationUrl();
+	await page.goto(url.href);
+	await signUp(page, newUser());
+	await page.locator('[data-id="consent-deny"]').click();
+	await page.waitForURL(`${MCP_CALLBACK}?**`);
+	expect(new URL(page.url()).searchParams.get("error")).toBe("access_denied");
+	await context.close();
+});
