@@ -1,5 +1,6 @@
 import type { RequestHandler, Router } from "express";
 import { isUpstreamProvider } from "../accounts/user-model.js";
+import { auditContext } from "../audit/audit-context.js";
 import { routeParam } from "../http/form.js";
 import { startUpstream } from "../interactions/upstream-start.js";
 import type { AppServices } from "../services.js";
@@ -64,6 +65,14 @@ export function registerAccessRoutes(
 				account._id,
 				routeParam(req, "uid"),
 			);
+			if (done) {
+				await services.audit.record(
+					"session.revoked",
+					account._id,
+					{ count: 1, cause: "account-page" },
+					auditContext(req),
+				);
+			}
 			res.redirect(
 				303,
 				`/account?notice=${done ? "session-revoked" : "not-found"}`,
@@ -76,10 +85,17 @@ export function registerAccessRoutes(
 		write(async (req, res, { account }) => {
 			const grantId = routeParam(req, "grantId");
 			const done = await revokeGrant(services.provider, account._id, grantId);
-			if (done)
+			if (done) {
 				await services.db
 					.collection<{ _id: string }>(GRANT_META_COLLECTION)
 					.deleteOne({ _id: grantId });
+				await services.audit.record(
+					"grant.revoked",
+					account._id,
+					{ count: 1, cause: "account-page" },
+					auditContext(req),
+				);
+			}
 			res.redirect(
 				303,
 				`/account?notice=${done ? "device-revoked" : "not-found"}`,
@@ -93,7 +109,15 @@ export function registerAccessRoutes(
 			const clientId = routeParam(req, "clientId");
 			// Every grant of the client, not just those shown on the page.
 			const grants = await grantIdsOf(services.db, account._id, clientId);
-			await revokeGrants(services, account._id, grants);
+			const revoked = await revokeGrants(services, account._id, grants);
+			if (revoked > 0) {
+				await services.audit.record(
+					"grant.revoked",
+					account._id,
+					{ count: revoked, cause: "account-page", clientId },
+					auditContext(req),
+				);
+			}
 			services.logger.info(
 				{ accountId: account._id, clientId, grants: grants.length },
 				"App access revoked",

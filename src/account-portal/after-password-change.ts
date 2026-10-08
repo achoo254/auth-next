@@ -1,4 +1,5 @@
 import type { AccountDocument } from "../accounts/user-model.js";
+import type { AuditContext } from "../audit/audit-events.js";
 import type { AppServices } from "../services.js";
 import { notifyTelegram } from "../telegram/notify.js";
 import { type RevokeScope, revokeAccountAccess } from "./revoke-access.js";
@@ -14,6 +15,7 @@ export async function afterPasswordChange(
 	account: AccountDocument,
 	via: "recovery-code" | "reset-link" | "account-page",
 	scope: RevokeScope,
+	context?: AuditContext,
 ): Promise<void> {
 	// Every pending one-time token of the account dies: other reset links,
 	// Telegram link codes, half-finished Google/GitHub links. The token of
@@ -24,11 +26,28 @@ export async function afterPasswordChange(
 			(id): id is string => id !== undefined,
 		),
 	);
-	const revoked = await revokeAccountAccess(services, account._id, scope);
+	const revoked = await revokeAccountAccess(
+		services,
+		account._id,
+		scope,
+		via === "account-page" ? "password-change" : "password-reset",
+	);
 	// A reset (not a change made while signed in) means someone else may
 	// have added a way back in: the owner must review before going on.
 	if (via !== "account-page") {
 		await services.accounts.setSecurityReviewPending(account._id, true);
+	}
+	// Recorded only once everything above is done; recording never throws,
+	// so the audit trail can never stop a revocation.
+	if (via === "account-page") {
+		await services.audit.record("password.changed", account._id, {}, context);
+	} else {
+		await services.audit.record(
+			"password.reset",
+			account._id,
+			{ via },
+			context,
+		);
 	}
 	services.logger.info(
 		{ accountId: account._id, via, revoked },

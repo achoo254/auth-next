@@ -113,6 +113,34 @@ describe("parseEnv", () => {
 			expect(errorFor({ TRUST_PROXY: "loopback" })).toMatch(/TRUST_PROXY:/);
 			expect(errorFor({ TRUST_PROXY: "false" })).toMatch(/TRUST_PROXY:/);
 		});
+
+		it("takes audit delivery all-or-nothing, over public https", () => {
+			const audit = {
+				AUDIT_EVENTS_URL: "https://localman.hoandat.com/internal/audit-events",
+				AUDIT_CLIENT_ID: "hoandat-auth",
+				AUDIT_CLIENT_SECRET: SECRET_A,
+			};
+			expect(errorFor(audit)).toBe("");
+			const partial = errorFor({ ...audit, AUDIT_CLIENT_SECRET: undefined });
+			expect(partial).toMatch(/AUDIT_CLIENT_SECRET: must be set together/);
+			expect(partial).not.toContain(SECRET_A);
+			expect(
+				errorFor({ ...audit, AUDIT_EVENTS_URL: "http://localman:3000/x" }),
+			).toMatch(/AUDIT_EVENTS_URL:/);
+			// Credentials belong in the Basic header, never in the URL.
+			const userinfo = errorFor({
+				...audit,
+				AUDIT_EVENTS_URL: "https://idp:pw@localman.hoandat.com/internal/x",
+			});
+			expect(userinfo).toMatch(
+				/AUDIT_EVENTS_URL: must not contain credentials/,
+			);
+			expect(userinfo).not.toContain("pw@");
+			// "id:secret" would be ambiguous once joined for HTTP Basic.
+			expect(errorFor({ ...audit, AUDIT_CLIENT_ID: "hoandat:auth" })).toMatch(
+				/AUDIT_CLIENT_ID:/,
+			);
+		});
 	});
 
 	it("collects the issuer host plus ALLOWED_HOSTS for the Host check", () => {

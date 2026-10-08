@@ -1,4 +1,10 @@
 import { isIPv6 } from "node:net";
+import type { Request } from "express";
+
+/** The client address Express derived through the trusted proxies. */
+export function clientIp(req: Request): string {
+	return req.ip ?? req.socket.remoteAddress ?? "unknown";
+}
 
 /** Expands an IPv6 address to its 8 hextets (no zone, no embedded IPv4). */
 function hextets(address: string): string[] | undefined {

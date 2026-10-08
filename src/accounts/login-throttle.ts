@@ -29,6 +29,13 @@ export {
 	type ThrottleSubject,
 } from "./throttle-policy.js";
 
+/** Matches a counter that is not locked at `at`. */
+function unlockedAt(at: Date) {
+	return {
+		$or: [{ lockedUntil: { $exists: false } }, { lockedUntil: { $lte: at } }],
+	};
+}
+
 function isDuplicateKey(error: unknown): boolean {
 	return error instanceof MongoServerError && error.code === 11000;
 }
@@ -83,13 +90,7 @@ export class LoginThrottle {
 	): Promise<boolean> {
 		const now = new Date();
 		await this.counters.deleteOne({ _id: key, expiresAt: { $lte: now } });
-		const notLocked = {
-			_id: key,
-			$or: [
-				{ lockedUntil: { $exists: false } },
-				{ lockedUntil: { $lte: now } },
-			],
-		};
+		const notLocked = { _id: key, ...unlockedAt(now) };
 		const update = {
 			$inc: { attempts: 1 },
 			$setOnInsert: { expiresAt: new Date(now.getTime() + policy.windowMs) },
@@ -124,27 +125,36 @@ export class LoginThrottle {
 			if (!(await this.reserveKey(key, policy))) return undefined;
 		}
 		const [identity, ip] = keys;
+		const accountKey = this.identifierKey(subject.identifier);
 		return {
-			// A key whose budget is used up gets locked.
+			// A key whose budget is used up gets locked, once: a parallel
+			// failure finds it locked already and neither extends the lock
+			// nor reports it again.
 			fail: async () => {
 				const now = Date.now();
+				let accountLocked = false;
 				for (const [key, policy] of keys) {
 					const lockedUntil = new Date(now + policy.lockMs);
-					await this.counters.updateOne(
-						{ _id: key, attempts: { $gte: policy.maxAttempts } },
+					const result = await this.counters.updateOne(
+						{
+							_id: key,
+							attempts: { $gte: policy.maxAttempts },
+							...unlockedAt(new Date(now)),
+						},
 						{ $set: { lockedUntil, expiresAt: lockedUntil } },
 					);
+					if (key === accountKey && result.modifiedCount === 1) {
+						accountLocked = true;
+					}
 				}
+				return { accountLocked };
 			},
 			// The account (or device) starts over; the IP gets its slot back.
 			succeed: async () => {
 				if (identity) {
 					await this.counters.deleteOne({
 						_id: identity[0],
-						$or: [
-							{ lockedUntil: { $exists: false } },
-							{ lockedUntil: { $lte: new Date() } },
-						],
+						...unlockedAt(new Date()),
 					});
 				}
 				if (ip) {

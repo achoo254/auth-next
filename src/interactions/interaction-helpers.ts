@@ -1,5 +1,6 @@
 import type { NextFunction, Request, RequestHandler, Response } from "express";
 import type { InteractionResults } from "oidc-provider";
+import { auditContext } from "../audit/audit-context.js";
 import { routeParam } from "../http/form.js";
 import type { AppServices } from "../services.js";
 import { sendPage } from "../ui/send-page.js";
@@ -20,10 +21,6 @@ export function asyncHandler(
 
 export function csrfScope(uid: string): string {
 	return `interaction:${uid}`;
-}
-
-export function clientIp(req: Request): string {
-	return req.ip ?? req.socket.remoteAddress ?? "unknown";
 }
 
 export function sendInteractionError(
@@ -113,6 +110,12 @@ export async function finishLogin(
 	await services.provider.interactionFinished(req, res, result, {
 		mergeWithLastSubmission: false,
 	});
+	await services.audit.record(
+		"login.succeeded",
+		accountId,
+		{ methods: [...amr] },
+		auditContext(req),
+	);
 }
 
 /** The client id an interaction is for. */

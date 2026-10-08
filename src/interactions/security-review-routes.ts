@@ -1,4 +1,5 @@
 import type { Request, Response, Router } from "express";
+import { auditContext } from "../audit/audit-context.js";
 import type { AppServices } from "../services.js";
 import {
 	type Interaction,
@@ -47,6 +48,12 @@ export async function completeLogin(
 				href: `/interaction/${interaction.uid}`,
 				label: "Đăng nhập bằng mật khẩu",
 			});
+			await services.audit.record(
+				"login.failed",
+				accountId,
+				{ method: "federated", reason: "review-pending" },
+				auditContext(req),
+			);
 			return;
 		}
 		await services.accountTokens.issue(

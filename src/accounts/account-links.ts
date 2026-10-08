@@ -1,4 +1,6 @@
 import type { Collection } from "mongodb";
+import type { LinkedMethod } from "../audit/audit-events.js";
+import type { AuditOutbox } from "../audit/audit-outbox.js";
 import {
 	type AccountDocument,
 	type ProviderDetail,
@@ -30,7 +32,22 @@ export function providerDetail(link: ProviderLink): ProviderDetail {
  * owner. Reached as `AccountRepository.links`.
  */
 export class AccountLinks {
-	constructor(private readonly accounts: Collection<AccountDocument>) {}
+	constructor(
+		private readonly accounts: Collection<AccountDocument>,
+		private readonly audit: AuditOutbox,
+	) {}
+
+	/** Records an applied (un)link for the audit log; returns the write. */
+	private async audited(
+		id: string,
+		change: "method.linked" | "method.unlinked",
+		method: LinkedMethod,
+		write: Promise<GuardedWrite>,
+	): Promise<GuardedWrite> {
+		const result = await write;
+		if (result.applied) await this.audit.record(change, id, { method });
+		return result;
+	}
 
 	/**
 	 * Links a provider account and records what the provider said (its
@@ -50,7 +67,7 @@ export class AccountLinks {
 			account.emailVerifiedBy === null &&
 			account.email !== undefined &&
 			email === account.email;
-		return writeWithVersion(
+		const write = writeWithVersion(
 			this.accounts,
 			account._id,
 			expectedVersion,
@@ -64,6 +81,7 @@ export class AccountLinks {
 				$inc: { securityVersion: 1 },
 			},
 		);
+		return this.audited(account._id, "method.linked", link.provider, write);
 	}
 
 	/**
@@ -96,7 +114,7 @@ export class AccountLinks {
 					? other
 					: null
 				: current.emailVerifiedBy;
-		return writeWithVersion(
+		const write = writeWithVersion(
 			this.accounts,
 			id,
 			readVersion,
@@ -116,6 +134,7 @@ export class AccountLinks {
 				$inc: { securityVersion: 1 },
 			},
 		);
+		return this.audited(id, "method.unlinked", provider, write);
 	}
 
 	/**
@@ -134,7 +153,9 @@ export class AccountLinks {
 			},
 			{ returnDocument: "before" },
 		);
-		return previous ?? undefined;
+		if (!previous) return undefined;
+		await this.audit.record("email.reclaimed", previous._id, {});
+		return previous;
 	}
 
 	setTelegram(
@@ -142,7 +163,7 @@ export class AccountLinks {
 		chat: { chatId: string; username?: string; name?: string },
 		expectedVersion?: number,
 	): Promise<GuardedWrite> {
-		return writeWithVersion(
+		const write = writeWithVersion(
 			this.accounts,
 			id,
 			expectedVersion,
@@ -152,10 +173,11 @@ export class AccountLinks {
 				$inc: { securityVersion: 1 },
 			},
 		);
+		return this.audited(id, "method.linked", "telegram", write);
 	}
 
 	unsetTelegram(id: string, expectedVersion?: number): Promise<GuardedWrite> {
-		return writeWithVersion(
+		const write = writeWithVersion(
 			this.accounts,
 			id,
 			expectedVersion,
@@ -165,5 +187,6 @@ export class AccountLinks {
 				$inc: { securityVersion: 1 },
 			},
 		);
+		return this.audited(id, "method.unlinked", "telegram", write);
 	}
 }

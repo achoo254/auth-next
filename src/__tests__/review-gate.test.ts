@@ -1,6 +1,7 @@
 import * as client from "openid-client";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { ONE_TIME_TOKENS_COLLECTION } from "../accounts/one-time-tokens.js";
+import { auditOutboxCollection } from "../audit/audit-outbox.js";
 import { REVIEW_NEEDS_PASSWORD_MESSAGE } from "../interactions/security-review-routes.js";
 import { createPasswordResetToken } from "../telegram/reset-link-service.js";
 import { FAKE_UPSTREAM_ENV, FakeUpstreams } from "./helpers/fake-upstreams.js";
@@ -88,6 +89,16 @@ describe("a pending security review only opens with the new password", () => {
 		expect(await intruder.response.text()).toContain(
 			REVIEW_NEEDS_PASSWORD_MESSAGE,
 		);
+		const refused = {
+			sub: account._id,
+			type: "login.failed",
+			"data.method": "federated",
+			"data.reason": "review-pending",
+			"data.provider": "google",
+		} as const;
+		await expect
+			.poll(() => auditOutboxCollection(idp.db).countDocuments(refused))
+			.toBe(1);
 		const base = `${idp.issuer}/interaction/${intruder.page.uid}/review`;
 		const review = await intruder.page.browser.request(base);
 		expect(review.status).toBe(303);

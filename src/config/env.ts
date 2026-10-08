@@ -110,6 +110,16 @@ const envSchema = z
 				});
 			}
 		}
+		if (
+			env.AUDIT_EVENTS_URL !== undefined &&
+			!isPublicHttpsUrl(env.AUDIT_EVENTS_URL)
+		) {
+			ctx.addIssue({
+				code: "custom",
+				path: ["AUDIT_EVENTS_URL"],
+				message: "must be a public https URL in production",
+			});
+		}
 		const proxies = env.TRUST_PROXY;
 		if (
 			proxies === false ||

@@ -2,6 +2,7 @@ import { Router } from "express";
 import { afterPasswordChange } from "../account-portal/after-password-change.js";
 import { hashSecret, passwordProblem } from "../accounts/password-hasher.js";
 import type { AccountDocument } from "../accounts/user-model.js";
+import { auditContext } from "../audit/audit-context.js";
 import {
 	formRateLimit,
 	formValue,
@@ -148,9 +149,13 @@ export function createResetRouter(services: AppServices): Router {
 			}
 			// The link may have been used by whoever took over the account:
 			// every session and grant goes, including any in this browser.
-			await afterPasswordChange(services, account, "reset-link", {
-				grants: true,
-			});
+			await afterPasswordChange(
+				services,
+				account,
+				"reset-link",
+				{ grants: true },
+				auditContext(req),
+			);
 			// Straight on to the security review, in this same browser.
 			await startResetReview(services, res, account._id, interactionUid);
 		}),

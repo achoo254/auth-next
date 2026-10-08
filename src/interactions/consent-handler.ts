@@ -1,5 +1,7 @@
 import type { Request, Response } from "express";
 import { recordDeviceGrant } from "../account-portal/grant-directory.js";
+import { auditContext, auditLabel } from "../audit/audit-context.js";
+import { clientIp } from "../http/client-ip.js";
 import { isStaticClientId } from "../oidc/clients.js";
 import { GRANT_MAX_SECONDS } from "../oidc/sliding-grants.js";
 import type { AppServices } from "../services.js";
@@ -10,7 +12,6 @@ import { renderDeviceApproval } from "./device-verify-page.js";
 import { requestedScopes, saveConsentGrant } from "./grant-builder.js";
 import {
 	type Interaction,
-	clientIp,
 	csrfScope,
 	interactionClientId,
 	sendInteractionError,
@@ -34,6 +35,8 @@ export async function completeConsent(
 	accountId: string,
 ): Promise<void> {
 	const isDevice = interaction.deviceCode !== undefined;
+	const clientId = interactionClientId(interaction);
+	let deviceName: string | undefined;
 	const grantId = await saveConsentGrant(
 		services.provider,
 		interaction,
@@ -42,12 +45,13 @@ export async function completeConsent(
 	);
 	if (isDevice) {
 		const code = await deviceCodeOf(services, interaction);
+		deviceName = deviceNameOf(code?.params, code?.deviceInfo);
 		await recordDeviceGrant(
 			services.db,
 			{
 				_id: grantId,
 				accountId,
-				deviceName: deviceNameOf(code?.params, code?.deviceInfo),
+				deviceName,
 				ip:
 					typeof code?.deviceInfo?.ip === "string"
 						? code.deviceInfo.ip
@@ -60,11 +64,7 @@ export async function completeConsent(
 			GRANT_MAX_SECONDS,
 		);
 		services.logger.info(
-			{
-				accountId,
-				clientId: interactionClientId(interaction),
-				ip: clientIp(req),
-			},
+			{ accountId, clientId, ip: clientIp(req) },
 			"Device approved",
 		);
 	}
@@ -74,6 +74,18 @@ export async function completeConsent(
 		{ consent: { grantId } },
 		{ mergeWithLastSubmission: true },
 	);
+	// First-party web apps consent silently; only devices and third-party
+	// (DCR) apps are a new grant of access the owner chose to give.
+	if (isDevice || !isStaticClientId(clientId)) {
+		await services.audit.record(
+			"grant.created",
+			accountId,
+			isDevice
+				? { clientId, kind: "device", deviceName: auditLabel(deviceName) }
+				: { clientId, kind: "third-party-app" },
+			auditContext(req),
+		);
+	}
 }
 
 /**

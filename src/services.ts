@@ -18,6 +18,9 @@ import {
 } from "./accounts/one-time-tokens.js";
 import { type Upstreams, createUpstreams } from "./accounts/upstream-client.js";
 import { ensureAccountIndexes } from "./accounts/user-model.js";
+import type { AuditOutbox } from "./audit/audit-outbox.js";
+import { ensureAuditOutboxIndexes } from "./audit/audit-outbox.js";
+import { auditProviderEvents } from "./audit/provider-events.js";
 import type { Env } from "./config/env.js";
 import { telegramBotConfig } from "./config/integrations-env.js";
 import { type Csrf, createCsrf } from "./http/csrf.js";
@@ -33,6 +36,8 @@ export interface AppServices {
 	readonly provider: Provider;
 	readonly logger: Logger;
 	readonly accounts: AccountRepository;
+	/** Credential events waiting for delivery to Localman's audit log. */
+	readonly audit: AuditOutbox;
 	/** Tokens not bound to an account (OAuth sign-in state, pending profiles). */
 	readonly tokens: OneTimeTokenStore;
 	/** Account-bound one-time tokens, checked against `securityVersion`. */
@@ -70,6 +75,7 @@ export function createServices(deps: ServiceDependencies): AppServices {
 	const telegramConfig = telegramBotConfig(env);
 	const secureCookies = new URL(env.ISSUER).protocol === "https:";
 	trackSessions(deps.provider, db, deps.logger);
+	auditProviderEvents(deps.provider, deps.accounts.audit);
 	return {
 		issuer: env.ISSUER,
 		host: new URL(env.ISSUER).host,
@@ -77,6 +83,7 @@ export function createServices(deps: ServiceDependencies): AppServices {
 		provider: deps.provider,
 		logger: deps.logger,
 		accounts: deps.accounts,
+		audit: deps.accounts.audit,
 		tokens: new OneTimeTokenStore(db),
 		accountTokens: new AccountTokens(db, deps.accounts),
 		csrf: createCsrf(env.COOKIE_KEYS, secureCookies),
@@ -101,6 +108,7 @@ export async function ensureAccountLayerIndexes(db: Db): Promise<void> {
 		ensureAccountIndexes(db),
 		ensureOneTimeTokenIndexes(db),
 		ensureLoginThrottleIndexes(db),
+		ensureAuditOutboxIndexes(db),
 		...[SESSION_META_COLLECTION, GRANT_META_COLLECTION].map((name) =>
 			db
 				.collection(name)

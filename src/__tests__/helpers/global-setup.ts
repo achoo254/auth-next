@@ -12,7 +12,13 @@ declare module "vitest" {
 export default async function setup(
 	project: TestProject,
 ): Promise<() => Promise<void>> {
-	const mongod = await MongoMemoryServer.create();
+	// Frequent checkpoints keep shutdown short: with the default 60 s, the
+	// whole run (thousands of collections created and dropped) is flushed at
+	// stop, which can exceed mongodb-memory-server's 10 s SIGINT grace on a
+	// busy machine and end in a SIGKILL warning.
+	const mongod = await MongoMemoryServer.create({
+		instance: { args: ["--syncdelay", "2"] },
+	});
 	project.provide("mongoUri", mongod.getUri());
 	return async () => {
 		await mongod.stop();

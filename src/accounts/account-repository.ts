@@ -1,4 +1,5 @@
 import type { Collection, Db } from "mongodb";
+import { AuditOutbox } from "../audit/audit-outbox.js";
 import type { AccountProfile, AccountStore } from "../oidc/claims.js";
 import { translateConflicts } from "./account-conflicts.js";
 import { AccountLinks } from "./account-links.js";
@@ -21,9 +22,13 @@ export class AccountRepository implements AccountStore {
 	/** Provider, Telegram and email-ownership changes. */
 	readonly links: AccountLinks;
 
-	constructor(db: Db) {
+	/** `audit` records credential changes made here for Localman's audit log. */
+	constructor(
+		db: Db,
+		readonly audit: AuditOutbox = new AuditOutbox(db),
+	) {
 		this.accounts = accountsCollection(db);
-		this.links = new AccountLinks(this.accounts);
+		this.links = new AccountLinks(this.accounts, audit);
 	}
 
 	/** oidc-provider lookup: disabled accounts no longer exist for clients. */
@@ -154,12 +159,12 @@ export class AccountRepository implements AccountStore {
 		return result.modifiedCount === 1;
 	}
 
-	replaceRecoveryCodes(
+	async replaceRecoveryCodes(
 		id: string,
 		hashes: readonly string[],
 		expectedVersion?: number,
 	): Promise<GuardedWrite> {
-		return writeWithVersion(
+		const write = await writeWithVersion(
 			this.accounts,
 			id,
 			expectedVersion,
@@ -172,5 +177,9 @@ export class AccountRepository implements AccountStore {
 				$inc: { securityVersion: 1 },
 			},
 		);
+		if (write.applied) {
+			await this.audit.record("recovery_codes.regenerated", id, {});
+		}
+		return write;
 	}
 }

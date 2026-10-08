@@ -48,6 +48,7 @@ export interface ThrottleSubject {
 
 /** A reserved attempt; report its outcome on the keys it was counted on. */
 export interface Reservation {
-	fail(): Promise<void>;
+	/** `accountLocked`: this failure started a lock on the account's budget. */
+	fail(): Promise<{ readonly accountLocked: boolean }>;
 	succeed(): Promise<void>;
 }

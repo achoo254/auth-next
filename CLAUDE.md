@@ -1,8 +1,8 @@
 # CLAUDE.md
 
-`hoandat-auth`: IdP OpenID Connect tại `auth.hoandat.com` (oidc-provider v9 + Express 5 + MongoDB, database `auth`). Plan nằm ở repo `localman-next`: `plans/dattqh/261008-1325-central-auth-idp/`. Quyết định kiến trúc: `docs/decisions/0001-own-oidc-idp.md`, `docs/decisions/0002-accounts-and-login-pages.md`.
+`hoandat-auth`: IdP OpenID Connect tại `auth.hoandat.com` (oidc-provider v9 + Express 5 + MongoDB, database `auth`). Plan nằm ở repo `localman-next`: `plans/dattqh/261008-1325-central-auth-idp/`. Quyết định kiến trúc: `docs/decisions/0001-own-oidc-idp.md`, `docs/decisions/0002-accounts-and-login-pages.md`, `docs/decisions/0003-token-exchange-and-audit-outbox.md`. Hợp đồng với app tích hợp: `docs/integration-guide.md`.
 
-Commands: `pnpm dev`, `pnpm build`, `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm test:e2e`, `pnpm check:tokens`, `pnpm generate-key`. Trước khi báo xong phải sạch `pnpm lint && pnpm typecheck && pnpm test && pnpm test:e2e && pnpm check:tokens`. Máy dùng chung: vitest đã giới hạn 2 worker trong `vitest.config.ts`, Playwright 1 worker; không chạy hai bộ test cùng lúc. `pnpm test -- <args>` không chuyển tham số, viết `pnpm test <args>`.
+Commands: `pnpm dev`, `pnpm build`, `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm test:e2e`, `pnpm check:tokens`, `pnpm generate-key`, `pnpm seed:clients` (chỉ đọc; kiểm client tĩnh và discovery). Trước khi báo xong phải sạch `pnpm lint && pnpm typecheck && pnpm test && pnpm test:e2e && pnpm check:tokens`. Máy dùng chung: vitest đã giới hạn 2 worker trong `vitest.config.ts`, Playwright 1 worker; không chạy hai bộ test cùng lúc. `pnpm test -- <args>` không chuyển tham số, viết `pnpm test <args>`.
 
 ## Quy tắc bảo mật
 - **Không log secret hay token**: không log client secret, cookie, header `authorization`, access/refresh/ID token, authorization code, device code, mật khẩu, khoá ký. Logger pino đã redact các trường này; đừng thêm log làm lộ chúng.
@@ -18,7 +18,14 @@ Commands: `pnpm dev`, `pnpm build`, `pnpm lint`, `pnpm typecheck`, `pnpm test`, 
 - `email_verified` chỉ `true` khi Google/GitHub xác minh.
 - Đổi cấu hình provider thì đọc docs `oidc-provider` đúng major đang dùng trước; API đổi theo major.
 
+## Audit
+- Sự kiện credential chỉ ghi qua `AuditOutbox.record` (kiểu trong `src/audit/audit-events.ts`), **sau** thao tác bảo mật mà nó mô tả (thu hồi, bật rà soát...), trong cùng request. `record` không bao giờ ném lỗi (lỗi chỉ được log, không kèm dữ liệu): audit không được làm hỏng bước bảo mật. Sự kiện về lượt đăng nhập sai ghi sau khi đã trả response (thời gian trả lời như nhau dù tài khoản có tồn tại hay không); lượt bị khoá từ chối không ghi gì, khoá chỉ ghi một `login.locked` khi `reservation.fail()` báo `accountLocked`. Sự kiện của endpoint `oidc-provider` (thu hồi, đăng xuất) ghi qua listener trong `src/audit/provider-events.ts`. Liên kết/gỡ phương thức, mã khôi phục, email bị lấy lại được ghi ở tầng dữ liệu (`AccountLinks`, `AccountRepository`); đăng nhập ở `finishLogin` và route đăng nhập/mã khôi phục; mật khẩu ở `afterPasswordChange`; thu hồi ở `revokeAccountAccess` và route thu hồi ở `/account`. Thêm thay đổi bảo mật mới thì thêm loại sự kiện và ghi ở cùng tầng.
+- Dữ liệu sự kiện không bao giờ chứa mật khẩu, mã, token, link hay secret; dispatcher không đọc hay log body phản hồi.
+
 ## Hợp đồng với client
+- Token exchange (RFC 8693) chỉ cho `localman-web`, đích chỉ `https://tunnel.hoandat.com`, scope chỉ `tunnels:read`, subject token phải là access token opaque còn sống của chính client (`src/oidc/token-exchange.ts`). Lỗi về subject token là `invalid_request` theo RFC 8693 §2.2.2.
+- Client tĩnh chỉ khai báo ở `src/oidc/clients.ts` (không ghi vào MongoDB); `scripts/seed-clients.ts` chỉ kiểm.
+- `localman-web` không có `offline_access`: refresh token của nó, như của client MCP, gắn với phiên IdP (`refreshesWithSession`), nên đăng xuất ở IdP giết grant, refresh và token exchange của Localman (Jev 0.94).
 - Refresh token xoay vòng và dùng một lần; client phải khoá khi refresh (Tunelo CLI: file lock) vì hai refresh song song thì một cái nhận `invalid_grant`. Phiên trượt: mỗi refresh gia hạn grant thêm 30 ngày, trần cứng 90 ngày từ lúc đăng nhập (`src/oidc/sliding-grants.ts`).
 - Chi tiết cho app tích hợp nằm ở README, mục "Lưu ý cho client".
 

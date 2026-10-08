@@ -8,6 +8,9 @@ import {
 } from "./resources.js";
 
 export const DEVICE_CODE_GRANT = "urn:ietf:params:oauth:grant-type:device_code";
+/** RFC 8693; only localman-web may use it (see token-exchange.ts). */
+export const TOKEN_EXCHANGE_GRANT =
+	"urn:ietf:params:oauth:grant-type:token-exchange";
 
 export const STATIC_CLIENT_IDS = {
 	localmanWeb: "localman-web",
@@ -38,6 +41,17 @@ export function isStaticClientId(clientId: unknown): boolean {
 	return typeof clientId === "string" && STATIC_ID_SET.has(clientId);
 }
 
+/**
+ * Clients whose refresh tokens are bound to the IdP browser session instead
+ * of `offline_access`: every DCR (MCP) client, and Localman web (Jev 0.94):
+ * signing out at the IdP ends its grant, refresh tokens and token exchange.
+ */
+export function refreshesWithSession(clientId: string): boolean {
+	return (
+		!isStaticClientId(clientId) || clientId === STATIC_CLIENT_IDS.localmanWeb
+	);
+}
+
 function scopeOf(...groups: readonly (readonly string[])[]): string {
 	return groups.flat().join(" ");
 }
@@ -60,16 +74,20 @@ export function buildStaticClients(env: Env): ClientMetadata[] {
 			client_name: "Localman",
 			client_secret: env.LOCALMAN_WEB_CLIENT_SECRET,
 			token_endpoint_auth_method: "client_secret_basic",
-			grant_types: ["authorization_code", "refresh_token"],
+			// Token exchange: a user's Localman session buys a short
+			// tunnels:read token for Tunelo's API.
+			grant_types: [
+				"authorization_code",
+				"refresh_token",
+				TOKEN_EXCHANGE_GRANT,
+			],
 			response_types: ["code"],
 			redirect_uris: [appUrl(localman, "/auth/callback")],
 			post_logout_redirect_uris: [appUrl(localman, "/")],
 			backchannel_logout_uri: appUrl(localman, "/auth/backchannel-logout"),
 			backchannel_logout_session_required: true,
-			scope: scopeOf(
-				["openid", "profile", "email", "offline_access"],
-				LOCALMAN_SCOPES,
-			),
+			// No offline_access: its refresh tokens live with the IdP session.
+			scope: scopeOf(["openid", "profile", "email"], LOCALMAN_SCOPES),
 			[ALLOWED_RESOURCES_PROPERTY]: [RESOURCES.localman],
 		},
 		{
@@ -92,6 +110,8 @@ export function buildStaticClients(env: Env): ClientMetadata[] {
 			response_types: ["code"],
 			redirect_uris: [appUrl(tunelo, "/auth/callback")],
 			post_logout_redirect_uris: [appUrl(tunelo, "/")],
+			backchannel_logout_uri: appUrl(tunelo, "/auth/backchannel-logout"),
+			backchannel_logout_session_required: true,
 			scope: scopeOf(
 				["openid", "profile", "email", "offline_access"],
 				TUNNEL_SCOPES,

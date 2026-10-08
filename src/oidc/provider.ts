@@ -24,12 +24,13 @@ import {
 import {
 	TRUSTED_INTROSPECTION_CLIENT_IDS,
 	buildStaticClients,
-	isStaticClientId,
+	refreshesWithSession,
 } from "./clients.js";
 import { cookieConfig } from "./cookies.js";
 import { buildInteractionPolicy } from "./interaction-policy.js";
 import { SIGNING_ALG, type SigningJwks } from "./jwks.js";
 import { createMongoAdapterFactory } from "./mongo-adapter.js";
+import { logProviderEvents } from "./provider-logging.js";
 import { validateClientMetadata } from "./registration-policy.js";
 import {
 	ALLOWED_RESOURCES_PROPERTY,
@@ -42,6 +43,7 @@ import {
 	createRotateAndSlideGrant,
 	refreshTokenTtl,
 } from "./sliding-grants.js";
+import { addActorClaims, enableTokenExchange } from "./token-exchange.js";
 
 /**
  * Endpoint paths, declared once so the HTTP layer (rate limits) and the
@@ -126,16 +128,19 @@ export function buildProviderConfiguration(
 			},
 		},
 		renderError: renderProviderError,
+		formats: { customizers: { jwt: addActorClaims } },
 		cookies: cookieConfig(env.ISSUER, env.COOKIE_KEYS),
 		ttl: { ...TTL_SECONDS, RefreshToken: refreshTokenTtl },
 		// Every refresh rotates (presenting a consumed one revokes the grant)
 		// and slides the grant: 30 days idle, 90 days at most.
 		rotateRefreshToken: createRotateAndSlideGrant(db),
-		// MCP clients cannot request offline_access (their scopes are fixed),
-		// yet still need refresh tokens to outlive the 15-minute access token.
+		// MCP clients and Localman web hold no offline_access, yet need refresh
+		// tokens to outlive the 15-minute access token; theirs die with the
+		// IdP session (and logout revokes their grant).
 		issueRefreshToken: async (_ctx, client, code) =>
 			client.grantTypeAllowed("refresh_token") &&
-			(code.scopes.has("offline_access") || !isStaticClientId(client.clientId)),
+			(code.scopes.has("offline_access") ||
+				refreshesWithSession(client.clientId)),
 		features: {
 			devInteractions: { enabled: false },
 			deviceFlow: {
@@ -144,7 +149,12 @@ export function buildProviderConfiguration(
 				userCodeConfirmSource,
 				successSource: deviceSuccessSource,
 			},
-			revocation: { enabled: true },
+			// A client may only revoke its own tokens.
+			revocation: {
+				enabled: true,
+				allowedPolicy: async (_ctx, client, token) =>
+					token.clientId === client.clientId,
+			},
 			introspection: {
 				enabled: true,
 				// A client sees only its own tokens, except the first-party
@@ -182,14 +192,7 @@ export function createProvider(deps: ProviderDependencies): Provider {
 		buildProviderConfiguration(deps),
 	);
 	provider.proxy = true;
-	provider.on("server_error", (ctx, error) => {
-		deps.logger.error(
-			{ err: error, route: ctx.oidc?.route },
-			"OIDC provider server error",
-		);
-	});
-	provider.on("grant.revoked", (_ctx, grantId) => {
-		deps.logger.info({ grantId }, "Grant revoked");
-	});
+	enableTokenExchange(provider, deps.accountStore);
+	logProviderEvents(provider, deps.logger);
 	return provider;
 }

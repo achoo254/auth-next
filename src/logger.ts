@@ -1,4 +1,9 @@
-import { type LevelWithSilent, type Logger, pino } from "pino";
+import {
+	type DestinationStream,
+	type LevelWithSilent,
+	type Logger,
+	pino,
+} from "pino";
 
 export type { Logger };
 
@@ -24,14 +29,21 @@ const REDACT_PATHS = [
 	"*.id_token",
 	"*.code",
 	"*.device_code",
+	"*.subject_token",
+	"*.actor_token",
 	"*.password",
 ];
 
-export function createLogger(level: LevelWithSilent): Logger {
-	return pino({
+/** `destination` defaults to stdout; tests pass a stream to read the lines. */
+export function createLogger(
+	level: LevelWithSilent,
+	destination?: DestinationStream,
+): Logger {
+	const options = {
 		level,
 		base: { service: "hoandat-auth" },
 		timestamp: saigonTimestamp,
 		redact: { paths: REDACT_PATHS, censor: "[redacted]" },
-	});
+	};
+	return destination ? pino(options, destination) : pino(options);
 }

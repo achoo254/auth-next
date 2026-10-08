@@ -7,6 +7,7 @@ import type Provider from "oidc-provider";
 import { inject } from "vitest";
 import { AccountRepository } from "../../accounts/account-repository.js";
 import { createApp } from "../../app.js";
+import { AuditOutbox } from "../../audit/audit-outbox.js";
 import { type Env, parseEnv } from "../../config/env.js";
 import type { RateLimitRule } from "../../http/security.js";
 import { createLogger } from "../../logger.js";
@@ -110,7 +111,7 @@ export async function startTestIdp(options: TestIdpOptions): Promise<TestIdp> {
 		keys: [await generateSigningJwk(), await generateSigningJwk()],
 	};
 	const logger = createLogger(env.LOG_LEVEL);
-	const accounts = new AccountRepository(db);
+	const accounts = new AccountRepository(db, new AuditOutbox(db, logger));
 	const provider = createProvider({
 		env,
 		db,

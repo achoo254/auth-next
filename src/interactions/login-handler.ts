@@ -11,13 +11,12 @@ import {
 	type AccountDocument,
 	normalizeEmail,
 } from "../accounts/user-model.js";
-import { ipThrottleKey } from "../http/client-ip.js";
+import { clientIp, ipThrottleKey } from "../http/client-ip.js";
 import { STATIC_CLIENT_IDS } from "../oidc/clients.js";
 import type { AppServices } from "../services.js";
 import { sendPage } from "../ui/send-page.js";
 import {
 	type Interaction,
-	clientIp,
 	csrfScope,
 	interactionClientId,
 } from "./interaction-helpers.js";
@@ -96,7 +95,14 @@ export function throttleSubject(
 
 export type PasswordCheck =
 	| { readonly ok: true; readonly account: AccountDocument }
-	| { readonly ok: false; readonly reason: "locked" | "invalid" };
+	/** Refused by a lock before any check; nothing to audit. */
+	| { readonly ok: false; readonly reason: "locked" }
+	/** Checked and wrong; `accountLocked` when this attempt locked it. */
+	| {
+			readonly ok: false;
+			readonly reason: "invalid";
+			readonly accountLocked: boolean;
+	  };
 
 /**
  * One password attempt against `account` (which may be missing). The
@@ -119,8 +125,8 @@ export async function checkPassword(
 		await burnPasswordCheck(password);
 	}
 	if (!account || !valid) {
-		await reservation.fail();
-		return { ok: false, reason: "invalid" };
+		const { accountLocked } = await reservation.fail();
+		return { ok: false, reason: "invalid", accountLocked };
 	}
 	await reservation.succeed();
 	return { ok: true, account };

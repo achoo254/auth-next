@@ -18,7 +18,8 @@
 		"test": "vitest run",
 		"test:e2e": "playwright test",
 		"generate-key": "tsx scripts/generate-signing-key.ts",
-		"check:tokens": "tsx scripts/check-tokens.ts"
+		"check:tokens": "tsx scripts/check-tokens.ts",
+		"seed:clients": "tsx --env-file-if-exists=.env scripts/seed-clients.ts"
 	},
 	"dependencies": {
 		"@fontsource/inter": "^5.3.0",

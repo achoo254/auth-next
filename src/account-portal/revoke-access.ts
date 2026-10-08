@@ -1,4 +1,5 @@
 import type { Db } from "mongodb";
+import type { RevocationCause } from "../audit/audit-events.js";
 import { collectionNameFor } from "../oidc/mongo-adapter.js";
 import type { AppServices } from "../services.js";
 import { GRANT_META_COLLECTION, revokeGrant } from "./grant-directory.js";
@@ -67,12 +68,14 @@ export interface RevokeScope {
 /**
  * Signs an account out everywhere: every IdP browser session (with
  * back-channel logout, as RP-initiated logout does) except the one named,
- * and optionally every grant. Used after a password reset or change.
+ * and optionally every grant. Used after a password reset or change and
+ * after a security review; what was revoked goes to the audit log.
  */
 export async function revokeAccountAccess(
 	services: AppServices,
 	accountId: string,
 	scope: RevokeScope,
+	cause: RevocationCause,
 ): Promise<{ sessions: number; grants: number }> {
 	let sessions = 0;
 	for (const uid of await sessionUidsOf(services.db, accountId)) {
@@ -93,5 +96,17 @@ export async function revokeAccountAccess(
 				await grantIdsOf(services.db, accountId),
 			)
 		: 0;
+	if (sessions > 0) {
+		await services.audit.record("session.revoked", accountId, {
+			count: sessions,
+			cause,
+		});
+	}
+	if (grants > 0) {
+		await services.audit.record("grant.revoked", accountId, {
+			count: grants,
+			cause,
+		});
+	}
 	return { sessions, grants };
 }

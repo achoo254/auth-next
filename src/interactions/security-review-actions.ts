@@ -168,10 +168,12 @@ export function registerReviewActions(
 		await review.consume();
 		// A sign-in that passed its password check just before the reset could
 		// have created a session or grant just after it: sweep once more.
-		await revokeAccountAccess(services, review.account._id, {
-			exceptSessionUid: review.keepSessionUid,
-			grants: true,
-		});
+		await revokeAccountAccess(
+			services,
+			review.account._id,
+			{ exceptSessionUid: review.keepSessionUid, grants: true },
+			"security-review",
+		);
 		services.logger.info(
 			{ accountId: review.account._id },
 			"Security review confirmed",

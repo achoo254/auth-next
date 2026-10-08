@@ -1,6 +1,7 @@
 import { type RequestHandler, Router } from "express";
 import { hashSecret, passwordProblem } from "../accounts/password-hasher.js";
 import { generateRecoveryCodes } from "../accounts/recovery-codes.js";
+import { auditContext } from "../audit/audit-context.js";
 import {
 	formRateLimit,
 	formText,
@@ -142,10 +143,14 @@ export function createAccountRouter(services: AppServices): Router {
 			);
 			// Other browsers are signed out; with the box ticked (the default)
 			// every device and app loses its grant too.
-			await afterPasswordChange(services, account, "account-page", {
-				exceptSessionUid: sessionUid,
-				grants: formValue(req, "logout_everywhere") === "yes",
-			});
+			const everywhere = formValue(req, "logout_everywhere") === "yes";
+			await afterPasswordChange(
+				services,
+				account,
+				"account-page",
+				{ exceptSessionUid: sessionUid, grants: everywhere },
+				auditContext(req),
+			);
 			res.redirect(303, "/account?notice=password");
 		}),
 	);

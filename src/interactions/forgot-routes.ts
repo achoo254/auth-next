@@ -2,6 +2,8 @@ import type { Request, Response, Router } from "express";
 import { afterPasswordChange } from "../account-portal/after-password-change.js";
 import { hashSecret, passwordProblem } from "../accounts/password-hasher.js";
 import { findRecoveryCodeHash } from "../accounts/recovery-codes.js";
+import { auditContext } from "../audit/audit-context.js";
+import { recordFailedLogin } from "../audit/record-login.js";
 import { formText, formValue } from "../http/form.js";
 import type { AppServices } from "../services.js";
 import { sendTelegramResetLink } from "../telegram/reset-link-service.js";
@@ -109,12 +111,22 @@ export function registerForgotRoutes(
 				matched !== undefined &&
 				(await services.accounts.consumeRecoveryCode(usable._id, matched));
 			if (!usable || !consumed) {
-				await reservation.fail();
+				const { accountLocked } = await reservation.fail();
 				showForgot(services, req, res, interaction, {
 					error: BAD_RECOVERY_MESSAGE,
 					identifier: rawIdentifier,
 					status: 401,
 				});
+				// After the response, as for passwords (same timing either way).
+				if (account) {
+					await recordFailedLogin(
+						services,
+						account._id,
+						"recovery-code",
+						accountLocked,
+						auditContext(req),
+					);
+				}
 				return;
 			}
 			await reservation.succeed();
@@ -124,10 +136,13 @@ export function registerForgotRoutes(
 			);
 			// A reset means someone may have had the old password: everything
 			// else signed in as this account is signed out, every grant revoked.
-			await afterPasswordChange(services, usable, "recovery-code", {
-				exceptSessionUid: interaction.session?.uid,
-				grants: true,
-			});
+			await afterPasswordChange(
+				services,
+				usable,
+				"recovery-code",
+				{ exceptSessionUid: interaction.session?.uid, grants: true },
+				auditContext(req),
+			);
 			await completeLogin(services, req, res, interaction, usable._id, ["pwd"]);
 		}),
 	);

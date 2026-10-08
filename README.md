@@ -1,8 +1,8 @@
 # hoandat-auth
 
-IdP OpenID Connect tự host tại `auth.hoandat.com`: một nơi đăng nhập cho Localman web, Localman MCP, Tunelo CLI và Tunelo web. Dựng trên [`oidc-provider`](https://github.com/panva/node-oidc-provider) v9, Express 5 và MongoDB. Lý do chọn kiến trúc: [`docs/decisions/0001-own-oidc-idp.md`](docs/decisions/0001-own-oidc-idp.md); tài khoản và trang đăng nhập: [`docs/decisions/0002-accounts-and-login-pages.md`](docs/decisions/0002-accounts-and-login-pages.md).
+IdP OpenID Connect tự host tại `auth.hoandat.com`: một nơi đăng nhập cho Localman web, Localman MCP, Tunelo CLI và Tunelo web. Dựng trên [`oidc-provider`](https://github.com/panva/node-oidc-provider) v9, Express 5 và MongoDB. Lý do chọn kiến trúc: [`docs/decisions/0001-own-oidc-idp.md`](docs/decisions/0001-own-oidc-idp.md); tài khoản và trang đăng nhập: [`docs/decisions/0002-accounts-and-login-pages.md`](docs/decisions/0002-accounts-and-login-pages.md); token exchange, kiểm client và audit: [`docs/decisions/0003-token-exchange-and-audit-outbox.md`](docs/decisions/0003-token-exchange-and-audit-outbox.md). **App tích hợp đọc [`docs/integration-guide.md`](docs/integration-guide.md).**
 
-Trạng thái: phase 02. Có lõi OIDC (phase 01) cùng trang đăng nhập, đăng ký, consent, duyệt thiết bị, quên mật khẩu, đăng xuất và trang `/account`. Không gửi email ở bất kỳ đâu.
+Trạng thái: phase 03 (phần IdP). Có lõi OIDC (phase 01), trang đăng nhập, đăng ký, consent, duyệt thiết bị, quên mật khẩu, đăng xuất, trang `/account` (phase 02), cùng token exchange Localman → Tunelo, script kiểm client và outbox sự kiện audit gửi sang Localman (phase 03). Không gửi email ở bất kỳ đâu.
 
 ## Bắt đầu
 
@@ -27,6 +27,7 @@ Hoặc chạy cả MongoDB lẫn IdP bằng Docker: `docker compose up --build` 
 | `pnpm test:e2e` | Playwright (Chromium, 1 worker) trên server thật ở cổng 4590/4591 với Google, GitHub, Telegram giả. Cài trình duyệt một lần: `pnpm exec playwright install chromium` |
 | `pnpm check:tokens` | Không có mã màu (hex, `rgb()`, `hsl()`) trong `src/` và `static/` ngoài `static/css/tokens.css` |
 | `pnpm generate-key [file]` | Sinh khoá ES256 và thêm vào cuối JWKS (chỉ để xác minh, xem ADR về xoay khoá) |
+| `pnpm seed:clients [--skip-discovery]` | Kiểm client tĩnh với env hiện tại (validator của `oidc-provider`, bản ghi MongoDB che id tĩnh, discovery và JWKS của issuer), in kế hoạch kèm fingerprint; chỉ đọc, chạy lại cho cùng kết quả. Trong image production: `node dist/seed-clients.mjs` |
 
 ## Endpoint
 
@@ -36,11 +37,15 @@ Client phải đọc endpoint từ `/.well-known/openid-configuration`, không h
 
 | Client | Loại | Grant | Scope | Audience của access token |
 |---|---|---|---|---|
-| `localman-web` | confidential | Code + PKCE, refresh | `openid profile email offline_access` + scope API Localman | `https://localman.hoandat.com` |
+| `localman-web` | confidential | Code + PKCE, refresh (gắn phiên IdP), token exchange | `openid profile email` + scope API Localman | `https://localman.hoandat.com`; token exchange cấp `https://tunnel.hoandat.com` |
 | `tunelo-cli` | public | device code, refresh | `openid offline_access tunnels:open tunnels:read` | `https://tunnel.hoandat.com` |
 | `tunelo-web` | confidential | Code + PKCE, refresh | `openid profile email offline_access tunnels:open tunnels:read` | `https://tunnel.hoandat.com` |
 | Client MCP (DCR) | public hoặc confidential | Code + PKCE, refresh | chỉ `mock:read mock:write client:read client:write client:send` | luôn `https://localman.hoandat.com/mcp` |
 | `hoandat-account` | public, nội bộ | Code + PKCE (code không bao giờ được đổi) | `openid` | không có |
+
+Back-channel logout: `localman-web` tới `${LOCALMAN_WEB_URL}/auth/backchannel-logout`, `tunelo-web` tới `${TUNELO_WEB_URL}/auth/backchannel-logout` (cả hai có `sid`).
+
+**Token exchange** (RFC 8693, grant `urn:ietf:params:oauth:grant-type:token-exchange`): chỉ `localman-web`, đổi access token opaque của phiên Localman lấy JWT `aud=https://tunnel.hoandat.com`, `scope=tunnels:read`, sống 15 phút, có `act`/`azp` là `localman-web`, không có refresh token. Subject token phải còn sống (grant chưa bị thu hồi, tài khoản không bị khoá hay chờ rà soát). Chi tiết và mã lỗi: [`docs/integration-guide.md`](docs/integration-guide.md) mục 6.
 
 `hoandat-account` là client riêng của trang `/account`: chưa đăng nhập thì `/account` gửi trình duyệt qua một authorization request bình thường của client này, nên đăng nhập dùng chung trang và chung cơ chế khoá; sau đó chỉ cookie phiên của IdP có ý nghĩa. App bên ngoài không dùng client này.
 
@@ -50,8 +55,9 @@ Khi request không có `resource`, IdP chỉ gắn audience nếu scope xin có 
 
 ### Lưu ý cho client
 - **Refresh token dùng một lần và xoay vòng.** Mỗi lần refresh trả về refresh token mới; dùng lại token cũ sẽ thu hồi cả grant. Hai request refresh song song với cùng một token thì chỉ một cái thắng, cái còn lại nhận `invalid_grant`. Vì vậy client (đặc biệt Tunelo CLI chạy nhiều tiến trình) **phải khoá khi refresh** (file lock hoặc mutex) và lưu token mới trước khi nhả khoá.
-- **Phiên trượt, trần 90 ngày.** Mỗi lần refresh thành công, grant (và refresh token mới) được gia hạn thêm 30 ngày tính từ lúc refresh, nhưng không bao giờ quá 90 ngày kể từ lúc đăng nhập. Bỏ không refresh quá 30 ngày thì phiên hết hạn; tới ngày thứ 90 thì dù đang dùng cũng phải đăng nhập lại (`tunelo login`, hoặc đăng nhập lại ở app web). Refresh token gần trần chỉ sống tới đúng trần. Áp cho mọi grant có refresh token. Riêng client MCP (không có `offline_access`) thì refresh token còn gắn với phiên trình duyệt ở IdP, nên vẫn hết khi phiên đó hết.
-- `offline_access` chỉ có hiệu lực khi request kèm `prompt=consent` (OIDC Core).
+- **Phiên trượt, trần 90 ngày.** Mỗi lần refresh thành công, grant (và refresh token mới) được gia hạn thêm 30 ngày tính từ lúc refresh, nhưng không bao giờ quá 90 ngày kể từ lúc đăng nhập. Bỏ không refresh quá 30 ngày thì phiên hết hạn; tới ngày thứ 90 thì dù đang dùng cũng phải đăng nhập lại (`tunelo login`, hoặc đăng nhập lại ở app web). Refresh token gần trần chỉ sống tới đúng trần. Áp cho mọi grant có refresh token. Riêng `localman-web` và client MCP (không có `offline_access`) thì refresh token còn gắn với phiên trình duyệt ở IdP: đăng xuất ở IdP thu hồi grant của chúng, kể cả token exchange của Localman (Jev 0.94).
+- `offline_access` chỉ có hiệu lực khi request kèm `prompt=consent` (OIDC Core); chỉ `tunelo-cli` và `tunelo-web` có scope này.
+- Revocation: client chỉ thu hồi được token của chính nó.
 - Introspection: client chỉ xem được token của chính mình; riêng `localman-web` và `tunelo-web` xem được mọi token. Token không được phép xem trả `{"active": false}`.
 
 Tunelo CLI nên gửi thêm `device_name=<hostname>` (tối đa 64 ký tự chữ, số, khoảng trắng, `._'()-`) trong request tới `/device/auth`; trang duyệt hiện "Cho phép `tunelo` trên máy <device_name>?" và trang `/account` liệt kê máy theo tên đó. Thiếu thì IdP dùng User-Agent.
@@ -89,17 +95,21 @@ Xem [`.env.example`](.env.example); env sai hoặc thiếu thì process báo tê
 
 Google, GitHub và bot Telegram là tuỳ chọn: thiếu biến nào trong một nhóm thì process báo lỗi; bỏ trống cả nhóm thì nút tương ứng bị ẩn và route trả 404. Callback cần đăng ký ở Google/GitHub là `${ISSUER}/oauth/google/callback` và `${ISSUER}/oauth/github/callback`; webhook Telegram là `${ISSUER}/telegram/webhook` với `secret_token` bằng `TELEGRAM_WEBHOOK_SECRET`.
 
+**Audit**: đăng nhập thành công/thất bại (và lúc tài khoản vừa bị khoá), đổi/đặt lại mật khẩu, tạo lại mã khôi phục, liên kết/gỡ Google/GitHub/Telegram, email bị lấy lại, duyệt thiết bị Tunelo, consent client MCP, thu hồi phiên/grant (cả ở `/token/revocation`) và đăng xuất RP-initiated được ghi vào collection `audit_outbox`, sau bước bảo mật tương ứng; ghi lỗi chỉ bị log, không làm hỏng bước đó. Đặt đủ `AUDIT_EVENTS_URL` (https, không chứa user:pass), `AUDIT_CLIENT_ID` (không chứa `:`), `AUDIT_CLIENT_SECRET` thì một dispatcher nền gửi từng sự kiện (cũ trước) sang Localman dạng SET ký ES256, `aud` là đúng URL đó, hết hạn 10 phút sau lúc ký (HTTP Basic `base64(id:secret)`, `Idempotency-Key`), thử lại 5 giây nhân đôi tới trần 1 giờ, không bỏ sự kiện nào; thiếu cả ba thì sự kiện nằm chờ. Sự kiện chờ quá 30 ngày bị xoá IP/User-Agent; sự kiện đã gửi tự xoá sau 30 ngày. Định dạng: [`docs/integration-guide.md`](docs/integration-guide.md) mục 10.
+
 Request có Host khác host của `ISSUER` bị trả 421; thêm host phụ cho dev qua `ALLOWED_HOSTS`. Riêng `/healthz` trả lời mọi Host để healthcheck của container chạy được.
 
 ## Cấu trúc
 
 ```
-src/server.ts                 # entry: env, Mongo, khoá ký, provider, dịch vụ, listen, tắt êm
+src/server.ts                 # entry: env, Mongo, khoá ký, provider, dịch vụ, dispatcher audit, listen, tắt êm
 src/app.ts                    # Express: bảo mật, /healthz, /assets, trang, provider
 src/services.ts               # gom repository, CSRF, throttle, Google/GitHub, bot Telegram
 src/config/                   # env (zod), env tích hợp, trust proxy (gồm dải IP Cloudflare)
 src/http/                     # helmet + rate limit + header proxy, CSRF, đọc form, error handler
-src/oidc/                     # cấu hình oidc-provider, client, resource, DCR, adapter Mongo, JWKS, claim
+src/oidc/                     # cấu hình oidc-provider, client, resource, DCR, adapter Mongo, JWKS, claim,
+                              # token exchange, kiểm client (seed)
+src/audit/                    # sự kiện audit: outbox Mongo, ký SET, dispatcher gửi sang Localman
 src/accounts/                 # model tài khoản, argon2id, mã khôi phục, khoá đăng nhập, token dùng một lần,
                               # luật liên kết, Google/GitHub qua openid-client
 src/telegram/                 # bot client, deep link liên kết, webhook, link reset mật khẩu

@@ -27,12 +27,30 @@ export const integrationEnvShape = {
 	TELEGRAM_API_BASE_URL: z
 		.url({ protocol: /^https?$/, error: "must be an http(s) URL" })
 		.default("https://api.telegram.org"),
+	/** Localman's audit intake, e.g. https://localman.hoandat.com/internal/audit-events. */
+	AUDIT_EVENTS_URL: z
+		.url({ protocol: /^https?$/, error: "must be an http(s) URL" })
+		.refine((value) => {
+			const url = URL.parse(value);
+			return url !== null && !url.username && !url.password;
+		}, "must not contain credentials; use AUDIT_CLIENT_ID/SECRET")
+		.optional(),
+	/** HTTP Basic credentials the IdP presents to the audit intake. */
+	AUDIT_CLIENT_ID: z
+		.string()
+		.regex(/^[^:\s]+$/, "must not contain ':' or whitespace")
+		.optional(),
+	AUDIT_CLIENT_SECRET: z
+		.string()
+		.min(32, "must be at least 32 characters")
+		.optional(),
 };
 
 const GROUPS = [
 	["GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET"],
 	["GITHUB_CLIENT_ID", "GITHUB_CLIENT_SECRET"],
 	["TELEGRAM_BOT_TOKEN", "TELEGRAM_BOT_USERNAME", "TELEGRAM_WEBHOOK_SECRET"],
+	["AUDIT_EVENTS_URL", "AUDIT_CLIENT_ID", "AUDIT_CLIENT_SECRET"],
 ] as const;
 
 type GroupKey = (typeof GROUPS)[number][number];
@@ -100,4 +118,24 @@ export function telegramBotConfig(
 		webhookSecret,
 		apiBaseUrl: env.TELEGRAM_API_BASE_URL.replace(/\/+$/, ""),
 	};
+}
+
+export interface AuditDeliveryConfig {
+	readonly url: string;
+	readonly clientId: string;
+	readonly clientSecret: string;
+}
+
+/** Undefined when unset: events then stay in the outbox until configured. */
+export function auditDeliveryConfig(
+	env: IntegrationEnv,
+): AuditDeliveryConfig | undefined {
+	const {
+		AUDIT_EVENTS_URL: url,
+		AUDIT_CLIENT_ID: clientId,
+		AUDIT_CLIENT_SECRET: clientSecret,
+	} = env;
+	return url && clientId && clientSecret
+		? { url, clientId, clientSecret }
+		: undefined;
 }

@@ -12,11 +12,16 @@ const manifest = z
 	.parse(JSON.parse(readFileSync(resolve(root, "package.json"), "utf8")));
 
 // Runtime dependencies stay external and load from node_modules; only the
-// application source is bundled.
+// application source is bundled. The client check ships too, so it runs in
+// the production image: `node dist/seed-clients.mjs`.
 rmSync(distDir, { recursive: true, force: true });
 await build({
-	entryPoints: [resolve(root, "src/server.ts")],
-	outfile: resolve(distDir, "server.mjs"),
+	entryPoints: {
+		server: resolve(root, "src/server.ts"),
+		"seed-clients": resolve(root, "scripts/seed-clients.ts"),
+	},
+	outdir: distDir,
+	outExtension: { ".js": ".mjs" },
 	bundle: true,
 	platform: "node",
 	target: "node22",

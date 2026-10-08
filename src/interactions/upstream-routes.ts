@@ -5,6 +5,7 @@ import {
 } from "../accounts/account-linking.js";
 import { UPSTREAM_LABELS } from "../accounts/upstream-client.js";
 import { isUpstreamProvider } from "../accounts/user-model.js";
+import { auditContext } from "../audit/audit-context.js";
 import { formRateLimit, queryValue, routeParam } from "../http/form.js";
 import type { AppServices } from "../services.js";
 import { notifyTelegram } from "../telegram/notify.js";
@@ -94,6 +95,16 @@ export function registerUpstreamInteractionRoutes(
 						href: `/interaction/${interaction.uid}`,
 						label: "Đăng nhập bằng mật khẩu",
 					},
+				);
+				await services.audit.record(
+					"login.failed",
+					decision.account._id,
+					{
+						method: "federated",
+						reason: "review-pending",
+						provider: profile.provider,
+					},
+					auditContext(req),
 				);
 				return;
 			}

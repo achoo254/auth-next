@@ -72,9 +72,8 @@ describe("Authorization Code + PKCE (localman-web)", () => {
 			await localmanWeb(),
 			LOCALMAN_CALLBACK,
 			{
-				scope: "openid profile email offline_access mock:read",
-				// OIDC Core: offline_access is only honoured together with prompt=consent.
-				prompt: "consent",
+				// No offline_access: Localman's refresh token lives with the IdP session.
+				scope: "openid profile email mock:read",
 				resource: RESOURCES.localman,
 			},
 		);

@@ -81,9 +81,16 @@ export async function getResourceServerInfo(
 	) {
 		throw new errors.InvalidTarget("resource is not allowed for this client");
 	}
+	return resourceServerInfo(resourceIndicator);
+}
+
+/** How tokens for `resource` are issued, whichever grant issues them. */
+export function resourceServerInfo(
+	resource: ResourceIndicator,
+): ResourceServer {
 	return {
-		scope: SCOPES_BY_RESOURCE[resourceIndicator].join(" "),
-		audience: resourceIndicator,
+		scope: SCOPES_BY_RESOURCE[resource].join(" "),
+		audience: resource,
 		accessTokenTTL: ACCESS_TOKEN_TTL_SECONDS,
 		accessTokenFormat: "jwt",
 		jwt: { sign: { alg: SIGNING_ALG } },

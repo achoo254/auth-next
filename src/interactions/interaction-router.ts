@@ -1,4 +1,6 @@
 import { Router } from "express";
+import { auditContext } from "../audit/audit-context.js";
+import { recordFailedLogin } from "../audit/record-login.js";
 import { formRateLimit, formText, formValue, parseForm } from "../http/form.js";
 import type { AppServices } from "../services.js";
 import { completeConsent, showConsent } from "./consent-handler.js";
@@ -84,6 +86,17 @@ export function createInteractionRouter(services: AppServices): Router {
 					identifier: rawIdentifier,
 					status: locked ? 429 : 401,
 				});
+				// After the response, so known and unknown identifiers answer
+				// in the same time; refusals by a lock checked nothing.
+				if (account && result.reason === "invalid") {
+					await recordFailedLogin(
+						services,
+						account._id,
+						"password",
+						result.accountLocked,
+						auditContext(req),
+					);
+				}
 				return;
 			}
 			await completeLogin(services, req, res, interaction, result.account._id, [
