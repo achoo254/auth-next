@@ -14,6 +14,11 @@ export interface AccountProfile {
 	readonly name?: string;
 	readonly picture?: string;
 	readonly telegramLinked: boolean;
+	/** The linked Telegram chat, when there is one (userinfo only). */
+	readonly telegram?: {
+		readonly chatId: string;
+		readonly username?: string;
+	};
 	/** A password reset is waiting for its security review (not a claim). */
 	readonly securityReviewPending?: boolean;
 }
@@ -31,11 +36,25 @@ export const CLAIMS_BY_SCOPE = {
 	openid: ["sub"],
 	profile: ["preferred_username", "name", "picture", "telegram_linked"],
 	email: ["email", "email_verified"],
+	telegram: ["telegram_chat_id", "telegram_username"],
 } as const;
 
-/** Every claim value this issuer can release for an account. */
-export function profileToClaims(profile: AccountProfile): AccountClaims {
-	return {
+/**
+ * Claims released only at the userinfo endpoint, never in an ID token
+ * (which travels through the browser and client logs).
+ */
+const USERINFO_ONLY_CLAIMS = new Set(CLAIMS_BY_SCOPE.telegram);
+
+/**
+ * Every claim value this issuer can release for an account and `use`; the
+ * provider then masks them to the granted scopes and claims.
+ */
+export function profileToClaims(
+	profile: AccountProfile,
+	/** oidc-provider's `use`: "id_token" or "userinfo". */
+	use = "userinfo",
+): AccountClaims {
+	const claims: AccountClaims = {
 		sub: profile.sub,
 		preferred_username: profile.username,
 		email: profile.email,
@@ -44,7 +63,13 @@ export function profileToClaims(profile: AccountProfile): AccountClaims {
 		name: profile.name,
 		picture: profile.picture,
 		telegram_linked: profile.telegramLinked,
+		telegram_chat_id: profile.telegram?.chatId,
+		telegram_username: profile.telegram?.username,
 	};
+	if (use !== "userinfo") {
+		for (const claim of USERINFO_ONLY_CLAIMS) delete claims[claim];
+	}
+	return claims;
 }
 
 /**
@@ -57,7 +82,7 @@ export function createFindAccount(store: AccountStore): FindAccount {
 		if (!profile) return undefined;
 		return {
 			accountId: profile.sub,
-			claims: () => profileToClaims(profile),
+			claims: (use) => profileToClaims(profile, use),
 		};
 	};
 }

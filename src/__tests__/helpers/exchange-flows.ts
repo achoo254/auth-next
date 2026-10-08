@@ -41,6 +41,8 @@ export async function codeTokens(
 	browser: TestBrowser,
 	redirectUri: string,
 	scope: string,
+	/** Extra authorization parameters (resource, claims...). */
+	extra: Record<string, string> = {},
 ): Promise<client.TokenEndpointResponse> {
 	const verifier = client.randomPKCECodeVerifier();
 	const state = client.randomState();
@@ -52,6 +54,7 @@ export async function codeTokens(
 		nonce,
 		code_challenge: await client.calculatePKCECodeChallenge(verifier),
 		code_challenge_method: "S256",
+		...extra,
 	});
 	const { location } = await browser.navigate(url, {}, redirectUri);
 	if (!location) throw new Error("Authorization did not return to the client");

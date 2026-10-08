@@ -4,6 +4,7 @@ import {
 	ALLOWED_RESOURCES_PROPERTY,
 	LOCALMAN_SCOPES,
 	RESOURCES,
+	TELEGRAM_SCOPE,
 	TUNNEL_SCOPES,
 } from "./resources.js";
 
@@ -87,7 +88,11 @@ export function buildStaticClients(env: Env): ClientMetadata[] {
 			backchannel_logout_uri: appUrl(localman, "/auth/backchannel-logout"),
 			backchannel_logout_session_required: true,
 			// No offline_access: its refresh tokens live with the IdP session.
-			scope: scopeOf(["openid", "profile", "email"], LOCALMAN_SCOPES),
+			// `telegram`: the linked chat for Localman's own notification bot.
+			scope: scopeOf(
+				["openid", "profile", "email", TELEGRAM_SCOPE],
+				LOCALMAN_SCOPES,
+			),
 			[ALLOWED_RESOURCES_PROPERTY]: [RESOURCES.localman],
 		},
 		{

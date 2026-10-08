@@ -53,6 +53,13 @@ Phase 03 nối bốn client vào IdP. Có ba việc cần quyết định kiến
 - `features.revocation.allowedPolicy` khai tường minh: client chỉ thu hồi token của chính nó (hết NOTICE của thư viện).
 - `backchannel.error` được log với `clientId` và mã lỗi (HTTP status hoặc mã mạng), không bao giờ có token hay `sid`. Logger che thêm `subject_token`, `actor_token`.
 
+### 7. Scope `telegram`: chat đã liên kết cho thông báo của Localman
+
+- Localman gửi thông báo bằng bot riêng nên cần `chatId` (plan Localman phase 02). Scope mới `telegram` chỉ có trong `scope` của `localman-web`; `oidc-provider` từ chối scope tĩnh không có trong client (`invalid_scope`), còn policy DCR chỉ cho `mock:*`/`client:*`, nên client MCP, `tunelo-*` và `hoandat-account` không xin được.
+- Claim `telegram_chat_id` (chuỗi) và `telegram_username` chỉ được trả ở **userinfo** (`claims(use)` bỏ chúng khi `use` là `id_token`, kể cả khi client xin qua tham số `claims`); access token JWT không bao giờ mang claim hồ sơ. Lý do: ID token đi qua trình duyệt và hay bị log ở phía app, còn `chatId` là định danh liên lạc trực tiếp. Chưa liên kết thì không có claim; `telegram_linked` giữ nguyên.
+- Không hỏi consent vì `localman-web` là app first-party (ADR 0002); user thấy và gỡ liên kết ở `/account`.
+- Đổi hoặc gỡ chat đã tăng `securityVersion` và sinh `method.linked`/`method.unlinked` (`method: "telegram"`) trong outbox audit; Localman dựa vào đó và vào mỗi lần đăng nhập/refresh để đọc lại `userinfo`.
+
 ## Hệ quả
 
 - Localman phải giữ access token opaque của phiên (đăng nhập không kèm `resource` và không xin scope API Localman) để đổi token Tunelo; hướng dẫn ở `docs/integration-guide.md`.

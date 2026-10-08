@@ -26,6 +26,12 @@ export const LOCALMAN_SCOPES = [
 
 export const TUNNEL_SCOPES = ["tunnels:open", "tunnels:read"] as const;
 
+/**
+ * The linked Telegram chat, at userinfo only; just `localman-web` may ask
+ * (its own bot sends the user's notifications there).
+ */
+export const TELEGRAM_SCOPE = "telegram";
+
 const SCOPES_BY_RESOURCE: Readonly<
 	Record<ResourceIndicator, readonly string[]>
 > = {
@@ -40,6 +46,7 @@ export const SUPPORTED_SCOPES = [
 	"offline_access",
 	"profile",
 	"email",
+	TELEGRAM_SCOPE,
 	...LOCALMAN_SCOPES,
 	...TUNNEL_SCOPES,
 ];

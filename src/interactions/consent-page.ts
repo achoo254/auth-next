@@ -8,6 +8,7 @@ const SCOPE_TEXT: Readonly<Record<string, string>> = {
 	profile: "Xem tên, username và ảnh đại diện",
 	email: "Xem địa chỉ email",
 	offline_access: "Giữ đăng nhập khi bạn không mở ứng dụng (tối đa 30 ngày)",
+	telegram: "Gửi thông báo tới chat Telegram bạn đã liên kết",
 	"mock:read": "Xem các mock API của bạn trên Localman",
 	"mock:write": "Tạo, sửa và xoá mock API trên Localman",
 	"client:read": "Xem các request đã lưu trong API client của Localman",

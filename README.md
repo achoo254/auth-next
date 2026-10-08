@@ -37,7 +37,7 @@ Client phải đọc endpoint từ `/.well-known/openid-configuration`, không h
 
 | Client | Loại | Grant | Scope | Audience của access token |
 |---|---|---|---|---|
-| `localman-web` | confidential | Code + PKCE, refresh (gắn phiên IdP), token exchange | `openid profile email` + scope API Localman | `https://localman.hoandat.com`; token exchange cấp `https://tunnel.hoandat.com` |
+| `localman-web` | confidential | Code + PKCE, refresh (gắn phiên IdP), token exchange | `openid profile email telegram` + scope API Localman | `https://localman.hoandat.com`; token exchange cấp `https://tunnel.hoandat.com` |
 | `tunelo-cli` | public | device code, refresh | `openid offline_access tunnels:open tunnels:read` | `https://tunnel.hoandat.com` |
 | `tunelo-web` | confidential | Code + PKCE, refresh | `openid profile email offline_access tunnels:open tunnels:read` | `https://tunnel.hoandat.com` |
 | Client MCP (DCR) | public hoặc confidential | Code + PKCE, refresh | chỉ `mock:read mock:write client:read client:write client:send` | luôn `https://localman.hoandat.com/mcp` |
@@ -50,6 +50,8 @@ Back-channel logout: `localman-web` tới `${LOCALMAN_WEB_URL}/auth/backchannel-
 `hoandat-account` là client riêng của trang `/account`: chưa đăng nhập thì `/account` gửi trình duyệt qua một authorization request bình thường của client này, nên đăng nhập dùng chung trang và chung cơ chế khoá; sau đó chỉ cookie phiên của IdP có ý nghĩa. App bên ngoài không dùng client này.
 
 Access token là JWT ES256 (`typ: at+jwt`) sống 15 phút. App xác minh offline bằng `jose` với JWKS đã cache, kiểm `iss`, `aud` của chính mình, `alg: ES256` và `typ`; mẫu tham chiếu: [`src/__tests__/helpers/verify-access-token.ts`](src/__tests__/helpers/verify-access-token.ts).
+
+Scope `telegram` (chỉ `localman-web`, không hỏi consent vì là app first-party) trả `telegram_chat_id` và `telegram_username` của chat đã liên kết **chỉ qua userinfo**, không bao giờ trong ID token hay access token; chưa liên kết thì không có hai claim này (`telegram_linked` của scope `profile` vẫn như cũ). Localman dùng nó để gửi thông báo bằng bot riêng: [`docs/integration-guide.md`](docs/integration-guide.md) mục 4.
 
 Khi request không có `resource`, IdP chỉ gắn audience nếu scope xin có ít nhất một scope của resource duy nhất mà client được phép (ví dụ `mock:read` cho Localman, `tunnels:read` cho Tunelo). Request chỉ có `openid profile email` nhận access token opaque, dùng được cho userinfo (`/me`).
 

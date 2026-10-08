@@ -24,6 +24,7 @@ Commands: `pnpm dev`, `pnpm build`, `pnpm lint`, `pnpm typecheck`, `pnpm test`, 
 
 ## Hợp đồng với client
 - Token exchange (RFC 8693) chỉ cho `localman-web`, đích chỉ `https://tunnel.hoandat.com`, scope chỉ `tunnels:read`, subject token phải là access token opaque còn sống của chính client (`src/oidc/token-exchange.ts`). Lỗi về subject token là `invalid_request` theo RFC 8693 §2.2.2.
+- Scope `telegram` chỉ cho `localman-web`; `telegram_chat_id`, `telegram_username` chỉ ra ở userinfo (`profileToClaims` bỏ chúng khi `use` khác `userinfo`). Claim liên lạc mới nào cũng theo cách đó.
 - Client tĩnh chỉ khai báo ở `src/oidc/clients.ts` (không ghi vào MongoDB); `scripts/seed-clients.ts` chỉ kiểm.
 - `localman-web` không có `offline_access`: refresh token của nó, như của client MCP, gắn với phiên IdP (`refreshesWithSession`), nên đăng xuất ở IdP giết grant, refresh và token exchange của Localman (Jev 0.94).
 - Refresh token xoay vòng và dùng một lần; client phải khoá khi refresh (Tunelo CLI: file lock) vì hai refresh song song thì một cái nhận `invalid_grant`. Phiên trượt: mỗi refresh gia hạn grant thêm 30 ngày, trần cứng 90 ngày từ lúc đăng nhập (`src/oidc/sliding-grants.ts`).

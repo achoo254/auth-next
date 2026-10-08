@@ -125,6 +125,16 @@ export function toAccountProfile(account: AccountDocument): AccountProfile {
 		name: account.name,
 		picture: account.picture,
 		telegramLinked: account.telegram !== undefined,
+		...(account.telegram
+			? {
+					telegram: {
+						chatId: account.telegram.chatId,
+						...(account.telegram.username
+							? { username: account.telegram.username }
+							: {}),
+					},
+				}
+			: {}),
 		securityReviewPending: account.securityReviewPendingSince !== undefined,
 	};
 }

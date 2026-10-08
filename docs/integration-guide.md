@@ -32,7 +32,7 @@ const config = await oidc.discovery(
 
 | `client_id` | Loại | Luồng | Scope được phép | `aud` của access token | Back-channel logout |
 |---|---|---|---|---|---|
-| `localman-web` | confidential (`client_secret_basic`) | Code + PKCE, refresh (gắn phiên IdP), **token exchange** | `openid profile email` + scope API Localman (không có `offline_access`) | `https://localman.hoandat.com` (chỉ khi xin scope API); đổi được token `https://tunnel.hoandat.com` | `https://localman.hoandat.com/auth/backchannel-logout` |
+| `localman-web` | confidential (`client_secret_basic`) | Code + PKCE, refresh (gắn phiên IdP), **token exchange** | `openid profile email telegram` + scope API Localman (không có `offline_access`) | `https://localman.hoandat.com` (chỉ khi xin scope API); đổi được token `https://tunnel.hoandat.com` | `https://localman.hoandat.com/auth/backchannel-logout` |
 | `tunelo-cli` | public (`none`) | Device flow, refresh | `openid offline_access tunnels:open tunnels:read` | `https://tunnel.hoandat.com` | không |
 | `tunelo-web` | confidential (`client_secret_basic`) | Code + PKCE, refresh | `openid profile email offline_access tunnels:open tunnels:read` | `https://tunnel.hoandat.com` | `https://tunnel.hoandat.com/auth/backchannel-logout` |
 | client MCP (DCR) | public hoặc confidential | Code + PKCE, refresh | `mock:read mock:write client:read client:write client:send` | luôn `https://localman.hoandat.com/mcp` | không được khai |
@@ -84,6 +84,22 @@ export async function verifyAccessToken(token: string, requiredScope: string) {
 2. `/auth/callback`: `authorizationCodeGrant(config, currentUrl, { pkceCodeVerifier, expectedState, expectedNonce })`; lấy `sub` và `sid` từ ID token (`tokens.claims()`), tạo phiên `__Host-lm_session` gắn `sub` và `sid`, lưu refresh token đã mã hoá. IdP vẫn cấp refresh token, nhưng nó **gắn với phiên IdP** (Jev 0.94): đăng xuất ở IdP, phiên IdP hết hạn hay bị thu hồi thì grant, refresh token và token exchange của Localman chết theo.
 3. Access token hết hạn thì refresh (mục 8). Refresh nhận `invalid_grant` nghĩa là phiên IdP đã kết thúc: xoá phiên Localman và đăng nhập lại. `/auth/logout`: xoá phiên của app rồi chuyển tới `end_session_endpoint` với `id_token_hint` và `post_logout_redirect_uri`.
 4. Back-channel logout (mục 5) vẫn bắt buộc: refresh token chết ở IdP không xoá được cookie `__Host-lm_session` đang mở trong trình duyệt; chỉ logout token cho Localman biết để huỷ phiên ngay.
+
+### Claim hồ sơ
+
+| Scope | Claim | Ở đâu |
+|---|---|---|
+| `openid` | `sub` | ID token, userinfo |
+| `profile` | `preferred_username`, `name`, `picture`, `telegram_linked` | ID token, userinfo |
+| `email` | `email`, `email_verified` (`true` chỉ khi Google/GitHub xác minh) | ID token, userinfo |
+| `telegram` (chỉ `localman-web`) | `telegram_chat_id` (chuỗi), `telegram_username` (không có `@`, có thể thiếu) | **chỉ userinfo**, và chỉ khi đã liên kết |
+
+### Chat Telegram cho thông báo của Localman
+
+- Localman xin thêm scope `telegram` khi đăng nhập (`scope: "openid profile email telegram"`). Là client first-party nên IdP **không hiện trang consent** cho scope này (như mọi scope khác của `localman-web`); trang `/account` của IdP cho user thấy và gỡ liên kết Telegram bất cứ lúc nào. Client khác (`tunelo-*`, `hoandat-account`, client MCP) xin `telegram` thì nhận `invalid_scope`.
+- Gọi `userinfo_endpoint` bằng access token opaque của phiên: có `telegram_chat_id` thì gửi thông báo tới chat đó bằng bot riêng của Localman; không có (chưa liên kết hoặc đã gỡ) thì hiện nút "Liên kết Telegram" dẫn tới `${issuer}/account`. Claim không bao giờ nằm trong ID token hay access token JWT, nên đừng tìm nó ở `tokens.claims()`.
+- Bot của Localman chỉ nhắn được cho user đã từng bấm Start với **chính bot đó** (Telegram trả 403 "bot can't initiate conversation" nếu chưa). `telegram_chat_id` là chat riêng giữa user và bot của IdP, có cùng giá trị với id người dùng Telegram, nên dùng được cho bot Localman sau khi user mở `t.me/<bot Localman>` và bấm Start; gặp 403 thì nhắc user làm việc đó.
+- Chat có thể đổi (liên kết lại chat khác) hoặc bị gỡ. Localman phải đọc lại `userinfo` (a) mỗi lần đăng nhập, (b) mỗi lần refresh access token, và (c) khi nhận sự kiện audit `method.linked` hoặc `method.unlinked` với `method: "telegram"` (mục 10) của user đó; khi đó xoá chat cũ đã lưu. Không gửi gì tới chat cũ sau khi `userinfo` không còn trả nó.
 
 ## 5. Back-channel logout (Localman web, Tunelo web)
 
@@ -216,7 +232,7 @@ Body là Security Event Token (RFC 8417), header `{alg: "ES256", kid, typ: "sece
 | `password.changed` | (đổi ở `/account`) |
 | `password.reset` | `via` (`recovery-code`, `reset-link`) |
 | `recovery_codes.regenerated` | |
-| `method.linked`, `method.unlinked` | `method` (`google`, `github`, `telegram`) |
+| `method.linked`, `method.unlinked` | `method` (`google`, `github`, `telegram`). Liên kết lại sang chat Telegram khác cũng sinh `method.linked`; Localman đọc lại `userinfo` khi nhận sự kiện có `method: "telegram"` |
 | `email.reclaimed` | (tài khoản `sub` mất email chưa xác minh cho chủ đã xác minh) |
 | `grant.created` | `clientId`, `kind` (`device`: duyệt máy Tunelo, có `deviceName`; `third-party-app`: consent client MCP). App first-party đăng nhập không sinh sự kiện này |
 | `session.revoked`, `grant.revoked` | `count`, `cause` (`account-page`, `password-change`, `password-reset`, `security-review`, `token-revocation`: client thu hồi refresh token ở `revocation_endpoint`), có thể có `clientId` |
