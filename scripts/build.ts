@@ -13,12 +13,14 @@ const manifest = z
 
 // Runtime dependencies stay external and load from node_modules; only the
 // application source is bundled. The client check ships too, so it runs in
-// the production image: `node dist/seed-clients.mjs`.
+// the production image: `node dist/seed-clients.mjs`, and so does the key
+// generator, so signing keys are created on the server and never travel.
 rmSync(distDir, { recursive: true, force: true });
 await build({
 	entryPoints: {
 		server: resolve(root, "src/server.ts"),
 		"seed-clients": resolve(root, "scripts/seed-clients.ts"),
+		"generate-signing-key": resolve(root, "scripts/generate-signing-key.ts"),
 	},
 	outdir: distDir,
 	outExtension: { ".js": ".mjs" },
