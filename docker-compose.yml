@@ -1,0 +1,54 @@
+# Local stack: MongoDB 7 as a single-node replica set plus the IdP.
+#   pnpm generate-key            # creates ./secrets/signing-keys.json once
+#   cp .env.example .env         # then fill in the secrets
+#   docker compose up --build
+# Both ports bind to 127.0.0.1 only; nothing is exposed to the network.
+name: hoandat-auth
+
+services:
+  mongo:
+    image: mongo:7
+    command: ["--replSet", "rs0", "--bind_ip_all"]
+    ports:
+      - "127.0.0.1:27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      # Initiates the replica set on first start, then reports its status.
+      test:
+        - CMD
+        - mongosh
+        - --quiet
+        - --eval
+        - "try { rs.status().ok } catch (e) { rs.initiate({ _id: 'rs0', members: [{ _id: 0, host: 'mongo:27017' }] }).ok }"
+      interval: 5s
+      timeout: 10s
+      retries: 20
+      start_period: 10s
+
+  hoandat-auth:
+    build: .
+    depends_on:
+      mongo:
+        condition: service_healthy
+    env_file:
+      - path: .env
+        required: true
+    environment:
+      # Defaults suit a local http stack. For production set NODE_ENV,
+      # ISSUER, the app URLs and TRUST_PROXY in .env; the IdP then refuses
+      # to start unless they are explicit https values and a named proxy.
+      NODE_ENV: ${NODE_ENV:-development}
+      HOST: 0.0.0.0
+      PORT: "4500"
+      ISSUER: ${ISSUER:-http://localhost:4500}
+      MONGO_URL: mongodb://mongo:27017/auth?replicaSet=rs0
+      SIGNING_KEYS_PATH: /run/secrets/hoandat-auth/signing-keys.json
+    volumes:
+      - ./secrets:/run/secrets/hoandat-auth:ro
+    ports:
+      - "127.0.0.1:4500:4500"
+    restart: unless-stopped
+
+volumes:
+  mongo-data:

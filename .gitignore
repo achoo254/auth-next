@@ -1,0 +1,13 @@
+node_modules/
+dist/
+coverage/
+*.tsbuildinfo
+.DS_Store
+
+# Signing keys and any other secret material never leave the machine.
+secrets/
+
+# Environment files hold secrets; only the documented template is tracked.
+.env
+.env.*
+!.env.example

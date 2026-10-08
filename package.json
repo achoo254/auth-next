@@ -1,0 +1,43 @@
+{
+	"name": "hoandat-auth",
+	"version": "0.0.0",
+	"private": true,
+	"type": "module",
+	"description": "auth.hoandat.com: self-hosted OpenID Connect identity provider",
+	"engines": {
+		"node": ">=22.12"
+	},
+	"packageManager": "pnpm@11.9.0",
+	"scripts": {
+		"dev": "tsx watch --env-file-if-exists=.env src/server.ts",
+		"build": "tsx scripts/build.ts",
+		"start": "node dist/server.mjs",
+		"lint": "biome check .",
+		"lint:fix": "biome check --fix .",
+		"typecheck": "tsc --noEmit",
+		"test": "vitest run",
+		"generate-key": "tsx scripts/generate-signing-key.ts"
+	},
+	"dependencies": {
+		"express": "^5.2.1",
+		"express-rate-limit": "^8.7.1",
+		"helmet": "^8.3.0",
+		"jose": "^6.2.12",
+		"mongodb": "^7.7.0",
+		"oidc-provider": "^9.12.2",
+		"pino": "^9.14.0",
+		"zod": "^4.6.5"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "1.9.4",
+		"@types/express": "^5.0.6",
+		"@types/node": "^22.20.5",
+		"@types/oidc-provider": "^9.12.1",
+		"esbuild": "^0.27.7",
+		"mongodb-memory-server": "^11.3.0",
+		"openid-client": "^6.8.8",
+		"tsx": "^4.23.15",
+		"typescript": "^5.9.3",
+		"vitest": "^3.2.7"
+	}
+}
