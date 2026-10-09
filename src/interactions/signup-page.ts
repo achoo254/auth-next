@@ -34,7 +34,7 @@ ${inputField({ name: "password", label: "Mật khẩu", type: "password", autoco
 ${inputField({ name: "password_confirm", label: "Nhập lại mật khẩu", type: "password", autocomplete: "new-password", minlength: 7, maxlength: 256 })}
 ${submitButton("Tạo tài khoản", { block: true, dataId: "signup-submit" })}
 </form>
-<p class="auth-foot">Đã có tài khoản? <a class="link" href="/interaction/${view.uid}" data-id="signup-to-login">Đăng nhập</a></p>`;
+<p class="auth-foot">Đã có tài khoản? <a class="link" href="/interaction/${view.uid}/login" data-id="signup-to-login">Đăng nhập</a></p>`;
 	return renderPage({ title: "Đăng ký", body, host: view.host });
 }
 

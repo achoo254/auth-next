@@ -2,7 +2,11 @@ import type { Request, Response } from "express";
 import type { UpstreamProfile } from "../accounts/account-linking.js";
 import { isUpstreamProvider } from "../accounts/user-model.js";
 import type { AppServices } from "../services.js";
-import { type Interaction, loadInteraction } from "./interaction-helpers.js";
+import {
+	type Interaction,
+	isSignInPrompt,
+	loadInteraction,
+} from "./interaction-helpers.js";
 import { completeLogin } from "./security-review-routes.js";
 
 const PENDING_TTL_SECONDS = 10 * 60;
@@ -77,7 +81,7 @@ export async function loadPending(
 	const interaction = await loadInteraction(services, req, res);
 	if (!interaction) return undefined;
 	const profile = await peekPendingUpstream(services, interaction.uid);
-	if (!profile || interaction.prompt.name !== "login") {
+	if (!profile || !isSignInPrompt(interaction)) {
 		res.redirect(303, `/interaction/${interaction.uid}`);
 		return undefined;
 	}

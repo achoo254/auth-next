@@ -2,6 +2,7 @@ import type { NextFunction, Request, RequestHandler, Response } from "express";
 import type { InteractionResults } from "oidc-provider";
 import { auditContext } from "../audit/audit-context.js";
 import { routeParam } from "../http/form.js";
+import { CREATE_PROMPT } from "../oidc/interaction-policy.js";
 import type { AppServices } from "../services.js";
 import { sendPage } from "../ui/send-page.js";
 import { renderErrorPage } from "./error-page.js";
@@ -116,6 +117,22 @@ export async function finishLogin(
 		{ methods: [...amr] },
 		auditContext(req),
 	);
+}
+
+/**
+ * True while the interaction waits for a sign-in: the login prompt, or
+ * `prompt=create` (sign-up first, sign-in still possible).
+ */
+export function isSignInPrompt(interaction: Interaction): boolean {
+	return (
+		interaction.prompt.name === "login" ||
+		interaction.prompt.name === CREATE_PROMPT
+	);
+}
+
+/** The login page of an interaction, also under `prompt=create`. */
+export function loginPath(uid: string): string {
+	return `/interaction/${uid}/login`;
 }
 
 /** The client id an interaction is for. */

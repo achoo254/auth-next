@@ -31,7 +31,7 @@ Hoặc chạy cả MongoDB lẫn IdP bằng Docker: `docker compose up --build` 
 
 ## Endpoint
 
-Client phải đọc endpoint từ `/.well-known/openid-configuration`, không hardcode. Hiện tại: `/auth`, `/request` (PAR), `/token`, `/me` (userinfo), `/jwks`, `/device/auth` và `/device` (device flow), `/token/revocation`, `/token/introspection`, `/session/end`, `/reg` (DCR). `/auth`, `/request`, `/token`, `/device`, `/device/auth` và `/reg` bị giới hạn tần suất theo IP (mọi cách viết hoa/thường và `/` cuối đều tính chung). `/healthz` trả 200 khi process sống.
+Client phải đọc endpoint từ `/.well-known/openid-configuration`, không hardcode. `prompt_values_supported` gồm `none`, `create`, `login`, `consent`: `prompt=create` (OIDC Prompt Create) mở thẳng trang đăng ký, đăng ký xong quay về client như đăng nhập. Hiện tại: `/auth`, `/request` (PAR), `/token`, `/me` (userinfo), `/jwks`, `/device/auth` và `/device` (device flow), `/token/revocation`, `/token/introspection`, `/session/end`, `/reg` (DCR). `/auth`, `/request`, `/token`, `/device`, `/device/auth` và `/reg` bị giới hạn tần suất theo IP (mọi cách viết hoa/thường và `/` cuối đều tính chung). `/healthz` trả 200 khi process sống.
 
 ## Client và audience
 

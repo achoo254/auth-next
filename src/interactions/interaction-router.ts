@@ -2,6 +2,7 @@ import { Router } from "express";
 import { auditContext } from "../audit/audit-context.js";
 import { recordFailedLogin } from "../audit/record-login.js";
 import { formRateLimit, formText, formValue, parseForm } from "../http/form.js";
+import { CREATE_PROMPT } from "../oidc/interaction-policy.js";
 import type { AppServices } from "../services.js";
 import { completeConsent, showConsent } from "./consent-handler.js";
 import { registerForgotRoutes } from "./forgot-routes.js";
@@ -9,6 +10,7 @@ import {
 	asyncHandler,
 	checkCsrf,
 	csrfScope,
+	isSignInPrompt,
 	loadInteraction,
 	sendInteractionError,
 } from "./interaction-helpers.js";
@@ -24,7 +26,7 @@ import {
 	completeLogin,
 	registerSecurityReviewRoutes,
 } from "./security-review-routes.js";
-import { registerSignupRoutes } from "./signup-routes.js";
+import { registerSignupRoutes, showSignup } from "./signup-routes.js";
 import { registerUpstreamInteractionRoutes } from "./upstream-routes.js";
 
 /**
@@ -49,6 +51,11 @@ export function createInteractionRouter(services: AppServices): Router {
 				await showLogin(services, req, res, interaction);
 				return;
 			}
+			// prompt=create (OIDC Prompt Create): sign-up first.
+			if (interaction.prompt.name === CREATE_PROMPT) {
+				showSignup(services, req, res, interaction);
+				return;
+			}
 			if (interaction.prompt.name === "consent") {
 				await showConsent(services, req, res, interaction);
 				return;
@@ -58,6 +65,20 @@ export function createInteractionRouter(services: AppServices): Router {
 				res,
 				"Bước đăng nhập này chưa được hỗ trợ.",
 			);
+		}),
+	);
+
+	// "Đã có tài khoản? Đăng nhập" from the sign-up page, same interaction.
+	router.get(
+		"/:uid/login",
+		asyncHandler(async (req, res) => {
+			const interaction = await loadInteraction(services, req, res);
+			if (!interaction) return;
+			if (!isSignInPrompt(interaction)) {
+				res.redirect(303, `/interaction/${interaction.uid}`);
+				return;
+			}
+			await showLogin(services, req, res, interaction);
 		}),
 	);
 

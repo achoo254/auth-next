@@ -11,6 +11,7 @@ import {
 	asyncHandler,
 	checkCsrf,
 	csrfScope,
+	isSignInPrompt,
 	loadInteraction,
 } from "./interaction-helpers.js";
 import { completeLogin } from "./security-review-routes.js";
@@ -21,7 +22,7 @@ import {
 	validationProblem,
 } from "./signup-rules.js";
 
-function showSignup(
+export function showSignup(
 	services: AppServices,
 	req: Request,
 	res: Response,
@@ -70,7 +71,7 @@ export function registerSignupRoutes(
 			const interaction = await loadInteraction(services, req, res);
 			if (!interaction) return;
 			if (!checkCsrf(services, req, res, csrfScope(interaction.uid))) return;
-			if (interaction.prompt.name !== "login") {
+			if (!isSignInPrompt(interaction)) {
 				res.redirect(303, `/interaction/${interaction.uid}`);
 				return;
 			}

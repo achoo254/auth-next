@@ -14,6 +14,7 @@ import {
 	asyncHandler,
 	csrfScope,
 	loadInteraction,
+	loginPath,
 	sendInteractionError,
 } from "./interaction-helpers.js";
 import { REVIEW_NEEDS_PASSWORD_MESSAGE } from "./security-review-routes.js";
@@ -92,7 +93,7 @@ export function registerUpstreamInteractionRoutes(
 					REVIEW_NEEDS_PASSWORD_MESSAGE,
 					403,
 					{
-						href: `/interaction/${interaction.uid}`,
+						href: loginPath(interaction.uid),
 						label: "Đăng nhập bằng mật khẩu",
 					},
 				);

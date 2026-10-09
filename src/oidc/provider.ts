@@ -1,10 +1,7 @@
 import type { Db } from "mongodb";
-import Provider, { type Configuration, errors } from "oidc-provider";
+import Provider, { type Configuration } from "oidc-provider";
 import type { Env } from "../config/env.js";
-import {
-	DEVICE_NAME_PARAM,
-	isValidDeviceName,
-} from "../interactions/device-info.js";
+import { DEVICE_NAME_EXTRA_PARAM } from "../interactions/device-info.js";
 import {
 	deviceSuccessSource,
 	userCodeConfirmSource,
@@ -27,7 +24,10 @@ import {
 	refreshesWithSession,
 } from "./clients.js";
 import { cookieConfig } from "./cookies.js";
-import { buildInteractionPolicy } from "./interaction-policy.js";
+import {
+	buildInteractionPolicy,
+	promptValuesSupported,
+} from "./interaction-policy.js";
 import { SIGNING_ALG, type SigningJwks } from "./jwks.js";
 import { createMongoAdapterFactory } from "./mongo-adapter.js";
 import { logProviderEvents } from "./provider-logging.js";
@@ -92,6 +92,7 @@ export function buildProviderConfiguration(
 	deps: Omit<ProviderDependencies, "logger">,
 ): Configuration {
 	const { env, db, jwks, accountStore } = deps;
+	const policy = buildInteractionPolicy(accountStore);
 	return {
 		adapter: createMongoAdapterFactory(db),
 		clients: buildStaticClients(env),
@@ -115,18 +116,13 @@ export function buildProviderConfiguration(
 		pkce: { required: () => true },
 		routes: OIDC_ROUTES,
 		interactions: {
-			policy: buildInteractionPolicy(accountStore),
+			policy,
 			url: async (_ctx, interaction) =>
 				`${INTERACTION_PATH}/${interaction.uid}`,
 		},
+		discovery: { prompt_values_supported: promptValuesSupported(policy) },
 		// Tunelo CLI names the machine so the approval page can show it.
-		extraParams: {
-			[DEVICE_NAME_PARAM]: (_ctx, value) => {
-				if (value !== undefined && !isValidDeviceName(value)) {
-					throw new errors.InvalidRequest(`${DEVICE_NAME_PARAM} is invalid`);
-				}
-			},
-		},
+		extraParams: DEVICE_NAME_EXTRA_PARAM,
 		renderError: renderProviderError,
 		formats: { customizers: { jwt: addActorClaims } },
 		cookies: cookieConfig(env.ISSUER, env.COOKIE_KEYS),

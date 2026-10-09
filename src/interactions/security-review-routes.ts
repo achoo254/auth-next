@@ -6,6 +6,7 @@ import {
 	csrfScope,
 	finishLogin,
 	loadInteraction,
+	loginPath,
 	sendInteractionError,
 } from "./interaction-helpers.js";
 import { registerReviewActions } from "./security-review-actions.js";
@@ -45,7 +46,7 @@ export async function completeLogin(
 				"Sign-in refused while a security review is pending",
 			);
 			sendInteractionError(services, res, REVIEW_NEEDS_PASSWORD_MESSAGE, 403, {
-				href: `/interaction/${interaction.uid}`,
+				href: loginPath(interaction.uid),
 				label: "Đăng nhập bằng mật khẩu",
 			});
 			await services.audit.record(

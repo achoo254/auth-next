@@ -85,6 +85,26 @@ export async function verifyAccessToken(token: string, requiredScope: string) {
 3. Access token hết hạn thì refresh (mục 8). Refresh nhận `invalid_grant` nghĩa là phiên IdP đã kết thúc: xoá phiên Localman và đăng nhập lại. `/auth/logout`: xoá phiên của app rồi chuyển tới `end_session_endpoint` với `id_token_hint` và `post_logout_redirect_uri`.
 4. Back-channel logout (mục 5) vẫn bắt buộc: refresh token chết ở IdP không xoá được cookie `__Host-lm_session` đang mở trong trình duyệt; chỉ logout token cho Localman biết để huỷ phiên ngay.
 
+### Nút "Bắt đầu miễn phí": `prompt=create`
+
+IdP hỗ trợ [OpenID Connect Prompt Create 1.0](https://openid.net/specs/openid-connect-prompt-create-1_0.html); discovery quảng bá `prompt_values_supported: ["none", "create", "login", "consent"]` (kiểm giá trị này trước khi hiện nút). Mọi client (tĩnh hoặc DCR) đều dùng được.
+
+- Gửi authorization request như bước 1 ở trên, thêm `prompt: "create"`. IdP mở thẳng trang **đăng ký** thay vì trang đăng nhập, kể cả khi user đã có phiên IdP (theo spec). Đăng ký xong (gồm bước xác nhận đã lưu mã khôi phục) IdP quay về `redirect_uri` với `code` như một lần đăng nhập bình thường; callback xử lý y hệt.
+- Trên trang đăng ký có "Đã có tài khoản? Đăng nhập" (giữ nguyên request, không quay về app), và nút Google/GitHub dùng đúng luồng liên kết/tạo tài khoản sẵn có. Mọi luật cũ vẫn áp dụng: giới hạn tần suất, CSRF, khoá đăng nhập, rà soát bảo mật sau reset.
+- `prompt=create none` (hay `none` đi cùng bất kỳ giá trị nào) bị trả về `redirect_uri` với `error=invalid_request`. Không gửi `prompt` thì luồng không đổi (trang đăng nhập, có link sang đăng ký).
+
+```ts
+const url = oidc.buildAuthorizationUrl(config, {
+	redirect_uri: "https://localman.hoandat.com/auth/callback",
+	scope: "openid profile email telegram",
+	prompt: "create",
+	code_challenge,
+	code_challenge_method: "S256",
+	state,
+	nonce,
+});
+```
+
 ### Claim hồ sơ
 
 | Scope | Claim | Ở đâu |

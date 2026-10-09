@@ -1,4 +1,4 @@
-import type { UnknownObject } from "oidc-provider";
+import { type Configuration, type UnknownObject, errors } from "oidc-provider";
 import { STATIC_CLIENT_IDS } from "../oidc/clients.js";
 
 /**
@@ -12,6 +12,17 @@ const DEVICE_NAME_PATTERN = /^[\p{L}\p{N} ._'()-]{1,64}$/u;
 export function isValidDeviceName(value: unknown): boolean {
 	return typeof value === "string" && DEVICE_NAME_PATTERN.test(value);
 }
+
+/** `extraParams` entry: oidc-provider keeps `device_name`, rejecting bad values. */
+export const DEVICE_NAME_EXTRA_PARAM: NonNullable<
+	Configuration["extraParams"]
+> = {
+	[DEVICE_NAME_PARAM]: (_ctx: unknown, value: unknown) => {
+		if (value !== undefined && !isValidDeviceName(value)) {
+			throw new errors.InvalidRequest(`${DEVICE_NAME_PARAM} is invalid`);
+		}
+	},
+};
 
 function stringField(
 	source: UnknownObject | undefined,

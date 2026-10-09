@@ -60,6 +60,12 @@ Phase 03 nối bốn client vào IdP. Có ba việc cần quyết định kiến
 - Không hỏi consent vì `localman-web` là app first-party (ADR 0002); user thấy và gỡ liên kết ở `/account`.
 - Đổi hoặc gỡ chat đã tăng `securityVersion` và sinh `method.linked`/`method.unlinked` (`method: "telegram"`) trong outbox audit; Localman dựa vào đó và vào mỗi lần đăng nhập/refresh để đọc lại `userinfo`.
 
+### 8. `prompt=create` qua interaction policy
+
+- Localman có nút "Bắt đầu miễn phí" gửi `prompt=create` (OpenID Connect Prompt Create 1.0). `oidc-provider` 9.12.2 chỉ nhận giá trị `prompt` là tên của một prompt `requestable` trong interaction policy, nên IdP thêm prompt `create` (requestable) **trước** `login` trong `src/oidc/interaction-policy.ts`; discovery quảng bá `prompt_values_supported` tính từ chính policy đó (thư viện không tự quảng bá trường này).
+- Check mặc định của prompt requestable chỉ coi là xong khi kết quả interaction có khoá trùng tên prompt; IdP thay nó bằng check cùng tên: `create` còn chờ khi request có `prompt=create` và interaction chưa có kết quả `login`. Vì vậy bất kỳ lần hoàn tất đăng nhập nào (tài khoản mới, Google/GitHub, hay đăng nhập bằng link "Đã có tài khoản?") cũng trả lời prompt này mà không phải sửa `finishLogin`; khi đã có phiên, prompt vẫn hiện (theo spec).
+- Trang interaction hiện đăng ký khi prompt là `create`; `GET /interaction/:uid/login` hiện trang đăng nhập cho cùng interaction. Các route đăng ký, Google/GitHub chấp nhận cả `login` lẫn `create` (`isSignInPrompt`). `none` đi cùng giá trị khác bị chính thư viện từ chối (`invalid_request`).
+
 ## Hệ quả
 
 - Localman phải giữ access token opaque của phiên (đăng nhập không kèm `resource` và không xin scope API Localman) để đổi token Tunelo; hướng dẫn ở `docs/integration-guide.md`.

@@ -1,4 +1,6 @@
+import * as client from "openid-client";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { localmanWeb } from "./helpers/exchange-flows.js";
 import {
 	FAKE_UPSTREAM_ENV,
 	type FakeProfile,
@@ -9,7 +11,7 @@ import {
 	openLoginPage,
 	repositoryOf,
 } from "./helpers/test-accounts.js";
-import { formField } from "./helpers/test-browser.js";
+import { TestBrowser, formField } from "./helpers/test-browser.js";
 import {
 	LOCALMAN_CALLBACK,
 	type TestIdp,
@@ -70,6 +72,45 @@ describe("Google and GitHub sign-in", () => {
 			name: "New Person",
 		});
 		expect(account?.passwordHash).toBeUndefined();
+	});
+
+	it("signs up through Google from the prompt=create page", async () => {
+		const browser = new TestBrowser();
+		const url = client.buildAuthorizationUrl(await localmanWeb(idp), {
+			redirect_uri: LOCALMAN_CALLBACK,
+			scope: "openid",
+			prompt: "create",
+			code_challenge: await client.calculatePKCECodeChallenge(
+				client.randomPKCECodeVerifier(),
+			),
+			code_challenge_method: "S256",
+		});
+		const start = await browser.navigate(url, {}, LOCALMAN_CALLBACK);
+		const uid = /\/interaction\/([\w-]+)/.exec(start.response.url)?.[1] ?? "";
+		expect(await start.response.text()).toContain(
+			`/interaction/${uid}/upstream/google`,
+		);
+		fake.nextLogins.push({
+			id: "g-create",
+			email: "created.here@gmail.com",
+			emailVerified: true,
+		});
+		const chosen = await browser.navigate(
+			`${idp.issuer}/interaction/${uid}/upstream/google`,
+			{},
+			LOCALMAN_CALLBACK,
+		);
+		const html = await chosen.response.text();
+		expect(html).toContain("Chọn username");
+		const done = await browser.navigate(
+			`${idp.issuer}/interaction/${uid}/upstream/signup`,
+			{ form: { csrf: formField(html, "csrf"), username: "created_here" } },
+			LOCALMAN_CALLBACK,
+		);
+		expect(done.location?.searchParams.get("code")).toEqual(expect.any(String));
+		expect(
+			await repositoryOf(idp).findByProvider("google", "g-create"),
+		).toMatchObject({ username: "created_here" });
 	});
 
 	it("links automatically when the account's email was already verified", async () => {
