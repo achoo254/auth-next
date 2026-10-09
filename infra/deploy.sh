@@ -16,8 +16,8 @@ SSH="ssh ${SSH_OPTS:-}"
 echo "== build"
 pnpm build
 
-echo "== sync release files"
-rsync -az --delete --chown=root:root -e "$SSH" \
+echo "== sync release files (no owner/group: files land owned by the remote root)"
+rsync -rlptz --delete -e "$SSH" \
 	--exclude .env --exclude secrets/ --exclude node_modules/ --exclude backups/ \
 	dist static infra package.json pnpm-lock.yaml pnpm-workspace.yaml \
 	"$SSH_TARGET:$REMOTE_DIR/"

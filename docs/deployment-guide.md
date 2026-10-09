@@ -23,7 +23,7 @@ Access log của nginx che token trong đường dẫn `/reset/...`.
 1. DNS: tạo bản ghi ở trên (proxied).
 2. Đồng bộ bản build: `SSH_TARGET=<alias> bash infra/deploy.sh`. Bước restart sẽ báo lỗi ở lần đầu vì chưa có `.env`; đó là bình thường.
 3. Trên server, trong `/var/www/hoandat-auth`: `bash infra/setup-server.sh` (sinh khoá ký và `.env` với secret ngẫu nhiên; chạy lại không ghi đè).
-4. Tạo user MongoDB bằng một user quản trị (mật khẩu đọc từ stdin, không lộ qua argv):
+4. Tạo user MongoDB bằng một user quản trị (trên .65 là `hoandat_admin`, thông tin nằm ở mục `SSH_SERVER_STAGING` của file server ngoài repo) (mật khẩu đọc từ stdin, không lộ qua argv):
    `bash infra/create-mongo-user.sh <admin-user> < <file-chứa-mật-khẩu-admin>`
 5. nginx: chép `infra/nginx/auth.hoandat.com.conf` vào `/etc/nginx/conf.d/`, chạy `nginx -t`, rồi `systemctl reload nginx`.
 6. Chạy lại `infra/deploy.sh` để khởi động pm2 và kiểm `/healthz`.
@@ -41,7 +41,7 @@ Script build, rsync `dist/ static/ infra/ package.json pnpm-lock.yaml pnpm-works
 ## Tuỳ chọn bật sau
 
 - Google/GitHub: tạo OAuth app với callback `https://auth.hoandat.com/oauth/google/callback` và `/oauth/github/callback`, điền 4 biến vào `.env`, `pm2 restart hoandat-auth --update-env`.
-- Telegram: tạo bot qua BotFather, điền `TELEGRAM_BOT_TOKEN`, `TELEGRAM_BOT_USERNAME`, `TELEGRAM_WEBHOOK_SECRET`, rồi đặt webhook `https://auth.hoandat.com/telegram/webhook` với `secret_token`.
+- Telegram (đã bật 2026-10-09 với `@auth_hoandat_bot`): `TELEGRAM_BOT_TOKEN`, `TELEGRAM_BOT_USERNAME`, `TELEGRAM_WEBHOOK_SECRET` nằm trong `.env`; webhook `https://auth.hoandat.com/telegram/webhook` đặt bằng `setWebhook` với `secret_token` và `allowed_updates=["message","callback_query"]`. Khi xoay token: cập nhật `.env`, restart, đặt lại webhook.
 - Audit sang Localman: điền `AUDIT_EVENTS_URL`, `AUDIT_CLIENT_ID`, `AUDIT_CLIENT_SECRET` khi Localman có endpoint.
 
 ## Xoay khoá ký
