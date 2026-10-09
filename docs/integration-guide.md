@@ -35,7 +35,7 @@ const config = await oidc.discovery(
 | `localman-web` | confidential (`client_secret_basic`) | Code + PKCE, refresh (gắn phiên IdP), **token exchange** | `openid profile email telegram` + scope API Localman (không có `offline_access`) | `https://localman.hoandat.com` (chỉ khi xin scope API); đổi được token `https://tunnel.hoandat.com` | `https://localman.hoandat.com/auth/backchannel-logout` |
 | `tunelo-cli` | public (`none`) | Device flow, refresh | `openid offline_access tunnels:open tunnels:read` | `https://tunnel.hoandat.com` | không |
 | `tunelo-web` | confidential (`client_secret_basic`) | Code + PKCE, refresh | `openid profile email offline_access tunnels:open tunnels:read` | `https://tunnel.hoandat.com` | `https://tunnel.hoandat.com/auth/backchannel-logout` |
-| client MCP (DCR) | public hoặc confidential | Code + PKCE, refresh | mặc định `mock:read mock:write client:read client:write client:send`; thêm `credentials:write` chỉ khi khai rõ lúc đăng ký | luôn `https://localman.hoandat.com/mcp` | không được khai |
+| client MCP (DCR) | public hoặc confidential | Code + PKCE, refresh (gắn phiên IdP) | mặc định `mock:read mock:write client:read client:write client:send`; thêm `credentials:write` chỉ khi khai rõ lúc đăng ký; `offline_access` bị bỏ qua (mục 9) | luôn `https://localman.hoandat.com/mcp` | không được khai |
 | `hoandat-account` | nội bộ IdP | không dùng ngoài IdP | | | |
 
 Redirect URI: `${LOCALMAN_WEB_URL}/auth/callback`, `${TUNELO_WEB_URL}/auth/callback`; post-logout về `/` của app. PKCE (`S256`) bắt buộc với **mọi** client, kể cả confidential.
@@ -212,14 +212,15 @@ const tokens = await oidc.pollDeviceAuthorizationGrant(cli, device);
 
 - Refresh token **dùng một lần, xoay vòng**: mỗi lần refresh nhận token mới; đưa lại token cũ làm IdP thu hồi cả grant. Hai refresh song song cùng một token thì một cái nhận `invalid_grant`. Vì vậy **phải khoá khi refresh** (Tunelo CLI: file lock vì nhiều tiến trình; app web: mutex theo phiên) và ghi token mới trước khi nhả khoá.
 - **Phiên trượt 30/90 ngày**: mỗi lần refresh thành công, grant được gia hạn tới 30 ngày sau lần đó, nhưng không quá 90 ngày kể từ lúc đăng nhập. Không refresh quá 30 ngày thì phải đăng nhập lại; tới ngày 90 thì luôn phải đăng nhập lại (`tunelo login`, hoặc đăng nhập lại ở app web).
-- `localman-web` và client MCP không có `offline_access`: refresh token của chúng gắn với phiên trình duyệt ở IdP (đăng xuất ở IdP là hết), vẫn theo trần 30/90 ngày.
+- `localman-web` và client MCP không có `offline_access` (client MCP xin thì bị bỏ qua, mục 9): refresh token của chúng gắn với phiên trình duyệt ở IdP (đăng xuất ở IdP là hết), vẫn theo trần 30/90 ngày.
 - `revocation_endpoint`: client chỉ thu hồi được token của chính nó. Thu hồi refresh token thu hồi cả grant (`tunelo logout`); thu hồi access token làm mọi token của grant mất hiệu lực nhưng giữ grant.
 
 ## 9. Client MCP (Localman MCP)
 
 - Localman công bố Protected Resource Metadata với `authorization_servers: ["https://auth.hoandat.com"]` và `resource: "https://localman.hoandat.com/mcp"`.
-- Client đăng ký qua `registration_endpoint`: redirect chỉ `https://…` hoặc `http://localhost`/`http://127.0.0.1`; scope chỉ trong `mock:*`, `client:*`, `credentials:write` (bỏ trống `scope` thì nhận `mock:*` và `client:*`, không có `credentials:write`); `client_name` không được giả tên first-party; không được khai `logo_uri`, `client_uri`, `policy_uri`, `tos_uri`, `backchannel_logout_uri`, `jwks_uri`, `sector_identifier_uri`. Mỗi IP tối đa 20 đăng ký mỗi giờ.
+- Client đăng ký qua `registration_endpoint`: redirect chỉ `https://…` hoặc `http://localhost`/`http://127.0.0.1`; scope chỉ trong `mock:*`, `client:*`, `credentials:write` (bỏ trống `scope` thì nhận `mock:*` và `client:*`, không có `credentials:write`; scope khác bị `invalid_client_metadata`); `client_name` không được giả tên first-party; không được khai `logo_uri`, `client_uri`, `policy_uri`, `tos_uri`, `backchannel_logout_uri`, `jwks_uri`, `sector_identifier_uri`. Mỗi IP tối đa 20 đăng ký mỗi giờ.
 - Authorization request phải có `resource=https://localman.hoandat.com/mcp` (resource khác bị `invalid_target`); user luôn thấy trang consent "Ứng dụng bên thứ ba chưa xác minh".
+- `offline_access`: SDK MCP (vd. TypeScript SDK 2.x) tự thêm scope này vào đăng ký và authorization request (kèm `prompt=consent`) khi discovery quảng bá nó. IdP **lặng lẽ bỏ** `offline_access` của client DCR thay vì báo lỗi: lúc đăng ký nó không vào `scope` lưu của client (response đăng ký trả `scope` đã bỏ nó), lúc authorize (`GET /auth`) nó bị gỡ khỏi `scope` trước khi kiểm. Chỉ `offline_access` được bỏ qua: scope ngoài danh sách trên vẫn bị `invalid_client_metadata` lúc đăng ký, scope client chưa đăng ký (vd. `credentials:write` khi chưa khai) vẫn bị `invalid_scope` lúc authorize. Client MCP vẫn nhận refresh token như cũ, gắn phiên IdP (mục 8). Authorization request gửi bằng `POST /auth` hoặc PAR không được gỡ: client DCR dùng hai cách đó thì đừng xin `offline_access`. Client tĩnh không có scope này (`localman-web`) vẫn nhận `invalid_scope`.
 - Endpoint MCP xác minh như mục 3 với `aud=https://localman.hoandat.com/mcp`.
 - Link từ app sang trang tài khoản dùng neo cố định: `${issuer}/account#account-email`, `#account-password`, `#account-recovery`, `#account-apps` (danh sách ứng dụng đã cấp quyền, nơi user thu hồi client MCP).
 

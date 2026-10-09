@@ -3,6 +3,7 @@ import { rateLimit } from "express-rate-limit";
 import helmet from "helmet";
 import type { TrustProxy } from "../config/trust-proxy.js";
 import { OIDC_ROUTES } from "../oidc/provider.js";
+import { normalizeRoutePath } from "./route-path.js";
 
 export interface RateLimitRule {
 	readonly name: string;
@@ -86,17 +87,6 @@ function contentSecurityPolicy(issuer: string): Parameters<typeof helmet>[0] {
 			},
 		},
 	};
-}
-
-/**
- * Canonical form of a request path for rate limiting. oidc-provider's router
- * matches routes case-insensitively and ignores a trailing slash, so the
- * limiter must treat `/TOKEN`, `/token/` and `//token` as `/token`.
- */
-export function normalizeRoutePath(path: string): string {
-	const collapsed = path.toLowerCase().replace(/\/{2,}/g, "/");
-	const trimmed = collapsed.replace(/\/+$/, "");
-	return trimmed === "" ? "/" : trimmed;
 }
 
 function rateLimiter(rules: readonly RateLimitRule[]): RequestHandler {

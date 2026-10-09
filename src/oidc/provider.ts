@@ -24,6 +24,7 @@ import {
 	refreshesWithSession,
 } from "./clients.js";
 import { cookieConfig } from "./cookies.js";
+import { ignoreOfflineAccessOfDynamicClients } from "./dynamic-client-scopes.js";
 import {
 	buildInteractionPolicy,
 	promptValuesSupported,
@@ -189,6 +190,7 @@ export function createProvider(deps: ProviderDependencies): Provider {
 	);
 	provider.proxy = true;
 	enableTokenExchange(provider, deps.accountStore);
+	ignoreOfflineAccessOfDynamicClients(provider, OIDC_ROUTES.authorization);
 	logProviderEvents(provider, deps.logger);
 	return provider;
 }

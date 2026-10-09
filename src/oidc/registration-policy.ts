@@ -4,6 +4,7 @@ import {
 	errors,
 } from "oidc-provider";
 import { STATIC_CLIENT_IDS, isStaticClientId } from "./clients.js";
+import { withoutOfflineAccess } from "./dynamic-client-scopes.js";
 import {
 	ALLOWED_RESOURCES_PROPERTY,
 	LOCALMAN_MCP_SCOPES,
@@ -130,10 +131,11 @@ function enforceDynamicClientPolicy(metadata: ClientMetadata): void {
 		);
 	}
 
-	const scopes =
+	const scopes = withoutOfflineAccess(
 		typeof metadata.scope === "string"
 			? metadata.scope.split(" ").filter(Boolean)
-			: [];
+			: [],
+	);
 	rejectOutside("scope", scopes, new Set(DCR_ALLOWED_SCOPES));
 	metadata.scope = (scopes.length > 0 ? scopes : DCR_DEFAULT_SCOPES).join(" ");
 
