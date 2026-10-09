@@ -107,7 +107,10 @@ describe("sign-up, consent and return to an MCP client", () => {
 		const consentPage = await consent.response.text();
 		expect(consentPage).toContain("Ứng dụng bên thứ ba chưa xác minh");
 		expect(consentPage).toContain("127.0.0.1:33419");
-		expect(consentPage).toContain("Xem các mock API của bạn trên Localman");
+		expect(consentPage).toContain(
+			"Xem project mock trên Localman mà bạn có quyền truy cập",
+		);
+		expect(consentPage).not.toContain('data-id="consent-credentials-warning"');
 
 		const consentUid =
 			/\/interaction\/([\w-]+)/.exec(consent.response.url)?.[1] ?? "";

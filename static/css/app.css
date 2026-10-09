@@ -157,6 +157,11 @@ button {
 	padding-top: var(--space-4);
 	border-top: 1px solid var(--c-border-subtle);
 }
+/* /account#<id> targets clear the sticky topbar */
+.account-section,
+.account-anchor {
+	scroll-margin-top: calc(var(--topbar-h) + var(--space-4));
+}
 .account-section .auth-form,
 .option-block .auth-form {
 	gap: var(--space-3);

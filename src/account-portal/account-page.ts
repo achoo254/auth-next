@@ -56,7 +56,7 @@ ${submitButton("Lưu", { variant: "secondary", dataId: "profile-save" })}</form>
 
 function passwordSection(view: AccountView): SafeHtml {
 	const hasPassword = view.account.passwordHash !== undefined;
-	return html`<section class="account-section" data-id="account-password">
+	return html`<section class="account-section" id="account-password" data-id="account-password">
 <h2 class="section-title">${hasPassword ? "Đổi mật khẩu" : "Đặt mật khẩu"}</h2>
 <form class="auth-form" method="post" action="/account/password" novalidate>${csrfField(view.csrf)}
 ${hasPassword ? inputField({ name: "current_password", label: "Mật khẩu hiện tại", type: "password", autocomplete: "current-password", maxlength: 256 }) : ""}
@@ -69,7 +69,7 @@ ${submitButton(hasPassword ? "Đổi mật khẩu" : "Đặt mật khẩu", { va
 }
 
 function recoverySection(view: AccountView): SafeHtml {
-	return html`<section class="account-section" data-id="account-recovery">
+	return html`<section class="account-section" id="account-recovery" data-id="account-recovery">
 <h2 class="section-title">Mã khôi phục</h2>
 <p class="help">Còn <b data-id="recovery-remaining">${view.account.recoveryCodeHashes.length}</b> mã chưa dùng. Tạo bộ mới thì bộ cũ hết hiệu lực.</p>
 ${actionButton("/account/recovery-codes", view.csrf, "Tạo lại 8 mã", { dataId: "recovery-regenerate" })}
@@ -153,7 +153,7 @@ export function renderAccountPage(view: AccountView): string {
 	const notice = view.notice ? ACCOUNT_NOTICES.get(view.notice) : undefined;
 	const { account } = view;
 	const body = html`${pageTitle("Tài khoản hoandat", html`${account.name ? html`${account.name} · ` : ""}<b data-id="account-username">@${account.username}</b>`)}
-<p class="help">${
+<p class="help account-anchor" id="account-email">${
 		account.email
 			? html`<span data-id="account-email">${account.email}</span> ${emailBadge(account)}`
 			: html`<span data-id="account-email">Chưa có email</span> · đăng nhập bằng username`

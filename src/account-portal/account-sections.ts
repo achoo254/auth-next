@@ -82,7 +82,7 @@ export function appsSection(
 	apps: readonly AuthorizedApp[],
 	csrf: string,
 ): SafeHtml {
-	return html`<section class="account-section" data-id="account-apps">
+	return html`<section class="account-section" id="account-apps" data-id="account-apps">
 <h2 class="section-title">Ứng dụng đã cấp quyền</h2>
 ${apps.length === 0 ? emptyRow("Chưa cấp quyền cho ứng dụng nào.") : ""}
 <ul class="item-list">${apps.map(

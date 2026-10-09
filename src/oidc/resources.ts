@@ -24,6 +24,17 @@ export const LOCALMAN_SCOPES = [
 	"client:send",
 ] as const;
 
+/**
+ * Lets an MCP client mint Localman credentials for the user (personal access
+ * tokens, service account secrets, access keys). Only the MCP resource has
+ * it, and no client holds it by default: a DCR client must register it
+ * explicitly, and consent shows it with a warning.
+ */
+export const CREDENTIALS_SCOPE = "credentials:write";
+
+/** Scopes the Localman MCP endpoint accepts. */
+export const LOCALMAN_MCP_SCOPES = [...LOCALMAN_SCOPES, CREDENTIALS_SCOPE];
+
 export const TUNNEL_SCOPES = ["tunnels:open", "tunnels:read"] as const;
 
 /**
@@ -36,7 +47,7 @@ const SCOPES_BY_RESOURCE: Readonly<
 	Record<ResourceIndicator, readonly string[]>
 > = {
 	[RESOURCES.localman]: LOCALMAN_SCOPES,
-	[RESOURCES.localmanMcp]: LOCALMAN_SCOPES,
+	[RESOURCES.localmanMcp]: LOCALMAN_MCP_SCOPES,
 	[RESOURCES.tunnel]: TUNNEL_SCOPES,
 };
 
@@ -47,7 +58,7 @@ export const SUPPORTED_SCOPES = [
 	"profile",
 	"email",
 	TELEGRAM_SCOPE,
-	...LOCALMAN_SCOPES,
+	...LOCALMAN_MCP_SCOPES,
 	...TUNNEL_SCOPES,
 ];
 

@@ -35,7 +35,7 @@ test("sign up, consent and return to the client; then sign in again", async ({
 		"127.0.0.1:4591",
 	);
 	await expect(page.locator('[data-id="consent-scopes"]')).toContainText(
-		"Tạo, sửa và xoá mock API trên Localman",
+		"Tạo, sửa, xoá project và resource mock trên Localman, sinh hoặc reset dữ liệu",
 	);
 	await page.locator('[data-id="consent-allow"]').click();
 

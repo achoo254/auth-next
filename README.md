@@ -40,7 +40,7 @@ Client phải đọc endpoint từ `/.well-known/openid-configuration`, không h
 | `localman-web` | confidential | Code + PKCE, refresh (gắn phiên IdP), token exchange | `openid profile email telegram` + scope API Localman | `https://localman.hoandat.com`; token exchange cấp `https://tunnel.hoandat.com` |
 | `tunelo-cli` | public | device code, refresh | `openid offline_access tunnels:open tunnels:read` | `https://tunnel.hoandat.com` |
 | `tunelo-web` | confidential | Code + PKCE, refresh | `openid profile email offline_access tunnels:open tunnels:read` | `https://tunnel.hoandat.com` |
-| Client MCP (DCR) | public hoặc confidential | Code + PKCE, refresh | chỉ `mock:read mock:write client:read client:write client:send` | luôn `https://localman.hoandat.com/mcp` |
+| Client MCP (DCR) | public hoặc confidential | Code + PKCE, refresh | chỉ `mock:read mock:write client:read client:write client:send`, cộng `credentials:write` nếu khai rõ lúc đăng ký | luôn `https://localman.hoandat.com/mcp` |
 | `hoandat-account` | public, nội bộ | Code + PKCE (code không bao giờ được đổi) | `openid` | không có |
 
 Back-channel logout: `localman-web` tới `${LOCALMAN_WEB_URL}/auth/backchannel-logout`, `tunelo-web` tới `${TUNELO_WEB_URL}/auth/backchannel-logout` (cả hai có `sid`).

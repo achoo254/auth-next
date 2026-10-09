@@ -1,4 +1,10 @@
-import { csrfField, pageTitle, submitButton } from "../ui/components.js";
+import { CREDENTIALS_SCOPE } from "../oidc/resources.js";
+import {
+	alertBox,
+	csrfField,
+	pageTitle,
+	submitButton,
+} from "../ui/components.js";
 import { html } from "../ui/html.js";
 import { renderPage } from "../ui/layout.js";
 
@@ -9,14 +15,25 @@ const SCOPE_TEXT: Readonly<Record<string, string>> = {
 	email: "Xem địa chỉ email",
 	offline_access: "Giữ đăng nhập khi bạn không mở ứng dụng (tối đa 30 ngày)",
 	telegram: "Gửi thông báo tới chat Telegram bạn đã liên kết",
-	"mock:read": "Xem các mock API của bạn trên Localman",
-	"mock:write": "Tạo, sửa và xoá mock API trên Localman",
-	"client:read": "Xem các request đã lưu trong API client của Localman",
-	"client:write": "Tạo, sửa và xoá request trong API client của Localman",
-	"client:send": "Gửi request từ API client của Localman thay bạn",
+	"mock:read":
+		"Xem project mock trên Localman mà bạn có quyền truy cập, gồm resource, schema và dữ liệu",
+	"mock:write":
+		"Tạo, sửa, xoá project và resource mock trên Localman, sinh hoặc reset dữ liệu",
+	"client:read":
+		"Xem workspace, collection, request và environment trong API client của Localman mà bạn có quyền truy cập (biến secret luôn bị che)",
+	"client:write":
+		"Tạo, sửa, xoá, import collection và request, đặt biến environment trong API client của Localman",
+	"client:send":
+		"Gửi request thay bạn qua proxy của Localman, kể cả tới localhost qua Tunelo (tính vào hạn mức proxy)",
+	[CREDENTIALS_SCOPE]:
+		"Tạo token truy cập cá nhân, secret của service account và access key trên Localman",
 	"tunnels:open": "Mở tunnel mới bằng tài khoản của bạn",
 	"tunnels:read": "Xem danh sách tunnel của bạn",
 };
+
+/** Shown in red above the buttons whenever a client asks for `credentials:write`. */
+export const CREDENTIALS_WARNING =
+	"Cho phép tạo khoá truy cập và secret mới thay bạn. Chỉ cấp cho ứng dụng bạn tin tưởng.";
 
 export function describeScopes(scopes: readonly string[]): string[] {
 	return [...new Set(scopes)].map(
@@ -63,6 +80,14 @@ ${
 </div>
 <p class="label">Ứng dụng sẽ được:</p>
 <ul class="scope-list" data-id="consent-scopes">${describeScopes(view.scopes).map((text) => html`<li>${text}</li>`)}</ul>
+${
+	view.scopes.includes(CREDENTIALS_SCOPE)
+		? alertBox(
+				"error",
+				html`<span data-id="consent-credentials-warning">${CREDENTIALS_WARNING}</span>`,
+			)
+		: ""
+}
 <div class="auth-form">
 <form method="post" action="/interaction/${view.uid}/consent">${csrfField(view.csrf)}${submitButton("Cho phép", { block: true, dataId: "consent-allow" })}</form>
 <form method="post" action="/interaction/${view.uid}/abort">${csrfField(view.csrf)}${submitButton("Từ chối", { block: true, variant: "secondary", dataId: "consent-deny" })}</form>

@@ -35,7 +35,7 @@ const config = await oidc.discovery(
 | `localman-web` | confidential (`client_secret_basic`) | Code + PKCE, refresh (gắn phiên IdP), **token exchange** | `openid profile email telegram` + scope API Localman (không có `offline_access`) | `https://localman.hoandat.com` (chỉ khi xin scope API); đổi được token `https://tunnel.hoandat.com` | `https://localman.hoandat.com/auth/backchannel-logout` |
 | `tunelo-cli` | public (`none`) | Device flow, refresh | `openid offline_access tunnels:open tunnels:read` | `https://tunnel.hoandat.com` | không |
 | `tunelo-web` | confidential (`client_secret_basic`) | Code + PKCE, refresh | `openid profile email offline_access tunnels:open tunnels:read` | `https://tunnel.hoandat.com` | `https://tunnel.hoandat.com/auth/backchannel-logout` |
-| client MCP (DCR) | public hoặc confidential | Code + PKCE, refresh | `mock:read mock:write client:read client:write client:send` | luôn `https://localman.hoandat.com/mcp` | không được khai |
+| client MCP (DCR) | public hoặc confidential | Code + PKCE, refresh | mặc định `mock:read mock:write client:read client:write client:send`; thêm `credentials:write` chỉ khi khai rõ lúc đăng ký | luôn `https://localman.hoandat.com/mcp` | không được khai |
 | `hoandat-account` | nội bộ IdP | không dùng ngoài IdP | | | |
 
 Redirect URI: `${LOCALMAN_WEB_URL}/auth/callback`, `${TUNELO_WEB_URL}/auth/callback`; post-logout về `/` của app. PKCE (`S256`) bắt buộc với **mọi** client, kể cả confidential.
@@ -45,8 +45,23 @@ Redirect URI: `${LOCALMAN_WEB_URL}/auth/callback`, `${TUNELO_WEB_URL}/auth/callb
 | Resource server | `aud` | Scope |
 |---|---|---|
 | API Localman | `https://localman.hoandat.com` | `mock:*`, `client:*` |
-| MCP của Localman | `https://localman.hoandat.com/mcp` | `mock:*`, `client:*` |
+| MCP của Localman | `https://localman.hoandat.com/mcp` | `mock:*`, `client:*`, `credentials:write` |
 | API Tunelo | `https://tunnel.hoandat.com` | `tunnels:open`, `tunnels:read` |
+
+**Scope API và câu hiện trên trang consent** (nguồn: `SCOPE_TEXT` trong `src/interactions/consent-page.ts`; danh sách "Ứng dụng đã cấp quyền" ở `/account` dùng cùng câu):
+
+| Scope | Resource | Mặc định cho client MCP | Câu trên consent |
+|---|---|---|---|
+| `mock:read` | Localman, MCP | có | Xem project mock trên Localman mà bạn có quyền truy cập, gồm resource, schema và dữ liệu |
+| `mock:write` | Localman, MCP | có | Tạo, sửa, xoá project và resource mock trên Localman, sinh hoặc reset dữ liệu |
+| `client:read` | Localman, MCP | có | Xem workspace, collection, request và environment trong API client của Localman mà bạn có quyền truy cập (biến secret luôn bị che) |
+| `client:write` | Localman, MCP | có | Tạo, sửa, xoá, import collection và request, đặt biến environment trong API client của Localman |
+| `client:send` | Localman, MCP | có | Gửi request thay bạn qua proxy của Localman, kể cả tới localhost qua Tunelo (tính vào hạn mức proxy) |
+| `credentials:write` | chỉ MCP | **không** | Tạo token truy cập cá nhân, secret của service account và access key trên Localman; kèm cảnh báo đỏ "Cho phép tạo khoá truy cập và secret mới thay bạn. Chỉ cấp cho ứng dụng bạn tin tưởng." |
+| `tunnels:open` | Tunelo | | Mở tunnel mới bằng tài khoản của bạn |
+| `tunnels:read` | Tunelo | | Xem danh sách tunnel của bạn |
+
+`credentials:write` (tool MCP tạo PAT, tạo/xoay secret service account, tạo access key) không bao giờ được cấp ngầm: client MCP phải khai nó trong `scope` lúc đăng ký (client đăng ký không khai `scope` chỉ nhận năm scope mặc định, xin thêm thì bị `invalid_scope`), rồi xin nó trong authorization request; user thấy cảnh báo đỏ trên trang consent. `localman-web` không có scope này. Endpoint MCP phải kiểm `credentials:write` trong `scope` của access token trước khi chạy các tool đó.
 
 Request không có `resource` chỉ được gắn audience khi scope có ít nhất một scope của resource duy nhất mà client được phép. Đăng nhập chỉ với `openid profile email` nhận **access token opaque không có `aud` API**: chỉ dùng cho `userinfo` (và làm subject của token exchange), không bao giờ là token gọi API.
 
@@ -203,9 +218,10 @@ const tokens = await oidc.pollDeviceAuthorizationGrant(cli, device);
 ## 9. Client MCP (Localman MCP)
 
 - Localman công bố Protected Resource Metadata với `authorization_servers: ["https://auth.hoandat.com"]` và `resource: "https://localman.hoandat.com/mcp"`.
-- Client đăng ký qua `registration_endpoint`: redirect chỉ `https://…` hoặc `http://localhost`/`http://127.0.0.1`; scope chỉ trong `mock:*`, `client:*`; `client_name` không được giả tên first-party; không được khai `logo_uri`, `client_uri`, `policy_uri`, `tos_uri`, `backchannel_logout_uri`, `jwks_uri`, `sector_identifier_uri`. Mỗi IP tối đa 20 đăng ký mỗi giờ.
+- Client đăng ký qua `registration_endpoint`: redirect chỉ `https://…` hoặc `http://localhost`/`http://127.0.0.1`; scope chỉ trong `mock:*`, `client:*`, `credentials:write` (bỏ trống `scope` thì nhận `mock:*` và `client:*`, không có `credentials:write`); `client_name` không được giả tên first-party; không được khai `logo_uri`, `client_uri`, `policy_uri`, `tos_uri`, `backchannel_logout_uri`, `jwks_uri`, `sector_identifier_uri`. Mỗi IP tối đa 20 đăng ký mỗi giờ.
 - Authorization request phải có `resource=https://localman.hoandat.com/mcp` (resource khác bị `invalid_target`); user luôn thấy trang consent "Ứng dụng bên thứ ba chưa xác minh".
 - Endpoint MCP xác minh như mục 3 với `aud=https://localman.hoandat.com/mcp`.
+- Link từ app sang trang tài khoản dùng neo cố định: `${issuer}/account#account-email`, `#account-password`, `#account-recovery`, `#account-apps` (danh sách ứng dụng đã cấp quyền, nơi user thu hồi client MCP).
 
 ## 10. Sự kiện audit gửi sang Localman
 

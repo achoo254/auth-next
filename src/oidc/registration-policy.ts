@@ -6,13 +6,17 @@ import {
 import { STATIC_CLIENT_IDS, isStaticClientId } from "./clients.js";
 import {
 	ALLOWED_RESOURCES_PROPERTY,
+	LOCALMAN_MCP_SCOPES,
 	LOCALMAN_SCOPES,
 	RESOURCES,
 	isResourceIndicator,
 } from "./resources.js";
 
 /** Scopes a dynamically registered (MCP) client may hold. */
-export const DCR_ALLOWED_SCOPES: readonly string[] = LOCALMAN_SCOPES;
+export const DCR_ALLOWED_SCOPES: readonly string[] = LOCALMAN_MCP_SCOPES;
+
+/** Scope of a DCR client that registers none: `credentials:write` is opt-in. */
+export const DCR_DEFAULT_SCOPES: readonly string[] = LOCALMAN_SCOPES;
 
 const DCR_GRANT_TYPES = new Set(["authorization_code", "refresh_token"]);
 const DCR_RESPONSE_TYPES = new Set(["code"]);
@@ -99,7 +103,7 @@ function rejectOutside(
 	}
 }
 
-/** MCP clients: Localman scopes only, loopback or https redirects, /mcp only. */
+/** MCP clients: Localman MCP scopes only, loopback or https redirects, /mcp only. */
 function enforceDynamicClientPolicy(metadata: ClientMetadata): void {
 	const resources = stringList(metadata[ALLOWED_RESOURCES_PROPERTY]);
 	if (
@@ -131,7 +135,7 @@ function enforceDynamicClientPolicy(metadata: ClientMetadata): void {
 			? metadata.scope.split(" ").filter(Boolean)
 			: [];
 	rejectOutside("scope", scopes, new Set(DCR_ALLOWED_SCOPES));
-	metadata.scope = (scopes.length > 0 ? scopes : DCR_ALLOWED_SCOPES).join(" ");
+	metadata.scope = (scopes.length > 0 ? scopes : DCR_DEFAULT_SCOPES).join(" ");
 
 	rejectOutside(
 		"grant_types",
