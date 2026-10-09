@@ -12,6 +12,7 @@ import {
 import { createInteractionRouter } from "./interactions/interaction-router.js";
 import { createResetRouter } from "./interactions/reset-password-page.js";
 import { createUpstreamCallbackRouter } from "./interactions/upstream-start.js";
+import { createPrivacyRouter } from "./legal/privacy-page.js";
 import { INTERACTION_PATH } from "./oidc/provider.js";
 import type { AppServices } from "./services.js";
 import { createTelegramLinkRouter } from "./telegram/link-routes.js";
@@ -57,6 +58,7 @@ export function createApp(options: AppOptions): Express {
 	// read the same forwarded headers as the provider itself.
 	app.use(forwardTrustedClientInfo);
 	app.use("/assets", createAssetsRouter());
+	app.use(createPrivacyRouter(new URL(env.ISSUER).host));
 	app.use(
 		INTERACTION_PATH,
 		options.interactions ?? createInteractionRouter(services),

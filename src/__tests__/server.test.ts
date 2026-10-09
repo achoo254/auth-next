@@ -34,6 +34,16 @@ describe("HTTP shell", () => {
 	});
 });
 
+describe("Privacy policy", () => {
+	it("serves a public privacy page without a session", async () => {
+		const response = await fetch(`${idp.issuer}/privacy`);
+		expect(response.status).toBe(200);
+		const body = await response.text();
+		expect(body).toContain("Chính sách quyền riêng tư");
+		expect(body).toContain("argon2id");
+	});
+});
+
 describe("Host check", () => {
 	it("answers 421 for a Host that is not the issuer's, except /healthz", async () => {
 		const discovery = `${idp.issuer}/.well-known/openid-configuration`;
