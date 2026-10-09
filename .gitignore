@@ -13,3 +13,6 @@ secrets/
 .env
 .env.*
 !.env.example
+
+# Claude local state and skills (ops skills name servers and credential entries; never pushed)
+.claude/
