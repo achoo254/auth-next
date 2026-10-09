@@ -1,7 +1,9 @@
 import type { KoaContextWithOIDC } from "oidc-provider";
+import { isStaticClientId } from "../oidc/clients.js";
 import { alertBox, pageTitle, submitButton } from "../ui/components.js";
 import { html, trustedHtml } from "../ui/html.js";
 import { renderPage } from "../ui/layout.js";
+import { clientLabel } from "./client-label.js";
 import { sendKoaPage } from "./koa-page.js";
 
 /**
@@ -13,11 +15,11 @@ export async function logoutSource(
 	ctx: KoaContextWithOIDC,
 	form: string,
 ): Promise<void> {
-	const clientName = ctx.oidc.client?.clientName;
+	const client = ctx.oidc.client;
 	const body = html`${pageTitle(
 		"Đăng xuất",
-		clientName
-			? html`<b>${clientName}</b> muốn đăng xuất bạn khỏi tài khoản hoandat.`
+		client?.clientName
+			? html`${clientLabel(client.clientName, !isStaticClientId(client.clientId))} muốn đăng xuất bạn khỏi tài khoản hoandat.`
 			: "Đăng xuất khỏi tài khoản hoandat trên trình duyệt này?",
 	)}
 ${trustedHtml(form)}

@@ -43,39 +43,33 @@ const DCR_FORBIDDEN_METADATA = [
 	"tos_uri",
 ] as const;
 
-/** Names reserved for first-party apps, matched on a lookalike skeleton. */
-const RESERVED_NAME_PATTERN = /localman|tunelo|hoandat/;
-
-// Cyrillic and Greek letters that render like the Latin letters of the
-// reserved names; NFKC alone keeps them distinct.
-const CONFUSABLE_LETTERS: Readonly<Record<string, string>> = {
-	"\u0430": "a", // Cyrillic а
-	"\u0441": "c", // Cyrillic с
-	"\u0435": "e", // Cyrillic е
-	"\u043e": "o", // Cyrillic о
-	"\u04bb": "h", // Cyrillic һ
-	"\u0501": "d", // Cyrillic ԁ
-	"\u04cf": "l", // Cyrillic ӏ
-	"\u03b1": "a", // Greek α
-	"\u03bf": "o", // Greek ο
-	"\u03b9": "l", // Greek ι
-};
+/** Longest client_name accepted, in characters; it is shown on consent. */
+const CLIENT_NAME_MAX_LENGTH = 100;
 
 /**
- * Reduces a display name to a skeleton so "Locaⅼman", "L o c a l m a n",
- * "LocaIman" or Cyrillic lookalikes still match a reserved name.
+ * Control, line/paragraph separator and bidi formatting characters: they
+ * could break the consent page layout or reorder the name as displayed.
  */
-function nameSkeleton(name: string): string {
-	return [...name.normalize("NFKC").toLowerCase()]
-		.map((char) => CONFUSABLE_LETTERS[char] ?? char)
-		.join("")
-		.replace(/[1|!i]/g, "l")
-		.replace(/0/g, "o")
-		.replace(/[^a-z]/g, "");
-}
+const CLIENT_NAME_FORBIDDEN_CHARS =
+	/[\p{Cc}\p{Zl}\p{Zp}\u061c\u200e\u200f\u202a-\u202e\u2066-\u2069]/u;
 
-export function imitatesFirstPartyName(name: string): boolean {
-	return RESERVED_NAME_PATTERN.test(nameSkeleton(name));
+/**
+ * client_name is self-declared and shown as such on consent, so any name
+ * is accepted, first-party lookalikes included (the consent page warns about
+ * those); only its shape is checked.
+ */
+function checkClientName(name: unknown): void {
+	if (name === undefined || name === null) return;
+	if (
+		typeof name !== "string" ||
+		name.trim() === "" ||
+		[...name].length > CLIENT_NAME_MAX_LENGTH ||
+		CLIENT_NAME_FORBIDDEN_CHARS.test(name)
+	) {
+		throw new errors.InvalidClientMetadata(
+			`client_name must be 1-${CLIENT_NAME_MAX_LENGTH} characters without control or bidi formatting characters`,
+		);
+	}
 }
 
 function stringList(value: unknown): string[] {
@@ -122,14 +116,7 @@ function enforceDynamicClientPolicy(metadata: ClientMetadata): void {
 			throw new errors.InvalidClientMetadata(`${property} is not supported`);
 		}
 	}
-	if (
-		typeof metadata.client_name === "string" &&
-		imitatesFirstPartyName(metadata.client_name)
-	) {
-		throw new errors.InvalidClientMetadata(
-			"client_name must not imitate a first-party application",
-		);
-	}
+	checkClientName(metadata.client_name);
 
 	const scopes = withoutOfflineAccess(
 		typeof metadata.scope === "string"

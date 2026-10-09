@@ -9,6 +9,7 @@ import {
 } from "../ui/components.js";
 import { type SafeHtml, html } from "../ui/html.js";
 import { renderPage } from "../ui/layout.js";
+import { clientLabel } from "./client-label.js";
 
 /** "Đăng nhập với Google" style buttons; hidden for unconfigured providers. */
 export function upstreamButtons(
@@ -32,6 +33,8 @@ export interface LoginView {
 	readonly providers: readonly UpstreamProvider[];
 	/** Who is asking: an app name, or a device approval. */
 	readonly clientName?: string;
+	/** The app registered through DCR: its name is self-declared. */
+	readonly externalClient?: boolean;
 	readonly forDevice: boolean;
 	readonly identifier?: string;
 	readonly error?: string;
@@ -42,7 +45,7 @@ export function renderLogin(view: LoginView): string {
 	const subtitle = view.forDevice
 		? "Đăng nhập để duyệt thiết bị."
 		: view.clientName
-			? html`Để tiếp tục tới <b>${view.clientName}</b>. Một tài khoản hoandat cho Localman và Tunelo.`
+			? html`Để tiếp tục tới ${clientLabel(view.clientName, view.externalClient === true)}. Một tài khoản hoandat cho Localman và Tunelo.`
 			: "Một tài khoản hoandat cho Localman và Tunelo.";
 	const body = html`${pageTitle("Đăng nhập", subtitle)}
 ${maybeAlert("error", view.error)}${maybeAlert("success", view.notice)}

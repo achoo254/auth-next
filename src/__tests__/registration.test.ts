@@ -91,16 +91,28 @@ describe("Dynamic Client Registration policy (MCP clients)", () => {
 	});
 
 	it.each([
+		"Claude Code (localman)",
 		"Localman",
-		"TUNELO CLI",
-		"hoandat account",
-		"My LocalMan helper",
-		"Loca\u217cman", // small roman numeral fifty
-		"LocaIman", // capital i
-		"L o c a l m a n",
 		"Tun\u0435lo", // Cyrillic е
 		"h\u043eandat", // Cyrillic о
-	])("rejects the first-party looking client_name %s", async (clientName) => {
+		"Cursor",
+		"a".repeat(100),
+	])("accepts the self-declared client_name %s", async (clientName) => {
+		const metadata = (
+			await register({ client_name: clientName })
+		).clientMetadata();
+		expect(metadata.client_name).toBe(clientName);
+	});
+
+	it.each([
+		["a blank name", "   "],
+		["a name over 100 characters", "a".repeat(101)],
+		["a control character", "Agent\u0007"],
+		["a line break", "Agent\nLocalman"],
+		["a line separator", "Agent\u2028"],
+		["a bidi override", "Agent \u202enamlacol"],
+		["a bidi isolate", "\u2066Agent\u2069"],
+	])("rejects a client_name with %s", async (_label, clientName) => {
 		await expect(register({ client_name: clientName })).rejects.toMatchObject({
 			error: "invalid_client_metadata",
 		});
@@ -116,13 +128,6 @@ describe("Dynamic Client Registration policy (MCP clients)", () => {
 		await expect(register({ [property]: value })).rejects.toMatchObject({
 			error: "invalid_client_metadata",
 		});
-	});
-
-	it("accepts a neutral client_name", async () => {
-		const metadata = (
-			await register({ client_name: "Claude Code" })
-		).clientMetadata();
-		expect(metadata.client_name).toBe("Claude Code");
 	});
 
 	it("rejects a client that tries to pick its own resources", async () => {

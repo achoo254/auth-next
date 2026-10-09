@@ -3,6 +3,7 @@ import { recordDeviceGrant } from "../account-portal/grant-directory.js";
 import { auditContext, auditLabel } from "../audit/audit-context.js";
 import { clientIp } from "../http/client-ip.js";
 import { isStaticClientId } from "../oidc/clients.js";
+import { imitatesFirstPartyName } from "../oidc/first-party-name.js";
 import { GRANT_MAX_SECONDS } from "../oidc/sliding-grants.js";
 import type { AppServices } from "../services.js";
 import { sendPage } from "../ui/send-page.js";
@@ -16,6 +17,24 @@ import {
 	interactionClientId,
 	sendInteractionError,
 } from "./interaction-helpers.js";
+
+/**
+ * Host of the redirect_uri this authorization request returns to; a client
+ * with a single registered redirect URI may leave the parameter out.
+ */
+function redirectHostOf(
+	interaction: Interaction,
+	registered: readonly string[] | undefined,
+): string | undefined {
+	const requested = interaction.params.redirect_uri;
+	const uri =
+		typeof requested === "string"
+			? requested
+			: registered?.length === 1
+				? registered[0]
+				: undefined;
+	return uri ? URL.parse(uri)?.host : undefined;
+}
 
 async function deviceCodeOf(services: AppServices, interaction: Interaction) {
 	return interaction.deviceCode
@@ -137,22 +156,18 @@ export async function showConsent(
 		await completeConsent(services, req, res, interaction, account._id);
 		return;
 	}
+	const clientName = client.clientName ?? clientId;
+	const external = !isStaticClientId(clientId);
 	sendPage(
 		res,
 		renderConsent({
 			host: services.host,
 			csrf,
 			uid: interaction.uid,
-			clientName: client.clientName ?? clientId,
-			unverified: !isStaticClientId(clientId),
-			redirectHosts: [
-				...new Set(
-					(client.redirectUris ?? []).flatMap((uri) => {
-						const host = URL.parse(uri)?.host;
-						return host ? [host] : [];
-					}),
-				),
-			],
+			clientName,
+			external,
+			imitatesFirstParty: external && imitatesFirstPartyName(clientName),
+			redirectHost: redirectHostOf(interaction, client.redirectUris),
 			scopes: requestedScopes(interaction),
 			username: account.username,
 		}),

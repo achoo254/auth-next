@@ -1,3 +1,7 @@
+import {
+	externalAppBadge,
+	quotedClientName,
+} from "../interactions/client-label.js";
 import { describeScopes } from "../interactions/consent-page.js";
 import { actionButton } from "../ui/components.js";
 import { type SafeHtml, html } from "../ui/html.js";
@@ -87,10 +91,10 @@ export function appsSection(
 ${apps.length === 0 ? emptyRow("Chưa cấp quyền cho ứng dụng nào.") : ""}
 <ul class="item-list">${apps.map(
 		(app) => html`<li class="item-row" data-id="app-${app.clientId}">
-<div><b>${app.name}</b> ${
+<div>${
 			app.firstParty
-				? html`<span class="badge badge-neutral">hoandat</span>`
-				: html`<span class="badge badge-warning">Ứng dụng bên thứ ba chưa xác minh</span>`
+				? html`<b>${app.name}</b> <span class="badge badge-neutral">hoandat</span>`
+				: html`${quotedClientName(app.name)} ${externalAppBadge(`app-external-${app.clientId}`)}`
 		}
 ${app.redirectHosts.length > 0 ? html`<p class="help">Chuyển về: ${app.redirectHosts.join(", ")}</p>` : ""}
 <p class="help">${describeScopes(app.scopes).join(" · ")}</p></div>

@@ -12,7 +12,7 @@ import {
 	normalizeEmail,
 } from "../accounts/user-model.js";
 import { clientIp, ipThrottleKey } from "../http/client-ip.js";
-import { STATIC_CLIENT_IDS } from "../oidc/clients.js";
+import { STATIC_CLIENT_IDS, isStaticClientId } from "../oidc/clients.js";
 import type { AppServices } from "../services.js";
 import { sendPage } from "../ui/send-page.js";
 import {
@@ -57,6 +57,7 @@ export async function showLogin(
 				client?.clientId === STATIC_CLIENT_IDS.accountPortal
 					? undefined
 					: client?.clientName,
+			externalClient: client ? !isStaticClientId(client.clientId) : false,
 			forDevice: interaction.deviceCode !== undefined,
 			...extra,
 		}),

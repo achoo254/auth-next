@@ -1,5 +1,6 @@
 import * as client from "openid-client";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { EXTERNAL_APP_NOTICE } from "../interactions/consent-page.js";
 import { RESOURCES } from "../oidc/resources.js";
 import { discoverClient } from "./helpers/flows.js";
 import {
@@ -105,7 +106,7 @@ describe("sign-up, consent and return to an MCP client", () => {
 			{ csrf, saved: "yes" },
 		);
 		const consentPage = await consent.response.text();
-		expect(consentPage).toContain("Ứng dụng bên thứ ba chưa xác minh");
+		expect(consentPage).toContain(EXTERNAL_APP_NOTICE);
 		expect(consentPage).toContain("127.0.0.1:33419");
 		expect(consentPage).toContain(
 			"Xem project mock trên Localman mà bạn có quyền truy cập",
