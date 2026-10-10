@@ -23,7 +23,9 @@ test("sign up with Google, consent and return to the client; then sign in again"
 	// 2. Consent: a DCR client is always labelled as external, its name is
 	// quoted, and a name that reads like ours gets the stronger warning.
 	await expect(
-		page.getByRole("heading", { name: "Cấp quyền cho ứng dụng" }),
+		page.getByRole("heading", {
+			name: "Cho phép một ứng dụng bên ngoài dùng tài khoản hoandat của bạn",
+		}),
 	).toBeVisible();
 	await expect(page.locator('[data-id="consent-client-name"]')).toHaveText(
 		"Claude Code (localman)",

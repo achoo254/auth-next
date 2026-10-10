@@ -9,12 +9,12 @@ import { startUpstream } from "../interactions/upstream-start.js";
 import type { AppServices } from "../services.js";
 import { GRANT_META_COLLECTION, revokeGrant } from "./grant-directory.js";
 import type { PortalHandler } from "./portal-session.js";
-import { grantIdsOf, revokeGrants } from "./revoke-access.js";
 import { revokeSession } from "./session-directory.js";
 
 /**
  * /account actions that grant or take away access: link and unlink
- * Google/GitHub, revoke sessions, Tunelo devices and authorized apps.
+ * Google/GitHub, sign out one session or one Tunelo device. Removing an
+ * app's access asks first (account-confirm-routes.ts).
  */
 export function registerAccessRoutes(
 	router: Router,
@@ -111,32 +111,6 @@ export function registerAccessRoutes(
 			res.redirect(
 				303,
 				`/account?notice=${done ? "device-revoked" : "not-found"}`,
-			);
-		}),
-	);
-
-	router.post(
-		"/apps/:clientId/revoke",
-		write(async (req, res, { account }) => {
-			const clientId = routeParam(req, "clientId");
-			// Every grant of the client, not just those shown on the page.
-			const grants = await grantIdsOf(services.db, account._id, clientId);
-			const revoked = await revokeGrants(services, account._id, grants);
-			if (revoked > 0) {
-				await services.audit.record(
-					"grant.revoked",
-					account._id,
-					{ count: revoked, cause: "account-page", clientId },
-					auditContext(req),
-				);
-			}
-			services.logger.info(
-				{ accountId: account._id, clientId, grants: grants.length },
-				"App access revoked",
-			);
-			res.redirect(
-				303,
-				`/account?notice=${grants.length > 0 ? "app-revoked" : "not-found"}`,
 			);
 		}),
 	);

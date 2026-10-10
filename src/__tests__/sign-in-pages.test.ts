@@ -1,12 +1,10 @@
 import { describe, expect, it } from "vitest";
-import {
-	NO_PROVIDER_MESSAGE,
-	renderLogin,
-	renderSignup,
-} from "../interactions/login-page.js";
+import { renderLogin, renderSignup } from "../interactions/login-page.js";
+import { shown, testPage } from "./helpers/test-page.js";
 
 const BASE = {
 	host: "auth.example.test",
+	page: testPage(),
 	uid: "uid-1",
 	csrf: "csrf-token",
 	forDevice: false,
@@ -17,7 +15,8 @@ describe("login and sign-up pages", () => {
 		const login = renderLogin({ ...BASE, providers: ["google", "github"] });
 		expect(login).toContain('href="/interaction/uid-1/upstream/google"');
 		expect(login).toContain('href="/interaction/uid-1/upstream/github"');
-		expect(login).toContain("Đăng nhập với Google");
+		expect(login).toContain("Sign in with Google");
+		expect(login).toContain('class="provider-logo"');
 		expect(login).toContain('action="/interaction/uid-1/abort"');
 		expect(login).not.toContain('type="password"');
 		expect(login).not.toContain('name="identifier"');
@@ -26,7 +25,7 @@ describe("login and sign-up pages", () => {
 		expect(login).not.toContain('action="/interaction/uid-1/login"');
 
 		const signup = renderSignup({ ...BASE, providers: ["github"] });
-		expect(signup).toContain("Đăng ký với GitHub");
+		expect(signup).toContain("Sign up with GitHub");
 		expect(signup).toContain('href="/interaction/uid-1/login"');
 		expect(signup).not.toContain('type="password"');
 		expect(signup).not.toContain("<form");
@@ -38,7 +37,7 @@ describe("login and sign-up pages", () => {
 			renderSignup({ ...BASE, providers: [] }),
 		]) {
 			expect(html).toContain('data-id="upstream-unavailable"');
-			expect(html).toContain(NO_PROVIDER_MESSAGE);
+			expect(html).toContain(shown("login.noProvider"));
 			expect(html).not.toContain("/upstream/");
 		}
 	});

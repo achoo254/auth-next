@@ -51,7 +51,7 @@ describe("first-party apps and devices with an existing session", () => {
 		});
 		const approvalPage = await approval.response.text();
 		expect(approvalPage).toContain(
-			"Cho phép <code>tunelo</code> trên máy <b>may-cua-dat</b>?",
+			"Allow <code>tunelo</code> on <b>may-cua-dat</b>?",
 		);
 		expect(approvalPage).not.toContain('type="password"');
 		await expect(pollDeviceCode(cli, device.device_code)).rejects.toMatchObject(
@@ -65,7 +65,7 @@ describe("first-party apps and devices with an existing session", () => {
 			`${idp.issuer}/interaction/${approvalUid}/consent`,
 			{ csrf: formField(approvalPage, "csrf") },
 		);
-		expect(await done.response.text()).toContain("Đã cho phép");
+		expect(await done.response.text()).toContain("Allowed");
 		const tokens = await pollDeviceCode(cli, device.device_code);
 		expect(tokens.refresh_token).toEqual(expect.any(String));
 
@@ -82,7 +82,7 @@ describe("first-party apps and devices with an existing session", () => {
 			`${idp.issuer}/account/devices/${grantId}/revoke`,
 			{ csrf: formField(accountPage, "csrf") },
 		);
-		expect(await revoked.response.text()).toContain("Đã thu hồi thiết bị");
+		expect(await revoked.response.text()).toContain("Signed out the device.");
 		await expect(
 			client.refreshTokenGrant(cli, tokens.refresh_token ?? ""),
 		).rejects.toMatchObject({ error: "invalid_grant" });
@@ -91,11 +91,12 @@ describe("first-party apps and devices with an existing session", () => {
 	it("rejects account-page writes without the session's CSRF token", async () => {
 		const account = await createTestAccount(repositoryOf(idp));
 		const browser = await signedInBrowser(idp, account);
-		// Telegram is not configured here: no trace of it on /account.
+		// Telegram is not configured here: its card says so, with no action.
 		const accountPage = await (
 			await browser.request(`${idp.issuer}/account`)
 		).text();
-		expect(accountPage).not.toContain("Telegram");
+		expect(accountPage).toContain('data-id="account-telegram-off"');
+		expect(accountPage).not.toContain("/account/telegram/");
 		const response = await browser.request(`${idp.issuer}/account/profile`, {
 			form: { name: "Kẻ giả mạo" },
 		});

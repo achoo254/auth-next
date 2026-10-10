@@ -6,6 +6,7 @@ import {
 	type Interaction,
 	csrfScope,
 	interactionClientId,
+	interactionPage,
 } from "./interaction-helpers.js";
 import { renderLogin, renderSignup } from "./login-page.js";
 
@@ -28,6 +29,7 @@ export async function showLogin(
 		res,
 		renderLogin({
 			host: services.host,
+			page: interactionPage(req, interaction),
 			uid: interaction.uid,
 			csrf: services.csrf.token(req, res, csrfScope(interaction.uid)),
 			providers: [...services.upstreams.keys()],
@@ -49,6 +51,7 @@ export async function showLogin(
  */
 export function showSignup(
 	services: AppServices,
+	req: Request,
 	res: Response,
 	interaction: Interaction,
 ): void {
@@ -56,6 +59,7 @@ export function showSignup(
 		res,
 		renderSignup({
 			host: services.host,
+			page: interactionPage(req, interaction),
 			uid: interaction.uid,
 			providers: [...services.upstreams.keys()],
 		}),

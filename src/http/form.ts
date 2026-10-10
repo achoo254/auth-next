@@ -1,5 +1,7 @@
 import express, { type Request, type RequestHandler } from "express";
 import { rateLimit } from "express-rate-limit";
+import { requestLocale } from "../i18n/request-locale.js";
+import { translator } from "../i18n/translator.js";
 
 /**
  * Body parser for the server-rendered forms only. It must never run in
@@ -25,7 +27,8 @@ export function formRateLimit(
 		limit,
 		standardHeaders: "draft-8",
 		legacyHeaders: false,
-		message: "Quá nhiều yêu cầu. Thử lại sau ít phút.",
+		message: (req: Request) =>
+			translator(requestLocale(req)).t("common.tooManyRequests"),
 		validate: { xForwardedForHeader: false },
 	});
 }
@@ -57,22 +60,4 @@ export function routeParam(req: Request, name: string): string {
 export function queryValue(req: Request, name: string): string | undefined {
 	const value: unknown = req.query[name];
 	return typeof value === "string" ? value : undefined;
-}
-
-/** Parses the Cookie header without decoding errors throwing. */
-export function readCookie(req: Request, name: string): string | undefined {
-	const header = req.headers.cookie;
-	if (!header) return undefined;
-	for (const part of header.split(";")) {
-		const separator = part.indexOf("=");
-		if (separator === -1) continue;
-		if (part.slice(0, separator).trim() !== name) continue;
-		const raw = part.slice(separator + 1).trim();
-		try {
-			return decodeURIComponent(raw);
-		} catch {
-			return undefined;
-		}
-	}
-	return undefined;
 }

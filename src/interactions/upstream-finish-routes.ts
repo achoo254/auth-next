@@ -5,10 +5,16 @@ import { providerDetail } from "../accounts/account-links.js";
 import { UPSTREAM_LABELS } from "../accounts/upstream-client.js";
 import { isValidUsername, normalizeUsername } from "../accounts/user-model.js";
 import { formText } from "../http/form.js";
+import type { MessageKey } from "../i18n/dictionaries.js";
 import type { AppServices } from "../services.js";
 import { notifyTelegram } from "../telegram/notify.js";
 import { sendPage } from "../ui/send-page.js";
-import { asyncHandler, checkCsrf, csrfScope } from "./interaction-helpers.js";
+import {
+	asyncHandler,
+	checkCsrf,
+	csrfScope,
+	interactionPage,
+} from "./interaction-helpers.js";
 import { renderChooseUsername } from "./upstream-pages.js";
 import { finishUpstream, loadPending } from "./upstream-pending.js";
 
@@ -34,28 +40,27 @@ export function registerUpstreamFinishRoutes(
 				return;
 			}
 			const username = normalizeUsername(formText(req, "username", 64));
-			const retry = (error: string, status: number): void => {
+			const page = interactionPage(req, interaction);
+			const retry = (error: MessageKey, status: number): void => {
 				sendPage(
 					res,
 					renderChooseUsername({
 						host: services.host,
+						page,
 						uid: interaction.uid,
 						csrf: services.csrf.token(req, res, csrfScope(interaction.uid)),
 						provider: profile.provider,
 						email: decision.email,
 						reclaiming: decision.reclaimsFrom !== undefined,
 						suggestion: username,
-						error,
+						error: page.i18n.t(error),
 					}),
 					status,
 				);
 			};
-			const taken = "Username này đã có người dùng. Chọn username khác.";
+			const taken = "username.taken";
 			if (!isValidUsername(username)) {
-				retry(
-					"Username cần 3–30 ký tự gồm chữ thường, số hoặc dấu gạch dưới.",
-					400,
-				);
+				retry("username.invalid", 400);
 				return;
 			}
 			if (await services.accounts.usernameTaken(username)) {
@@ -94,12 +99,7 @@ export function registerUpstreamFinishRoutes(
 			} catch (error) {
 				if (!(error instanceof AccountConflictError)) throw error;
 				// Say which field: a parallel sign-up may have taken either.
-				retry(
-					error.field === "email"
-						? "Email này vừa được dùng cho một tài khoản khác. Hãy đăng nhập bằng tài khoản đó."
-						: taken,
-					409,
-				);
+				retry(error.field === "email" ? "username.emailTaken" : taken, 409);
 			}
 		}),
 	);

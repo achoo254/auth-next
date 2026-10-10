@@ -100,6 +100,15 @@ export async function verifyAccessToken(token: string, requiredScope: string) {
 3. Access token hết hạn thì refresh (mục 8). Refresh nhận `invalid_grant` nghĩa là phiên IdP đã kết thúc: xoá phiên Localman và đăng nhập lại. `/auth/logout`: xoá phiên của app rồi chuyển tới `end_session_endpoint` với `id_token_hint` và `post_logout_redirect_uri`.
 4. Back-channel logout (mục 5) vẫn bắt buộc: refresh token chết ở IdP không xoá được cookie `__Host-lm_session` đang mở trong trình duyệt; chỉ logout token cho Localman biết để huỷ phiên ngay.
 
+### Ngôn ngữ trang IdP: `ui_locales`
+
+Trang IdP có English (mặc định), `zh-CN` và `vi`; discovery quảng bá `ui_locales_supported: ["en", "zh-CN", "vi"]`. Client nên gửi `ui_locales=<ngôn ngữ đang hiển thị>` trong authorization request để người dùng thấy cùng ngôn ngữ với app. Localman web làm vậy: web gọi `/auth/login?locale=<en|zh-CN|vi>`, API kiểm bằng `isLocale` rồi chuyển thành `ui_locales`.
+
+- IdP đọc `ui_locales` theo thứ tự ưu tiên, lấy tag đầu tiên khớp theo ngôn ngữ chính (`vi-VN` là `vi`, mọi `zh*` là `zh-CN`); tag lạ bị bỏ qua, không lỗi.
+- Thứ tự chọn ngôn ngữ của trang: lựa chọn người dùng vừa bấm trên chính lần đăng nhập đó, rồi `ui_locales`, rồi cookie `hd_lang` của nút chuyển ngôn ngữ, rồi `Accept-Language`, rồi English.
+- Nút chuyển ngôn ngữ ở chân mọi trang là link `GET /lang?set=<locale>&return=<path>` (không JavaScript): đặt cookie `hd_lang` (1 năm, `HttpOnly`, `SameSite=Lax`, `Secure` khi issuer là https) rồi `303` về `return`. `return` chỉ nhận path cùng origin bắt đầu bằng `/`; `//`, `/\`, scheme, ký tự điều khiển, dấu `\` ở bất kỳ đâu hay chính `/lang` đều bị đưa về `/account`. Khi `return` là trang của một interaction, endpoint đặt thêm cookie `hd_lang_interaction` với `Path=/interaction/<uid>`, nên lựa chọn đó thắng `ui_locales` cho đến hết lần đăng nhập ấy mà không ảnh hưởng lần đăng nhập sau.
+- Tin nhắn của bot Telegram và nội dung sự kiện audit giữ nguyên tiếng Việt.
+
 ### Nút "Bắt đầu miễn phí": `prompt=create`
 
 IdP hỗ trợ [OpenID Connect Prompt Create 1.0](https://openid.net/specs/openid-connect-prompt-create-1_0.html); discovery quảng bá `prompt_values_supported: ["none", "create", "login", "consent"]` (kiểm giá trị này trước khi hiện nút). Mọi client (tĩnh hoặc DCR) đều dùng được.

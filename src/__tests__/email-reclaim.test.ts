@@ -39,8 +39,8 @@ describe("emails from Google/GitHub", () => {
 			name: "Victim",
 		});
 		const html = await response.text();
-		expect(html).toContain("Chọn username");
-		expect(html).toContain("chưa ai xác minh");
+		expect(html).toContain("Choose a username");
+		expect(html).toContain("that nobody has verified");
 		expect(html).not.toContain(squatter.username);
 		const done = await page.browser.navigate(
 			`${idp.issuer}/interaction/${page.uid}/upstream/signup`,
@@ -74,7 +74,7 @@ describe("emails from Google/GitHub", () => {
 			await browser.request(`${idp.issuer}/account`)
 		).text();
 		expect(accountPage).toContain('data-id="account-email-reclaimed"');
-		expect(accountPage).toContain("Chưa có email");
+		expect(accountPage).toContain("No email yet");
 	});
 
 	it("stores a Google email normalised", async () => {
@@ -118,6 +118,6 @@ describe("emails from Google/GitHub", () => {
 			},
 		);
 		expect(retry.status).toBe(409);
-		expect(await retry.text()).toContain("Username này đã có người dùng");
+		expect(await retry.text()).toContain("This username is taken");
 	});
 });

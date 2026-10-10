@@ -4,6 +4,7 @@ import {
 	renderAccountPage,
 } from "../account-portal/account-page.js";
 import type { AccountDocument } from "../accounts/user-model.js";
+import { testPage } from "./helpers/test-page.js";
 
 /** Localman links straight to these sections of /account. */
 const ANCHORS = ["account-email", "account-sign-in", "account-apps"];
@@ -14,6 +15,7 @@ function page(
 ): string {
 	return renderAccountPage({
 		host: "auth.example.test",
+		page: testPage(),
 		csrf: "csrf-token",
 		account: {
 			_id: "acc_anchor",
@@ -55,7 +57,7 @@ describe("/account sign-in methods", () => {
 			"github",
 		]);
 		expect(onlyGoogle).not.toContain('data-id="provider-unlink-google"');
-		expect(onlyGoogle).toContain("cách đăng nhập duy nhất");
+		expect(onlyGoogle).toContain("your only way to sign in");
 		expect(onlyGoogle).toContain('data-id="provider-link-github"');
 
 		const both = page({ providers: { google: "g-1", github: "1" } }, [
@@ -72,6 +74,6 @@ describe("/account sign-in methods", () => {
 		]);
 		expect(html).not.toContain('data-id="provider-unlink-google"');
 		expect(html).toContain('data-id="provider-unlink-github"');
-		expect(html).toContain("đang tạm tắt");
+		expect(html).toContain("turned off for now");
 	});
 });

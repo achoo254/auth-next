@@ -15,6 +15,7 @@ import {
 	type Interaction,
 	csrfScope,
 	interactionClientId,
+	interactionPage,
 	sendInteractionError,
 } from "./interaction-helpers.js";
 
@@ -70,7 +71,7 @@ export async function completeConsent(
 			{
 				_id: grantId,
 				accountId,
-				deviceName,
+				...(deviceName ? { deviceName } : {}),
 				ip:
 					typeof code?.deviceInfo?.ip === "string"
 						? code.deviceInfo.ip
@@ -125,20 +126,18 @@ export async function showConsent(
 	const clientId = interactionClientId(interaction);
 	const client = await services.provider.Client.find(clientId);
 	if (!account || !client) {
-		sendInteractionError(
-			services,
-			res,
-			"Không tìm thấy tài khoản hoặc ứng dụng của phiên này. Quay lại ứng dụng và đăng nhập lại.",
-		);
+		sendInteractionError(services, res, { message: "error.consentMissing" });
 		return;
 	}
 	const csrf = services.csrf.token(req, res, csrfScope(interaction.uid));
+	const page = interactionPage(req, interaction);
 	if (interaction.deviceCode) {
 		const code = await deviceCodeOf(services, interaction);
 		sendPage(
 			res,
 			renderDeviceApproval({
 				host: services.host,
+				page,
 				csrf,
 				uid: interaction.uid,
 				clientId,
@@ -162,6 +161,7 @@ export async function showConsent(
 		res,
 		renderConsent({
 			host: services.host,
+			page,
 			csrf,
 			uid: interaction.uid,
 			clientName,

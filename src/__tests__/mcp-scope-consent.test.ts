@@ -1,6 +1,5 @@
 import * as client from "openid-client";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { CREDENTIALS_WARNING } from "../interactions/consent-page.js";
 import { CREDENTIALS_SCOPE, RESOURCES } from "../oidc/resources.js";
 import { authorizationRedirect } from "./helpers/flows.js";
 import { signedInBrowser } from "./helpers/session-flows.js";
@@ -11,6 +10,7 @@ import {
 } from "./helpers/test-accounts.js";
 import { formField } from "./helpers/test-browser.js";
 import { type TestIdp, startTestIdp } from "./helpers/test-idp.js";
+import { shown } from "./helpers/test-page.js";
 import { createAccessTokenVerifier } from "./helpers/verify-access-token.js";
 
 const MCP_REDIRECT = "http://127.0.0.1:33420/callback";
@@ -77,8 +77,8 @@ describe("credentials:write scope for MCP clients", () => {
 		expect(page).toMatch(
 			/<div class="alert alert-error"[^>]*><span data-id="consent-credentials-warning">/,
 		);
-		expect(page).toContain(CREDENTIALS_WARNING);
-		expect(page).toContain("secret của service account và access key");
+		expect(page).toContain(shown("consent.credentialsWarning"));
+		expect(page).toContain("service account secrets and access keys");
 
 		const uid = /\/interaction\/([\w-]+)/.exec(response.url)?.[1] ?? "";
 		const back = await submitForm(

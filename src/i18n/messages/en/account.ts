@@ -1,0 +1,68 @@
+/** /account: header, groups and the six cards. */
+export const enAccount = {
+	"account.pageTitle": "Account",
+	"account.title": "hoandat account",
+	"account.signOut": "Sign out",
+	"account.noEmail": "No email yet",
+	"account.emailVerified": "verified by {provider}",
+	"account.emailUnverified": "email not verified",
+	"account.emailReclaimed":
+		"The email {email} was removed from this account on {date}, because its owner verified it with Google or GitHub.",
+	"account.callbackFailed": "Couldn't sign in to your account page.",
+	"account.group.account": "Account",
+	"account.group.security": "Security",
+	"account.group.connections": "Connections",
+	"account.profile.title": "Profile",
+	"account.profile.description": "The name Localman and Tunelo show for you.",
+	"account.profile.empty": "No display name yet, so apps show @{username}.",
+	"account.profile.nameLabel": "Display name",
+	"account.profile.save": "Save",
+	"account.signIn.title": "Sign-in methods",
+	"account.signIn.description":
+		"No password: you sign in with Google or GitHub. Link both to keep a way in if you lose one.",
+	"account.signIn.empty":
+		"Sign-in with Google and GitHub is turned off for now.",
+	"account.signIn.notLinked": "Not linked",
+	"account.signIn.linked": "Linked ({identity})",
+	"account.signIn.linkedOff":
+		"Linked ({identity}) · signing in this way is turned off for now",
+	"account.signIn.linkedOnly":
+		"Linked ({identity}) · your only way to sign in, so it can't be unlinked",
+	"account.signIn.link": "Link {provider}",
+	"account.signIn.unlink": "Unlink {provider}",
+	"account.sessions.title": "Open sessions",
+	"account.sessions.description": "Browsers signed in to your hoandat account.",
+	"account.sessions.empty": "No open sessions.",
+	"account.sessions.thisBrowser": "This browser",
+	"account.sessions.signedInAt": "Signed in {date}",
+	"account.sessions.signOutThis": "Sign out this browser",
+	"account.sessions.signOut": "Sign out session",
+	"account.sessions.signOutOthers": "Sign out every other session",
+	"account.sessions.unknownBrowser": "Unknown browser",
+	"account.sessions.browser": "Browser",
+	"account.sessions.unknownSystem": "unknown system",
+	"account.sessions.browserOn": "{browser} on {system}",
+	"account.devices.title": "Tunelo devices",
+	"account.devices.description": "Machines signed in with the Tunelo CLI.",
+	"account.devices.empty": "No machine has signed in with {command} yet.",
+	"account.devices.dates": "Allowed {granted} · expires {expires}",
+	"account.devices.signOut": "Sign out device",
+	"account.apps.title": "Authorized apps",
+	"account.apps.description":
+		"Apps you allowed to use your account, such as coding agents using MCP.",
+	"account.apps.empty": "You haven't given any app access yet.",
+	"account.apps.redirects": "Returns to: {hosts}",
+	"account.apps.remove": "Remove app access",
+	"account.telegram.description":
+		"Security notices for your account, sent to your Telegram chat.",
+	"account.telegram.off": "Telegram notices aren't available on this server.",
+	"account.telegram.empty":
+		"Link a chat to get security notices for your account. Telegram isn't used to sign in.",
+	"account.telegram.linked":
+		"Linked to {chat} on {date}. Used for your account's security notices.",
+	"account.telegram.link": "Link Telegram",
+	"account.telegram.unlink": "Unlink Telegram",
+	"account.telegram.statusLinked": "linked",
+	"account.telegram.statusNone": "not linked",
+	"account.telegram.statusOff": "off",
+};

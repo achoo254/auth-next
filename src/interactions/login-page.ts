@@ -1,5 +1,7 @@
 import { UPSTREAM_LABELS } from "../accounts/upstream-client.js";
 import type { UpstreamProvider } from "../accounts/user-model.js";
+import type { MessageKey } from "../i18n/dictionaries.js";
+import type { Translator } from "../i18n/translator.js";
 import {
 	alertBox,
 	csrfField,
@@ -8,32 +10,32 @@ import {
 } from "../ui/components.js";
 import { type SafeHtml, html } from "../ui/html.js";
 import { renderPage } from "../ui/layout.js";
+import type { PageContext } from "../ui/page-context.js";
+import { providerLogo } from "../ui/provider-logos.js";
 import { clientLabel } from "./client-label.js";
 
-/** Shown instead of the buttons when no Google/GitHub app is configured. */
-export const NO_PROVIDER_MESSAGE =
-	"Đăng nhập bằng Google và GitHub đang tạm tắt, nên chưa đăng nhập hay đăng ký được. Thử lại sau.";
-
 /**
- * "Đăng nhập với Google" style buttons for the configured providers, or the
- * unavailable notice when there is none (the only ways in are these).
+ * "Sign in with Google" style buttons, each with its provider's mark, or
+ * the unavailable notice when none is configured (the only ways in).
  */
 export function upstreamButtons(
+	i18n: Translator,
 	uid: string,
 	providers: readonly UpstreamProvider[],
-	verb: string,
+	verb: Extract<MessageKey, "login.with" | "signup.with">,
 ): SafeHtml {
 	if (providers.length === 0) {
-		return html`<div data-id="upstream-unavailable">${alertBox("error", NO_PROVIDER_MESSAGE)}</div>`;
+		return html`<div data-id="upstream-unavailable">${alertBox("error", i18n.t("login.noProvider"))}</div>`;
 	}
 	return html`<div class="oauth">${providers.map(
 		(provider) =>
-			html`<a class="btn btn-secondary btn-block" href="/interaction/${uid}/upstream/${provider}" data-id="upstream-${provider}">${verb} với ${UPSTREAM_LABELS[provider]}</a>`,
+			html`<a class="btn btn-secondary btn-block btn-provider" href="/interaction/${uid}/upstream/${provider}" data-id="upstream-${provider}">${providerLogo(provider)}<span>${i18n.t(verb, { provider: UPSTREAM_LABELS[provider] })}</span></a>`,
 	)}</div>`;
 }
 
 export interface LoginView {
 	readonly host: string;
+	readonly page: PageContext;
 	readonly uid: string;
 	readonly csrf: string;
 	readonly providers: readonly UpstreamProvider[];
@@ -44,33 +46,69 @@ export interface LoginView {
 	readonly forDevice: boolean;
 }
 
+/**
+ * Title and subtitle: a first-party app is named in the title ("Sign in
+ * to continue to Localman"); an external app keeps its quoted, labelled
+ * name in the subtitle.
+ */
+function loginHeading(view: LoginView): SafeHtml {
+	const { i18n } = view.page;
+	const tagline = i18n.t("login.tagline");
+	if (view.forDevice) {
+		return pageTitle(i18n.t("login.title"), i18n.t("login.forDevice"));
+	}
+	if (!view.clientName) return pageTitle(i18n.t("login.title"), tagline);
+	if (view.externalClient) {
+		return pageTitle(
+			i18n.t("login.title"),
+			html`${i18n.rich("login.continueTo", {
+				app: clientLabel(i18n, view.clientName, true),
+			})} ${tagline}`,
+		);
+	}
+	return pageTitle(
+		html`<span data-id="login-app-title">${i18n.t("login.titleForApp", { app: view.clientName })}</span>`,
+		tagline,
+	);
+}
+
 export function renderLogin(view: LoginView): string {
-	const subtitle = view.forDevice
-		? "Đăng nhập để duyệt thiết bị."
-		: view.clientName
-			? html`Để tiếp tục tới ${clientLabel(view.clientName, view.externalClient === true)}. Một tài khoản hoandat cho Localman và Tunelo.`
-			: "Một tài khoản hoandat cho Localman và Tunelo.";
-	const body = html`${pageTitle("Đăng nhập", subtitle)}
+	const { i18n } = view.page;
+	const body = html`${loginHeading(view)}
 <div class="auth-form">
-${upstreamButtons(view.uid, view.providers, "Đăng nhập")}
+${upstreamButtons(i18n, view.uid, view.providers, "login.with")}
 </div>
-${view.providers.length > 0 ? html`<p class="auth-foot" data-id="login-first-time">Lần đầu đăng nhập bằng Google hoặc GitHub sẽ tạo tài khoản hoandat mới.</p>` : ""}
-<form method="post" action="/interaction/${view.uid}/abort" class="auth-cancel">${csrfField(view.csrf)}${submitButton("Huỷ đăng nhập", { variant: "minimal", dataId: "login-cancel" })}</form>`;
-	return renderPage({ title: "Đăng nhập", body, host: view.host });
+${view.providers.length > 0 ? html`<p class="auth-foot" data-id="login-first-time">${i18n.t("login.firstTime")}</p>` : ""}
+<form method="post" action="/interaction/${view.uid}/abort" class="auth-cancel">${csrfField(view.csrf)}${submitButton(i18n.t("login.cancel"), { variant: "minimal", dataId: "login-cancel" })}</form>`;
+	return renderPage({
+		title: i18n.t("login.title"),
+		body,
+		host: view.host,
+		page: view.page,
+	});
 }
 
 export interface SignupView {
 	readonly host: string;
+	readonly page: PageContext;
 	readonly uid: string;
 	readonly providers: readonly UpstreamProvider[];
 }
 
 /** `prompt=create`: the same Google/GitHub choice, worded as a sign-up. */
 export function renderSignup(view: SignupView): string {
-	const body = html`${pageTitle("Tạo tài khoản hoandat", "Dùng chung cho Localman và Tunelo. Đăng ký bằng Google hoặc GitHub; hoandat không dùng mật khẩu và không gửi email.")}
+	const { i18n } = view.page;
+	const body = html`${pageTitle(i18n.t("signup.title"), i18n.t("signup.subtitle"))}
 <div class="auth-form">
-${upstreamButtons(view.uid, view.providers, "Đăng ký")}
+${upstreamButtons(i18n, view.uid, view.providers, "signup.with")}
 </div>
-<p class="auth-foot">Đã có tài khoản? <a class="link" href="/interaction/${view.uid}/login" data-id="signup-to-login">Đăng nhập</a></p>`;
-	return renderPage({ title: "Đăng ký", body, host: view.host });
+<p class="auth-foot">${i18n.rich("signup.haveAccount", {
+		link: html`<a class="link" href="/interaction/${view.uid}/login" data-id="signup-to-login">${i18n.t("login.title")}</a>`,
+	})}</p>`;
+	return renderPage({
+		title: i18n.t("signup.pageTitle"),
+		body,
+		host: view.host,
+		page: view.page,
+	});
 }

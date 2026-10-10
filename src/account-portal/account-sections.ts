@@ -1,22 +1,14 @@
-import {
-	externalAppBadge,
-	quotedClientName,
-} from "../interactions/client-label.js";
-import { describeScopes } from "../interactions/consent-page.js";
-import { actionButton } from "../ui/components.js";
+import type { Translator } from "../i18n/translator.js";
+import { actionButton, actionLink } from "../ui/components.js";
 import { type SafeHtml, html } from "../ui/html.js";
-import type { AuthorizedApp, DeviceGrant } from "./grant-directory.js";
+import { accountCard, emptyState } from "./account-card.js";
+import { accountIcon } from "./account-icons.js";
+import type { AccountView } from "./account-page.js";
+import type { DeviceGrant } from "./grant-directory.js";
 import type { OpenSession } from "./session-directory.js";
 
-const DATE_FORMAT = new Intl.DateTimeFormat("vi-VN", {
-	timeZone: "Asia/Ho_Chi_Minh",
-	dateStyle: "short",
-	timeStyle: "short",
-});
-
-export function formatDate(date: Date | undefined): string {
-	return date ? DATE_FORMAT.format(date) : "không rõ";
-}
+/** Confirmation page of "Sign out every other session". */
+export const REVOKE_OTHER_SESSIONS_PATH = "/account/sessions/revoke-others";
 
 const BROWSERS: readonly [RegExp, string][] = [
 	[/Edg\//, "Edge"],
@@ -32,74 +24,95 @@ const SYSTEMS: readonly [RegExp, string][] = [
 	[/Linux/, "Linux"],
 ];
 
-/** A short "Chrome trên macOS" style label from a User-Agent. */
-export function describeUserAgent(userAgent: string | undefined): string {
-	if (!userAgent) return "Trình duyệt không rõ";
+/** A short "Chrome on macOS" style label from a User-Agent. */
+export function describeUserAgent(
+	i18n: Translator,
+	userAgent: string | undefined,
+): string {
+	if (!userAgent) return i18n.t("account.sessions.unknownBrowser");
 	const browser =
-		BROWSERS.find(([pattern]) => pattern.test(userAgent))?.[1] ?? "Trình duyệt";
+		BROWSERS.find(([pattern]) => pattern.test(userAgent))?.[1] ??
+		i18n.t("account.sessions.browser");
 	const system =
 		SYSTEMS.find(([pattern]) => pattern.test(userAgent))?.[1] ??
-		"hệ điều hành không rõ";
-	return `${browser} trên ${system}`;
+		i18n.t("account.sessions.unknownSystem");
+	return i18n.t("account.sessions.browserOn", { browser, system });
 }
 
-function emptyRow(text: string): SafeHtml {
-	return html`<p class="help">${text}</p>`;
+function sessionRow(view: AccountView, session: OpenSession): SafeHtml {
+	const { i18n } = view.page;
+	const current = session.uid === view.currentSessionUid;
+	const signedIn = i18n.t("account.sessions.signedInAt", {
+		date: i18n.date(session.loginAt),
+	});
+	return html`<li class="item-row" data-id="session-${session.uid}">
+<div><b>${describeUserAgent(i18n, session.userAgent)}</b>${current ? html` <span class="badge badge-primary" data-id="session-current">${i18n.t("account.sessions.thisBrowser")}</span>` : ""}
+<p class="help">${signedIn}${session.ip ? html` · IP <code>${session.ip}</code>` : ""}</p></div>
+${actionButton(
+	`/account/sessions/${session.uid}/revoke`,
+	view.csrf,
+	current
+		? i18n.t("account.sessions.signOutThis")
+		: i18n.t("account.sessions.signOut"),
+	{ dataId: `session-revoke-${session.uid}` },
+)}
+</li>`;
 }
 
-export function sessionsSection(
-	sessions: readonly OpenSession[],
-	currentUid: string,
-	csrf: string,
-): SafeHtml {
-	return html`<section class="account-section" data-id="account-sessions">
-<h2 class="section-title">Phiên đang mở</h2>
-${sessions.length === 0 ? emptyRow("Không có phiên nào.") : ""}
-<ul class="item-list">${sessions.map(
-		(session) => html`<li class="item-row" data-id="session-${session.uid}">
-<div><b>${describeUserAgent(session.userAgent)}</b>${session.uid === currentUid ? html` <span class="badge badge-primary">Phiên này</span>` : ""}
-<p class="help">Đăng nhập ${formatDate(session.loginAt)}${session.ip ? html` · IP <code>${session.ip}</code>` : ""}</p></div>
-${actionButton(`/account/sessions/${session.uid}/revoke`, csrf, session.uid === currentUid ? "Đăng xuất" : "Thu hồi", { dataId: `session-revoke-${session.uid}` })}
-</li>`,
-	)}</ul>
-</section>`;
+export function sessionsCard(view: AccountView): SafeHtml {
+	const { i18n } = view.page;
+	const { sessions } = view;
+	return accountCard({
+		id: "sessions",
+		icon: accountIcon("sessions"),
+		title: i18n.t("account.sessions.title"),
+		description: i18n.t("account.sessions.description"),
+		count: sessions.length,
+		body:
+			sessions.length === 0
+				? emptyState(i18n.t("account.sessions.empty"), "account-sessions-empty")
+				: html`<ul class="item-list">${sessions.map((session) => sessionRow(view, session))}</ul>`,
+		footer:
+			sessions.length >= 2
+				? actionLink(
+						REVOKE_OTHER_SESSIONS_PATH,
+						i18n.t("account.sessions.signOutOthers"),
+						{ dataId: "sessions-revoke-others" },
+					)
+				: undefined,
+	});
 }
 
-export function devicesSection(
-	devices: readonly DeviceGrant[],
-	csrf: string,
-): SafeHtml {
-	return html`<section class="account-section" data-id="account-devices">
-<h2 class="section-title">Thiết bị Tunelo</h2>
-${devices.length === 0 ? emptyRow("Chưa có máy nào đăng nhập bằng tunelo login.") : ""}
-<ul class="item-list">${devices.map(
-		(device) => html`<li class="item-row" data-id="device-${device.grantId}">
-<div><b>${device.deviceName}</b>
-<p class="help">Cho phép lúc ${formatDate(device.grantedAt)} · hết hạn ${formatDate(device.expiresAt)}</p></div>
-${actionButton(`/account/devices/${device.grantId}/revoke`, csrf, "Thu hồi", { dataId: `device-revoke-${device.grantId}` })}
-</li>`,
-	)}</ul>
-</section>`;
+function deviceRow(view: AccountView, device: DeviceGrant): SafeHtml {
+	const { i18n } = view.page;
+	const dates = i18n.t("account.devices.dates", {
+		granted: i18n.date(device.grantedAt),
+		expires: i18n.date(device.expiresAt),
+	});
+	return html`<li class="item-row" data-id="device-${device.grantId}">
+<div><b>${device.deviceName ?? i18n.t("device.unknownName")}</b>
+<p class="help">${dates}</p></div>
+${actionButton(`/account/devices/${device.grantId}/revoke`, view.csrf, i18n.t("account.devices.signOut"), { dataId: `device-revoke-${device.grantId}` })}
+</li>`;
 }
 
-export function appsSection(
-	apps: readonly AuthorizedApp[],
-	csrf: string,
-): SafeHtml {
-	return html`<section class="account-section" id="account-apps" data-id="account-apps">
-<h2 class="section-title">Ứng dụng đã cấp quyền</h2>
-${apps.length === 0 ? emptyRow("Chưa cấp quyền cho ứng dụng nào.") : ""}
-<ul class="item-list">${apps.map(
-		(app) => html`<li class="item-row" data-id="app-${app.clientId}">
-<div>${
-			app.firstParty
-				? html`<b>${app.name}</b> <span class="badge badge-neutral">hoandat</span>`
-				: html`${quotedClientName(app.name)} ${externalAppBadge(`app-external-${app.clientId}`)}`
-		}
-${app.redirectHosts.length > 0 ? html`<p class="help">Chuyển về: ${app.redirectHosts.join(", ")}</p>` : ""}
-<p class="help">${describeScopes(app.scopes).join(" · ")}</p></div>
-${actionButton(`/account/apps/${encodeURIComponent(app.clientId)}/revoke`, csrf, "Thu hồi", { variant: "danger", dataId: `app-revoke-${app.clientId}` })}
-</li>`,
-	)}</ul>
-</section>`;
+export function devicesCard(view: AccountView): SafeHtml {
+	const { i18n } = view.page;
+	const { devices } = view;
+	return accountCard({
+		id: "devices",
+		icon: accountIcon("devices"),
+		title: i18n.t("account.devices.title"),
+		description: i18n.t("account.devices.description"),
+		count: devices.length,
+		body:
+			devices.length === 0
+				? emptyState(
+						i18n.rich("account.devices.empty", {
+							command: html`<code>tunelo login</code>`,
+						}),
+						"account-devices-empty",
+					)
+				: html`<ul class="item-list">${devices.map((device) => deviceRow(view, device))}</ul>`,
+	});
 }

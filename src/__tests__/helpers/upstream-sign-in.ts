@@ -8,7 +8,7 @@ import {
 import type { TestBrowser } from "./test-browser.js";
 import { LOCALMAN_CALLBACK, type TestIdp } from "./test-idp.js";
 
-/** Login page → "Đăng nhập với <provider>" (fake) → back on the IdP. */
+/** Login page → "Sign in with <provider>" (fake) → back on the IdP. */
 export async function signInWith(
 	idp: TestIdp,
 	provider: "google" | "github",

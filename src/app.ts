@@ -9,6 +9,7 @@ import {
 	forwardTrustedClientInfo,
 	requireKnownHost,
 } from "./http/security.js";
+import { createLanguageRouter } from "./i18n/language-route.js";
 import { createInteractionRouter } from "./interactions/interaction-router.js";
 import { createUpstreamCallbackRouter } from "./interactions/upstream-start.js";
 import { createPrivacyRouter } from "./legal/privacy-page.js";
@@ -57,6 +58,7 @@ export function createApp(options: AppOptions): Express {
 	app.use(forwardTrustedClientInfo);
 	app.use("/assets", createAssetsRouter());
 	app.use(createPrivacyRouter(new URL(env.ISSUER).host));
+	app.use(createLanguageRouter(services));
 	app.use(
 		INTERACTION_PATH,
 		options.interactions ?? createInteractionRouter(services),

@@ -1,7 +1,7 @@
 import { createHash, randomBytes, timingSafeEqual } from "node:crypto";
 import type { Request, RequestHandler, Response } from "express";
 import type { AccountDocument } from "../accounts/user-model.js";
-import { readCookie } from "../http/form.js";
+import { readCookie } from "../http/cookies.js";
 import {
 	ACCOUNT_PORTAL_CALLBACK_PATH,
 	STATIC_CLIENT_IDS,

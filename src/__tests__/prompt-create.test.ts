@@ -19,7 +19,7 @@ import {
 import { linkedGoogleProfile } from "./helpers/upstream-sign-in.js";
 
 const MCP_REDIRECT = "http://127.0.0.1:33422/callback";
-const SIGNUP_TITLE = "Tạo tài khoản hoandat";
+const SIGNUP_TITLE = "Create a hoandat account";
 
 let idp: TestIdp;
 
@@ -56,7 +56,7 @@ async function authorize(
 	};
 }
 
-/** "Đăng ký với Google" with a Google account nobody has, then a username. */
+/** "Sign up with Google" with a Google account nobody has, then a username. */
 async function signUp(browser: TestBrowser, uid: string) {
 	const name = `new_${randomUUID().slice(0, 8)}`;
 	idp.fake.nextLogins.push({

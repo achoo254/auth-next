@@ -10,7 +10,7 @@ import { notifyTelegram } from "../telegram/notify.js";
 import { sendInteractionError } from "./interaction-helpers.js";
 
 /**
- * Callback of "Liên kết Google/GitHub" on /account: the same browser must
+ * Callback of "Link Google/GitHub" on /account: the same browser must
  * still be signed in as the account that started it, and the provider
  * account must not belong to someone else.
  */
@@ -27,7 +27,14 @@ export async function finishAccountLink(
 ): Promise<void> {
 	const { accountId, profile } = link;
 	const label = UPSTREAM_LABELS[profile.provider];
-	const expired = `Phiên đăng nhập bằng ${label} đã hết hạn. Thử lại từ đầu.`;
+	const expired = {
+		message: "upstream.expired",
+		params: { provider: label },
+	} as const;
+	const toAccount = {
+		href: "/account",
+		label: "common.backToAccount",
+	} as const;
 	const portal = await loadPortalContext(services, req, res);
 	if (!portal || portal.account._id !== accountId) {
 		sendInteractionError(services, res, expired);
@@ -38,23 +45,21 @@ export async function finishAccountLink(
 		profile.providerId,
 	);
 	if (owner && owner._id !== portal.account._id) {
-		sendInteractionError(
-			services,
-			res,
-			`Tài khoản ${label} này đã liên kết với một tài khoản hoandat khác.`,
-			409,
-			{ href: "/account", label: "Về trang tài khoản" },
-		);
+		sendInteractionError(services, res, {
+			message: "upstream.link.ownedByOther",
+			params: { provider: label },
+			status: 409,
+			back: toAccount,
+		});
 		return;
 	}
 	if (portal.account.providers[profile.provider]) {
-		sendInteractionError(
-			services,
-			res,
-			`Tài khoản đã liên kết một tài khoản ${label} khác. Huỷ liên kết đó trước.`,
-			409,
-			{ href: "/account", label: "Về trang tài khoản" },
-		);
+		sendInteractionError(services, res, {
+			message: "upstream.link.alreadyLinked",
+			params: { provider: label },
+			status: 409,
+			back: toAccount,
+		});
 		return;
 	}
 	const write = await linkUpstream(
@@ -64,7 +69,7 @@ export async function finishAccountLink(
 		link.version,
 	);
 	if (!write.applied) {
-		sendInteractionError(services, res, expired, 410);
+		sendInteractionError(services, res, { ...expired, status: 410 });
 		return;
 	}
 	notifyTelegram(

@@ -80,10 +80,14 @@ export interface LoginPage {
 	readonly html: string;
 }
 
-/** Starts a localman-web authorization and stops on the IdP login page. */
+/**
+ * Starts a localman-web authorization (with `extra` parameters such as
+ * ui_locales) and stops on the IdP login page.
+ */
 export async function openLoginPage(
 	idp: TestIdp,
 	browser = new TestBrowser(),
+	extra: Readonly<Record<string, string>> = {},
 ): Promise<LoginPage> {
 	const config = await discoverClient(
 		idp,
@@ -97,6 +101,7 @@ export async function openLoginPage(
 			client.randomPKCECodeVerifier(),
 		),
 		code_challenge_method: "S256",
+		...extra,
 	});
 	const { response } = await browser.navigate(url, {}, LOCALMAN_CALLBACK);
 	const html = await response.text();

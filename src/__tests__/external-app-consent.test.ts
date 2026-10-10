@@ -1,10 +1,6 @@
 import * as client from "openid-client";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import {
-	EXTERNAL_APP_NOTICE,
-	LOOKALIKE_NAME_WARNING,
-	renderConsent,
-} from "../interactions/consent-page.js";
+import { renderConsent } from "../interactions/consent-page.js";
 import { STATIC_CLIENT_IDS } from "../oidc/clients.js";
 import { RESOURCES } from "../oidc/resources.js";
 import { escapeHtml } from "../ui/html.js";
@@ -18,6 +14,7 @@ import {
 } from "./helpers/test-accounts.js";
 import { TestBrowser, formField } from "./helpers/test-browser.js";
 import { type TestIdp, startTestIdp } from "./helpers/test-idp.js";
+import { shown, testPage } from "./helpers/test-page.js";
 import { createAccessTokenVerifier } from "./helpers/verify-access-token.js";
 
 /** Claude Code listens on a random localhost port for the callback. */
@@ -87,7 +84,7 @@ describe("consent for an app registered through DCR", () => {
 			`“<b data-id="consent-client-name">${escapeHtml(name)}</b>”`,
 		);
 		expect(page).toContain('data-id="consent-external"');
-		expect(page).toContain(EXTERNAL_APP_NOTICE);
+		expect(page).toContain(shown("consent.externalNotice"));
 		expect(page).toContain(
 			'<code data-id="consent-redirect-host">localhost:33422</code>',
 		);
@@ -137,8 +134,8 @@ describe("consent for an app registered through DCR", () => {
 
 	it("registers a Cyrillic lookalike but warns hard on consent", async () => {
 		const { page } = await consentPageFor("Tun\u0435lo");
-		expect(page).toContain(EXTERNAL_APP_NOTICE);
-		expect(page).toContain(LOOKALIKE_NAME_WARNING);
+		expect(page).toContain(shown("consent.externalNotice"));
+		expect(page).toContain(shown("consent.lookalikeWarning"));
 		expect(page).toContain(
 			'“<b data-id="consent-client-name">Tun\u0435lo</b>”',
 		);
@@ -148,7 +145,7 @@ describe("consent for an app registered through DCR", () => {
 		const { page } = await consentPageFor("Agent <img src=x>");
 		expect(page).toContain("Agent &lt;img src=x&gt;");
 		expect(page).not.toContain("<img src=x>");
-		expect(page).toContain(EXTERNAL_APP_NOTICE);
+		expect(page).toContain(shown("consent.externalNotice"));
 		expect(page).not.toContain('data-id="consent-lookalike-warning"');
 	});
 
@@ -160,10 +157,10 @@ describe("consent for an app registered through DCR", () => {
 			{},
 			MCP_REDIRECT,
 		);
-		const label = "“<b>Localman</b>” (ứng dụng bên ngoài)";
-		expect(await response.text()).toContain(`Để tiếp tục tới ${label}.`);
+		const label = "“<b>Localman</b>” (external app)";
+		expect(await response.text()).toContain(`To continue to ${label}.`);
 		const firstParty = await openLoginPage(idp);
-		expect(firstParty.html).toContain("Để tiếp tục tới <b>Localman</b>.");
+		expect(firstParty.html).toContain("Sign in to continue to Localman");
 
 		// Without a session the provider skips the question altogether.
 		const browser = await signedInBrowser(
@@ -173,7 +170,7 @@ describe("consent for an app registered through DCR", () => {
 		const logout = await browser.request(
 			`${idp.issuer}/session/end?client_id=${config.clientMetadata().client_id}`,
 		);
-		expect(await logout.text()).toContain(`${label} muốn đăng xuất bạn`);
+		expect(await logout.text()).toContain(`${label} wants to sign you out`);
 	});
 });
 
@@ -181,6 +178,7 @@ describe("consent for a first-party client", () => {
 	it("shows no external label, notice or quotes", () => {
 		const page = renderConsent({
 			host: "auth.example.test",
+			page: testPage(),
 			csrf: "csrf-token",
 			uid: "uid-1",
 			clientName: "Tunelo CLI",

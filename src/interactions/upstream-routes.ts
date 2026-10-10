@@ -6,12 +6,14 @@ import {
 import { UPSTREAM_LABELS } from "../accounts/upstream-client.js";
 import { isUpstreamProvider } from "../accounts/user-model.js";
 import { formRateLimit, routeParam } from "../http/form.js";
+import type { MessageKey } from "../i18n/dictionaries.js";
 import type { AppServices } from "../services.js";
 import { notifyTelegram } from "../telegram/notify.js";
 import { sendPage } from "../ui/send-page.js";
 import {
 	asyncHandler,
 	csrfScope,
+	interactionPage,
 	loadInteraction,
 	sendInteractionError,
 } from "./interaction-helpers.js";
@@ -24,13 +26,11 @@ import {
 } from "./upstream-pending.js";
 import { startUpstream } from "./upstream-start.js";
 
-const REJECTED: Readonly<Record<string, string>> = {
-	"no-verified-email":
-		"Tài khoản này chưa có email đã xác minh, nên không dùng để đăng nhập hoandat được.",
-	disabled: "Tài khoản hoandat này đã bị khoá.",
-	"other-provider-account":
-		"Email này thuộc một tài khoản hoandat đã liên kết với tài khoản khác của cùng nhà cung cấp. Đăng nhập bằng tài khoản đã liên kết đó.",
-};
+const REJECTED: ReadonlyMap<string, MessageKey> = new Map([
+	["no-verified-email", "upstream.rejected.noVerifiedEmail"],
+	["disabled", "upstream.rejected.disabled"],
+	["other-provider-account", "upstream.rejected.otherProviderAccount"],
+]);
 
 /**
  * Google/GitHub inside an interaction, the only way to sign in or sign up:
@@ -71,6 +71,7 @@ export function registerUpstreamInteractionRoutes(
 			const csrf = services.csrf.token(req, res, csrfScope(interaction.uid));
 			const base = {
 				host: services.host,
+				page: interactionPage(req, interaction),
 				uid: interaction.uid,
 				csrf,
 				provider: profile.provider,
@@ -128,16 +129,14 @@ export function registerUpstreamInteractionRoutes(
 					return;
 				case "rejected":
 					await dropPendingUpstream(services, interaction.uid);
-					sendInteractionError(
-						services,
-						res,
-						REJECTED[decision.reason] ?? "Không đăng nhập được.",
-						403,
-						{
+					sendInteractionError(services, res, {
+						message: REJECTED.get(decision.reason) ?? "upstream.rejected.other",
+						status: 403,
+						back: {
 							href: `/interaction/${interaction.uid}`,
-							label: "Quay lại đăng nhập",
+							label: "username.back",
 						},
-					);
+					});
 			}
 		}),
 	);

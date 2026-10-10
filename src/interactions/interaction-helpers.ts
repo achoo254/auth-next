@@ -2,8 +2,11 @@ import type { NextFunction, Request, RequestHandler, Response } from "express";
 import type { InteractionResults } from "oidc-provider";
 import { auditContext } from "../audit/audit-context.js";
 import { routeParam } from "../http/form.js";
+import type { MessageKey } from "../i18n/dictionaries.js";
+import type { MessageParams } from "../i18n/translator.js";
 import { CREATE_PROMPT } from "../oidc/interaction-policy.js";
 import type { AppServices } from "../services.js";
+import { type PageContext, pageContext } from "../ui/page-context.js";
 import { sendPage } from "../ui/send-page.js";
 import { renderErrorPage } from "./error-page.js";
 
@@ -24,22 +27,44 @@ export function csrfScope(uid: string): string {
 	return `interaction:${uid}`;
 }
 
+/**
+ * Page context of an interaction page: the app's `ui_locales` counts, and
+ * a page rendered for a POST returns to the interaction itself.
+ */
+export function interactionPage(
+	req: Request,
+	interaction: Interaction,
+): PageContext {
+	return pageContext(req, {
+		uiLocales: interaction.params.ui_locales,
+		fallbackPath: `/interaction/${interaction.uid}`,
+	});
+}
+
+export interface InteractionError {
+	readonly message: MessageKey;
+	readonly params?: MessageParams;
+	readonly status?: number;
+	readonly back?: { readonly href: string; readonly label: MessageKey };
+}
+
+/** An error page in the request's language (default status 400). */
 export function sendInteractionError(
 	services: AppServices,
 	res: Response,
-	message: string,
-	status = 400,
-	back?: { href: string; label: string },
+	error: InteractionError,
 ): void {
+	const page = pageContext(res.req);
 	sendPage(
 		res,
 		renderErrorPage({
 			host: services.host,
-			message,
-			backHref: back?.href,
-			backLabel: back?.label,
+			page,
+			message: page.i18n.t(error.message, error.params),
+			backHref: error.back?.href,
+			backLabel: error.back ? page.i18n.t(error.back.label) : undefined,
 		}),
-		status,
+		error.status ?? 400,
 	);
 }
 
@@ -58,19 +83,13 @@ export async function loadInteraction(
 	try {
 		interaction = await services.provider.interactionDetails(req, res);
 	} catch {
-		sendInteractionError(
-			services,
-			res,
-			"Phiên đăng nhập đã hết hạn hoặc không còn hợp lệ. Quay lại ứng dụng và đăng nhập lại.",
-		);
+		sendInteractionError(services, res, {
+			message: "error.interactionExpired",
+		});
 		return undefined;
 	}
 	if (interaction.uid !== routeParam(req, "uid")) {
-		sendInteractionError(
-			services,
-			res,
-			"Trang này thuộc về một phiên đăng nhập khác. Quay lại ứng dụng và đăng nhập lại.",
-		);
+		sendInteractionError(services, res, { message: "error.otherInteraction" });
 		return undefined;
 	}
 	return interaction;
@@ -84,12 +103,10 @@ export function checkCsrf(
 	scope: string,
 ): boolean {
 	if (services.csrf.verify(req, scope)) return true;
-	sendInteractionError(
-		services,
-		res,
-		"Biểu mẫu đã hết hạn. Tải lại trang rồi thử lại.",
-		403,
-	);
+	sendInteractionError(services, res, {
+		message: "error.formExpired",
+		status: 403,
+	});
 	return false;
 }
 

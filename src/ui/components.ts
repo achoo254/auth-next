@@ -78,12 +78,15 @@ export function submitButton(
 	}${options.dataId ? html` data-id="${options.dataId}"` : ""}>${label}</button>`;
 }
 
-/** A form with a single CSRF-protected POST button (e.g. "Thu hồi"). */
+/** A form with a single CSRF-protected POST button ("Sign out device"). */
 export function actionButton(
 	action: string,
 	csrf: string,
 	label: string,
-	options: { readonly variant?: "secondary" | "danger"; dataId?: string } = {},
+	options: {
+		readonly variant?: "primary" | "secondary" | "danger";
+		readonly dataId?: string;
+	} = {},
 ): SafeHtml {
 	return html`<form method="post" action="${action}" class="inline-form">${csrfField(csrf)}${submitButton(
 		label,
@@ -91,7 +94,21 @@ export function actionButton(
 	)}</form>`;
 }
 
-export function pageTitle(title: string, subtitle?: HtmlValue): SafeHtml {
+/** A GET link styled as a button, for actions confirmed on their own page. */
+export function actionLink(
+	href: string,
+	label: string,
+	options: {
+		readonly variant?: "secondary" | "danger" | "minimal";
+		readonly dataId?: string;
+	} = {},
+): SafeHtml {
+	return html`<a class="btn btn-${options.variant ?? "secondary"}" href="${href}"${
+		options.dataId ? html` data-id="${options.dataId}"` : ""
+	}>${label}</a>`;
+}
+
+export function pageTitle(title: HtmlValue, subtitle?: HtmlValue): SafeHtml {
 	return html`<h1 class="auth-title">${title}</h1>${
 		subtitle ? html`<p class="auth-sub">${subtitle}</p>` : ""
 	}`;

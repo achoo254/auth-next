@@ -1,25 +1,29 @@
 import type { ErrorOut, KoaContextWithOIDC } from "oidc-provider";
+import type { MessageKey } from "../i18n/dictionaries.js";
 import { pageTitle } from "../ui/components.js";
 import { html } from "../ui/html.js";
 import { renderPage } from "../ui/layout.js";
+import { type PageContext, koaPageContext } from "../ui/page-context.js";
 import { sendKoaPage } from "./koa-page.js";
 
-const ERROR_TEXT: Readonly<Record<string, string>> = {
-	invalid_request:
-		"Yêu cầu đăng nhập không hợp lệ hoặc đã hết hạn. Quay lại ứng dụng và thử lại.",
-	invalid_client: "Ứng dụng yêu cầu đăng nhập không hợp lệ.",
-	invalid_redirect_uri: "Địa chỉ quay về của ứng dụng không hợp lệ.",
-	unauthorized_client: "Ứng dụng không được phép dùng cách đăng nhập này.",
-	access_denied: "Yêu cầu đã bị từ chối.",
-	invalid_scope: "Ứng dụng xin quyền không được hỗ trợ.",
-	invalid_target: "Ứng dụng xin quyền cho một dịch vụ không được phép.",
-	login_required: "Bạn cần đăng nhập để tiếp tục.",
-	server_error: "Có lỗi phía máy chủ. Thử lại sau ít phút.",
-};
+/** OAuth error codes the provider renders, and how the page explains them. */
+const ERROR_TEXT: ReadonlyMap<string, MessageKey> = new Map([
+	["invalid_request", "providerError.invalidRequest"],
+	["invalid_client", "providerError.invalidClient"],
+	["invalid_redirect_uri", "providerError.invalidRedirectUri"],
+	["unauthorized_client", "providerError.unauthorizedClient"],
+	["access_denied", "providerError.accessDenied"],
+	["invalid_scope", "providerError.invalidScope"],
+	["invalid_target", "providerError.invalidTarget"],
+	["login_required", "providerError.loginRequired"],
+	["server_error", "providerError.serverError"],
+]);
 
 export interface ErrorView {
 	readonly host: string;
+	readonly page: PageContext;
 	readonly title?: string;
+	/** Already in the page's language. */
 	readonly message: string;
 	/** Machine-readable code, shown small for support. */
 	readonly code?: string;
@@ -28,11 +32,24 @@ export interface ErrorView {
 }
 
 export function renderErrorPage(view: ErrorView): string {
-	const body = html`${pageTitle(view.title ?? "Không thể tiếp tục")}
+	const { i18n } = view.page;
+	const title = view.title ?? i18n.t("error.title");
+	const body = html`${pageTitle(title)}
 <div class="alert alert-error" role="alert" data-id="error-message">${view.message}</div>
-${view.code ? html`<p class="help">Mã lỗi: <code data-id="error-code">${view.code}</code></p>` : ""}
-<p class="auth-foot"><a class="link" href="${view.backHref ?? "/account"}" data-id="error-back">${view.backLabel ?? "Về trang tài khoản"}</a></p>`;
-	return renderPage({ title: view.title ?? "Lỗi", body, host: view.host });
+${view.code ? html`<p class="help">${i18n.rich("error.code", { code: html`<code data-id="error-code">${view.code}</code>` })}</p>` : ""}
+<p class="auth-foot"><a class="link" href="${view.backHref ?? "/account"}" data-id="error-back">${view.backLabel ?? i18n.t("common.backToAccount")}</a></p>`;
+	return renderPage({ title, body, host: view.host, page: view.page });
+}
+
+function field(source: unknown, key: string): unknown {
+	return typeof source === "object" && source !== null
+		? Reflect.get(source, key)
+		: undefined;
+}
+
+/** `ui_locales` of the failed request; ctx.oidc is unset before routing. */
+function uiLocalesOf(ctx: KoaContextWithOIDC): unknown {
+	return field(field(field(ctx, "oidc"), "params"), "ui_locales");
 }
 
 /**
@@ -43,10 +60,12 @@ export async function renderProviderError(
 	ctx: KoaContextWithOIDC,
 	out: ErrorOut,
 ): Promise<void> {
-	const message =
-		ERROR_TEXT[out.error] ?? "Không xử lý được yêu cầu. Thử lại sau ít phút.";
+	const page = koaPageContext(ctx, { uiLocales: uiLocalesOf(ctx) });
+	const message = page.i18n.t(
+		ERROR_TEXT.get(out.error) ?? "providerError.unknown",
+	);
 	const code = out.error_description
 		? `${out.error}: ${out.error_description}`
 		: out.error;
-	sendKoaPage(ctx, renderErrorPage({ host: ctx.host, message, code }));
+	sendKoaPage(ctx, renderErrorPage({ host: ctx.host, page, message, code }));
 }

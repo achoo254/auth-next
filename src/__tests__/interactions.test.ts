@@ -1,6 +1,5 @@
 import * as client from "openid-client";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { EXTERNAL_APP_NOTICE } from "../interactions/consent-page.js";
 import { RESOURCES } from "../oidc/resources.js";
 import { discoverClient } from "./helpers/flows.js";
 import { signedInBrowser } from "./helpers/session-flows.js";
@@ -11,6 +10,7 @@ import {
 } from "./helpers/test-accounts.js";
 import { TestBrowser, formField } from "./helpers/test-browser.js";
 import { type TestIdp, startTestIdp } from "./helpers/test-idp.js";
+import { shown } from "./helpers/test-page.js";
 
 const MCP_REDIRECT = "http://127.0.0.1:33419/callback";
 let idp: TestIdp;
@@ -76,17 +76,17 @@ describe("sign-up, consent and return to an MCP client", () => {
 			`${idp.issuer}/interaction/${uid}/upstream/google`,
 		);
 		const usernamePage = await chosen.response.text();
-		expect(usernamePage).toContain("Chọn username");
+		expect(usernamePage).toContain("Choose a username");
 		const consent = await submitForm(
 			browser,
 			`${idp.issuer}/interaction/${uid}/upstream/signup`,
 			{ csrf: formField(usernamePage, "csrf"), username: "minh_anh" },
 		);
 		const consentPage = await consent.response.text();
-		expect(consentPage).toContain(EXTERNAL_APP_NOTICE);
+		expect(consentPage).toContain(shown("consent.externalNotice"));
 		expect(consentPage).toContain("127.0.0.1:33419");
 		expect(consentPage).toContain(
-			"Xem project mock trên Localman mà bạn có quyền truy cập",
+			"See the Localman mock projects you can access",
 		);
 		expect(consentPage).not.toContain('data-id="consent-credentials-warning"');
 
@@ -127,7 +127,7 @@ describe("logout", () => {
 			await browser.request(`${idp.issuer}/session/end`)
 		).text();
 		expect(ask).toContain('id="op.logoutForm"');
-		expect(ask).toContain("Đăng xuất khỏi tài khoản hoandat");
+		expect(ask).toContain("Sign out of your hoandat account");
 		const done = await submitForm(
 			browser,
 			`${idp.issuer}/session/end/confirm`,
@@ -136,7 +136,7 @@ describe("logout", () => {
 				logout: "yes",
 			},
 		);
-		expect(await done.response.text()).toContain("Đã đăng xuất");
+		expect(await done.response.text()).toContain("Signed out");
 		const accountPage = await browser.request(`${idp.issuer}/account`);
 		expect(accountPage.status).toBe(303);
 		expect(accountPage.headers.get("location")).toContain(

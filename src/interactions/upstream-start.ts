@@ -6,7 +6,8 @@ import {
 	type UpstreamClient,
 } from "../accounts/upstream-client.js";
 import { isUpstreamProvider } from "../accounts/user-model.js";
-import { queryValue, readCookie, routeParam } from "../http/form.js";
+import { readCookie } from "../http/cookies.js";
+import { queryValue, routeParam } from "../http/form.js";
 import type { AppServices } from "../services.js";
 import { asyncHandler, sendInteractionError } from "./interaction-helpers.js";
 import { finishAccountLink } from "./upstream-account-link.js";
@@ -128,7 +129,11 @@ export function createUpstreamCallbackRouter(services: AppServices): Router {
 				return;
 			}
 			const label = UPSTREAM_LABELS[client.provider];
-			const expired = `Phiên đăng nhập bằng ${label} đã hết hạn. Thử lại từ đầu.`;
+			const expired = {
+				message: "upstream.expired",
+				params: { provider: label },
+				status: 410,
+			} as const;
 			const state = queryValue(req, "state") ?? "";
 			const cookie = readCookie(req, stateCookieName(services)) ?? "";
 			res.clearCookie(stateCookieName(services), stateCookieOptions(services));
@@ -142,7 +147,7 @@ export function createUpstreamCallbackRouter(services: AppServices): Router {
 				!data.verifier ||
 				!data.nonce
 			) {
-				sendInteractionError(services, res, expired, 410);
+				sendInteractionError(services, res, expired);
 				return;
 			}
 			const back = data.uid ? `/interaction/${data.uid}` : "/account";
@@ -164,13 +169,12 @@ export function createUpstreamCallbackRouter(services: AppServices): Router {
 					{ err: error, provider: client.provider },
 					"Upstream sign-in failed",
 				);
-				sendInteractionError(
-					services,
-					res,
-					`Không đăng nhập được bằng ${label}. Thử lại sau ít phút.`,
-					502,
-					{ href: back, label: "Quay lại" },
-				);
+				sendInteractionError(services, res, {
+					message: "upstream.failed",
+					params: { provider: label },
+					status: 502,
+					back: { href: back, label: "common.back" },
+				});
 				return;
 			}
 			if (data.purpose === "login" && data.uid) {
@@ -179,7 +183,7 @@ export function createUpstreamCallbackRouter(services: AppServices): Router {
 				return;
 			}
 			if (data.purpose !== "link" || !data.accountId) {
-				sendInteractionError(services, res, expired, 410);
+				sendInteractionError(services, res, expired);
 				return;
 			}
 			await finishAccountLink(services, req, res, {

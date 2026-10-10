@@ -1,6 +1,7 @@
 import { createHmac, randomBytes, timingSafeEqual } from "node:crypto";
 import type { Request, Response } from "express";
-import { formValue, readCookie } from "./form.js";
+import { readCookie } from "./cookies.js";
+import { formValue } from "./form.js";
 
 /**
  * CSRF protection for every server-rendered form: a random per-browser

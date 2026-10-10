@@ -10,13 +10,16 @@ import {
 } from "../ui/components.js";
 import { html } from "../ui/html.js";
 import { renderPage } from "../ui/layout.js";
+import type { PageContext } from "../ui/page-context.js";
 
 interface UpstreamPageBase {
 	readonly host: string;
+	readonly page: PageContext;
 	readonly uid: string;
 	readonly csrf: string;
 	readonly provider: UpstreamProvider;
 	readonly email: string;
+	/** Already in the page's language. */
 	readonly error?: string;
 }
 
@@ -28,24 +31,29 @@ export function renderChooseUsername(
 		readonly reclaiming: boolean;
 	},
 ): string {
-	const label = UPSTREAM_LABELS[view.provider];
-	const body = html`${pageTitle("Chọn username", html`Tạo tài khoản hoandat bằng ${label} cho <b>${view.email}</b> (đã xác minh).`)}
+	const { i18n } = view.page;
+	const provider = UPSTREAM_LABELS[view.provider];
+	const title = i18n.t("username.title");
+	const body = html`${pageTitle(title, i18n.rich("username.subtitle", { provider, email: html`<b>${view.email}</b>` }))}
 ${maybeAlert("error", view.error)}
 ${
 	view.reclaiming
 		? alertBox(
 				"warning",
-				html`Email này đang gắn với một tài khoản hoandat khác nhưng chưa ai xác minh. Nếu đó là tài khoản của bạn và nó đã liên kết Google hoặc GitHub khác, hãy <a class="link" href="/interaction/${view.uid}">đăng nhập bằng cách đó</a> rồi liên kết ${label} ở trang tài khoản. Nếu tiếp tục, email chuyển sang tài khoản mới; tài khoản kia giữ các cách đăng nhập khác của nó.`,
+				i18n.rich("username.reclaimWarning", {
+					provider,
+					link: html`<a class="link" href="/interaction/${view.uid}">${i18n.t("username.reclaimLink")}</a>`,
+				}),
 			)
 		: ""
 }
 <form class="auth-form" method="post" action="/interaction/${view.uid}/upstream/signup" novalidate>
 ${csrfField(view.csrf)}
-${inputField({ name: "username", label: "Username", value: view.suggestion, autocomplete: "username", minlength: 3, maxlength: 30, pattern: "[a-z0-9_]{3,30}", autofocus: true, help: "3–30 ký tự: chữ thường, số và dấu gạch dưới. Người khác mời bạn bằng username này." })}
-${submitButton("Tạo tài khoản", { block: true, dataId: "upstream-signup-submit" })}
+${inputField({ name: "username", label: i18n.t("username.label"), value: view.suggestion, autocomplete: "username", minlength: 3, maxlength: 30, pattern: "[a-z0-9_]{3,30}", autofocus: true, help: i18n.t("username.help") })}
+${submitButton(i18n.t("username.submit"), { block: true, dataId: "upstream-signup-submit" })}
 </form>
-<p class="auth-foot"><a class="link" href="/interaction/${view.uid}" data-id="upstream-signup-back">Quay lại đăng nhập</a></p>`;
-	return renderPage({ title: "Chọn username", body, host: view.host });
+<p class="auth-foot"><a class="link" href="/interaction/${view.uid}" data-id="upstream-signup-back">${i18n.t("username.back")}</a></p>`;
+	return renderPage({ title, body, host: view.host, page: view.page });
 }
 
 /** A username guess from the email's local part, e.g. "Minh.Anh" → "minh_anh". */

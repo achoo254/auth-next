@@ -1,7 +1,6 @@
 import * as client from "openid-client";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { accountsCollection } from "../accounts/user-model.js";
-import { NO_PROVIDER_MESSAGE } from "../interactions/login-page.js";
 import { STATIC_CLIENT_IDS } from "../oidc/clients.js";
 import { discoverClient } from "./helpers/flows.js";
 import { signedInBrowser } from "./helpers/session-flows.js";
@@ -17,6 +16,7 @@ import {
 	type TestIdp,
 	startTestIdp,
 } from "./helpers/test-idp.js";
+import { shown } from "./helpers/test-page.js";
 
 let idp: TestIdp;
 
@@ -118,7 +118,7 @@ describe("no Google/GitHub configured", () => {
 			);
 			expect(response.status).toBe(503);
 			const html = await response.text();
-			expect(html).toContain(NO_PROVIDER_MESSAGE);
+			expect(html).toContain(shown("login.noProvider"));
 			expect(html).toContain('data-id="login-cancel"');
 			expect(html).not.toContain("/upstream/");
 		} finally {

@@ -49,7 +49,7 @@ describe("Google and GitHub sign-in", () => {
 			name: "New Person",
 		});
 		const html = await response.text();
-		expect(html).toContain("Chọn username");
+		expect(html).toContain("Choose a username");
 		expect(html).toContain('value="new_person"');
 		const done = await page.browser.navigate(
 			`${idp.issuer}/interaction/${page.uid}/upstream/signup`,
@@ -97,7 +97,7 @@ describe("Google and GitHub sign-in", () => {
 			LOCALMAN_CALLBACK,
 		);
 		const html = await chosen.response.text();
-		expect(html).toContain("Chọn username");
+		expect(html).toContain("Choose a username");
 		const done = await browser.navigate(
 			`${idp.issuer}/interaction/${uid}/upstream/signup`,
 			{ form: { csrf: formField(html, "csrf"), username: "created_here" } },
@@ -132,7 +132,7 @@ describe("Google and GitHub sign-in", () => {
 			emailVerified: false,
 		});
 		expect(response.status).toBe(403);
-		expect(await response.text()).toContain("chưa có email đã xác minh");
+		expect(await response.text()).toContain("has no verified email");
 		expect(
 			await repositoryOf(idp).findByProvider("github", "301"),
 		).toBeUndefined();

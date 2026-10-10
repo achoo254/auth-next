@@ -32,15 +32,14 @@ function stringField(
 	return typeof value === "string" && value.length > 0 ? value : undefined;
 }
 
-/** Machine name from the request, else its User-Agent, else a placeholder. */
+/** Machine name from the request, else its User-Agent; pages name the rest. */
 export function deviceNameOf(
 	params: UnknownObject | undefined,
 	deviceInfo: UnknownObject | undefined,
-): string {
+): string | undefined {
 	const named = stringField(params, DEVICE_NAME_PARAM);
 	if (named && isValidDeviceName(named)) return named;
-	const userAgent = stringField(deviceInfo, "ua");
-	return userAgent ? userAgent.slice(0, 80) : "không rõ tên";
+	return stringField(deviceInfo, "ua")?.slice(0, 80);
 }
 
 export function deviceIpOf(
@@ -49,7 +48,7 @@ export function deviceIpOf(
 	return stringField(deviceInfo, "ip");
 }
 
-/** Short product name shown in "Cho phép tunelo trên máy …?". */
+/** Short product name shown in "Allow tunelo on …?". */
 export function deviceClientLabel(
 	clientId: string,
 	clientName?: string,

@@ -19,7 +19,8 @@ const storedGrant = z.object({
 interface DeviceMetaDocument {
 	_id: string;
 	accountId: string;
-	deviceName: string;
+	/** Missing when the CLI sent neither a machine name nor a User-Agent. */
+	deviceName?: string;
 	ip?: string;
 	userAgent?: string;
 	createdAt: Date;
@@ -37,7 +38,7 @@ export interface GrantSummary {
 }
 
 export interface DeviceGrant extends GrantSummary {
-	readonly deviceName: string;
+	readonly deviceName?: string;
 }
 
 /**
@@ -114,7 +115,7 @@ export async function listDeviceGrants(
 	const names = new Map(metas.map((meta) => [meta._id, meta.deviceName]));
 	return devices.map((grant) => ({
 		...grant,
-		deviceName: names.get(grant.grantId) ?? "Máy không rõ tên",
+		deviceName: names.get(grant.grantId) ?? undefined,
 	}));
 }
 

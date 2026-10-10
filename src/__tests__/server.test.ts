@@ -39,7 +39,7 @@ describe("Privacy policy", () => {
 		const response = await fetch(`${idp.issuer}/privacy`);
 		expect(response.status).toBe(200);
 		const body = await response.text();
-		expect(body).toContain("Chính sách quyền riêng tư");
+		expect(body).toContain("Privacy policy");
 		expect(body).toContain("argon2id");
 	});
 });
@@ -148,7 +148,7 @@ describe("interaction pages without a session", () => {
 		expect(response.status).toBe(200);
 		expect(new URL(response.url).pathname).toMatch(/^\/interaction\//);
 		const page = await response.text();
-		expect(page).toContain("Đăng nhập");
+		expect(page).toContain("Sign in to continue to Localman");
 		expect(page).toContain('name="csrf"');
 		expect(response.headers.get("cache-control")).toBe("no-store");
 	});
@@ -172,7 +172,7 @@ describe("interaction pages without a session", () => {
 			},
 		);
 		expect(response.status).toBe(200);
-		expect(await response.text()).toContain("Đăng nhập để duyệt thiết bị");
+		expect(await response.text()).toContain("Sign in to approve a device.");
 		await expect(
 			client.genericGrantRequest(
 				config,

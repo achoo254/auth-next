@@ -1,54 +1,63 @@
 import { Router } from "express";
+import type { MessageKey } from "../i18n/dictionaries.js";
 import { pageTitle } from "../ui/components.js";
 import { html } from "../ui/html.js";
 import { renderPage } from "../ui/layout.js";
+import { type PageContext, pageContext } from "../ui/page-context.js";
 
 export const PRIVACY_PATH = "/privacy";
+
+const STORED: readonly MessageKey[] = [
+	"privacy.stored.profile",
+	"privacy.stored.noPassword",
+	"privacy.stored.providers",
+	"privacy.stored.telegram",
+	"privacy.stored.sessions",
+	"privacy.stored.securityLog",
+];
 
 /**
  * Public privacy policy. Google requires one before a "Sign in with Google"
  * app can leave testing; it states only what this service actually stores.
  */
-export function renderPrivacyPage(host: string): string {
+export function renderPrivacyPage(host: string, page: PageContext): string {
+	const { i18n } = page;
+	const title = i18n.t("privacy.title");
 	return renderPage({
-		title: "Chính sách quyền riêng tư",
+		title,
 		host,
-		wide: true,
-		body: html`${pageTitle(
-			"Chính sách quyền riêng tư",
-			"Áp dụng cho dịch vụ đăng nhập auth.hoandat.com. Cập nhật ngày 09/10/2026.",
-		)}
+		page,
+		layout: "wide",
+		body: html`${pageTitle(title, i18n.t("privacy.subtitle"))}
 <div class="prose" data-id="privacy-policy">
-<h2>Dữ liệu được lưu</h2>
-<ul>
-<li>Tên đăng nhập, địa chỉ email, tên hiển thị và ảnh đại diện.</li>
-<li>Dịch vụ không dùng mật khẩu. Tài khoản tạo trước khi bỏ mật khẩu có thể vẫn còn bản băm argon2id của mật khẩu và mã khôi phục cũ; chúng không còn được dùng để đăng nhập.</li>
-<li>Khi bạn đăng nhập bằng Google hoặc GitHub: mã định danh tài khoản ở nhà cung cấp, email đã xác minh, tên và ảnh đại diện mà nhà cung cấp trả về.</li>
-<li>Khi bạn liên kết Telegram: mã chat và tên người dùng Telegram.</li>
-<li>Phiên đăng nhập, thiết bị và ứng dụng bạn đã cấp quyền, kèm thời điểm sử dụng.</li>
-<li>Nhật ký bảo mật (đăng nhập, liên kết hoặc gỡ phương thức đăng nhập, thu hồi phiên và quyền) gồm địa chỉ IP và trình duyệt; IP và trình duyệt của sự kiện chưa gửi đi bị xoá sau 30 ngày.</li>
-</ul>
-<h2>Mục đích sử dụng</h2>
-<p>Dữ liệu chỉ dùng để xác thực bạn, giữ phiên đăng nhập, khôi phục tài khoản và phát hiện truy cập bất thường. Dịch vụ không gửi email, không hiển thị quảng cáo và không bán dữ liệu.</p>
-<h2>Chia sẻ</h2>
-<p>Thông tin hồ sơ chỉ được cấp cho các ứng dụng do cùng chủ sở hữu vận hành (Localman, Tunelo) hoặc ứng dụng bạn đã đồng ý cấp quyền, trong phạm vi bạn đồng ý. Không chia sẻ cho bên thứ ba nào khác.</p>
-<h2>Quyền của bạn</h2>
-<p>Tại trang <a href="/account">Tài khoản</a>, bạn xem và sửa hồ sơ, gỡ liên kết Google, GitHub hoặc Telegram, thu hồi phiên và ứng dụng đã cấp quyền. Để xoá tài khoản, liên hệ quocdat254@gmail.com.</p>
-<h2>Lưu trữ</h2>
-<p>Dữ liệu nằm trên máy chủ tại Việt Nam do chủ sở hữu dịch vụ quản lý, có sao lưu hằng ngày giữ 14 ngày.</p>
+<h2>${i18n.t("privacy.stored.title")}</h2>
+<ul>${STORED.map((key) => html`<li>${i18n.t(key)}</li>`)}</ul>
+<h2>${i18n.t("privacy.purpose.title")}</h2>
+<p>${i18n.t("privacy.purpose.body")}</p>
+<h2>${i18n.t("privacy.sharing.title")}</h2>
+<p>${i18n.t("privacy.sharing.body")}</p>
+<h2>${i18n.t("privacy.rights.title")}</h2>
+<p>${i18n.rich("privacy.rights.body", { account: html`<a href="/account">${i18n.t("layout.brand")}</a>`, email: "quocdat254@gmail.com" })}</p>
+<h2>${i18n.t("privacy.storage.title")}</h2>
+<p>${i18n.t("privacy.storage.body")}</p>
 </div>`,
 	});
 }
 
+/**
+ * The page depends on the visitor's language (cookie, Accept-Language),
+ * so caches must revalidate rather than serve one language to everyone.
+ */
 export function createPrivacyRouter(host: string): Router {
 	const router = Router();
-	const page = renderPrivacyPage(host);
-	router.get(PRIVACY_PATH, (_req, res) => {
+	router.get(PRIVACY_PATH, (req, res) => {
 		res
 			.status(200)
-			.set("cache-control", "public, max-age=3600")
+			.set("cache-control", "private, no-cache")
+			.vary("Cookie")
+			.vary("Accept-Language")
 			.type("html")
-			.send(page);
+			.send(renderPrivacyPage(host, pageContext(req)));
 	});
 	return router;
 }

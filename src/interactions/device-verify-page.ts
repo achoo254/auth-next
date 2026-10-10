@@ -1,4 +1,6 @@
 import type { Client, KoaContextWithOIDC, UnknownObject } from "oidc-provider";
+import type { MessageKey } from "../i18n/dictionaries.js";
+import type { Translator } from "../i18n/translator.js";
 import {
 	alertBox,
 	csrfField,
@@ -7,25 +9,37 @@ import {
 } from "../ui/components.js";
 import { type SafeHtml, html } from "../ui/html.js";
 import { renderPage } from "../ui/layout.js";
+import { type PageContext, koaPageContext } from "../ui/page-context.js";
 import { describeScopes } from "./consent-page.js";
 import { deviceClientLabel, deviceIpOf, deviceNameOf } from "./device-info.js";
 import { sendKoaPage, xsrfFromProviderForm } from "./koa-page.js";
 
-const INPUT_ERRORS: Readonly<Record<string, string>> = {
-	NoCodeError: "Hãy nhập mã đang hiện trên máy của bạn.",
-	NotFoundError: "Mã không đúng. Kiểm tra lại mã trên máy của bạn.",
-	ExpiredError:
-		"Mã đã hết hạn. Chạy lại lệnh đăng nhập trên máy để lấy mã mới.",
-	AlreadyUsedError: "Mã này đã được dùng. Chạy lại lệnh đăng nhập trên máy.",
-	AbortedError: "Đã từ chối. Máy kia sẽ không được cấp quyền.",
-};
+const INPUT_ERRORS: ReadonlyMap<string, MessageKey> = new Map([
+	["NoCodeError", "device.error.noCode"],
+	["NotFoundError", "device.error.notFound"],
+	["ExpiredError", "device.error.expired"],
+	["AlreadyUsedError", "device.error.used"],
+	["AbortedError", "device.error.aborted"],
+]);
 
-function inputMessage(error: Error | undefined): SafeHtml {
+function inputMessage(i18n: Translator, error: Error | undefined): SafeHtml {
 	if (!error) return html``;
-	const known = INPUT_ERRORS[error.name];
+	const known = INPUT_ERRORS.get(error.name);
 	return known
-		? alertBox(error.name === "AbortedError" ? "info" : "error", known)
-		: alertBox("error", "Không xử lý được yêu cầu. Thử lại sau ít phút.");
+		? alertBox(error.name === "AbortedError" ? "info" : "error", i18n.t(known))
+		: alertBox("error", i18n.t("device.error.other"));
+}
+
+/** "tunelo on <machine>", the machine bold. */
+function deviceLabel(
+	i18n: Translator,
+	label: string,
+	machine: string | undefined,
+): SafeHtml {
+	return i18n.rich("device.onMachine", {
+		app: html`<code>${label}</code>`,
+		machine: html`<b>${machine ?? i18n.t("device.unknownName")}</b>`,
+	});
 }
 
 /**
@@ -39,20 +53,20 @@ export async function userCodeInputSource(
 	_out?: unknown,
 	error?: Error,
 ): Promise<void> {
+	const page = koaPageContext(ctx);
+	const { i18n } = page;
 	const action = ctx.oidc.urlFor("code_verification");
-	const body = html`${pageTitle("Đăng nhập thiết bị", "Nhập mã đang hiện trên máy (ví dụ trong cửa sổ dòng lệnh của tunelo).")}
-${inputMessage(error)}
+	const body = html`${pageTitle(i18n.t("device.input.title"), i18n.t("device.input.subtitle"))}
+${inputMessage(i18n, error)}
 <form class="auth-form" method="post" action="${action}">
 <input type="hidden" name="xsrf" value="${xsrfFromProviderForm(form)}">
 <input type="hidden" name="confirm" value="yes">
-<div class="field"><label class="label" for="user_code">Mã thiết bị</label>
+<div class="field"><label class="label" for="user_code">${i18n.t("device.input.label")}</label>
 <input class="input input-code-entry" id="user_code" name="user_code" autocomplete="off" autocapitalize="characters" spellcheck="false" required autofocus placeholder="XXXX-XXXX" data-id="device-user-code"></div>
-${submitButton("Tiếp tục", { block: true, dataId: "device-continue" })}
+${submitButton(i18n.t("common.continue"), { block: true, dataId: "device-continue" })}
 </form>`;
-	sendKoaPage(
-		ctx,
-		renderPage({ title: "Đăng nhập thiết bị", body, host: ctx.host }),
-	);
+	const title = i18n.t("device.input.title");
+	sendKoaPage(ctx, renderPage({ title, body, host: ctx.host, page }));
 }
 
 /**
@@ -67,38 +81,40 @@ export async function userCodeConfirmSource(
 	deviceInfo: UnknownObject,
 	userCode: string,
 ): Promise<void> {
+	const page = koaPageContext(ctx);
+	const { i18n } = page;
 	const action = ctx.oidc.urlFor("code_verification");
 	const xsrf = xsrfFromProviderForm(form);
 	const label = deviceClientLabel(client.clientId, client.clientName);
-	const body = html`${pageTitle("Kiểm tra mã thiết bị", html`Yêu cầu từ <code>${label}</code> trên máy <b>${deviceNameOf(ctx.oidc.deviceCode?.params, deviceInfo)}</b>.`)}
+	const machine = deviceNameOf(ctx.oidc.deviceCode?.params, deviceInfo);
+	const title = i18n.t("device.confirm.title");
+	const body = html`${pageTitle(title, i18n.rich("device.confirm.subtitle", { device: deviceLabel(i18n, label, machine) }))}
 <p class="device-code" data-id="device-code">${userCode}</p>
-<p class="help">Chỉ tiếp tục nếu mã trên khớp với mã đang hiện trên máy của bạn.</p>
+<p class="help">${i18n.t("device.confirm.help")}</p>
 <div class="auth-form">
-<form method="post" action="${action}"><input type="hidden" name="xsrf" value="${xsrf}"><input type="hidden" name="user_code" value="${userCode}"><input type="hidden" name="confirm" value="yes">${submitButton("Mã khớp, tiếp tục", { block: true, dataId: "device-confirm" })}</form>
-<form method="post" action="${action}"><input type="hidden" name="xsrf" value="${xsrf}"><input type="hidden" name="user_code" value="${userCode}"><input type="hidden" name="abort" value="yes">${submitButton("Huỷ", { block: true, variant: "minimal", dataId: "device-abort" })}</form>
+<form method="post" action="${action}"><input type="hidden" name="xsrf" value="${xsrf}"><input type="hidden" name="user_code" value="${userCode}"><input type="hidden" name="confirm" value="yes">${submitButton(i18n.t("device.confirm.match"), { block: true, dataId: "device-confirm" })}</form>
+<form method="post" action="${action}"><input type="hidden" name="xsrf" value="${xsrf}"><input type="hidden" name="user_code" value="${userCode}"><input type="hidden" name="abort" value="yes">${submitButton(i18n.t("common.cancel"), { block: true, variant: "minimal", dataId: "device-abort" })}</form>
 </div>`;
-	sendKoaPage(
-		ctx,
-		renderPage({ title: "Kiểm tra mã thiết bị", body, host: ctx.host }),
-	);
+	sendKoaPage(ctx, renderPage({ title, body, host: ctx.host, page }));
 }
 
 /** `features.deviceFlow.successSource`. */
 export async function deviceSuccessSource(
 	ctx: KoaContextWithOIDC,
 ): Promise<void> {
+	const page = koaPageContext(ctx);
+	const { i18n } = page;
 	const client = ctx.oidc.client;
 	const code = ctx.oidc.deviceCode;
 	const label = client
 		? deviceClientLabel(client.clientId, client.clientName)
-		: "thiết bị";
-	const body = html`${pageTitle("Đã cho phép", html`<code>${label}</code> trên máy <b>${deviceNameOf(code?.params, code?.deviceInfo)}</b> đã đăng nhập vào tài khoản của bạn.`)}
-${alertBox("success", "Quay lại cửa sổ dòng lệnh, máy sẽ tự tiếp tục. Bạn có thể đóng trang này.")}
-<p class="auth-foot"><a class="link" href="/account" data-id="device-success-account">Quản lý thiết bị ở trang tài khoản</a></p>`;
-	sendKoaPage(
-		ctx,
-		renderPage({ title: "Đã cho phép thiết bị", body, host: ctx.host }),
-	);
+		: i18n.t("device.genericLabel");
+	const machine = deviceNameOf(code?.params, code?.deviceInfo);
+	const body = html`${pageTitle(i18n.t("device.success.title"), i18n.rich("device.success.subtitle", { device: deviceLabel(i18n, label, machine) }))}
+${alertBox("success", i18n.t("device.success.alert"))}
+<p class="auth-foot"><a class="link" href="/account" data-id="device-success-account">${i18n.t("device.success.manage")}</a></p>`;
+	const title = i18n.t("device.success.pageTitle");
+	sendKoaPage(ctx, renderPage({ title, body, host: ctx.host, page }));
 }
 
 /** Stored codes are normalised (XXXXXXXX); show them as on the device. */
@@ -108,6 +124,7 @@ function formatUserCode(code: string): string {
 
 export interface DeviceApprovalView {
 	readonly host: string;
+	readonly page: PageContext;
 	readonly csrf: string;
 	readonly uid: string;
 	readonly clientId: string;
@@ -119,18 +136,20 @@ export interface DeviceApprovalView {
 	readonly username: string;
 }
 
-/** The "Cho phép tunelo trên máy …?" page, shown after sign-in. */
+/** The "Allow tunelo on …?" page, shown after sign-in. */
 export function renderDeviceApproval(view: DeviceApprovalView): string {
+	const { i18n } = view.page;
 	const label = deviceClientLabel(view.clientId, view.clientName);
 	const machine = deviceNameOf(view.params, view.deviceInfo);
 	const ip = deviceIpOf(view.deviceInfo);
-	const body = html`${pageTitle("Duyệt thiết bị", html`Đang đăng nhập là <b>@${view.username}</b>.`)}
-<p class="device-question" data-id="device-question">Cho phép <code>${label}</code> trên máy <b>${machine}</b>?</p>
-${view.userCode ? html`<p class="help">Mã: <code data-id="device-approval-code">${formatUserCode(view.userCode)}</code>${ip ? html` · yêu cầu từ IP <code>${ip}</code>` : ""}</p>` : ""}
-<ul class="scope-list">${describeScopes(view.scopes).map((text) => html`<li>${text}</li>`)}</ul>
+	const title = i18n.t("device.approve.title");
+	const body = html`${pageTitle(title, i18n.rich("common.signedInAs", { username: html`<b>@${view.username}</b>` }))}
+<p class="device-question" data-id="device-question">${i18n.rich("device.approve.question", { device: deviceLabel(i18n, label, machine) })}</p>
+${view.userCode ? html`<p class="help">${i18n.rich("device.approve.code", { code: html`<code data-id="device-approval-code">${formatUserCode(view.userCode)}</code>` })}${ip ? html` · ${i18n.rich("device.approve.ip", { ip: html`<code>${ip}</code>` })}` : ""}</p>` : ""}
+<ul class="scope-list">${describeScopes(i18n, view.scopes).map((text) => html`<li>${text}</li>`)}</ul>
 <div class="auth-form">
-<form method="post" action="/interaction/${view.uid}/consent">${csrfField(view.csrf)}${submitButton("Cho phép", { block: true, dataId: "device-allow" })}</form>
-<form method="post" action="/interaction/${view.uid}/abort">${csrfField(view.csrf)}${submitButton("Từ chối", { block: true, variant: "secondary", dataId: "device-deny" })}</form>
+<form method="post" action="/interaction/${view.uid}/consent">${csrfField(view.csrf)}${submitButton(i18n.t("consent.allow"), { block: true, dataId: "device-allow" })}</form>
+<form method="post" action="/interaction/${view.uid}/abort">${csrfField(view.csrf)}${submitButton(i18n.t("consent.deny"), { block: true, variant: "secondary", dataId: "device-deny" })}</form>
 </div>`;
-	return renderPage({ title: "Duyệt thiết bị", body, host: view.host });
+	return renderPage({ title, body, host: view.host, page: view.page });
 }

@@ -68,6 +68,8 @@ Client MCP đăng ký qua `/reg`: redirect chỉ được là `https://…` ho�
 
 ## Tài khoản và đăng nhập
 
+Mọi trang có ba ngôn ngữ: English (mặc định), 中文 giản thể và Tiếng Việt. Chữ người dùng thấy nằm trong từ điển có kiểu ở `src/i18n/messages/{en,zh-cn,vi}/` (thiếu key là lỗi typecheck); trang chọn ngôn ngữ theo `ui_locales` của app, cookie `hd_lang`, `Accept-Language`, rồi English. Ngày giờ định dạng theo ngôn ngữ, múi `Asia/Ho_Chi_Minh`.
+
 Mọi trang là HTML render phía server, không có JavaScript (CSP `script-src 'self'`, `style-src 'self'`), dùng token màu của Localman (`static/css/tokens.css`, bản sao có chủ đích) và font Inter, JetBrains Mono tự host từ `@fontsource` (có subset tiếng Việt). Mọi dữ liệu đưa vào HTML đi qua template tự escape (`src/ui/html.ts`).
 
 | Đường dẫn | Việc |
@@ -75,7 +77,9 @@ Mọi trang là HTML render phía server, không có JavaScript (CSP `script-src
 | `/interaction/:uid` | Đăng nhập và đăng ký bằng Google/GitHub, consent, duyệt thiết bị. Gắn với cookie interaction của `oidc-provider` |
 | `/device` | Nhập mã thiết bị (trang của `oidc-provider` đã thay giao diện) |
 | `/session/end` | Đăng xuất (trang của `oidc-provider` đã thay giao diện) |
-| `/account` | Hồ sơ, cách đăng nhập (liên kết Google/GitHub), Telegram, phiên đang mở, thiết bị Tunelo, ứng dụng đã cấp quyền |
+| `/account` | Ba nhóm card: Tài khoản (hồ sơ, cách đăng nhập), Bảo mật (phiên đang mở, thiết bị Tunelo), Kết nối (ứng dụng đã cấp quyền, Telegram) |
+| `/account/apps/:clientId/revoke`, `/account/sessions/revoke-others` | Trang xác nhận (GET) trước khi gỡ quyền ứng dụng hoặc đăng xuất mọi phiên khác; POST cần CSRF và đăng nhập gần đây |
+| `/lang?set=<locale>&return=<path>` | Nút chuyển ngôn ngữ (English, 中文, Tiếng Việt), xem `docs/integration-guide.md` mục 4 |
 | `/oauth/:provider/callback` | Redirect URI đăng ký với Google/GitHub |
 | `/telegram/webhook` | Webhook của bot; từ chối (401) khi header `X-Telegram-Bot-Api-Secret-Token` sai |
 
@@ -83,10 +87,10 @@ Mọi trang là HTML render phía server, không có JavaScript (CSP `script-src
 - **Google/GitHub** (theo env; phải bật ít nhất một), qua `openid-client`: cả hai dùng Code + PKCE + state; Google thêm `nonce` và kiểm ID token (issuer, audience, hạn, nonce). Metadata của hai provider ghi tĩnh trong code, không gọi discovery. Luật liên kết: tài khoản provider đã liên kết thì đăng nhập; email trùng một tài khoản mà email đó đã được provider xác minh thì tự liên kết; email trùng một tài khoản mà email đó **chưa** xác minh thì không liên kết: người vừa chứng minh sở hữu email tạo tài khoản mới với email đó, còn tài khoản cũ bị gỡ email (giữ các Google/GitHub khác đã liên kết, thấy thông báo ở `/account` và trên Telegram nếu đã liên kết); chưa có tài khoản thì tạo mới và hỏi username. Huỷ liên kết provider đã xác minh email thì email trở về chưa xác minh, trừ khi provider còn lại cũng đã xác minh đúng email đó. `/account` luôn hiện email/login mà provider báo lúc liên kết ("không rõ" với liên kết cũ). Provider không trả email đã xác minh thì bị từ chối.
 - **Cách đăng nhập** ở `/account` (neo `#account-sign-in`): liên kết và huỷ liên kết Google/GitHub. Không huỷ được provider cuối cùng còn đăng nhập được (đã liên kết và đang bật ở IdP); lệnh ghi ở MongoDB còn đòi provider kia vẫn liên kết, nên hai lần huỷ song song cũng không để tài khoản mất cách vào. Nên liên kết cả hai: mất một tài khoản Google/GitHub thì vẫn vào bằng cái kia. Mọi token một lần gắn với tài khoản (mã liên kết Telegram, liên kết Google/GitHub dở dang) mang `securityVersion` của lúc cấp; liên kết/gỡ phương thức hay email bị lấy lại làm chúng hết hiệu lực (410), xem ADR 0002 mục 10.
 - **Telegram**: `/account` tạo deep link `t.me/<bot>?start=<code>` (dùng một lần, 10 phút); bot nhận `/start <code>`, hỏi lại kèm nút "Xác nhận liên kết", và chỉ gắn chat khi nút được bấm và phiên đã tạo mã vẫn còn. `/account` hiện @username và tên Telegram đã liên kết; khi chuyển sang chat khác thì chat cũ được báo. Telegram chỉ để nhận thông báo, không dùng để đăng nhập; bot báo cho chủ tài khoản khi có Google/GitHub mới được liên kết hoặc khi email bị gỡ.
-- **Thao tác nhạy cảm ở `/account`** (liên kết hoặc huỷ Google/GitHub/Telegram) cần đăng nhập trong 10 phút gần đây; quá hạn thì IdP bắt đăng nhập lại bằng Google/GitHub (`prompt=login`) rồi đưa về `/account` để làm lại.
+- **Thao tác nhạy cảm ở `/account`** (liên kết hoặc huỷ Google/GitHub/Telegram, gỡ quyền ứng dụng, đăng xuất mọi phiên khác) cần đăng nhập trong 10 phút gần đây; quá hạn thì IdP bắt đăng nhập lại bằng Google/GitHub (`prompt=login`) rồi đưa về `/account` để làm lại.
 - **Consent**: app first-party (`localman-web`, `tunelo-web`) không hỏi. Client MCP đăng ký qua DCR luôn hỏi: tên trong ngoặc kép, nhãn "Ứng dụng bên ngoài" kèm cảnh báo "không do hoandat.com phát hành", cảnh báo đỏ nếu tên giống sản phẩm hoandat, và host của `redirect_uri` của lần này. Đăng nhập Tunelo CLI luôn hỏi "Cho phép `tunelo` trên máy …?"; đã có phiên thì không phải đăng nhập lại. Mỗi máy có grant riêng nên thu hồi từng máy được.
 - **Chống giả mạo form**: mọi form có CSRF (HMAC của một bí mật theo trình duyệt và phạm vi: uid interaction hoặc uid phiên IdP). Rate-limit theo IP cho mọi POST và cho bước bắt đầu đăng nhập Google/GitHub.
-- **Thu hồi** ở `/account`: thu hồi phiên (kèm back-channel logout như khi đăng xuất), thiết bị Tunelo hoặc ứng dụng. Thu hồi grant xoá refresh token, access token opaque và code của grant đó ngay; access token JWT không gọi lại được và hết hạn trong tối đa 15 phút.
+- **Thu hồi** ở `/account`, nút ghi rõ tác dụng: "Sign out this browser" (phiên hiện tại, có badge), "Sign out session", "Sign out device", "Remove app access" (nút đỏ duy nhất) và "Sign out every other session" khi có từ hai phiên. Gỡ quyền ứng dụng và đăng xuất mọi phiên khác hỏi lại ở trang riêng; đăng xuất phiên đi kèm back-channel logout như khi đăng xuất. Thu hồi grant xoá refresh token, access token opaque và code của grant đó ngay; access token JWT không gọi lại được và hết hạn trong tối đa 15 phút.
 
 ## Cấu hình
 
@@ -116,7 +120,8 @@ src/accounts/                 # model tài khoản, token dùng một lần,
 src/telegram/                 # bot client, deep link liên kết, webhook, thông báo
 src/interactions/             # trang đăng nhập/đăng ký Google/GitHub, consent, thiết bị, logout, lỗi
 src/account-portal/           # /account: phiên, grant, thiết bị, ứng dụng
-src/ui/                       # template HTML tự escape, layout, component
+src/i18n/                     # ngôn ngữ: chọn locale, từ điển en/zh-cn/vi, endpoint /lang
+src/ui/                       # template HTML tự escape, layout, component, logo Google/GitHub
 static/css/                   # tokens.css (bản sao từ Localman) và app.css
 src/__tests__/                # test luồng bằng openid-client trên Mongo thật, upstream giả
 e2e/                          # Playwright trên server thật (e2e/support/e2e-server.ts)

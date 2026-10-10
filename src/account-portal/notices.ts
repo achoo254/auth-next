@@ -1,30 +1,26 @@
+import type { MessageKey } from "../i18n/dictionaries.js";
 import type { AlertTone } from "../ui/components.js";
 
 interface Notice {
 	readonly tone: AlertTone;
-	readonly text: string;
+	readonly text: MessageKey;
 }
 
 /** Messages shown on /account after a redirect (`?notice=<key>`). */
 const NOTICES: Readonly<Record<string, Notice>> = {
-	reauthed: {
-		tone: "info",
-		text: "Đã xác nhận lại danh tính. Thực hiện lại thao tác vừa rồi trong 10 phút tới.",
-	},
-	expired: { tone: "error", text: "Biểu mẫu đã hết hạn. Thử lại." },
-	profile: { tone: "success", text: "Đã lưu hồ sơ." },
-	"linked-google": { tone: "success", text: "Đã liên kết Google." },
-	"linked-github": { tone: "success", text: "Đã liên kết GitHub." },
-	unlinked: { tone: "success", text: "Đã huỷ liên kết." },
-	"last-method": {
-		tone: "error",
-		text: "Không huỷ được: đây là cách đăng nhập cuối cùng của tài khoản. Liên kết Google hoặc GitHub còn lại trước.",
-	},
-	"telegram-unlinked": { tone: "success", text: "Đã huỷ liên kết Telegram." },
-	"session-revoked": { tone: "success", text: "Đã thu hồi phiên." },
-	"device-revoked": { tone: "success", text: "Đã thu hồi thiết bị." },
-	"app-revoked": { tone: "success", text: "Đã thu hồi quyền của ứng dụng." },
-	"not-found": { tone: "error", text: "Không tìm thấy mục cần thu hồi." },
+	reauthed: { tone: "info", text: "notice.reauthed" },
+	expired: { tone: "error", text: "notice.expired" },
+	profile: { tone: "success", text: "notice.profile" },
+	"linked-google": { tone: "success", text: "notice.linkedGoogle" },
+	"linked-github": { tone: "success", text: "notice.linkedGithub" },
+	unlinked: { tone: "success", text: "notice.unlinked" },
+	"last-method": { tone: "error", text: "notice.lastMethod" },
+	"telegram-unlinked": { tone: "success", text: "notice.telegramUnlinked" },
+	"session-revoked": { tone: "success", text: "notice.sessionRevoked" },
+	"sessions-revoked": { tone: "success", text: "notice.otherSessionsRevoked" },
+	"device-revoked": { tone: "success", text: "notice.deviceRevoked" },
+	"app-revoked": { tone: "success", text: "notice.appRevoked" },
+	"not-found": { tone: "error", text: "notice.notFound" },
 };
 
 /**

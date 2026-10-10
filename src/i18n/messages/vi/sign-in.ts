@@ -1,0 +1,63 @@
+import type { enSignIn } from "../en/sign-in.js";
+import type { Translation } from "../translation.js";
+
+export const viSignIn: Translation<typeof enSignIn> = {
+	"login.title": "Đăng nhập",
+	"login.titleForApp": "Đăng nhập để tiếp tục tới {app}",
+	"login.tagline": "Một tài khoản hoandat cho Localman và Tunelo.",
+	"login.forDevice": "Đăng nhập để duyệt thiết bị.",
+	"login.continueTo": "Để tiếp tục tới {app}.",
+	"login.with": "Đăng nhập với {provider}",
+	"login.noProvider":
+		"Đăng nhập bằng Google và GitHub đang tạm tắt, nên chưa đăng nhập hay đăng ký được. Thử lại sau.",
+	"login.firstTime":
+		"Lần đầu đăng nhập bằng Google hoặc GitHub sẽ tạo tài khoản hoandat mới.",
+	"login.cancel": "Huỷ đăng nhập",
+	"signup.title": "Tạo tài khoản hoandat",
+	"signup.pageTitle": "Đăng ký",
+	"signup.subtitle":
+		"Dùng chung cho Localman và Tunelo. Đăng ký bằng Google hoặc GitHub; hoandat không dùng mật khẩu và không gửi email.",
+	"signup.with": "Đăng ký với {provider}",
+	"signup.haveAccount": "Đã có tài khoản? {link}",
+	"username.title": "Chọn username",
+	"username.subtitle":
+		"Tạo tài khoản hoandat bằng {provider} cho {email} (đã xác minh).",
+	"username.reclaimWarning":
+		"Email này đang gắn với một tài khoản hoandat khác nhưng chưa ai xác minh. Nếu đó là tài khoản của bạn và nó đã liên kết Google hoặc GitHub khác, hãy {link} rồi liên kết {provider} ở trang tài khoản. Nếu tiếp tục, email chuyển sang tài khoản mới; tài khoản kia giữ các cách đăng nhập khác của nó.",
+	"username.reclaimLink": "đăng nhập bằng cách đó",
+	"username.label": "Username",
+	"username.help":
+		"3–30 ký tự: chữ thường, số và dấu gạch dưới. Người khác mời bạn bằng username này.",
+	"username.submit": "Tạo tài khoản",
+	"username.back": "Quay lại đăng nhập",
+	"username.taken": "Username này đã có người dùng. Chọn username khác.",
+	"username.invalid":
+		"Username cần 3–30 ký tự gồm chữ thường, số hoặc dấu gạch dưới.",
+	"username.emailTaken":
+		"Email này vừa được dùng cho một tài khoản khác. Hãy đăng nhập bằng tài khoản đó.",
+	"upstream.expired":
+		"Phiên đăng nhập bằng {provider} đã hết hạn. Thử lại từ đầu.",
+	"upstream.failed":
+		"Không đăng nhập được bằng {provider}. Thử lại sau ít phút.",
+	"upstream.link.ownedByOther":
+		"Tài khoản {provider} này đã liên kết với một tài khoản hoandat khác.",
+	"upstream.link.alreadyLinked":
+		"Tài khoản đã liên kết một tài khoản {provider} khác. Huỷ liên kết đó trước.",
+	"upstream.rejected.noVerifiedEmail":
+		"Tài khoản này chưa có email đã xác minh, nên không dùng để đăng nhập hoandat được.",
+	"upstream.rejected.disabled": "Tài khoản hoandat này đã bị khoá.",
+	"upstream.rejected.otherProviderAccount":
+		"Email này thuộc một tài khoản hoandat đã liên kết với tài khoản khác của cùng nhà cung cấp. Đăng nhập bằng tài khoản đã liên kết đó.",
+	"upstream.rejected.other": "Không đăng nhập được.",
+	"logout.title": "Đăng xuất",
+	"logout.byApp": "{app} muốn đăng xuất bạn khỏi tài khoản hoandat.",
+	"logout.question": "Đăng xuất khỏi tài khoản hoandat trên trình duyệt này?",
+	"logout.confirm": "Đăng xuất",
+	"logout.keep": "Không, giữ đăng nhập",
+	"logout.help":
+		"Đăng xuất ở đây cũng đăng xuất Localman và Tunelo web trên trình duyệt này.",
+	"logout.doneTitle": "Đã đăng xuất",
+	"logout.done":
+		"Bạn đã đăng xuất khỏi tài khoản hoandat trên trình duyệt này.",
+	"logout.signInAgain": "Đăng nhập lại",
+};

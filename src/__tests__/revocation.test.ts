@@ -13,6 +13,7 @@ import {
 } from "./helpers/test-accounts.js";
 import { type TestBrowser, formField } from "./helpers/test-browser.js";
 import { type TestIdp, startTestIdp } from "./helpers/test-idp.js";
+import { shown } from "./helpers/test-page.js";
 
 let idp: TestIdp;
 
@@ -28,10 +29,10 @@ async function accountPage(browser: TestBrowser): Promise<string> {
 	return (await browser.request(`${idp.issuer}/account`)).text();
 }
 
-/** The uid of the session `browser` itself is signed in with ("Phiên này"). */
+/** The uid of the session `browser` itself is signed in with ("This browser"). */
 function ownSessionUid(page: string): string {
 	const uid =
-		/data-id="session-([\w-]+)">\s*<div><b>[^<]*<\/b> <span class="badge badge-primary">Phiên này/.exec(
+		/data-id="session-([\w-]+)">\s*<div><b>[^<]*<\/b> <span class="badge badge-primary" data-id="session-current">/.exec(
 			page,
 		)?.[1];
 	if (!uid) throw new Error("no current session on the page");
@@ -52,7 +53,7 @@ describe("/account revokes what the owner picks", () => {
 			`${idp.issuer}/account/sessions/${otherUid}/revoke`,
 			{ csrf: formField(page, "csrf") },
 		);
-		expect(await done.response.text()).toContain("Đã thu hồi phiên");
+		expect(await done.response.text()).toContain("Signed out the session.");
 		expect(await accountPageStatus(idp, current)).toBe(200);
 		expect(await accountPageStatus(idp, other)).toBe(303);
 		const revoked = await auditOutboxCollection(idp.db).findOne({
@@ -71,9 +72,7 @@ describe("/account revokes what the owner picks", () => {
 			`${idp.issuer}/account/apps/tunelo-cli/revoke`,
 			{ csrf: formField(await accountPage(browser), "csrf") },
 		);
-		expect(await done.response.text()).toContain(
-			"Đã thu hồi quyền của ứng dụng",
-		);
+		expect(await done.response.text()).toContain(shown("notice.appRevoked"));
 		await expect(
 			client.refreshTokenGrant(cli.config, cli.refreshToken),
 		).rejects.toMatchObject({ error: "invalid_grant" });

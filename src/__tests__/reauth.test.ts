@@ -89,7 +89,7 @@ describe("sensitive changes need a recent sign-in", () => {
 			`${idp.issuer}/interaction/${uid}/upstream/google`,
 		);
 		expect(back.response.url).toBe(`${idp.issuer}/account?notice=reauthed`);
-		expect(await back.response.text()).toContain("Đã xác nhận lại danh tính");
+		expect(await back.response.text()).toContain("Identity confirmed.");
 
 		const unlinked = await browser.request(
 			`${idp.issuer}/account/unlink/github`,

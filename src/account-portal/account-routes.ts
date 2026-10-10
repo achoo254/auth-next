@@ -10,8 +10,10 @@ import {
 	sendInteractionError,
 } from "../interactions/interaction-helpers.js";
 import type { AppServices } from "../services.js";
+import { pageContext } from "../ui/page-context.js";
 import { sendPage } from "../ui/send-page.js";
 import { registerAccessRoutes } from "./account-access-routes.js";
+import { registerConfirmRoutes } from "./account-confirm-routes.js";
 import { renderAccountPage } from "./account-page.js";
 import {
 	listAuthorizedApps,
@@ -51,6 +53,7 @@ export function createAccountRouter(services: AppServices): Router {
 					res,
 					renderAccountPage({
 						host: services.host,
+						page: pageContext(req),
 						csrf: services.csrf.token(req, res, portalCsrfScope(portal)),
 						account,
 						currentSessionUid: portal.sessionUid,
@@ -72,13 +75,10 @@ export function createAccountRouter(services: AppServices): Router {
 		"/callback",
 		asyncHandler(async (req, res) => {
 			if (queryValue(req, "error")) {
-				sendInteractionError(
-					services,
-					res,
-					"Chưa đăng nhập được vào trang tài khoản.",
-					400,
-					{ href: "/account", label: "Thử lại" },
-				);
+				sendInteractionError(services, res, {
+					message: "account.callbackFailed",
+					back: { href: "/account", label: "common.tryAgain" },
+				});
 				return;
 			}
 			const reauthed = consumeReauthState(
@@ -101,5 +101,8 @@ export function createAccountRouter(services: AppServices): Router {
 	);
 
 	registerAccessRoutes(router, services, write, sensitive);
+	const page = (handler: PortalHandler): RequestHandler =>
+		portalRoute(services, handler, { csrf: false });
+	registerConfirmRoutes(router, services, page, sensitive);
 	return router;
 }

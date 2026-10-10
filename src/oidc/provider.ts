@@ -1,6 +1,7 @@
 import type { Db } from "mongodb";
 import Provider, { type Configuration } from "oidc-provider";
 import type { Env } from "../config/env.js";
+import { LOCALES } from "../i18n/locales.js";
 import { DEVICE_NAME_EXTRA_PARAM } from "../interactions/device-info.js";
 import {
 	deviceSuccessSource,
@@ -121,7 +122,10 @@ export function buildProviderConfiguration(
 			url: async (_ctx, interaction) =>
 				`${INTERACTION_PATH}/${interaction.uid}`,
 		},
-		discovery: { prompt_values_supported: promptValuesSupported(policy) },
+		discovery: {
+			prompt_values_supported: promptValuesSupported(policy),
+			ui_locales_supported: [...LOCALES],
+		},
 		// Tunelo CLI names the machine so the approval page can show it.
 		extraParams: DEVICE_NAME_EXTRA_PARAM,
 		renderError: renderProviderError,

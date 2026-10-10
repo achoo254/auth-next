@@ -38,22 +38,20 @@ export function createInteractionRouter(services: AppServices): Router {
 			}
 			// prompt=create (OIDC Prompt Create): sign-up first.
 			if (interaction.prompt.name === CREATE_PROMPT) {
-				showSignup(services, res, interaction);
+				showSignup(services, req, res, interaction);
 				return;
 			}
 			if (interaction.prompt.name === "consent") {
 				await showConsent(services, req, res, interaction);
 				return;
 			}
-			sendInteractionError(
-				services,
-				res,
-				"Bước đăng nhập này chưa được hỗ trợ.",
-			);
+			sendInteractionError(services, res, {
+				message: "error.unsupportedStep",
+			});
 		}),
 	);
 
-	// "Đã có tài khoản? Đăng nhập" from the sign-up page, same interaction.
+	// "Already have an account? Sign in" from the sign-up page, same interaction.
 	router.get(
 		"/:uid/login",
 		asyncHandler(async (req, res) => {

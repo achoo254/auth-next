@@ -11,6 +11,7 @@ import type { AppServices } from "../services.js";
 import { alertBox, linkButton, pageTitle } from "../ui/components.js";
 import { html } from "../ui/html.js";
 import { renderPage } from "../ui/layout.js";
+import { pageContext } from "../ui/page-context.js";
 import { sendPage } from "../ui/send-page.js";
 import type { TelegramBot } from "./bot-client.js";
 
@@ -100,23 +101,23 @@ export function createTelegramLinkRouter(services: AppServices): Router {
 		"/link",
 		portalRoute(
 			services,
-			async (_req, res, { account, sessionUid }) => {
+			async (req, res, { account, sessionUid }) => {
 				const code = await createTelegramLinkCode(services.accountTokens, {
 					accountId: account._id,
 					sessionUid,
 				});
-				const body = html`${pageTitle("Liên kết Telegram", "Mở bot hoandat trên Telegram, bấm Start rồi bấm “Xác nhận liên kết” trong 10 phút.")}
+				const page = pageContext(req);
+				const { i18n } = page;
+				const title = i18n.t("telegram.title");
+				const body = html`${pageTitle(title, i18n.t("telegram.subtitle"))}
 <div class="auth-form">
-${linkButton(telegramDeepLink(bot, code), "Mở Telegram", "primary", "telegram-deep-link")}
-<p class="help">Hoặc gửi lệnh sau cho bot <b>@${bot.username}</b>:</p>
-<input class="input" readonly value="/start ${code}" aria-label="Lệnh liên kết" data-id="telegram-start-command">
-${alertBox("info", "Link chỉ dùng được một lần. Sau khi bot báo đã liên kết, tải lại trang tài khoản.")}
-${linkButton("/account", "Về trang tài khoản", "secondary", "telegram-back")}
+${linkButton(telegramDeepLink(bot, code), i18n.t("telegram.open"), "primary", "telegram-deep-link")}
+<p class="help">${i18n.rich("telegram.orSend", { bot: html`<b>@${bot.username}</b>` })}</p>
+<input class="input" readonly value="/start ${code}" aria-label="${i18n.t("telegram.commandLabel")}" data-id="telegram-start-command">
+${alertBox("info", i18n.t("telegram.once"))}
+${linkButton("/account", i18n.t("common.backToAccount"), "secondary", "telegram-back")}
 </div>`;
-				sendPage(
-					res,
-					renderPage({ title: "Liên kết Telegram", body, host: services.host }),
-				);
+				sendPage(res, renderPage({ title, body, host: services.host, page }));
 			},
 			{ csrf: true, recentLogin: true },
 		),
