@@ -28,7 +28,7 @@ export const enAccountActions = {
 		"Apps signed in through those browsers, such as Localman and Tunelo on the web, are signed out too. Tunelo devices stay signed in.",
 	"telegram.title": "Link Telegram",
 	"telegram.subtitle":
-		"Open the hoandat bot in Telegram, press Start, then press “Xác nhận liên kết” (confirm link) within 10 minutes.",
+		"Open the hoandat bot in Telegram, press Start, then press “{button}” within 10 minutes.",
 	"telegram.open": "Open Telegram",
 	"telegram.orSend": "Or send this command to the bot {bot}:",
 	"telegram.commandLabel": "Link command",

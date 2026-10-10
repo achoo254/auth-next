@@ -29,7 +29,7 @@ export const viAccountActions: Translation<typeof enAccountActions> = {
 		"Ứng dụng đăng nhập qua các trình duyệt đó, như Localman và Tunelo bản web, cũng bị đăng xuất. Thiết bị Tunelo vẫn giữ đăng nhập.",
 	"telegram.title": "Liên kết Telegram",
 	"telegram.subtitle":
-		"Mở bot hoandat trên Telegram, bấm Start rồi bấm “Xác nhận liên kết” trong 10 phút.",
+		"Mở bot hoandat trên Telegram, bấm Start rồi bấm “{button}” trong 10 phút.",
 	"telegram.open": "Mở Telegram",
 	"telegram.orSend": "Hoặc gửi lệnh sau cho bot {bot}:",
 	"telegram.commandLabel": "Lệnh liên kết",

@@ -75,11 +75,11 @@ export function registerUpstreamFinishRoutes(
 					{ fromAccountId: previous?._id, provider: profile.provider },
 					"Unverified email reclaimed by its verified owner",
 				);
-				notifyTelegram(
-					services,
-					previous,
-					`Email ${decision.email} đã được gỡ khỏi tài khoản hoandat @${previous?.username ?? ""} vì người sở hữu email đã xác minh nó qua ${UPSTREAM_LABELS[profile.provider]}. Bạn vẫn đăng nhập được bằng Google/GitHub đã liên kết với tài khoản đó.`,
-				);
+				notifyTelegram(services, previous, "bot.notice.emailReclaimed", {
+					email: decision.email,
+					username: previous?.username ?? "",
+					provider: UPSTREAM_LABELS[profile.provider],
+				});
 			}
 			try {
 				const account = await services.accounts.create({

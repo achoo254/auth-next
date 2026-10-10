@@ -72,11 +72,10 @@ export async function finishAccountLink(
 		sendInteractionError(services, res, { ...expired, status: 410 });
 		return;
 	}
-	notifyTelegram(
-		services,
-		portal.account,
-		`Tài khoản hoandat @${portal.account.username} vừa được liên kết với ${label}. Nếu không phải bạn, hãy huỷ liên kết ở trang tài khoản.`,
-	);
+	notifyTelegram(services, portal.account, "bot.notice.providerLinked", {
+		username: portal.account.username,
+		provider: label,
+	});
 	services.logger.info(
 		{ accountId: portal.account._id, provider: profile.provider },
 		"Provider linked",

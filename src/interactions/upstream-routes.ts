@@ -101,7 +101,11 @@ export function registerUpstreamInteractionRoutes(
 					notifyTelegram(
 						services,
 						decision.account,
-						`Tài khoản hoandat @${decision.account.username} vừa được liên kết với ${UPSTREAM_LABELS[profile.provider]}. Nếu không phải bạn, hãy huỷ liên kết ở trang tài khoản.`,
+						"bot.notice.providerLinked",
+						{
+							username: decision.account.username,
+							provider: UPSTREAM_LABELS[profile.provider],
+						},
 					);
 					services.logger.info(
 						{ accountId: decision.account._id, provider: profile.provider },

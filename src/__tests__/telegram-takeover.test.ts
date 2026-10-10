@@ -87,7 +87,8 @@ describe("Telegram link codes cannot outlive the session that made them", () => 
 			.slice(before)
 			.filter((m) => m.chatId === "6666");
 		expect(toAttacker.some((m) => m.callbackData)).toBe(false);
-		expect(toAttacker.at(-1)?.text).toMatch(/hết hạn hoặc đã được dùng/);
+		// The page had no language preference: English.
+		expect(toAttacker.at(-1)?.text).toMatch(/expired or was already used/);
 		expect(
 			(await repositoryOf(idp).findActiveById(account._id))?.telegram,
 		).toBeUndefined();

@@ -63,7 +63,10 @@ describe("emails from Google/GitHub", () => {
 		await expect
 			.poll(() =>
 				idp.fake.telegramMessages.some(
-					(m) => m.chatId === "6006" && /đã được gỡ/.test(m.text),
+					// No language stored with the link: English.
+					(m) =>
+						m.chatId === "6006" &&
+						/was removed from hoandat account/.test(m.text),
 				),
 			)
 			.toBe(true);

@@ -21,6 +21,7 @@ async function linkCodeFor(account: TestAccount): Promise<string> {
 	return createTelegramLinkCode(idp.services.accountTokens, {
 		accountId: account._id,
 		sessionUid: await sessionUidOf(idp, account._id),
+		locale: "vi",
 	});
 }
 
@@ -92,10 +93,13 @@ describe("Telegram webhook", () => {
 			username: "dat_tg",
 			name: "Đạt",
 		});
-		// The code was single-use: pressing again links nothing new.
+		expect(linked?.telegramLocale).toBe("vi");
+		// The code was single-use: pressing again links nothing new. A used
+		// code carries no language, so the reply follows the chat's Telegram
+		// language (none sent here: English).
 		await post(press(4242), FAKE_TELEGRAM_SECRET);
 		expect(idp.fake.telegramMessages.at(-1)?.text).toMatch(
-			/hết hạn hoặc đã được dùng/,
+			/expired or was already used/,
 		);
 	});
 
@@ -117,9 +121,10 @@ describe("Telegram webhook", () => {
 		expect(
 			(await repositoryOf(idp).findActiveById(account._id))?.telegram?.chatId,
 		).toBe("2222");
+		// The old link stored no language: the old chat is told in English.
 		const toOld = idp.fake.telegramMessages.filter((m) => m.chatId === "1111");
 		expect(toOld.at(-1)?.text).toMatch(
-			/chuyển liên kết sang một chat Telegram khác/,
+			/moved its link to another Telegram chat/,
 		);
 	});
 });

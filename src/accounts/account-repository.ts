@@ -1,5 +1,6 @@
 import type { Collection, Db } from "mongodb";
 import { AuditOutbox } from "../audit/audit-outbox.js";
+import type { Locale } from "../i18n/locales.js";
 import type { AccountProfile, AccountStore } from "../oidc/claims.js";
 import { translateConflicts } from "./account-conflicts.js";
 import { AccountLinks } from "./account-links.js";
@@ -92,5 +93,22 @@ export class AccountRepository implements AccountStore {
 			{ _id: id },
 			name ? { $set: { name } } : { $unset: { name: "" } },
 		);
+	}
+
+	/**
+	 * Remembers the language the Telegram bot should write in. Writes only
+	 * while a chat is linked and only when the language differs; returns
+	 * whether it wrote. Not a security change: `securityVersion` stays.
+	 */
+	async updateTelegramLocale(id: string, locale: Locale): Promise<boolean> {
+		const result = await this.accounts.updateOne(
+			{
+				_id: id,
+				"telegram.chatId": { $type: "string" },
+				telegramLocale: { $ne: locale },
+			},
+			{ $set: { telegramLocale: locale } },
+		);
+		return result.modifiedCount > 0;
 	}
 }

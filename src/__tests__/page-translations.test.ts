@@ -141,10 +141,8 @@ describe("every page in every language", () => {
 		const vietnamese =
 			/[ăâđêôơưạảấầẩẫậắằẳẵặẹẻẽếềểễệỉịọỏốồổỗộớờởỡợụủứừửữựỳỵỷỹ]/i;
 		for (const [name, html] of Object.entries(pages("en"))) {
-			// The Telegram bot's button keeps its Vietnamese label, quoted.
-			const text = html
-				.replace(/“Xác nhận liên kết”/g, "")
-				.replace(/Tiếng Việt/g, "");
+			// The language switcher names Vietnamese in Vietnamese.
+			const text = html.replace(/Tiếng Việt/g, "");
 			expect(text, name).not.toMatch(vietnamese);
 		}
 	});

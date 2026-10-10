@@ -1,6 +1,7 @@
 import type { Collection } from "mongodb";
 import type { LinkedMethod } from "../audit/audit-events.js";
 import type { AuditOutbox } from "../audit/audit-outbox.js";
+import type { Locale } from "../i18n/locales.js";
 import {
 	type AccountDocument,
 	type ProviderDetail,
@@ -155,18 +156,28 @@ export class AccountLinks {
 		return previous;
 	}
 
+	/**
+	 * Links a Telegram chat. `locale`, the bot's language for it, is the
+	 * language of the page that made the link code; without one the language
+	 * stored by an earlier link is dropped.
+	 */
 	setTelegram(
 		id: string,
-		chat: { chatId: string; username?: string; name?: string },
+		link: { chatId: string; username?: string; name?: string; locale?: Locale },
 		expectedVersion?: number,
 	): Promise<GuardedWrite> {
+		const { locale, ...chat } = link;
 		const write = writeWithVersion(
 			this.accounts,
 			id,
 			expectedVersion,
 			{},
 			{
-				$set: { telegram: { ...chat, linkedAt: new Date() } },
+				$set: {
+					telegram: { ...chat, linkedAt: new Date() },
+					...(locale ? { telegramLocale: locale } : {}),
+				},
+				...(locale ? {} : { $unset: { telegramLocale: "" } }),
 				$inc: { securityVersion: 1 },
 			},
 		);
@@ -180,7 +191,7 @@ export class AccountLinks {
 			expectedVersion,
 			{},
 			{
-				$unset: { telegram: "" },
+				$unset: { telegram: "", telegramLocale: "" },
 				$inc: { securityVersion: 1 },
 			},
 		);

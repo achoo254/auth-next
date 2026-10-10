@@ -110,10 +110,15 @@ describe("sensitive changes need a recent sign-in", () => {
 		).toBe(account.providers.google);
 	});
 
-	it("tells the owner on Telegram when a provider is linked", async () => {
+	it("tells the owner on Telegram, in the link's language, when a provider is linked", async () => {
 		const account = await createTestAccount(repositoryOf(idp));
-		await repositoryOf(idp).links.setTelegram(account._id, { chatId: "3004" });
+		await repositoryOf(idp).links.setTelegram(account._id, {
+			chatId: "3004",
+			locale: "zh-CN",
+		});
 		const browser = await signedInBrowser(idp, account);
+		// Opening /account in English would switch the bot to English too.
+		await browser.request(`${idp.issuer}/lang?set=zh-CN&return=/account`);
 		idp.fake.nextLogins.push({
 			id: "3004",
 			email: "someone.else@example.com",
@@ -128,7 +133,7 @@ describe("sensitive changes need a recent sign-in", () => {
 		await expect
 			.poll(() =>
 				idp.fake.telegramMessages.some(
-					(m) => m.chatId === "3004" && /liên kết với GitHub/.test(m.text),
+					(m) => m.chatId === "3004" && /刚刚关联了 GitHub/.test(m.text),
 				),
 			)
 			.toBe(true);

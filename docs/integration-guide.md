@@ -107,7 +107,7 @@ Trang IdP có English (mặc định), `zh-CN` và `vi`; discovery quảng bá `
 - IdP đọc `ui_locales` theo thứ tự ưu tiên, lấy tag đầu tiên khớp theo ngôn ngữ chính (`vi-VN` là `vi`, mọi `zh*` là `zh-CN`); tag lạ bị bỏ qua, không lỗi.
 - Thứ tự chọn ngôn ngữ của trang: lựa chọn người dùng vừa bấm trên chính lần đăng nhập đó, rồi `ui_locales`, rồi cookie `hd_lang` của nút chuyển ngôn ngữ, rồi `Accept-Language`, rồi English.
 - Nút chuyển ngôn ngữ ở chân mọi trang là link `GET /lang?set=<locale>&return=<path>` (không JavaScript): đặt cookie `hd_lang` (1 năm, `HttpOnly`, `SameSite=Lax`, `Secure` khi issuer là https) rồi `303` về `return`. `return` chỉ nhận path cùng origin bắt đầu bằng `/`; `//`, `/\`, scheme, ký tự điều khiển, dấu `\` ở bất kỳ đâu hay chính `/lang` đều bị đưa về `/account`. Khi `return` là trang của một interaction, endpoint đặt thêm cookie `hd_lang_interaction` với `Path=/interaction/<uid>`, nên lựa chọn đó thắng `ui_locales` cho đến hết lần đăng nhập ấy mà không ảnh hưởng lần đăng nhập sau.
-- Tin nhắn của bot Telegram và nội dung sự kiện audit giữ nguyên tiếng Việt.
+- Bot Telegram của IdP nói ngôn ngữ của trang `/account` mà người dùng tạo link liên kết (lưu cùng tài khoản, đổi theo lần mở `/account` gần nhất khi đang liên kết); chi tiết ở README, mục Telegram. Nội dung sự kiện audit giữ nguyên tiếng Việt.
 
 ### Nút "Bắt đầu miễn phí": `prompt=create`
 

@@ -28,7 +28,7 @@ export const zhAccountActions: Translation<typeof enAccountActions> = {
 		"通过这些浏览器登录的应用（例如网页版 Localman 和 Tunelo）也会退出。Tunelo 设备保持登录。",
 	"telegram.title": "关联 Telegram",
 	"telegram.subtitle":
-		"在 Telegram 中打开 hoandat bot，点击 Start，然后在 10 分钟内点击“Xác nhận liên kết”（确认关联）。",
+		"在 Telegram 中打开 hoandat bot，点击 Start，然后在 10 分钟内点击“{button}”。",
 	"telegram.open": "打开 Telegram",
 	"telegram.orSend": "或者向 bot {bot} 发送以下命令：",
 	"telegram.commandLabel": "关联命令",

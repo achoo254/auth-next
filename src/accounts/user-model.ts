@@ -1,5 +1,6 @@
 import { randomBytes } from "node:crypto";
 import type { Collection, Db } from "mongodb";
+import type { Locale } from "../i18n/locales.js";
 import type { AccountProfile } from "../oidc/claims.js";
 
 export const UPSTREAM_PROVIDERS = ["google", "github"] as const;
@@ -64,6 +65,13 @@ export interface AccountDocument {
 		username?: string;
 		name?: string;
 	};
+	/**
+	 * Language the Telegram bot writes to this account in: the language of
+	 * the /account page the link was made from, then of the last /account
+	 * visit while linked. Absent (older links) means English for notices.
+	 * Not security-relevant, so changing it does not bump `securityVersion`.
+	 */
+	telegramLocale?: Locale;
 	/** The unverified email this account lost to its verified owner. */
 	reclaimedEmail?: { email: string; at: Date };
 	createdAt: Date;

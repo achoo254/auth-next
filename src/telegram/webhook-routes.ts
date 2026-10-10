@@ -1,8 +1,11 @@
 import { createHash, timingSafeEqual } from "node:crypto";
 import express, { type Request, Router } from "express";
 import { z } from "zod";
+import type { Locale } from "../i18n/locales.js";
+import { translator } from "../i18n/translator.js";
 import type { AppServices } from "../services.js";
 import type { TelegramBot } from "./bot-client.js";
+import { localeFromTelegram } from "./bot-locale.js";
 import { confirmTelegramLink, describeLinkCode } from "./link-confirmation.js";
 
 export const WEBHOOK_PATH = "/telegram/webhook";
@@ -18,12 +21,22 @@ const chat = z.object({
 	last_name: z.string().max(128).optional(),
 });
 
+/** The sender; `language_code` is their Telegram app's language (IETF tag). */
+const from = z.object({ language_code: z.string().max(35).optional() });
+
 const update = z.object({
-	message: z.object({ text: z.string().max(4096).optional(), chat }).optional(),
+	message: z
+		.object({
+			text: z.string().max(4096).optional(),
+			chat,
+			from: from.optional(),
+		})
+		.optional(),
 	callback_query: z
 		.object({
 			id: z.string(),
 			data: z.string().max(64).optional(),
+			from: from.optional(),
 			message: z.object({ chat }).optional(),
 		})
 		.optional(),
@@ -40,26 +53,33 @@ export function hasValidSecret(req: Request, expected: string): boolean {
 	return timingSafeEqual(digest(received), digest(expected));
 }
 
-/** `/start <code>`: ask the chat to confirm, without using the code yet. */
+/**
+ * `/start <code>`: ask the chat to confirm, without using the code yet, in
+ * the language of the page that made the code. Without a valid code,
+ * explain how to get one in the chat's Telegram language.
+ */
 async function askToConfirm(
 	services: AppServices,
 	bot: TelegramBot,
 	chatId: string,
 	code: string | undefined,
+	chatLocale: Locale,
 ): Promise<void> {
-	const username = code ? await describeLinkCode(services, code) : undefined;
-	if (!code || !username) {
+	const target = code ? await describeLinkCode(services, code) : undefined;
+	if (!code || !target) {
+		const { t } = translator(chatLocale);
 		await bot.sendMessage(
 			chatId,
-			"Để liên kết, mở trang tài khoản hoandat và bấm “Liên kết Telegram”. Link cũ hết hạn sau 10 phút và chỉ dùng được một lần.",
+			t("bot.start.howTo", { button: t("account.telegram.link") }),
 		);
 		return;
 	}
+	const { t } = translator(target.locale ?? chatLocale);
 	await bot.sendMessage(
 		chatId,
-		`Liên kết chat Telegram này với tài khoản hoandat @${username}? Chỉ bấm xác nhận nếu chính bạn vừa mở link từ trang tài khoản.`,
+		t("bot.link.ask", { username: target.username }),
 		{
-			text: "Xác nhận liên kết",
+			text: t("bot.link.confirm"),
 			callbackData: `${LINK_CALLBACK_PREFIX}${code}`,
 		},
 	);
@@ -90,7 +110,13 @@ export function createTelegramWebhookRouter(services: AppServices): Router {
 		if (message?.chat.type === "private") {
 			const [command, code] = (message.text ?? "").trim().split(/\s+/);
 			if (command === "/start") {
-				work = askToConfirm(services, bot, String(message.chat.id), code);
+				work = askToConfirm(
+					services,
+					bot,
+					String(message.chat.id),
+					code,
+					localeFromTelegram(message.from?.language_code),
+				);
 			}
 		} else if (
 			callback?.message?.chat.type === "private" &&
@@ -102,6 +128,7 @@ export function createTelegramWebhookRouter(services: AppServices): Router {
 				bot,
 				callback.message.chat,
 				code,
+				localeFromTelegram(callback.from?.language_code),
 			).then((text) => bot.answerCallbackQuery(callback.id, text));
 		}
 		(work ?? Promise.resolve())

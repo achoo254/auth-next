@@ -39,7 +39,11 @@ function accountTokens(): AccountTokens {
 describe("Telegram link codes", () => {
 	it("work once, expire after 10 minutes, and a new code replaces the old", async () => {
 		const account = await createTestAccount(repositoryOf(idp));
-		const owner = { accountId: account._id, sessionUid: "s3" };
+		const owner = {
+			accountId: account._id,
+			sessionUid: "s3",
+			locale: "vi",
+		} as const;
 		const first = await createTelegramLinkCode(accountTokens(), owner);
 		const second = await createTelegramLinkCode(accountTokens(), owner);
 		expect(first).toMatch(/^[\w-]{43}$/);
@@ -57,6 +61,7 @@ describe("Telegram link codes", () => {
 		).toMatchObject({
 			account: { _id: account._id },
 			sessionUid: "s3",
+			locale: "vi",
 		});
 		expect(
 			await consumeTelegramLinkCode(accountTokens(), second),

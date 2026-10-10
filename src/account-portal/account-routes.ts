@@ -1,10 +1,12 @@
 import { type RequestHandler, Router } from "express";
+import type { AccountDocument } from "../accounts/user-model.js";
 import {
 	formRateLimit,
 	formText,
 	parseForm,
 	queryValue,
 } from "../http/form.js";
+import type { Locale } from "../i18n/locales.js";
 import {
 	asyncHandler,
 	sendInteractionError,
@@ -28,6 +30,27 @@ import {
 } from "./portal-session.js";
 import { listSessions } from "./session-directory.js";
 
+/**
+ * The bot follows the language the owner reads /account in. Skipped when
+ * nothing would change; a failed write only costs the bot's language, so it
+ * is logged and the page still renders.
+ */
+async function rememberTelegramLocale(
+	services: AppServices,
+	account: AccountDocument,
+	locale: Locale,
+): Promise<void> {
+	if (!account.telegram || account.telegramLocale === locale) return;
+	try {
+		await services.accounts.updateTelegramLocale(account._id, locale);
+	} catch (error) {
+		services.logger.warn(
+			{ err: error, accountId: account._id },
+			"Telegram language not saved",
+		);
+	}
+}
+
 /** /account: the signed-in user's own account page and its actions. */
 export function createAccountRouter(services: AppServices): Router {
 	const router = Router();
@@ -43,17 +66,19 @@ export function createAccountRouter(services: AppServices): Router {
 			services,
 			async (req, res, portal) => {
 				const { account } = portal;
+				const page = pageContext(req);
 				const grants = await listGrants(services.db, account._id);
 				const [sessions, devices, apps] = await Promise.all([
 					listSessions(services.db, account._id),
 					listDeviceGrants(services.db, grants),
 					listAuthorizedApps(services.provider, grants),
+					rememberTelegramLocale(services, account, page.i18n.locale),
 				]);
 				sendPage(
 					res,
 					renderAccountPage({
 						host: services.host,
-						page: pageContext(req),
+						page,
 						csrf: services.csrf.token(req, res, portalCsrfScope(portal)),
 						account,
 						currentSessionUid: portal.sessionUid,

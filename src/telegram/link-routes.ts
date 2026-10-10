@@ -7,6 +7,7 @@ import type {
 import { randomToken } from "../accounts/one-time-tokens.js";
 import type { AccountDocument } from "../accounts/user-model.js";
 import { formRateLimit, parseForm } from "../http/form.js";
+import { type Locale, isLocale } from "../i18n/locales.js";
 import type { AppServices } from "../services.js";
 import { alertBox, linkButton, pageTitle } from "../ui/components.js";
 import { html } from "../ui/html.js";
@@ -22,6 +23,8 @@ export interface LinkCodeOwner {
 	readonly accountId: string;
 	/** The IdP session that asked for the code; it must still exist to link. */
 	readonly sessionUid: string;
+	/** Language of the page that made the code: the bot speaks it to the chat. */
+	readonly locale: Locale;
 }
 
 /** A code still good to use: its account (current) and the session behind it. */
@@ -30,12 +33,14 @@ export interface LinkCodeHolder {
 	readonly sessionUid: string;
 	/** Security version the code was checked at; the link write requires it. */
 	readonly version: number;
+	/** Language of the page that made the code; absent on older codes. */
+	readonly locale?: Locale;
 }
 
 /**
  * New deep-link code for an account, bound to the session that asked for
- * it and to the account's security version; earlier unused codes stop
- * working. 43 base64url characters, within Telegram's 64-character limit
+ * it and to the account's security version, and carrying the page's
+ * language for the bot; earlier unused codes stop working. 43 base64url characters, within Telegram's 64-character limit
  * for the `start` parameter.
  */
 export async function createTelegramLinkCode(
@@ -48,20 +53,21 @@ export async function createTelegramLinkCode(
 		"telegram-link",
 		code,
 		owner.accountId,
-		{ sessionUid: owner.sessionUid },
+		{ sessionUid: owner.sessionUid, locale: owner.locale },
 		LINK_CODE_TTL_SECONDS,
 	);
 	return code;
 }
 
 function toHolder(result: AccountTokenResult): LinkCodeHolder | undefined {
-	return result.status === "ok" && result.data.sessionUid
-		? {
-				account: result.account,
-				sessionUid: result.data.sessionUid,
-				version: result.version,
-			}
-		: undefined;
+	if (result.status !== "ok" || !result.data.sessionUid) return undefined;
+	const { locale } = result.data;
+	return {
+		account: result.account,
+		sessionUid: result.data.sessionUid,
+		version: result.version,
+		...(isLocale(locale) ? { locale } : {}),
+	};
 }
 
 /** Who a still-valid code was issued to, without using it. */
@@ -102,14 +108,19 @@ export function createTelegramLinkRouter(services: AppServices): Router {
 		portalRoute(
 			services,
 			async (req, res, { account, sessionUid }) => {
+				const page = pageContext(req);
+				const { i18n } = page;
 				const code = await createTelegramLinkCode(services.accountTokens, {
 					accountId: account._id,
 					sessionUid,
+					locale: i18n.locale,
 				});
-				const page = pageContext(req);
-				const { i18n } = page;
 				const title = i18n.t("telegram.title");
-				const body = html`${pageTitle(title, i18n.t("telegram.subtitle"))}
+				// The bot asks in this page's language, so its button reads the same.
+				const subtitle = i18n.t("telegram.subtitle", {
+					button: i18n.t("bot.link.confirm"),
+				});
+				const body = html`${pageTitle(title, subtitle)}
 <div class="auth-form">
 ${linkButton(telegramDeepLink(bot, code), i18n.t("telegram.open"), "primary", "telegram-deep-link")}
 <p class="help">${i18n.rich("telegram.orSend", { bot: html`<b>@${bot.username}</b>` })}</p>

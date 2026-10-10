@@ -85,6 +85,7 @@ describe("a change slipped in between token check and write", () => {
 		const code = await createTelegramLinkCode(idp.services.accountTokens, {
 			accountId: account._id,
 			sessionUid: await sessionUidOf(idp, account._id),
+			locale: "vi",
 		});
 		changeAfter("take", account);
 		await fetch(`${idp.issuer}${WEBHOOK_PATH}`, {
