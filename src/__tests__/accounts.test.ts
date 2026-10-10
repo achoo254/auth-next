@@ -2,15 +2,9 @@ import type { Db } from "mongodb";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { AccountRepository } from "../accounts/account-repository.js";
 import {
-	hashSecret,
-	passwordProblem,
-	verifySecret,
-} from "../accounts/password-hasher.js";
-import {
-	findRecoveryCodeHash,
-	generateRecoveryCodes,
-	normalizeRecoveryCode,
-} from "../accounts/recovery-codes.js";
+	accountsCollection,
+	usableSignInProviders,
+} from "../accounts/user-model.js";
 import { profileToClaims } from "../oidc/claims.js";
 import { createTestAccount, openTestDb } from "./helpers/test-accounts.js";
 
@@ -25,57 +19,6 @@ beforeAll(async () => {
 
 afterAll(async () => {
 	await close?.();
-});
-
-describe("passwords", () => {
-	it("hashes with argon2id and enforces the 7-character minimum", async () => {
-		const stored = await hashSecret("seven77");
-		expect(stored.startsWith("$argon2id$")).toBe(true);
-		expect(await verifySecret(stored, "seven77")).toBe(true);
-		expect(await verifySecret(stored, "seven78")).toBe(false);
-		expect(await verifySecret("not-a-hash", "seven77")).toBe(false);
-		expect(passwordProblem("six666")).toMatch(/7 ký tự/);
-		expect(passwordProblem("seven77")).toBeUndefined();
-	});
-});
-
-describe("recovery codes", () => {
-	it("issues 8 distinct xxxx-xxxx codes, each usable exactly once", async () => {
-		const { codes, hashes } = await generateRecoveryCodes();
-		expect(codes).toHaveLength(8);
-		expect(new Set(codes).size).toBe(8);
-		for (const code of codes) expect(code).toMatch(/^[a-z2-9]{4}-[a-z2-9]{4}$/);
-		const account = await createTestAccount(accounts, {
-			recoveryCodeHashes: [...hashes],
-		});
-		const [first = ""] = codes;
-
-		const typed = first.toUpperCase().replace("-", " ");
-		const matched = await findRecoveryCodeHash(
-			account.recoveryCodeHashes,
-			typed,
-		);
-		expect(matched).toBeDefined();
-		expect(await accounts.consumeRecoveryCode(account._id, matched ?? "")).toBe(
-			true,
-		);
-		// A replay of the same code, or of the consumed hash, finds nothing.
-		const after = await accounts.findActiveById(account._id);
-		expect(after?.recoveryCodeHashes).toHaveLength(7);
-		expect(
-			await findRecoveryCodeHash(after?.recoveryCodeHashes ?? [], first),
-		).toBeUndefined();
-		expect(await accounts.consumeRecoveryCode(account._id, matched ?? "")).toBe(
-			false,
-		);
-	});
-
-	it("normalises what users type and rejects malformed input", () => {
-		expect(normalizeRecoveryCode(" ABCD-EFGH ")).toBe("abcd-efgh");
-		expect(normalizeRecoveryCode("abcdefgh")).toBe("abcd-efgh");
-		expect(normalizeRecoveryCode("abcd-efg0")).toBeUndefined();
-		expect(normalizeRecoveryCode("abc")).toBeUndefined();
-	});
 });
 
 describe("email_verified claim", () => {
@@ -93,5 +36,27 @@ describe("email_verified claim", () => {
 			email_verified: false,
 		});
 		expect(await claimsOf(vouched._id)).toMatchObject({ email_verified: true });
+	});
+});
+
+describe("legacy password fields", () => {
+	it("are never read: an old password-only account has no way in and no pending review", async () => {
+		const legacy = await createTestAccount(accounts, { providers: {} });
+		await accountsCollection(db).updateOne(
+			{ _id: legacy._id },
+			{
+				$set: {
+					passwordHash: "$argon2id$v=19$m=19456,t=2,p=1$legacy",
+					recoveryCodeHashes: ["$argon2id$legacy-code"],
+					securityReviewPendingSince: new Date(),
+				},
+			},
+		);
+		const profile = await accounts.findAccount(legacy._id);
+		expect(profile).toBeDefined();
+		expect(JSON.stringify(profile)).not.toMatch(/password|recovery|review/i);
+		const stored = await accounts.findActiveById(legacy._id);
+		if (!stored) throw new Error("account vanished");
+		expect(usableSignInProviders(stored, ["google", "github"])).toEqual([]);
 	});
 });

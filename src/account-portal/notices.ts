@@ -13,26 +13,12 @@ const NOTICES: Readonly<Record<string, Notice>> = {
 	},
 	expired: { tone: "error", text: "Biểu mẫu đã hết hạn. Thử lại." },
 	profile: { tone: "success", text: "Đã lưu hồ sơ." },
-	password: {
-		tone: "success",
-		text: "Đã đổi mật khẩu. Các trình duyệt khác đã bị đăng xuất.",
-	},
-	"password-wrong": { tone: "error", text: "Mật khẩu hiện tại không đúng." },
-	"password-locked": {
-		tone: "error",
-		text: "Tạm khoá do nhập sai nhiều lần. Thử lại sau 15 phút.",
-	},
-	"password-invalid": {
-		tone: "error",
-		text: "Mật khẩu mới cần ít nhất 7 ký tự và hai lần nhập phải khớp nhau.",
-	},
-	codes: { tone: "success", text: "Đã tạo bộ mã khôi phục mới." },
 	"linked-google": { tone: "success", text: "Đã liên kết Google." },
 	"linked-github": { tone: "success", text: "Đã liên kết GitHub." },
 	unlinked: { tone: "success", text: "Đã huỷ liên kết." },
 	"last-method": {
 		tone: "error",
-		text: "Không huỷ được: đây là cách đăng nhập cuối cùng của tài khoản. Đặt mật khẩu hoặc liên kết cách khác trước.",
+		text: "Không huỷ được: đây là cách đăng nhập cuối cùng của tài khoản. Liên kết Google hoặc GitHub còn lại trước.",
 	},
 	"telegram-unlinked": { tone: "success", text: "Đã huỷ liên kết Telegram." },
 	"session-revoked": { tone: "success", text: "Đã thu hồi phiên." },

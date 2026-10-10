@@ -5,7 +5,10 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 	return typeof value === "object" && value !== null;
 }
 
-/** Reset links carry a bearer token in the path; keep it out of logs. */
+/**
+ * Password reset links (no longer served) carried a bearer token in the
+ * path; old ones may still be opened from Telegram, so keep them out of logs.
+ */
 export function redactPath(path: string): string {
 	return path.replace(/^\/reset\/[^/]+/i, "/reset/[redacted]");
 }

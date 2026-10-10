@@ -16,7 +16,7 @@ IdP chạy trên server dùng chung `103.72.98.65` theo quy ước của server 
 | Database | database `auth`, user `auth` chỉ có `readWrite` trên `auth` |
 | Backup | `infra/backup-auth-db.sh`, cron 02:30 hằng ngày, giữ 14 ngày trong `/var/www/hoandat-auth/backups` |
 
-Access log của nginx che token trong đường dẫn `/reset/...`.
+Access log của nginx che token trong đường dẫn `/reset/...` (link đặt lại mật khẩu cũ; route đã bỏ theo ADR 0004 nhưng link cũ còn trong chat Telegram).
 
 ## Lần đầu
 

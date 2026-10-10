@@ -6,8 +6,6 @@ import { codeTokens, localmanWeb } from "./helpers/exchange-flows.js";
 import { cliLogin, signedInBrowser } from "./helpers/session-flows.js";
 import {
 	createTestAccount,
-	openLoginPage,
-	postLogin,
 	repositoryOf,
 	submitForm,
 } from "./helpers/test-accounts.js";
@@ -28,38 +26,6 @@ beforeAll(async () => {
 
 afterAll(async () => {
 	await idp?.close();
-});
-
-function typesOf(sub: string): Promise<string[]> {
-	return auditOutboxCollection(idp.db)
-		.find({ sub })
-		.sort({ occurredAt: 1 })
-		.toArray()
-		.then((events) => events.map((event) => event.type));
-}
-
-describe("failed sign-ins and locks", () => {
-	it("records each wrong password, the lock once, and nothing while locked", async () => {
-		const account = await createTestAccount(repositoryOf(idp));
-		for (let attempt = 0; attempt < 5; attempt += 1) {
-			const page = await openLoginPage(idp);
-			expect(
-				(await postLogin(idp, page, account.username, "wrong")).status,
-			).toBe(401);
-		}
-		const locked = await postLogin(
-			idp,
-			await openLoginPage(idp),
-			account.username,
-			"wrong",
-		);
-		expect(locked.status).toBe(429);
-		const expected = [...Array(5).fill("login.failed"), "login.locked"];
-		await expect.poll(() => typesOf(account._id)).toEqual(expected);
-		// The refused attempt left nothing behind, even a moment later.
-		await new Promise((resolve) => setTimeout(resolve, 100));
-		expect(await typesOf(account._id)).toEqual(expected);
-	});
 });
 
 describe("grants created and ended outside /account", () => {

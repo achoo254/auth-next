@@ -4,35 +4,14 @@ import type { UpstreamProvider } from "../accounts/user-model.js";
 export type LinkedMethod = UpstreamProvider | "telegram";
 
 /** Why sessions or grants were revoked. */
-export type RevocationCause =
-	| "account-page"
-	| "password-change"
-	| "password-reset"
-	| "security-review"
-	| "token-revocation";
+export type RevocationCause = "account-page" | "token-revocation";
 
 /**
  * Credential events sent to Localman, and the data each carries. Data never
- * holds a secret: no password, code, token, link or provider credential.
+ * holds a secret: no code, token, link or provider credential.
  */
 export type AuditEventData = {
 	"login.succeeded": { readonly methods: readonly string[] };
-	/**
-	 * A secret was checked and was wrong, or a Google/GitHub sign-in was
-	 * refused because the account owes its post-reset security review.
-	 * Attempts refused by a lock are not recorded (no secret was checked).
-	 */
-	"login.failed": {
-		readonly method: "password" | "recovery-code" | "federated";
-		readonly reason: "invalid" | "review-pending";
-		/** Which provider, for a federated sign-in when known. */
-		readonly provider?: UpstreamProvider;
-	};
-	/** Wrong attempts just locked the account for this method. */
-	"login.locked": { readonly method: "password" | "recovery-code" };
-	"password.changed": Record<string, never>;
-	"password.reset": { readonly via: "recovery-code" | "reset-link" };
-	"recovery_codes.regenerated": Record<string, never>;
 	"method.linked": { readonly method: LinkedMethod };
 	"method.unlinked": { readonly method: LinkedMethod };
 	/** The account lost its unverified email to the email's proven owner. */

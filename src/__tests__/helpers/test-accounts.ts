@@ -3,7 +3,6 @@ import { type Db, MongoClient } from "mongodb";
 import * as client from "openid-client";
 import { inject } from "vitest";
 import type { AccountRepository } from "../../accounts/account-repository.js";
-import { hashSecret } from "../../accounts/password-hasher.js";
 import type {
 	AccountDocument,
 	UpstreamProvider,
@@ -17,8 +16,6 @@ import {
 	LOCALMAN_WEB_SECRET,
 	type TestIdp,
 } from "./test-idp.js";
-
-export const TEST_PASSWORD = "correct horse";
 
 /** A fresh database on the shared mongod, with the account indexes. */
 export async function openTestDb(): Promise<{
@@ -44,7 +41,10 @@ let counter = 0;
 /** Test accounts always have an email. */
 export type TestAccount = AccountDocument & { email: string };
 
-/** Creates an account with a password; unique username/email per call. */
+/**
+ * Creates an account; unique username/email per call. By default it has a
+ * Google account linked (its id is unique too), so it can sign in.
+ */
 export async function createTestAccount(
 	accounts: AccountRepository,
 	overrides: {
@@ -52,13 +52,9 @@ export async function createTestAccount(
 		email?: string;
 		emailVerifiedBy?: UpstreamProvider | null;
 		providers?: AccountDocument["providers"];
-		password?: string | null;
-		recoveryCodeHashes?: string[];
 	} = {},
 ): Promise<TestAccount> {
 	counter += 1;
-	const password =
-		overrides.password === undefined ? TEST_PASSWORD : overrides.password;
 	const email =
 		overrides.email ?? `user${counter}.${randomUUID().slice(0, 6)}@example.com`;
 	const account = await accounts.create({
@@ -66,9 +62,9 @@ export async function createTestAccount(
 			overrides.username ?? `user_${counter}_${randomUUID().slice(0, 6)}`,
 		email,
 		emailVerifiedBy: overrides.emailVerifiedBy ?? null,
-		passwordHash: password === null ? undefined : await hashSecret(password),
-		recoveryCodeHashes: overrides.recoveryCodeHashes ?? [],
-		providers: overrides.providers ?? {},
+		providers: overrides.providers ?? {
+			google: `g-${counter}-${randomUUID().slice(0, 8)}`,
+		},
 	});
 	return { ...account, email: account.email ?? email };
 }
@@ -107,18 +103,6 @@ export async function openLoginPage(
 	const uid = /\/interaction\/([\w-]+)/.exec(response.url)?.[1];
 	if (!uid) throw new Error(`Not on an interaction page: ${response.url}`);
 	return { browser, uid, csrf: formField(html, "csrf"), html };
-}
-
-/** Posts the login form; returns the response without following redirects. */
-export function postLogin(
-	idp: TestIdp,
-	page: LoginPage,
-	identifier: string,
-	password: string,
-): Promise<Response> {
-	return page.browser.request(`${idp.issuer}/interaction/${page.uid}/login`, {
-		form: { csrf: page.csrf, identifier, password },
-	});
 }
 
 /** Posts a form and follows the redirects (see TestBrowser.navigate). */

@@ -81,12 +81,10 @@ export function isTokenCurrent(
 }
 
 /**
- * Account-bound one-time tokens (reset links, Telegram link codes, OAuth
- * link state, parked logins). Issuing stamps the account's current
- * `securityVersion` (and channel); using one re-checks both, so a token
- * issued before a password change, a recovery, a link/unlink, new recovery
- * codes or a finished review stops working. A flow that itself changes the
- * version renews its own token with `renew`.
+ * Account-bound one-time tokens (Telegram link codes, OAuth link state).
+ * Issuing stamps the account's current `securityVersion` (and channel);
+ * using one re-checks both, so a token issued before a link/unlink or a
+ * reclaimed email stops working.
  */
 export class AccountTokens {
 	private readonly collection: TokenCollection;
@@ -130,30 +128,6 @@ export class AccountTokens {
 	/** Consumes the token, current or stale: either way it is used up. */
 	take(kind: AccountTokenKind, token: string): Promise<AccountTokenResult> {
 		return this.resolve(this.collection.take(kind, token));
-	}
-
-	/**
-	 * Re-stamps a token for the flow that changed the version itself (e.g.
-	 * removing a provider during the security review keeps that review's own
-	 * token valid). `producedVersion` is the version that flow's own write
-	 * produced: if the account is anywhere else now (someone else changed it
-	 * too), the token is destroyed instead.
-	 */
-	async renew(
-		kind: AccountTokenKind,
-		token: string,
-		accountId: string,
-		producedVersion: number,
-	): Promise<boolean> {
-		const account = await this.accounts.findActiveById(accountId);
-		if ((account?.securityVersion ?? 0) !== producedVersion || !account) {
-			await this.collection.take(kind, token);
-			return false;
-		}
-		await this.collection.update(kind, token, {
-			securityVersion: String(producedVersion),
-		});
-		return true;
 	}
 
 	revokeFor(kind: AccountTokenKind, accountId: string): Promise<void> {

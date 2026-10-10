@@ -3,9 +3,8 @@ import {
 	type AccountDocument,
 	UPSTREAM_PROVIDERS,
 	type UpstreamProvider,
-	loginMethodCount,
+	usableSignInProviders,
 } from "../accounts/user-model.js";
-import { providerIdentity } from "../interactions/security-review-page.js";
 import {
 	actionButton,
 	alertBox,
@@ -54,72 +53,65 @@ ${submitButton("Lưu", { variant: "secondary", dataId: "profile-save" })}</form>
 </section>`;
 }
 
-function passwordSection(view: AccountView): SafeHtml {
-	const hasPassword = view.account.passwordHash !== undefined;
-	return html`<section class="account-section" id="account-password" data-id="account-password">
-<h2 class="section-title">${hasPassword ? "Đổi mật khẩu" : "Đặt mật khẩu"}</h2>
-<form class="auth-form" method="post" action="/account/password" novalidate>${csrfField(view.csrf)}
-${hasPassword ? inputField({ name: "current_password", label: "Mật khẩu hiện tại", type: "password", autocomplete: "current-password", maxlength: 256 }) : ""}
-${inputField({ name: "password", label: "Mật khẩu mới", type: "password", autocomplete: "new-password", minlength: 7, maxlength: 256, help: "Ít nhất 7 ký tự." })}
-${inputField({ name: "password_confirm", label: "Nhập lại mật khẩu mới", type: "password", autocomplete: "new-password", minlength: 7, maxlength: 256 })}
-<label class="check-row"><input type="checkbox" name="logout_everywhere" value="yes" checked data-id="password-logout-everywhere"> Đăng xuất khỏi mọi thiết bị và ứng dụng</label>
-<p class="help">Các trình duyệt khác luôn bị đăng xuất. Đổi mật khẩu, mã khôi phục và liên kết đăng nhập cần đăng nhập trong 10 phút gần đây.</p>
-${submitButton(hasPassword ? "Đổi mật khẩu" : "Đặt mật khẩu", { variant: "secondary", dataId: "password-save" })}</form>
-</section>`;
-}
-
-function recoverySection(view: AccountView): SafeHtml {
-	return html`<section class="account-section" id="account-recovery" data-id="account-recovery">
-<h2 class="section-title">Mã khôi phục</h2>
-<p class="help">Còn <b data-id="recovery-remaining">${view.account.recoveryCodeHashes.length}</b> mã chưa dùng. Tạo bộ mới thì bộ cũ hết hiệu lực.</p>
-${actionButton("/account/recovery-codes", view.csrf, "Tạo lại 8 mã", { dataId: "recovery-regenerate" })}
-</section>`;
-}
-
-function providerRow(
-	view: AccountView,
+/** "email · @login" a provider vouched for, or "không rõ" for older links. */
+function providerIdentity(
+	account: AccountDocument,
 	provider: UpstreamProvider,
-	lastMethod: boolean,
-): SafeHtml {
-	const linked = view.account.providers[provider] !== undefined;
-	let status = "Chưa liên kết";
-	let action = !view.providers.includes(provider)
-		? html``
-		: actionButton(`/account/link/${provider}`, view.csrf, "Liên kết", {
-				dataId: `provider-link-${provider}`,
-			});
-	const identity = providerIdentity(view.account, provider);
-	if (linked && lastMethod) {
-		status = `Đã liên kết (${identity}) · đây là cách đăng nhập duy nhất, không huỷ được`;
-		action = html``;
-	} else if (linked) {
-		status = `Đã liên kết (${identity})`;
-		action = actionButton(
-			`/account/unlink/${provider}`,
-			view.csrf,
-			"Huỷ liên kết",
-			{
-				dataId: `provider-unlink-${provider}`,
-			},
-		);
-	}
-	return html`<li class="item-row" data-id="provider-${provider}"><div><b>${UPSTREAM_LABELS[provider]}</b>
-<p class="help">${status}</p></div>${action}</li>`;
+): string {
+	const detail = account.providerDetails?.[provider];
+	const parts = [
+		detail?.email,
+		detail?.login ? `@${detail.login}` : undefined,
+	].filter((part): part is string => Boolean(part));
+	return parts.length > 0 ? parts.join(" · ") : "không rõ";
 }
 
-function providersSection(view: AccountView): SafeHtml {
-	// Configured providers (to link) plus any already linked, even if its
-	// sign-in is switched off now: a linked identity is always visible.
+function providerRow(view: AccountView, provider: UpstreamProvider): SafeHtml {
+	const label = html`<b>${UPSTREAM_LABELS[provider]}</b>`;
+	const enabled = view.providers.includes(provider);
+	if (view.account.providers[provider] === undefined) {
+		const link = enabled
+			? actionButton(`/account/link/${provider}`, view.csrf, "Liên kết", {
+					dataId: `provider-link-${provider}`,
+				})
+			: html``;
+		return html`<li class="item-row" data-id="provider-${provider}"><div>${label}
+<p class="help">Chưa liên kết</p></div>${link}</li>`;
+	}
+	// Unlinking needs another linked provider that can sign in here.
+	const last =
+		usableSignInProviders(view.account, view.providers).filter(
+			(other) => other !== provider,
+		).length === 0;
+	const identity = providerIdentity(view.account, provider);
+	const status = last
+		? `Đã liên kết (${identity}) · đây là cách đăng nhập duy nhất, không huỷ được`
+		: `Đã liên kết (${identity})${enabled ? "" : " · đăng nhập bằng cách này đang tạm tắt"}`;
+	const unlink = last
+		? html``
+		: actionButton(`/account/unlink/${provider}`, view.csrf, "Huỷ liên kết", {
+				dataId: `provider-unlink-${provider}`,
+			});
+	return html`<li class="item-row" data-id="provider-${provider}"><div>${label}
+<p class="help">${status}</p></div>${unlink}</li>`;
+}
+
+/**
+ * How this account signs in: Google and GitHub, the only ways in. Shown are
+ * the configured providers (to link) plus any already linked, even if its
+ * sign-in is switched off now: a linked identity is always visible.
+ */
+function signInSection(view: AccountView): SafeHtml {
 	const shown = UPSTREAM_PROVIDERS.filter(
 		(provider) =>
 			view.providers.includes(provider) ||
 			view.account.providers[provider] !== undefined,
 	);
-	if (shown.length === 0) return html``;
-	const lastMethod = loginMethodCount(view.account) <= 1;
-	return html`<section class="account-section" data-id="account-providers">
-<h2 class="section-title">Đăng nhập bằng Google, GitHub</h2>
-<ul class="item-list">${shown.map((provider) => providerRow(view, provider, lastMethod))}</ul>
+	return html`<section class="account-section" id="account-sign-in" data-id="account-sign-in">
+<h2 class="section-title">Cách đăng nhập</h2>
+<p class="help">hoandat không dùng mật khẩu: bạn đăng nhập bằng Google hoặc GitHub. Liên kết cả hai để vẫn vào được tài khoản khi mất một cách.</p>
+${shown.length === 0 ? html`<p class="help">Đăng nhập bằng Google và GitHub đang tạm tắt.</p>` : ""}
+<ul class="item-list">${shown.map((provider) => providerRow(view, provider))}</ul>
 </section>`;
 }
 
@@ -141,8 +133,8 @@ function telegramSection(view: AccountView): SafeHtml {
 <h2 class="section-title">Telegram</h2>
 <p class="help" data-id="telegram-status">${
 		linked
-			? html`Đã liên kết với <b>${telegramLabel(linked)}</b> lúc ${formatDate(linked.linkedAt)}. Dùng để nhận thông báo và link đặt lại mật khẩu.`
-			: "Liên kết để nhận thông báo và link đặt lại mật khẩu khi quên."
+			? html`Đã liên kết với <b>${telegramLabel(linked)}</b> lúc ${formatDate(linked.linkedAt)}. Dùng để nhận thông báo bảo mật của tài khoản.`
+			: "Liên kết để nhận thông báo bảo mật của tài khoản. Telegram không dùng để đăng nhập."
 	}</p>
 ${linked ? actionButton("/account/telegram/unlink", view.csrf, "Huỷ liên kết Telegram", { dataId: "telegram-unlink" }) : actionButton("/account/telegram/link", view.csrf, "Liên kết Telegram", { dataId: "telegram-link" })}
 </section>`;
@@ -156,21 +148,19 @@ export function renderAccountPage(view: AccountView): string {
 <p class="help account-anchor" id="account-email">${
 		account.email
 			? html`<span data-id="account-email">${account.email}</span> ${emailBadge(account)}`
-			: html`<span data-id="account-email">Chưa có email</span> · đăng nhập bằng username`
+			: html`<span data-id="account-email">Chưa có email</span>`
 	}</p>
 ${
 	account.reclaimedEmail
 		? alertBox(
 				"warning",
-				html`<span data-id="account-email-reclaimed">Email <b>${account.reclaimedEmail.email}</b> đã được gỡ khỏi tài khoản này lúc ${formatDate(account.reclaimedEmail.at)}, vì người sở hữu email đã xác minh nó qua Google/GitHub. Bạn vẫn đăng nhập bằng username @${account.username}.</span>`,
+				html`<span data-id="account-email-reclaimed">Email <b>${account.reclaimedEmail.email}</b> đã được gỡ khỏi tài khoản này lúc ${formatDate(account.reclaimedEmail.at)}, vì người sở hữu email đã xác minh nó qua Google/GitHub.</span>`,
 			)
 		: ""
 }
 ${notice ? alertBox(notice.tone, notice.text) : ""}
 ${profileSection(view)}
-${passwordSection(view)}
-${recoverySection(view)}
-${providersSection(view)}
+${signInSection(view)}
 ${telegramSection(view)}
 ${sessionsSection(view.sessions, view.currentSessionUid, view.csrf)}
 ${devicesSection(view.devices, view.csrf)}

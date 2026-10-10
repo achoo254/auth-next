@@ -1,6 +1,5 @@
 import * as client from "openid-client";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { afterPasswordChange } from "../account-portal/after-password-change.js";
 import { revokeGrant } from "../account-portal/grant-directory.js";
 import { accountsCollection } from "../accounts/user-model.js";
 import { collectionNameFor } from "../oidc/mongo-adapter.js";
@@ -120,31 +119,25 @@ describe("the subject token must be live and Localman's", () => {
 		}
 	});
 
-	it("refuses tokens from before a password reset", async () => {
-		const account = await createTestAccount(repositoryOf(idp));
-		const { accessToken } = await localmanSignIn(idp, account);
-		await repositoryOf(idp).setPassword(account._id, "unused-hash");
-		await afterPasswordChange(idp.services, account, "reset-link", {
-			grants: true,
-		});
-		await expect(exchange(localman, accessToken)).rejects.toMatchObject(
-			rejectedWith("invalid_request"),
-		);
-	});
-
-	it("refuses while the account owes a security review or is disabled", async () => {
-		const pending = await signIn();
-		await repositoryOf(idp).setSecurityReviewPending(pending.accountId, true);
+	it("refuses once the account is disabled", async () => {
 		const disabled = await signIn();
 		await accountsCollection(idp.db).updateOne(
 			{ _id: disabled.accountId },
 			{ $set: { disabledAt: new Date() } },
 		);
-		for (const { subject } of [pending, disabled]) {
-			await expect(exchange(localman, subject)).rejects.toMatchObject(
-				rejectedWith("invalid_request"),
-			);
-		}
+		await expect(exchange(localman, disabled.subject)).rejects.toMatchObject(
+			rejectedWith("invalid_request"),
+		);
+	});
+
+	it("ignores a review flag left over from the old password reset", async () => {
+		const legacy = await signIn();
+		await accountsCollection(idp.db).updateOne(
+			{ _id: legacy.accountId },
+			{ $set: { securityReviewPendingSince: new Date() } },
+		);
+		const issued = await exchange(localman, legacy.subject);
+		expect(issued.access_token).toEqual(expect.any(String));
 	});
 
 	it("dies with the IdP session: logout ends refresh and exchange", async () => {

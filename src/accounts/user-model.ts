@@ -17,7 +17,14 @@ export interface ProviderDetail {
 	linkedAt: Date;
 }
 
-/** One account in the `accounts` collection; `_id` is the OIDC `sub`. */
+/**
+ * One account in the `accounts` collection; `_id` is the OIDC `sub`.
+ * Accounts sign in only through a linked Google or GitHub account. Documents
+ * from before that may still hold `passwordHash`, `recoveryCodeHashes`,
+ * `recoveryCodesCreatedAt`, `credentialsChangedAt` or
+ * `securityReviewPendingSince`; they are left in place but deliberately
+ * absent from this type, so nothing reads them.
+ */
 export interface AccountDocument {
 	_id: string;
 	/** Lowercase, `^[a-z0-9_]{3,30}$`, unique. */
@@ -25,39 +32,25 @@ export interface AccountDocument {
 	/**
 	 * Normalised (trimmed, lowercase), unique when present. Absent after a
 	 * Google/GitHub user proved they own it and reclaimed it (see
-	 * `reclaimedEmail`); the account still signs in by username.
+	 * `reclaimedEmail`).
 	 */
 	email?: string;
-	/** Who vouched for `email`; null for a typed-in, unverified address. */
+	/** Who vouched for `email`; null for an unverified address (older accounts). */
 	emailVerifiedBy: UpstreamProvider | null;
-	/** argon2id PHC string; absent for accounts created through Google/GitHub. */
-	passwordHash?: string;
 	/**
-	 * Bumped by every security-relevant change: password set/reset/change,
-	 * linking or unlinking Google/GitHub/Telegram, new recovery codes, an
-	 * email reclaimed, a security review started or finished. Account-bound
-	 * one-time tokens carry the value they were issued at and stop working
-	 * once it moves on (account-tokens.ts). Absent means 0.
+	 * Bumped by every security-relevant change: linking or unlinking
+	 * Google/GitHub/Telegram, an email reclaimed. Account-bound one-time
+	 * tokens carry the value they were issued at and stop working once it
+	 * moves on (account-tokens.ts). Absent means 0.
 	 */
 	securityVersion?: number;
-	/** Last password set/reset/change; device cookies are signed with it. */
-	credentialsChangedAt?: Date;
-	/** argon2id hashes of the unused one-time recovery codes. */
-	recoveryCodeHashes: string[];
-	/** When the current set of recovery codes was generated. */
-	recoveryCodesCreatedAt?: Date;
-	/**
-	 * Set by a password reset: until the owner confirms the security review
-	 * (linked providers, Telegram, recovery codes), sign-ins stop there.
-	 */
-	securityReviewPendingSince?: Date;
 	name?: string;
 	picture?: string;
 	/** Provider-side account ids (Google `sub`, GitHub numeric id). */
 	providers: { google?: string; github?: string };
 	/**
-	 * What each provider said at link time, shown on /account and the
-	 * security review: its verified email and (GitHub) login. Links made
+	 * What each provider said at link time, shown on /account: its verified
+	 * email and (GitHub) login. Links made
 	 * before this field existed have none ("không rõ").
 	 */
 	providerDetails?: {
@@ -107,12 +100,18 @@ export function newAccountId(): string {
 	return `acc_${randomBytes(16).toString("base64url")}`;
 }
 
-/** Ways to sign in; Telegram only resets passwords, so it does not count. */
-export function loginMethodCount(account: AccountDocument): number {
-	return (
-		(account.passwordHash ? 1 : 0) +
-		(account.providers.google ? 1 : 0) +
-		(account.providers.github ? 1 : 0)
+/**
+ * The linked Google/GitHub accounts that can sign in here now: linked to
+ * the account and enabled on this IdP. Telegram only receives notices, so
+ * it is not a way in.
+ */
+export function usableSignInProviders(
+	account: Pick<AccountDocument, "providers">,
+	enabled: readonly UpstreamProvider[],
+): UpstreamProvider[] {
+	return UPSTREAM_PROVIDERS.filter(
+		(provider) =>
+			account.providers[provider] !== undefined && enabled.includes(provider),
 	);
 }
 
@@ -135,7 +134,6 @@ export function toAccountProfile(account: AccountDocument): AccountProfile {
 					},
 				}
 			: {}),
-		securityReviewPending: account.securityReviewPendingSince !== undefined,
 	};
 }
 

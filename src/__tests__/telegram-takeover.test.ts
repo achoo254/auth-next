@@ -1,29 +1,22 @@
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { revokeSession } from "../account-portal/session-directory.js";
-import { createPasswordResetToken } from "../telegram/reset-link-service.js";
 import { SECRET_HEADER, WEBHOOK_PATH } from "../telegram/webhook-routes.js";
 import {
 	FAKE_TELEGRAM_SECRET,
 	FAKE_UPSTREAM_ENV,
-	FakeUpstreams,
 } from "./helpers/fake-upstreams.js";
 import { sessionUidOf, signedInBrowser } from "./helpers/session-flows.js";
 import {
-	type TestAccount,
 	createTestAccount,
-	openLoginPage,
 	repositoryOf,
 	submitForm,
 } from "./helpers/test-accounts.js";
-import { TestBrowser, formField } from "./helpers/test-browser.js";
+import { type TestBrowser, formField } from "./helpers/test-browser.js";
 import { type TestIdp, startTestIdp } from "./helpers/test-idp.js";
 
 let idp: TestIdp;
-const fake = new FakeUpstreams();
-let uninstall: () => void;
 
 beforeAll(async () => {
-	uninstall = fake.install();
 	idp = await startTestIdp({
 		interactions: "real",
 		rateLimits: [],
@@ -32,7 +25,6 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-	uninstall?.();
 	await idp?.close();
 });
 
@@ -75,31 +67,23 @@ async function tryToLink(code: string, chatId: number): Promise<void> {
 	});
 }
 
-async function resetPassword(account: TestAccount): Promise<void> {
-	const token = await createPasswordResetToken(idp.services.accountTokens, {
-		accountId: account._id,
-	});
-	const owner = new TestBrowser();
-	const form = await (
-		await owner.request(`${idp.issuer}/reset/${token}`)
-	).text();
-	await submitForm(owner, `${idp.issuer}/reset/${token}`, {
-		csrf: formField(form, "csrf"),
-		password: "owner-new-password",
-		password_confirm: "owner-new-password",
-	});
-}
-
 describe("Telegram link codes cannot outlive the session that made them", () => {
-	it("a code made with a stolen session dies when the owner resets the password", async () => {
+	it("a code made with a stolen session dies when the owner revokes that session", async () => {
 		const account = await createTestAccount(repositoryOf(idp));
 		const attacker = await signedInBrowser(idp, account);
+		const stolenUid = await sessionUidOf(idp, account._id);
 		const code = await linkCodeFrom(attacker);
-		await resetPassword(account);
+		const owner = await signedInBrowser(idp, account);
+		const page = await (await owner.request(`${idp.issuer}/account`)).text();
+		await submitForm(
+			owner,
+			`${idp.issuer}/account/sessions/${stolenUid}/revoke`,
+			{ csrf: formField(page, "csrf") },
+		);
 
-		const before = fake.telegramMessages.length;
+		const before = idp.fake.telegramMessages.length;
 		await tryToLink(code, 6666);
-		const toAttacker = fake.telegramMessages
+		const toAttacker = idp.fake.telegramMessages
 			.slice(before)
 			.filter((m) => m.chatId === "6666");
 		expect(toAttacker.some((m) => m.callbackData)).toBe(false);
@@ -107,21 +91,6 @@ describe("Telegram link codes cannot outlive the session that made them", () => 
 		expect(
 			(await repositoryOf(idp).findActiveById(account._id))?.telegram,
 		).toBeUndefined();
-
-		// So a later Telegram reset request sends nothing to the attacker.
-		const page = await openLoginPage(idp);
-		await page.browser.request(
-			`${idp.issuer}/interaction/${page.uid}/forgot/telegram`,
-			{
-				form: { csrf: page.csrf, identifier: account.username },
-			},
-		);
-		await new Promise((resolve) => setTimeout(resolve, 200));
-		expect(
-			fake.telegramMessages
-				.slice(before)
-				.some((m) => m.chatId === "6666" && m.buttonUrl),
-		).toBe(false);
 	});
 
 	it("a code dies with the session that created it (signed out)", async () => {

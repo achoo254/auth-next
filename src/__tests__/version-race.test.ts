@@ -9,31 +9,23 @@ import {
 } from "vitest";
 import type { AccountTokens } from "../accounts/account-tokens.js";
 import { createTelegramLinkCode } from "../telegram/link-routes.js";
-import { createPasswordResetToken } from "../telegram/reset-link-service.js";
 import { SECRET_HEADER, WEBHOOK_PATH } from "../telegram/webhook-routes.js";
 import {
 	FAKE_TELEGRAM_SECRET,
 	FAKE_UPSTREAM_ENV,
-	FakeUpstreams,
 } from "./helpers/fake-upstreams.js";
 import { sessionUidOf, signedInBrowser } from "./helpers/session-flows.js";
 import {
-	TEST_PASSWORD,
 	type TestAccount,
 	createTestAccount,
-	openLoginPage,
-	postLogin,
 	repositoryOf,
 } from "./helpers/test-accounts.js";
-import { TestBrowser, formField } from "./helpers/test-browser.js";
+import { formField } from "./helpers/test-browser.js";
 import { type TestIdp, startTestIdp } from "./helpers/test-idp.js";
 
 let idp: TestIdp;
-const fake = new FakeUpstreams();
-let uninstall: () => void;
 
 beforeAll(async () => {
-	uninstall = fake.install();
 	idp = await startTestIdp({
 		interactions: "real",
 		rateLimits: [],
@@ -42,7 +34,6 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-	uninstall?.();
 	await idp?.close();
 });
 
@@ -52,9 +43,9 @@ afterEach(() => {
 
 /** Some other security change on the account (raises its version). */
 function interfere(account: TestAccount): Promise<unknown> {
-	return repositoryOf(idp).replaceRecoveryCodes(account._id, [
-		"interfering-change",
-	]);
+	return repositoryOf(idp).links.setTelegram(account._id, {
+		chatId: `interfering-${account._id}`,
+	});
 }
 
 /** Runs `interfere` right after the token check `method` returns. */
@@ -69,80 +60,23 @@ function changeAfter(method: "peek" | "take", account: TestAccount): void {
 }
 
 describe("a change slipped in between token check and write", () => {
-	it("reset link: the new password is not set (410)", async () => {
+	it("linking GitHub at /account: the link is not made (410)", async () => {
 		const account = await createTestAccount(repositoryOf(idp));
-		const token = await createPasswordResetToken(idp.services.accountTokens, {
-			accountId: account._id,
+		const browser = await signedInBrowser(idp, account);
+		const page = await (await browser.request(`${idp.issuer}/account`)).text();
+		idp.fake.nextLogins.push({
+			id: "7007",
+			email: account.email,
+			emailVerified: true,
 		});
-		const browser = new TestBrowser();
-		const url = `${idp.issuer}/reset/${token ?? ""}`;
-		const csrf = formField(await (await browser.request(url)).text(), "csrf");
 		changeAfter("take", account);
-		const post = await browser.request(url, {
-			form: { csrf, password: "never-set-1", password_confirm: "never-set-1" },
+		const linked = await browser.navigate(`${idp.issuer}/account/link/github`, {
+			form: { csrf: formField(page, "csrf") },
 		});
-		expect(post.status).toBe(410);
+		expect(linked.response.status).toBe(410);
 		expect(
-			(await repositoryOf(idp).findActiveById(account._id))?.passwordHash,
-		).toBe(account.passwordHash);
-	});
-
-	it("security review: removing a provider is refused (410) and nothing is removed", async () => {
-		const accounts = repositoryOf(idp);
-		const account = await createTestAccount(accounts);
-		await accounts.links.linkProvider(account, {
-			provider: "google",
-			providerId: `g-race-${account._id}`,
-		});
-		await accounts.setSecurityReviewPending(account._id, true);
-		const page = await openLoginPage(idp);
-		await postLogin(idp, page, account.username, TEST_PASSWORD);
-		const base = `${idp.issuer}/interaction/${page.uid}/review`;
-		const csrf = formField(
-			await (await page.browser.request(base)).text(),
-			"csrf",
-		);
-		changeAfter("peek", account);
-		const unlink = await page.browser.request(`${base}/unlink/google`, {
-			form: { csrf },
-		});
-		expect(unlink.status).toBe(410);
-		expect(
-			(await accounts.findActiveById(account._id))?.providers.google,
-		).toBeDefined();
-	});
-
-	it("security review: a change after the review's own write kills its token", async () => {
-		const accounts = repositoryOf(idp);
-		const account = await createTestAccount(accounts);
-		await accounts.links.setTelegram(account._id, {
-			chatId: `t-race-${account._id}`,
-		});
-		await accounts.setSecurityReviewPending(account._id, true);
-		const page = await openLoginPage(idp);
-		await postLogin(idp, page, account.username, TEST_PASSWORD);
-		const base = `${idp.issuer}/interaction/${page.uid}/review`;
-		const csrf = formField(
-			await (await page.browser.request(base)).text(),
-			"csrf",
-		);
-		const tokens = idp.services.accountTokens;
-		const renew = tokens.renew.bind(tokens);
-		vi.spyOn(tokens, "renew").mockImplementationOnce(async (...args) => {
-			await interfere(account);
-			return renew(...args);
-		});
-		const unlink = await page.browser.request(`${base}/telegram/unlink`, {
-			form: { csrf },
-		});
-		expect(unlink.status).toBe(410);
-		// The review's token is gone: the page sends the browser back to sign in.
-		expect((await page.browser.request(base)).status).toBe(303);
-		const done = await page.browser.request(`${base}/done`, { form: { csrf } });
-		expect(done.status).toBe(303);
-		expect(
-			(await accounts.findActiveById(account._id))?.securityReviewPendingSince,
-		).toBeDefined();
+			(await repositoryOf(idp).findActiveById(account._id))?.providers.github,
+		).toBeUndefined();
 	});
 
 	it("Telegram link confirmation: the chat is not linked", async () => {
@@ -169,9 +103,9 @@ describe("a change slipped in between token check and write", () => {
 			}),
 		});
 		expect(
-			(await repositoryOf(idp).findActiveById(account._id))?.telegram,
-		).toBeUndefined();
-		expect(fake.telegramMessages.at(-1)?.text).toMatch(
+			(await repositoryOf(idp).findActiveById(account._id))?.telegram?.chatId,
+		).not.toBe("8080");
+		expect(idp.fake.telegramMessages.at(-1)?.text).toMatch(
 			/hết hạn hoặc đã được dùng/,
 		);
 	});

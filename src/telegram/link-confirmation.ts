@@ -11,8 +11,8 @@ import type { TelegramChat } from "./webhook-routes.js";
 
 /**
  * The account behind a link code, while the code is unused and the IdP
- * session that created it still exists (signing out, or a password reset,
- * ends that session and so voids the code).
+ * session that created it still exists (signing out, or revoking that
+ * session at /account, voids the code).
  */
 async function ownerAccount(
 	services: AppServices,
@@ -85,7 +85,7 @@ export async function confirmTelegramLink(
 		await bot
 			.sendMessage(
 				previous,
-				`Tài khoản hoandat @${account.username} đã chuyển liên kết sang một chat Telegram khác. Chat này sẽ không nhận thông báo hay link đặt lại mật khẩu nữa.`,
+				`Tài khoản hoandat @${account.username} đã chuyển liên kết sang một chat Telegram khác. Chat này sẽ không nhận thông báo nữa.`,
 			)
 			.catch((error: unknown) => {
 				services.logger.warn({ err: error }, "Old Telegram chat not notified");
@@ -94,7 +94,7 @@ export async function confirmTelegramLink(
 	services.logger.info({ accountId: account._id }, "Telegram linked");
 	await bot.sendMessage(
 		chatId,
-		`Đã liên kết Telegram với tài khoản hoandat @${account.username}. Bạn sẽ nhận thông báo và link đặt lại mật khẩu ở đây.`,
+		`Đã liên kết Telegram với tài khoản hoandat @${account.username}. Bạn sẽ nhận thông báo bảo mật của tài khoản ở đây.`,
 	);
 	return "Đã liên kết";
 }

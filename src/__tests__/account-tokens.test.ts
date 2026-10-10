@@ -30,12 +30,8 @@ afterAll(async () => {
 });
 
 const KINDS: readonly AccountTokenKind[] = [
-	"password-reset",
 	"telegram-link",
 	"upstream-link-state",
-	"signup-pending",
-	"review-pending",
-	"review-reset",
 ];
 
 interface Change {
@@ -46,19 +42,6 @@ interface Change {
 
 /** Every security-relevant change; each must void older tokens. */
 const CHANGES: Readonly<Record<string, Change>> = {
-	"password set/reset": {
-		apply: (a) => accounts.setPassword(a._id, "$argon2id$new"),
-	},
-	"new recovery codes": {
-		apply: (a) => accounts.replaceRecoveryCodes(a._id, ["h"]),
-	},
-	"review started": {
-		apply: (a) => accounts.setSecurityReviewPending(a._id, true),
-	},
-	"review finished": {
-		setup: (a) => accounts.setSecurityReviewPending(a._id, true),
-		apply: (a) => accounts.setSecurityReviewPending(a._id, false),
-	},
 	"provider linked": {
 		apply: (a) =>
 			accounts.links.linkProvider(a, {
@@ -69,10 +52,10 @@ const CHANGES: Readonly<Record<string, Change>> = {
 	"provider unlinked": {
 		setup: (a) =>
 			accounts.links.linkProvider(a, {
-				provider: "google",
-				providerId: `g-${a._id}`,
+				provider: "github",
+				providerId: `gh-${a._id}`,
 			}),
-		apply: (a) => accounts.links.unlinkProvider(a._id, "google"),
+		apply: (a) => accounts.links.unlinkProvider(a._id, "github"),
 	},
 	"Telegram linked": {
 		apply: (a) => accounts.links.setTelegram(a._id, { chatId: `c-${a._id}` }),
@@ -100,14 +83,8 @@ describe("account tokens stop working after any security change", () => {
 				});
 				await apply(account);
 				expect(await tokens.peek(kind, token)).toEqual({ status: "stale" });
-				// The flow that made the change may renew its own token, with the
-				// version its own write produced.
-				const current =
-					(await accounts.findActiveById(account._id))?.securityVersion ?? 0;
-				expect(await tokens.renew(kind, token, account._id, current)).toBe(
-					true,
-				);
-				expect((await tokens.take(kind, token)).status).toBe("ok");
+				// Using a stale token still uses it up.
+				expect(await tokens.take(kind, token)).toEqual({ status: "stale" });
 				expect(await tokens.take(kind, token)).toEqual({ status: "missing" });
 			});
 		}
@@ -115,8 +92,8 @@ describe("account tokens stop working after any security change", () => {
 
 	it("a token only works for its own kind", async () => {
 		const account = await createTestAccount(accounts);
-		await tokens.issue("password-reset", "shared-value", account._id, {}, 600);
-		expect(await tokens.peek("review-reset", "shared-value")).toEqual({
+		await tokens.issue("telegram-link", "shared-value", account._id, {}, 600);
+		expect(await tokens.peek("upstream-link-state", "shared-value")).toEqual({
 			status: "missing",
 		});
 	});

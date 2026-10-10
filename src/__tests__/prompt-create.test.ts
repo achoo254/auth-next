@@ -6,7 +6,6 @@ import { localmanWeb } from "./helpers/exchange-flows.js";
 import { discoverClient } from "./helpers/flows.js";
 import { signedInBrowser } from "./helpers/session-flows.js";
 import {
-	TEST_PASSWORD,
 	createTestAccount,
 	repositoryOf,
 	submitForm,
@@ -17,6 +16,7 @@ import {
 	type TestIdp,
 	startTestIdp,
 } from "./helpers/test-idp.js";
+import { linkedGoogleProfile } from "./helpers/upstream-sign-in.js";
 
 const MCP_REDIRECT = "http://127.0.0.1:33422/callback";
 const SIGNUP_TITLE = "Tạo tài khoản hoandat";
@@ -56,24 +56,21 @@ async function authorize(
 	};
 }
 
-/** Fills the sign-up form and confirms the recovery codes were saved. */
-async function signUp(browser: TestBrowser, uid: string, page: string) {
+/** "Đăng ký với Google" with a Google account nobody has, then a username. */
+async function signUp(browser: TestBrowser, uid: string) {
 	const name = `new_${randomUUID().slice(0, 8)}`;
-	const codes = await submitForm(
-		browser,
-		`${idp.issuer}/interaction/${uid}/signup`,
-		{
-			csrf: formField(page, "csrf"),
-			email: `${name}@example.com`,
-			username: name,
-			password: "1234567",
-			password_confirm: "1234567",
-		},
+	idp.fake.nextLogins.push({
+		id: `g-${name}`,
+		email: `${name}@example.com`,
+		emailVerified: true,
+	});
+	const chosen = await browser.navigate(
+		`${idp.issuer}/interaction/${uid}/upstream/google`,
 	);
 	const done = await submitForm(
 		browser,
-		`${idp.issuer}/interaction/${uid}/signup/done`,
-		{ csrf: formField(await codes.response.text(), "csrf"), saved: "yes" },
+		`${idp.issuer}/interaction/${uid}/upstream/signup`,
+		{ csrf: formField(await chosen.response.text(), "csrf"), username: name },
 		LOCALMAN_CALLBACK,
 	);
 	return { name, location: done.location };
@@ -99,15 +96,20 @@ describe("prompt=create (OIDC Prompt Create 1.0)", () => {
 		const page = await start.response.text();
 		expect(page).toContain(SIGNUP_TITLE);
 		expect(page).toContain(`/interaction/${start.uid}/login`);
+		expect(page).toContain(`/interaction/${start.uid}/upstream/google`);
+		expect(page).not.toContain('type="password"');
 
-		const { name, location } = await signUp(browser, start.uid, page);
+		const { name, location } = await signUp(browser, start.uid);
 		if (!location) throw new Error("did not return to the client");
 		const tokens = await client.authorizationCodeGrant(
 			config,
 			location,
 			start.checks,
 		);
-		const created = await repositoryOf(idp).findByIdentifier(name);
+		const created = await repositoryOf(idp).findByProvider(
+			"google",
+			`g-${name}`,
+		);
 		const sub = tokens.claims()?.sub ?? "";
 		expect(sub).toBe(created?._id);
 		const userinfo = await client.fetchUserInfo(
@@ -132,15 +134,12 @@ describe("prompt=create (OIDC Prompt Create 1.0)", () => {
 		const login = await (
 			await browser.request(`${idp.issuer}/interaction/${start.uid}/login`)
 		).text();
-		expect(login).toContain(`action="/interaction/${start.uid}/login"`);
-		const back = await submitForm(
-			browser,
-			`${idp.issuer}/interaction/${start.uid}/login`,
-			{
-				csrf: formField(login, "csrf"),
-				identifier: account.username,
-				password: TEST_PASSWORD,
-			},
+		expect(login).toContain(`/interaction/${start.uid}/upstream/google`);
+		expect(login).not.toContain(SIGNUP_TITLE);
+		idp.fake.nextLogins.push(linkedGoogleProfile(account));
+		const back = await browser.navigate(
+			`${idp.issuer}/interaction/${start.uid}/upstream/google`,
+			{},
 			LOCALMAN_CALLBACK,
 		);
 		if (!back.location) throw new Error("did not return to the client");
@@ -190,7 +189,8 @@ describe("prompt=create (OIDC Prompt Create 1.0)", () => {
 			{ scope: "openid" },
 		);
 		const page = await start.response.text();
-		expect(page).toContain(`action="/interaction/${start.uid}/login"`);
+		expect(page).toContain(`/interaction/${start.uid}/upstream/google`);
+		expect(page).toContain('data-id="login-cancel"');
 		expect(page).not.toContain(SIGNUP_TITLE);
 	});
 });

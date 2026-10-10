@@ -19,8 +19,6 @@ export interface AccountProfile {
 		readonly chatId: string;
 		readonly username?: string;
 	};
-	/** A password reset is waiting for its security review (not a claim). */
-	readonly securityReviewPending?: boolean;
 }
 
 /**

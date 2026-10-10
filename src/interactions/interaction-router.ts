@@ -1,11 +1,8 @@
 import { Router } from "express";
-import { auditContext } from "../audit/audit-context.js";
-import { recordFailedLogin } from "../audit/record-login.js";
-import { formRateLimit, formText, formValue, parseForm } from "../http/form.js";
+import { formRateLimit, parseForm } from "../http/form.js";
 import { CREATE_PROMPT } from "../oidc/interaction-policy.js";
 import type { AppServices } from "../services.js";
 import { completeConsent, showConsent } from "./consent-handler.js";
-import { registerForgotRoutes } from "./forgot-routes.js";
 import {
 	asyncHandler,
 	checkCsrf,
@@ -14,25 +11,13 @@ import {
 	loadInteraction,
 	sendInteractionError,
 } from "./interaction-helpers.js";
-import {
-	BAD_CREDENTIALS_MESSAGE,
-	LOCKED_MESSAGE,
-	checkPassword,
-	normalizeIdentifier,
-	showLogin,
-	throttleSubject,
-} from "./login-handler.js";
-import {
-	completeLogin,
-	registerSecurityReviewRoutes,
-} from "./security-review-routes.js";
-import { registerSignupRoutes, showSignup } from "./signup-routes.js";
+import { showLogin, showSignup } from "./login-handler.js";
 import { registerUpstreamInteractionRoutes } from "./upstream-routes.js";
 
 /**
  * Login, consent and the rest of the interaction pages under
- * /interaction/:uid. Every POST checks CSRF; every POST is rate-limited per
- * IP on top of the per-account lockout kept in MongoDB.
+ * /interaction/:uid. Signing in is only through Google or GitHub (see
+ * upstream-routes.ts). Every POST checks CSRF and is rate-limited per IP.
  */
 export function createInteractionRouter(services: AppServices): Router {
 	const router = Router();
@@ -53,7 +38,7 @@ export function createInteractionRouter(services: AppServices): Router {
 			}
 			// prompt=create (OIDC Prompt Create): sign-up first.
 			if (interaction.prompt.name === CREATE_PROMPT) {
-				showSignup(services, req, res, interaction);
+				showSignup(services, res, interaction);
 				return;
 			}
 			if (interaction.prompt.name === "consent") {
@@ -79,50 +64,6 @@ export function createInteractionRouter(services: AppServices): Router {
 				return;
 			}
 			await showLogin(services, req, res, interaction);
-		}),
-	);
-
-	router.post(
-		"/:uid/login",
-		asyncHandler(async (req, res) => {
-			const interaction = await loadInteraction(services, req, res);
-			if (!interaction) return;
-			if (!checkCsrf(services, req, res, csrfScope(interaction.uid))) return;
-			const rawIdentifier = formText(req, "identifier", 254);
-			const identifier = normalizeIdentifier(rawIdentifier);
-			const password = formValue(req, "password") ?? "";
-			const account = identifier
-				? await services.accounts.findByIdentifier(identifier)
-				: undefined;
-			const result = await checkPassword(
-				services.passwordThrottle,
-				throttleSubject(services, req, identifier, account),
-				account,
-				password,
-			);
-			if (!result.ok) {
-				const locked = result.reason === "locked";
-				await showLogin(services, req, res, interaction, {
-					error: locked ? LOCKED_MESSAGE : BAD_CREDENTIALS_MESSAGE,
-					identifier: rawIdentifier,
-					status: locked ? 429 : 401,
-				});
-				// After the response, so known and unknown identifiers answer
-				// in the same time; refusals by a lock checked nothing.
-				if (account && result.reason === "invalid") {
-					await recordFailedLogin(
-						services,
-						account._id,
-						"password",
-						result.accountLocked,
-						auditContext(req),
-					);
-				}
-				return;
-			}
-			await completeLogin(services, req, res, interaction, result.account._id, [
-				"pwd",
-			]);
 		}),
 	);
 
@@ -159,9 +100,6 @@ export function createInteractionRouter(services: AppServices): Router {
 		}),
 	);
 
-	registerSignupRoutes(router, services);
-	registerSecurityReviewRoutes(router, services);
-	registerForgotRoutes(router, services);
 	registerUpstreamInteractionRoutes(router, services);
 	return router;
 }

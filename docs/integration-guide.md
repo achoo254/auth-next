@@ -1,6 +1,6 @@
 # Hướng dẫn tích hợp với `auth.hoandat.com`
 
-Tài liệu cho Localman web, Localman MCP, Tunelo CLI, Tunelo web và Localman (nhận audit). Quyết định phía IdP: [ADR 0001](decisions/0001-own-oidc-idp.md), [ADR 0002](decisions/0002-accounts-and-login-pages.md), [ADR 0003](decisions/0003-token-exchange-and-audit-outbox.md).
+Tài liệu cho Localman web, Localman MCP, Tunelo CLI, Tunelo web và Localman (nhận audit). Quyết định phía IdP: [ADR 0001](decisions/0001-own-oidc-idp.md), [ADR 0002](decisions/0002-accounts-and-login-pages.md), [ADR 0003](decisions/0003-token-exchange-and-audit-outbox.md), [ADR 0004](decisions/0004-upstream-only-sign-in.md) (chỉ đăng nhập bằng Google/GitHub).
 
 ## 1. Endpoint: luôn lấy từ discovery
 
@@ -104,9 +104,9 @@ export async function verifyAccessToken(token: string, requiredScope: string) {
 
 IdP hỗ trợ [OpenID Connect Prompt Create 1.0](https://openid.net/specs/openid-connect-prompt-create-1_0.html); discovery quảng bá `prompt_values_supported: ["none", "create", "login", "consent"]` (kiểm giá trị này trước khi hiện nút). Mọi client (tĩnh hoặc DCR) đều dùng được.
 
-- Gửi authorization request như bước 1 ở trên, thêm `prompt: "create"`. IdP mở thẳng trang **đăng ký** thay vì trang đăng nhập, kể cả khi user đã có phiên IdP (theo spec). Đăng ký xong (gồm bước xác nhận đã lưu mã khôi phục) IdP quay về `redirect_uri` với `code` như một lần đăng nhập bình thường; callback xử lý y hệt.
-- Trên trang đăng ký có "Đã có tài khoản? Đăng nhập" (giữ nguyên request, không quay về app), và nút Google/GitHub dùng đúng luồng liên kết/tạo tài khoản sẵn có. Mọi luật cũ vẫn áp dụng: giới hạn tần suất, CSRF, khoá đăng nhập, rà soát bảo mật sau reset.
-- `prompt=create none` (hay `none` đi cùng bất kỳ giá trị nào) bị trả về `redirect_uri` với `error=invalid_request`. Không gửi `prompt` thì luồng không đổi (trang đăng nhập, có link sang đăng ký).
+- Gửi authorization request như bước 1 ở trên, thêm `prompt: "create"`. IdP mở thẳng trang **đăng ký** thay vì trang đăng nhập, kể cả khi user đã có phiên IdP (theo spec). Trang đăng ký chỉ có nút "Đăng ký với Google/GitHub" (IdP không có mật khẩu, ADR 0004): danh tính Google/GitHub chưa có tài khoản thì chọn username rồi tạo tài khoản mới; danh tính đã liên kết thì đăng nhập vào tài khoản đó. Xong thì IdP quay về `redirect_uri` với `code` như một lần đăng nhập bình thường; callback xử lý y hệt.
+- Trên trang đăng ký có "Đã có tài khoản? Đăng nhập" (giữ nguyên request, không quay về app); nút Google/GitHub dùng đúng luồng liên kết/tạo tài khoản của trang đăng nhập. Mọi luật cũ vẫn áp dụng: giới hạn tần suất, CSRF.
+- `prompt=create none` (hay `none` đi cùng bất kỳ giá trị nào) bị trả về `redirect_uri` với `error=invalid_request`. Không gửi `prompt` thì luồng không đổi (trang đăng nhập với nút Google/GitHub; lần đầu đăng nhập bằng một danh tính mới cũng tạo tài khoản).
 
 ```ts
 const url = oidc.buildAuthorizationUrl(config, {
@@ -138,7 +138,7 @@ const url = oidc.buildAuthorizationUrl(config, {
 
 ## 5. Back-channel logout (Localman web, Tunelo web)
 
-Khi user đăng xuất ở IdP hoặc phiên IdP bị thu hồi (ở `/account`, sau đặt lại mật khẩu), IdP `POST` form `logout_token=<JWT>` tới URI back-channel của client. App phải:
+Khi user đăng xuất ở IdP hoặc phiên IdP bị thu hồi (ở `/account`), IdP `POST` form `logout_token=<JWT>` tới URI back-channel của client. App phải:
 
 ```ts
 import { createRemoteJWKSet, jwtVerify } from "jose";
@@ -189,7 +189,7 @@ const tunelo = await oidc.genericGrantRequest(
 
 - Token cấp ra: `sub` của user, `client_id` và `azp` là `localman-web`, `act: {"sub": "localman-web"}`, `exp` sau 15 phút, **không có refresh token**. Cache theo user tới gần `exp` rồi đổi lại; nếu access token của phiên đã hết hạn thì refresh phiên trước. Token endpoint giới hạn 60 request mỗi phút cho mỗi IP, và mọi lần đổi code, refresh, token exchange của Localman đều đi từ IP của server Localman, nên không đổi token ở mỗi request.
 - Phiên Localman sống theo phiên IdP: sau khi user đăng xuất ở IdP, token exchange với access token cũ trả `invalid_request`.
-- Lỗi: client khác hoặc client không được phép thì `unauthorized_client`; sai secret thì `invalid_client` (401); `resource`/`audience` khác Tunelo thì `invalid_target` (thiếu cả hai thì `invalid_request`); scope khác `tunnels:read` thì `invalid_scope`; subject token sai loại, hết hạn, đã thu hồi, grant đã bị thu hồi (đăng xuất, đặt lại mật khẩu), tài khoản bị khoá hay đang chờ rà soát bảo mật thì `invalid_request` (RFC 8693 §2.2.2). Gặp `invalid_request` vì subject token thì coi như phiên đã chết: đăng nhập lại.
+- Lỗi: client khác hoặc client không được phép thì `unauthorized_client`; sai secret thì `invalid_client` (401); `resource`/`audience` khác Tunelo thì `invalid_target` (thiếu cả hai thì `invalid_request`); scope khác `tunnels:read` thì `invalid_scope`; subject token sai loại, hết hạn, đã thu hồi, grant đã bị thu hồi (đăng xuất, thu hồi ở `/account`), tài khoản bị khoá thì `invalid_request` (RFC 8693 §2.2.2). Gặp `invalid_request` vì subject token thì coi như phiên đã chết: đăng nhập lại.
 - Phía Tunelo, `GET /api/tunnels` xác minh như mục 3 với `aud=https://tunnel.hoandat.com` và scope `tunnels:read`, rồi liệt kê theo `sub`. `client_id` cho biết token đến từ Localman.
 
 ## 7. Tunelo CLI (device flow)
@@ -205,7 +205,7 @@ console.log(`Mở ${device.verification_uri_complete} và xác nhận mã ${devi
 const tokens = await oidc.pollDeviceAuthorizationGrant(cli, device);
 ```
 
-- Trang duyệt luôn hỏi "Cho phép `tunelo` trên máy <device_name>?"; đã đăng nhập IdP thì không hỏi mật khẩu. Mỗi máy một grant, thu hồi từng máy ở `/account`.
+- Trang duyệt luôn hỏi "Cho phép `tunelo` trên máy <device_name>?"; đã đăng nhập IdP thì không phải đăng nhập lại. Mỗi máy một grant, thu hồi từng máy ở `/account`.
 - Lưu refresh token với quyền file `0600`. `tunelo logout`: gọi `revocation_endpoint` với refresh token rồi xoá file.
 
 ## 8. Refresh token và phiên trượt
@@ -226,7 +226,7 @@ const tokens = await oidc.pollDeviceAuthorizationGrant(cli, device);
 - Authorization request phải có `resource=https://localman.hoandat.com/mcp` (resource khác bị `invalid_target`); user luôn thấy trang consent nói trên, kể cả khi đã cấp quyền trước đó.
 - `offline_access`: SDK MCP (vd. TypeScript SDK 2.x) tự thêm scope này vào đăng ký và authorization request (kèm `prompt=consent`) khi discovery quảng bá nó. IdP **lặng lẽ bỏ** `offline_access` của client DCR thay vì báo lỗi: lúc đăng ký nó không vào `scope` lưu của client (response đăng ký trả `scope` đã bỏ nó), lúc authorize (`GET /auth`) nó bị gỡ khỏi `scope` trước khi kiểm. Chỉ `offline_access` được bỏ qua: scope ngoài danh sách trên vẫn bị `invalid_client_metadata` lúc đăng ký, scope client chưa đăng ký (vd. `credentials:write` khi chưa khai) vẫn bị `invalid_scope` lúc authorize. Client MCP vẫn nhận refresh token như cũ, gắn phiên IdP (mục 8). Authorization request gửi bằng `POST /auth` hoặc PAR không được gỡ: client DCR dùng hai cách đó thì đừng xin `offline_access`. Client tĩnh không có scope này (`localman-web`) vẫn nhận `invalid_scope`.
 - Endpoint MCP xác minh như mục 3 với `aud=https://localman.hoandat.com/mcp`.
-- Link từ app sang trang tài khoản dùng neo cố định: `${issuer}/account#account-email`, `#account-password`, `#account-recovery`, `#account-apps` (danh sách ứng dụng đã cấp quyền, nơi user thu hồi client MCP).
+- Link từ app sang trang tài khoản dùng neo cố định: `${issuer}/account#account-email`, `#account-sign-in` (cách đăng nhập: liên kết/huỷ Google, GitHub), `#account-apps` (danh sách ứng dụng đã cấp quyền, nơi user thu hồi client MCP). `#account-password` và `#account-recovery` đã bỏ cùng mật khẩu và mã khôi phục (ADR 0004); link cũ chỉ mở đầu trang.
 
 ## 10. Sự kiện audit gửi sang Localman
 
@@ -257,7 +257,7 @@ Body là Security Event Token (RFC 8417), header `{alg: "ES256", kid, typ: "sece
   "toe": 1791455925,
   "events": {
     "urn:hoandat:auth:event:login.succeeded": {
-      "methods": ["pwd"],
+      "methods": ["fed"],
       "ip": "203.0.113.7",
       "user_agent": "Mozilla/5.0 ..."
     }
@@ -267,19 +267,14 @@ Body là Security Event Token (RFC 8417), header `{alg: "ES256", kid, typ: "sece
 
 | Loại (`urn:hoandat:auth:event:` + …) | Dữ liệu |
 |---|---|
-| `login.succeeded` | `methods` (amr: `pwd`, `fed`) |
-| `login.failed` | `method` (`password`, `recovery-code`, `federated`), `reason` (`invalid`: bí mật sai; `review-pending`: Google/GitHub bị từ chối lúc chờ rà soát), có thể có `provider`; chỉ khi tài khoản tồn tại. Lượt bị khoá từ chối (không kiểm bí mật) không sinh sự kiện |
-| `login.locked` | `method`; một lần, khi lượt sai cuối cùng vừa khoá tài khoản |
-| `password.changed` | (đổi ở `/account`) |
-| `password.reset` | `via` (`recovery-code`, `reset-link`) |
-| `recovery_codes.regenerated` | |
+| `login.succeeded` | `methods` (amr: `fed`, đăng nhập qua Google/GitHub) |
 | `method.linked`, `method.unlinked` | `method` (`google`, `github`, `telegram`). Liên kết lại sang chat Telegram khác cũng sinh `method.linked`; Localman đọc lại `userinfo` khi nhận sự kiện có `method: "telegram"` |
 | `email.reclaimed` | (tài khoản `sub` mất email chưa xác minh cho chủ đã xác minh) |
 | `grant.created` | `clientId`, `kind` (`device`: duyệt máy Tunelo, có `deviceName`; `third-party-app`: consent client MCP). App first-party đăng nhập không sinh sự kiện này |
-| `session.revoked`, `grant.revoked` | `count`, `cause` (`account-page`, `password-change`, `password-reset`, `security-review`, `token-revocation`: client thu hồi refresh token ở `revocation_endpoint`), có thể có `clientId` |
+| `session.revoked`, `grant.revoked` | `count`, `cause` (`account-page`, `token-revocation`: client thu hồi refresh token ở `revocation_endpoint`), có thể có `clientId` |
 | `session.logout` | `scope` (`all`: đăng xuất khỏi IdP; `client`: chỉ khỏi một app), có thể có `clientId` (RP-initiated logout) |
 
-`ip`, `user_agent` có khi sự kiện đến từ một request của user; sự kiện nằm chờ quá 30 ngày (Localman chưa nhận) bị xoá hai trường này trước khi gửi. Sự kiện đã gửi được giữ 30 ngày trong outbox rồi tự xoá. Payload không bao giờ chứa mật khẩu, mã, token, link hay secret. Thứ tự gửi theo lúc xảy ra (cũ trước), nhưng thử lại có thể làm sự kiện tới không theo thứ tự: sắp theo `toe`.
+`ip`, `user_agent` có khi sự kiện đến từ một request của user; sự kiện nằm chờ quá 30 ngày (Localman chưa nhận) bị xoá hai trường này trước khi gửi. Sự kiện đã gửi được giữ 30 ngày trong outbox rồi tự xoá. Payload không bao giờ chứa mã, token, link hay secret. Từ khi bỏ mật khẩu (ADR 0004) IdP không còn phát `login.failed`, `login.locked`, `password.changed`, `password.reset`, `recovery_codes.regenerated`, và `cause` không còn `password-change`, `password-reset`, `security-review`; sự kiện cũ loại đó đã nằm trong outbox vẫn được gửi. Thứ tự gửi theo lúc xảy ra (cũ trước), nhưng thử lại có thể làm sự kiện tới không theo thứ tự: sắp theo `toe`.
 
 **Localman phải**
 

@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-`hoandat-auth`: IdP OpenID Connect tại `auth.hoandat.com` (oidc-provider v9 + Express 5 + MongoDB, database `auth`). Plan nằm ở repo `localman-next`: `plans/dattqh/261008-1325-central-auth-idp/`. Quyết định kiến trúc: `docs/decisions/0001-own-oidc-idp.md`, `docs/decisions/0002-accounts-and-login-pages.md`, `docs/decisions/0003-token-exchange-and-audit-outbox.md`. Hợp đồng với app tích hợp: `docs/integration-guide.md`.
+`hoandat-auth`: IdP OpenID Connect tại `auth.hoandat.com` (oidc-provider v9 + Express 5 + MongoDB, database `auth`). Plan nằm ở repo `localman-next`: `plans/dattqh/261008-1325-central-auth-idp/`. Quyết định kiến trúc: `docs/decisions/0001-own-oidc-idp.md`, `docs/decisions/0002-accounts-and-login-pages.md`, `docs/decisions/0003-token-exchange-and-audit-outbox.md`, `docs/decisions/0004-upstream-only-sign-in.md` (chỉ Google/GitHub, không mật khẩu). Hợp đồng với app tích hợp: `docs/integration-guide.md`.
 
 Commands: `pnpm dev`, `pnpm build`, `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm test:e2e`, `pnpm check:tokens`, `pnpm generate-key`, `pnpm seed:clients` (chỉ đọc; kiểm client tĩnh và discovery). Trước khi báo xong phải sạch `pnpm lint && pnpm typecheck && pnpm test && pnpm test:e2e && pnpm check:tokens`. Máy dùng chung: vitest đã giới hạn 2 worker trong `vitest.config.ts`, Playwright 1 worker; không chạy hai bộ test cùng lúc. `pnpm test -- <args>` không chuyển tham số, viết `pnpm test <args>`.
 
@@ -9,18 +9,18 @@ Commands: `pnpm dev`, `pnpm build`, `pnpm lint`, `pnpm typecheck`, `pnpm test`, 
 - **Không commit `secrets/` hay `.env`**. Khoá ký chỉ nằm trong file secret mount read-only.
 - **Không gửi email**: không thêm nodemailer, SMTP hay dịch vụ mail. `grep -ri "nodemailer\|smtp" src` phải rỗng.
 - Không có đường auto-login nào ngoài test: `src/__tests__/helpers/auto-interactions.ts` và upstream giả `src/__tests__/helpers/fake-upstreams.ts` chỉ được import từ test và `e2e/`.
-- Không log mật khẩu, mã khôi phục, mã liên kết Telegram, token reset, state/code của Google/GitHub. Token reset nằm trong path `/reset/<token>`; error handler đã che path này.
-- Không bao giờ để lộ một email/username có tồn tại không: đăng nhập sai và tài khoản không có phải cùng thông báo, cùng thời gian (luôn chạy argon2, xem `checkPassword`); yêu cầu reset qua Telegram luôn trả cùng một câu.
-- Mọi lượt thử bí mật (mật khẩu, mã khôi phục, reset qua Telegram) phải giữ chỗ qua `LoginThrottle.reserve` *trước* khi kiểm, với subject từ `throttleSubject`. Không thêm đường kiểm mật khẩu nào bỏ qua bước này.
-- Thao tác nhạy cảm ở `/account` dùng `portalRoute(..., { csrf: true, recentLogin: true })`. Đổi/đặt lại mật khẩu đi qua `afterPasswordChange` (huỷ token một lần, thu hồi phiên, grant, bật rà soát bảo mật sau reset, báo Telegram); mật khẩu chỉ ghi qua `setPassword` (đổi thế hệ thông tin đăng nhập, làm cookie thiết bị cũ mất hiệu lực).
-- Token một lần gắn với tài khoản chỉ được cấp/đọc qua `services.accountTokens` (kiểu `AccountTokenKind`); nó tự kiểm `securityVersion` và kênh. Mọi thay đổi bảo mật mới trên tài khoản phải `$inc: { securityVersion: 1 }` trong cùng câu cập nhật ở tầng repository. Thao tác ghi được phép bởi token thì truyền `version` mà `peek`/`take` trả về xuống phương thức repository (ghi có điều kiện, nhận `GuardedWrite`; `applied: false` thì coi như token hết hạn). Luồng tự làm tăng version mà cần dùng tiếp token của mình thì gọi `renew` với version mà chính lệnh ghi đó trả về.
-- Mọi lần hoàn tất đăng nhập trong interaction gọi `completeLogin` (không gọi thẳng `finishLogin`), để tài khoản đang chờ rà soát bảo mật dừng ở trang rà soát.
+- Không log mã liên kết Telegram, state/code của Google/GitHub. Error handler vẫn che path `/reset/<token>` của link đặt lại mật khẩu cũ.
+- Đăng nhập và đăng ký chỉ qua Google/GitHub (ADR 0004). Không thêm lại mật khẩu, mã khôi phục hay đường đăng nhập nào khác mà không có ADR mới. Các trường cũ `passwordHash`, `recoveryCodeHashes`, `recoveryCodesCreatedAt`, `credentialsChangedAt`, `securityReviewPendingSince` còn trong MongoDB nhưng cố ý không có trong `AccountDocument`: không đọc chúng.
+- Không được để tài khoản mất cách đăng nhập: huỷ liên kết Google/GitHub chỉ khi còn provider khác đã liên kết và đang bật (`usableSignInProviders` ở route, điều kiện "provider kia còn liên kết" trong `AccountLinks.unlinkProvider`).
+- Thao tác nhạy cảm ở `/account` dùng `portalRoute(..., { csrf: true, recentLogin: true })`.
+- Token một lần gắn với tài khoản chỉ được cấp/đọc qua `services.accountTokens` (kiểu `AccountTokenKind`); nó tự kiểm `securityVersion` và kênh. Mọi thay đổi bảo mật mới trên tài khoản phải `$inc: { securityVersion: 1 }` trong cùng câu cập nhật ở tầng repository. Thao tác ghi được phép bởi token thì truyền `version` mà `peek`/`take` trả về xuống phương thức repository (ghi có điều kiện, nhận `GuardedWrite`; `applied: false` thì coi như token hết hạn). 
+- Mọi lần hoàn tất đăng nhập trong interaction gọi `finishLogin` (ghi `login.succeeded`).
 - `email_verified` chỉ `true` khi Google/GitHub xác minh.
 - Đổi cấu hình provider thì đọc docs `oidc-provider` đúng major đang dùng trước; API đổi theo major.
 
 ## Audit
-- Sự kiện credential chỉ ghi qua `AuditOutbox.record` (kiểu trong `src/audit/audit-events.ts`), **sau** thao tác bảo mật mà nó mô tả (thu hồi, bật rà soát...), trong cùng request. `record` không bao giờ ném lỗi (lỗi chỉ được log, không kèm dữ liệu): audit không được làm hỏng bước bảo mật. Sự kiện về lượt đăng nhập sai ghi sau khi đã trả response (thời gian trả lời như nhau dù tài khoản có tồn tại hay không); lượt bị khoá từ chối không ghi gì, khoá chỉ ghi một `login.locked` khi `reservation.fail()` báo `accountLocked`. Sự kiện của endpoint `oidc-provider` (thu hồi, đăng xuất) ghi qua listener trong `src/audit/provider-events.ts`. Liên kết/gỡ phương thức, mã khôi phục, email bị lấy lại được ghi ở tầng dữ liệu (`AccountLinks`, `AccountRepository`); đăng nhập ở `finishLogin` và route đăng nhập/mã khôi phục; mật khẩu ở `afterPasswordChange`; thu hồi ở `revokeAccountAccess` và route thu hồi ở `/account`. Thêm thay đổi bảo mật mới thì thêm loại sự kiện và ghi ở cùng tầng.
-- Dữ liệu sự kiện không bao giờ chứa mật khẩu, mã, token, link hay secret; dispatcher không đọc hay log body phản hồi.
+- Sự kiện credential chỉ ghi qua `AuditOutbox.record` (kiểu trong `src/audit/audit-events.ts`), **sau** thao tác bảo mật mà nó mô tả (thu hồi, liên kết...), trong cùng request. `record` không bao giờ ném lỗi (lỗi chỉ được log, không kèm dữ liệu): audit không được làm hỏng bước bảo mật. Sự kiện của endpoint `oidc-provider` (thu hồi, đăng xuất) ghi qua listener trong `src/audit/provider-events.ts`. Liên kết/gỡ phương thức, email bị lấy lại được ghi ở tầng dữ liệu (`AccountLinks`); đăng nhập ở `finishLogin`; thu hồi ở route thu hồi của `/account`. Thêm thay đổi bảo mật mới thì thêm loại sự kiện và ghi ở cùng tầng.
+- Dữ liệu sự kiện không bao giờ chứa mã, token, link hay secret; dispatcher không đọc hay log body phản hồi.
 
 ## Hợp đồng với client
 - Token exchange (RFC 8693) chỉ cho `localman-web`, đích chỉ `https://tunnel.hoandat.com`, scope chỉ `tunnels:read`, subject token phải là access token opaque còn sống của chính client (`src/oidc/token-exchange.ts`). Lỗi về subject token là `invalid_request` theo RFC 8693 §2.2.2.
@@ -33,7 +33,7 @@ Commands: `pnpm dev`, `pnpm build`, `pnpm lint`, `pnpm typecheck`, `pnpm test`, 
 ## Trang render phía server
 - Mọi HTML đi qua template `html` trong `src/ui/html.ts` (tự escape); `trustedHtml` chỉ cho markup do `oidc-provider` sinh ra. Không nối chuỗi HTML thô.
 - Không có inline script hay inline style (CSP `script-src 'self'`, `style-src 'self'`). Màu chỉ lấy từ biến trong `static/css/tokens.css` (bản sao của Localman, sửa bằng cách chép lại cả file); `pnpm check:tokens` chặn mã màu ở chỗ khác.
-- Mọi form POST có CSRF qua `services.csrf` với đúng phạm vi: `csrfScope(uid)` cho interaction, `portalCsrfScope` cho `/account`, `reset:<token>` cho trang reset. Body form chỉ parse trong router của trang (`parseForm`), không bao giờ trước `oidc-provider`.
+- Mọi form POST có CSRF qua `services.csrf` với đúng phạm vi: `csrfScope(uid)` cho interaction, `portalCsrfScope` cho `/account`. Body form chỉ parse trong router của trang (`parseForm`), không bao giờ trước `oidc-provider`.
 - Route của interaction phải nằm dưới `/interaction/:uid/...` vì cookie interaction gắn với path đó; luôn đọc interaction qua `loadInteraction` (kiểm cookie và uid).
 - Google/GitHub chỉ đi qua interface `UpstreamClient` (`src/accounts/upstream-client.ts`), cài bằng `openid-client` trong `upstream-google.ts`, `upstream-github.ts`; luôn PKCE + state, Google thêm nonce. Test thay Google/GitHub bằng fetch giả, không gọi mạng thật.
 

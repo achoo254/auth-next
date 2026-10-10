@@ -3,8 +3,7 @@ import type { AppServices } from "../services.js";
 
 /**
  * Tells the account owner about a security-relevant change on their linked
- * Telegram chat (password changed, recovery codes regenerated, new sign-in
- * method linked, email reclaimed). Best effort and in the background: a
+ * Telegram chat (new sign-in method linked, email reclaimed). Best effort and in the background: a
  * Telegram outage never blocks or fails the change itself.
  */
 export function notifyTelegram(

@@ -93,7 +93,10 @@ export function checkCsrf(
 	return false;
 }
 
-/** Completes the login prompt for `accountId` and remembers this browser. */
+/**
+ * Completes the login prompt for `accountId`, signed in through Google or
+ * GitHub (`amr` "fed"). Every completed sign-in goes through here.
+ */
 export async function finishLogin(
 	services: AppServices,
 	req: Request,
@@ -104,10 +107,6 @@ export async function finishLogin(
 	const result: InteractionResults = {
 		login: { accountId, amr: [...amr] },
 	};
-	// From now on this browser has its own budget instead of the account's.
-	// Read fresh: the cookie is signed with the current credential generation.
-	const account = await services.accounts.findActiveById(accountId);
-	if (account) services.devices.remember(req, res, account);
 	await services.provider.interactionFinished(req, res, result, {
 		mergeWithLastSubmission: false,
 	});
@@ -128,11 +127,6 @@ export function isSignInPrompt(interaction: Interaction): boolean {
 		interaction.prompt.name === "login" ||
 		interaction.prompt.name === CREATE_PROMPT
 	);
-}
-
-/** The login page of an interaction, also under `prompt=create`. */
-export function loginPath(uid: string): string {
-	return `/interaction/${uid}/login`;
 }
 
 /** The client id an interaction is for. */

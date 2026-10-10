@@ -3,7 +3,7 @@ import * as client from "openid-client";
 import { MCP_CALLBACK } from "./support/e2e-config.js";
 import { logIn, newUser, registerMcpClient, signUp } from "./support/flows.js";
 
-test("sign up, consent and return to the client; then sign in again", async ({
+test("sign up with Google, consent and return to the client; then sign in again", async ({
 	browser,
 }) => {
 	const mcp = await registerMcpClient("Claude Code (localman)");
@@ -18,8 +18,7 @@ test("sign up, consent and return to the client; then sign in again", async ({
 	await expect(page.locator('[data-id="idp-brand"]')).toContainText(
 		"hoandat · Tài khoản",
 	);
-	const codes = await signUp(page, user);
-	expect(new Set(codes).size).toBe(8);
+	await signUp(page, user);
 
 	// 2. Consent: a DCR client is always labelled as external, its name is
 	// quoted, and a name that reads like ours gets the stronger warning.
@@ -58,16 +57,13 @@ test("sign up, consent and return to the client; then sign in again", async ({
 	expect(tokens.access_token).toEqual(expect.any(String));
 	await first.close();
 
-	// 4. A fresh browser: sign in with the password; consent is asked again.
+	// 4. A fresh browser: sign in with the same Google account; consent is
+	// asked again and no second account appears.
 	const second = await browser.newContext();
 	const again = await second.newPage();
 	const next = await mcp.authorizationUrl();
 	await again.goto(next.url.href);
-	await logIn(again, user.username, "sai-mat-khau");
-	await expect(again.locator('[data-id="alert-error"]')).toHaveText(
-		"Email/username hoặc mật khẩu không đúng.",
-	);
-	await logIn(again, user.email.toLowerCase(), user.password);
+	await logIn(again, user);
 	await expect(again.locator('[data-id="consent-external"]')).toBeVisible();
 	await again.locator('[data-id="consent-allow"]').click();
 	await again.waitForURL(`${MCP_CALLBACK}?**`);

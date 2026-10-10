@@ -1,8 +1,10 @@
 # ADR 0002: Tài khoản, trang đăng nhập và trang `/account`
 
-- Trạng thái: chấp nhận
+- Trạng thái: chấp nhận; mục 3, 4, 8, 10 bị ADR 0004 thay một phần
 - Ngày: 2026-10-08
 - Phạm vi: phase 02 của IdP (tài khoản, đăng nhập không dùng email, quản lý tài khoản)
+
+> Cập nhật 2026-10-10: IdP chỉ còn đăng nhập bằng Google/GitHub ([ADR 0004](0004-upstream-only-sign-in.md)). Phần về mật khẩu, mã khôi phục, khoá đăng nhập và cookie thiết bị (mục 3, 4), đặt lại mật khẩu và rà soát bảo mật (mục 8, 10) đã bị gỡ khỏi code; giữ ở đây làm lịch sử quyết định.
 
 ## Bối cảnh
 

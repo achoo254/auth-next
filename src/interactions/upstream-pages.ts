@@ -35,7 +35,7 @@ ${
 	view.reclaiming
 		? alertBox(
 				"warning",
-				html`Email này đang gắn với một tài khoản hoandat khác nhưng chưa ai xác minh. Nếu đó là tài khoản của bạn, hãy <a class="link" href="/interaction/${view.uid}">đăng nhập bằng mật khẩu</a> rồi liên kết ${label} ở trang tài khoản. Nếu tiếp tục, email chuyển sang tài khoản mới; tài khoản kia vẫn đăng nhập được bằng username.`,
+				html`Email này đang gắn với một tài khoản hoandat khác nhưng chưa ai xác minh. Nếu đó là tài khoản của bạn và nó đã liên kết Google hoặc GitHub khác, hãy <a class="link" href="/interaction/${view.uid}">đăng nhập bằng cách đó</a> rồi liên kết ${label} ở trang tài khoản. Nếu tiếp tục, email chuyển sang tài khoản mới; tài khoản kia giữ các cách đăng nhập khác của nó.`,
 			)
 		: ""
 }

@@ -15,7 +15,7 @@ import { finishUpstream, loadPending } from "./upstream-pending.js";
 /**
  * Finishes a Google/GitHub sign-up: the username for the new account. When
  * an account held this email unverified, the email moves to the new account
- * (its proven owner) and the old account keeps signing in by username.
+ * (its proven owner); the old account keeps its other sign-in methods.
  */
 export function registerUpstreamFinishRoutes(
 	router: Router,
@@ -73,7 +73,7 @@ export function registerUpstreamFinishRoutes(
 				notifyTelegram(
 					services,
 					previous,
-					`Email ${decision.email} đã được gỡ khỏi tài khoản hoandat @${previous?.username ?? ""} vì người sở hữu email đã xác minh nó qua ${UPSTREAM_LABELS[profile.provider]}. Bạn vẫn đăng nhập được bằng username.`,
+					`Email ${decision.email} đã được gỡ khỏi tài khoản hoandat @${previous?.username ?? ""} vì người sở hữu email đã xác minh nó qua ${UPSTREAM_LABELS[profile.provider]}. Bạn vẫn đăng nhập được bằng Google/GitHub đã liên kết với tài khoản đó.`,
 				);
 			}
 			try {
@@ -81,7 +81,6 @@ export function registerUpstreamFinishRoutes(
 					username,
 					email: decision.email,
 					emailVerifiedBy: profile.provider,
-					recoveryCodeHashes: [],
 					providers: { [profile.provider]: profile.providerId },
 					providerDetails: { [profile.provider]: providerDetail(profile) },
 					name: profile.name,

@@ -55,7 +55,7 @@ export function portalCsrfScope(portal: PortalContext): string {
 
 /**
  * Sends the browser through a normal authorization request of the portal
- * client, so signing in uses the same login pages (and lockouts). The code
+ * client, so signing in uses the same login pages (Google/GitHub). The code
  * it returns is never redeemed: only the session cookie set on the way
  * matters, and without the discarded PKCE verifier the code is useless.
  */
@@ -74,7 +74,7 @@ export function redirectToPortalLogin(
 		redirect_uri: `${services.issuer}${ACCOUNT_PORTAL_CALLBACK_PATH}`,
 		code_challenge: createHash("sha256").update(verifier).digest("base64url"),
 		code_challenge_method: "S256",
-		// prompt=login asks for credentials even with a live session.
+		// prompt=login asks to sign in again even with a live session.
 		...(options.reauthenticate ? { prompt: "login" } : {}),
 		state: options.reauthenticate ? `${REAUTH_STATE_PREFIX}${nonce}` : nonce,
 	}).toString();
@@ -151,13 +151,6 @@ export function portalRoute(
 		const run = async (): Promise<void> => {
 			const portal = await loadPortalContext(services, req, res);
 			if (!portal) {
-				if (req.method === "GET") redirectToPortalLogin(services, res);
-				else res.redirect(303, "/account");
-				return;
-			}
-			if (portal.account.securityReviewPendingSince) {
-				// After a password reset nothing here is usable before the
-				// security review, which follows the (forced) sign-in.
 				if (req.method === "GET") redirectToPortalLogin(services, res);
 				else res.redirect(303, "/account");
 				return;

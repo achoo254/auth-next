@@ -23,7 +23,7 @@ User đã đặt quy tắc: không chạy mail server, không gửi email; thôn
 
 - IdP không có route gửi mail và không có cấu hình SMTP; kiểm bằng `grep -ri "nodemailer\|smtp" src` phải rỗng.
 - Email chỉ là định danh đăng nhập. Claim `email_verified` chỉ là `true` khi Google hoặc GitHub đã xác minh email đó; email gõ tay luôn là chưa xác minh, vì IdP không gửi được mail để xác minh.
-- Khôi phục tài khoản (phase 02): mã khôi phục dùng một lần, link reset gửi qua Telegram, hoặc đăng nhập bằng Google/GitHub đã liên kết.
+- Khôi phục tài khoản (phase 02): mã khôi phục dùng một lần, link reset gửi qua Telegram, hoặc đăng nhập bằng Google/GitHub đã liên kết. Từ [ADR 0004](0004-upstream-only-sign-in.md): không còn mật khẩu; khôi phục là đăng nhập bằng provider thứ hai đã liên kết.
 - Nếu sau này cần gửi mail thì cắm một dịch vụ gửi mail vào IdP mà không phải đổi app nào; việc đó cần user đồng ý trước.
 
 ### 3. ES256 và token ngắn hạn

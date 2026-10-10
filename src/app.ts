@@ -10,13 +10,11 @@ import {
 	requireKnownHost,
 } from "./http/security.js";
 import { createInteractionRouter } from "./interactions/interaction-router.js";
-import { createResetRouter } from "./interactions/reset-password-page.js";
 import { createUpstreamCallbackRouter } from "./interactions/upstream-start.js";
 import { createPrivacyRouter } from "./legal/privacy-page.js";
 import { INTERACTION_PATH } from "./oidc/provider.js";
 import type { AppServices } from "./services.js";
 import { createTelegramLinkRouter } from "./telegram/link-routes.js";
-import { RESET_PATH } from "./telegram/reset-link-service.js";
 import { createTelegramWebhookRouter } from "./telegram/webhook-routes.js";
 
 export interface AppOptions {
@@ -32,8 +30,8 @@ export interface AppOptions {
 
 /**
  * Express shell: security layer, /healthz, static assets, the
- * server-rendered pages (interactions, /account, password reset, OAuth
- * callbacks, Telegram webhook), then the provider for everything else.
+ * server-rendered pages (interactions, /account, Google/GitHub callbacks,
+ * Telegram webhook), then the provider for everything else.
  */
 export function createApp(options: AppOptions): Express {
 	const { services, env } = options;
@@ -66,7 +64,6 @@ export function createApp(options: AppOptions): Express {
 	app.use("/oauth", createUpstreamCallbackRouter(services));
 	app.use("/account/telegram", createTelegramLinkRouter(services));
 	app.use("/account", createAccountRouter(services));
-	app.use(RESET_PATH, createResetRouter(services));
 	app.use(createTelegramWebhookRouter(services));
 
 	const callback = services.provider.callback();

@@ -4,6 +4,8 @@
 - Ngày: 2026-10-08
 - Phạm vi: phase 03 của IdP (tích hợp Localman, Tunelo, MCP)
 
+> Cập nhật 2026-10-10: từ [ADR 0004](0004-upstream-only-sign-in.md) không còn mật khẩu, nên IdP không còn phát `login.failed`, `login.locked`, `password.changed`, `password.reset`, `recovery_codes.regenerated`, và không còn đặt lại mật khẩu để thu hồi grant (mục 1, 3 nói về các điều đó là lịch sử). Hợp đồng SET với Localman không đổi.
+
 ## Bối cảnh
 
 Phase 03 nối bốn client vào IdP. Có ba việc cần quyết định kiến trúc: Localman phải gọi được API liệt kê tunnel của Tunelo thay cho user; client phải có mặt ở staging và production ("seed"); và IdP phải đẩy sự kiện credential sang audit log của Localman (Jev 0.94) mà không mất sự kiện khi Localman chưa chạy.

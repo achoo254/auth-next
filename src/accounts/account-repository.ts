@@ -12,7 +12,6 @@ import {
 	normalizeUsername,
 	toAccountProfile,
 } from "./user-model.js";
-import { type GuardedWrite, writeWithVersion } from "./versioned-write.js";
 
 export type NewAccount = Omit<AccountDocument, "_id" | "createdAt">;
 
@@ -43,16 +42,6 @@ export class AccountRepository implements AccountStore {
 			disabledAt: { $exists: false },
 		});
 		return account ?? undefined;
-	}
-
-	/** Email when it contains "@", otherwise username (a leading @ is ignored). */
-	async findByIdentifier(
-		identifier: string,
-	): Promise<AccountDocument | undefined> {
-		const filter = identifier.includes("@", 1)
-			? { email: normalizeEmail(identifier) }
-			: { username: normalizeUsername(identifier) };
-		return (await this.accounts.findOne(filter)) ?? undefined;
 	}
 
 	async findByEmail(email: string): Promise<AccountDocument | undefined> {
@@ -98,88 +87,10 @@ export class AccountRepository implements AccountStore {
 		return count > 0;
 	}
 
-	/**
-	 * New password; also starts a new credential generation (voids device
-	 * cookies). `expectedVersion`: only if the account is still at the
-	 * security version a token was checked against (see versioned-write.ts).
-	 */
-	setPassword(
-		id: string,
-		passwordHash: string,
-		expectedVersion?: number,
-	): Promise<GuardedWrite> {
-		return writeWithVersion(
-			this.accounts,
-			id,
-			expectedVersion,
-			{},
-			{
-				$set: { passwordHash, credentialsChangedAt: new Date() },
-				$inc: { securityVersion: 1 },
-			},
-		);
-	}
-
-	/** Starts (after a password reset) or ends the mandatory security review. */
-	setSecurityReviewPending(
-		id: string,
-		pending: boolean,
-		expectedVersion?: number,
-	): Promise<GuardedWrite> {
-		return writeWithVersion(
-			this.accounts,
-			id,
-			expectedVersion,
-			{},
-			pending
-				? {
-						$set: { securityReviewPendingSince: new Date() },
-						$inc: { securityVersion: 1 },
-					}
-				: {
-						$unset: { securityReviewPendingSince: "" },
-						$inc: { securityVersion: 1 },
-					},
-		);
-	}
-
 	async updateName(id: string, name: string | undefined): Promise<void> {
 		await this.accounts.updateOne(
 			{ _id: id },
 			name ? { $set: { name } } : { $unset: { name: "" } },
 		);
-	}
-
-	/** Removes one code hash; false if another request used it first. */
-	async consumeRecoveryCode(id: string, codeHash: string): Promise<boolean> {
-		const result = await this.accounts.updateOne(
-			{ _id: id, recoveryCodeHashes: codeHash },
-			{ $pull: { recoveryCodeHashes: codeHash } },
-		);
-		return result.modifiedCount === 1;
-	}
-
-	async replaceRecoveryCodes(
-		id: string,
-		hashes: readonly string[],
-		expectedVersion?: number,
-	): Promise<GuardedWrite> {
-		const write = await writeWithVersion(
-			this.accounts,
-			id,
-			expectedVersion,
-			{},
-			{
-				$set: {
-					recoveryCodeHashes: [...hashes],
-					recoveryCodesCreatedAt: new Date(),
-				},
-				$inc: { securityVersion: 1 },
-			},
-		);
-		if (write.applied) {
-			await this.audit.record("recovery_codes.regenerated", id, {});
-		}
-		return write;
 	}
 }

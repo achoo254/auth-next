@@ -4,16 +4,16 @@ import { isUpstreamProvider } from "../accounts/user-model.js";
 import type { AppServices } from "../services.js";
 import {
 	type Interaction,
+	finishLogin,
 	isSignInPrompt,
 	loadInteraction,
 } from "./interaction-helpers.js";
-import { completeLogin } from "./security-review-routes.js";
 
 const PENDING_TTL_SECONDS = 10 * 60;
 
 /**
- * A Google/GitHub profile waiting for the rest of its interaction (password
- * to link, or a username). Keyed by interaction uid; only the browser that
+ * A Google/GitHub profile waiting for the rest of its interaction (the
+ * username of a new account). Keyed by interaction uid; only the browser that
  * holds that interaction's cookie can reach the pages that read it.
  */
 export async function savePendingUpstream(
@@ -69,7 +69,7 @@ export async function finishUpstream(
 	accountId: string,
 ): Promise<void> {
 	await dropPendingUpstream(services, interaction.uid);
-	await completeLogin(services, req, res, interaction, accountId, ["fed"]);
+	await finishLogin(services, req, res, accountId, ["fed"]);
 }
 
 /** Loads the interaction and its pending Google/GitHub profile. */

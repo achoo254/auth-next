@@ -1,11 +1,7 @@
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { FAKE_UPSTREAM_ENV, FakeUpstreams } from "./helpers/fake-upstreams.js";
-import {
-	TEST_PASSWORD,
-	createTestAccount,
-	openLoginPage,
-	repositoryOf,
-} from "./helpers/test-accounts.js";
+import { FAKE_UPSTREAM_ENV } from "./helpers/fake-upstreams.js";
+import { signedInBrowser } from "./helpers/session-flows.js";
+import { createTestAccount, repositoryOf } from "./helpers/test-accounts.js";
 import { formField } from "./helpers/test-browser.js";
 import {
 	LOCALMAN_CALLBACK,
@@ -15,11 +11,8 @@ import {
 import { signInWith } from "./helpers/upstream-sign-in.js";
 
 let idp: TestIdp;
-const fake = new FakeUpstreams();
-let uninstall: () => void;
 
 beforeAll(async () => {
-	uninstall = fake.install();
 	idp = await startTestIdp({
 		interactions: "real",
 		rateLimits: [],
@@ -28,19 +21,18 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-	uninstall?.();
 	await idp?.close();
 });
 
 describe("emails from Google/GitHub", () => {
 	it("lets the verified owner reclaim an email squatted by an unverified account", async () => {
-		// P6: someone registered the victim's address first, with a password.
+		// An older account holds the victim's address, never verified.
 		const accounts = repositoryOf(idp);
 		const squatter = await createTestAccount(accounts, {
 			email: "Victim.Name@Gmail.com",
 		});
 		await accounts.links.setTelegram(squatter._id, { chatId: "6006" });
-		const { page, response } = await signInWith(idp, fake, "github", {
+		const { page, response } = await signInWith(idp, "github", {
 			id: "300",
 			email: "victim.name@gmail.com",
 			emailVerified: true,
@@ -70,35 +62,23 @@ describe("emails from Google/GitHub", () => {
 		expect(old?.reclaimedEmail?.email).toBe("victim.name@gmail.com");
 		await expect
 			.poll(() =>
-				fake.telegramMessages.some(
+				idp.fake.telegramMessages.some(
 					(m) => m.chatId === "6006" && /đã được gỡ/.test(m.text),
 				),
 			)
 			.toBe(true);
 
-		// The old account still signs in by username and sees why on /account.
-		const login = await openLoginPage(idp);
-		const back = await login.browser.navigate(
-			`${idp.issuer}/interaction/${login.uid}/login`,
-			{
-				form: {
-					csrf: login.csrf,
-					identifier: squatter.username,
-					password: TEST_PASSWORD,
-				},
-			},
-			LOCALMAN_CALLBACK,
-		);
-		expect(back.location?.href.startsWith(LOCALMAN_CALLBACK)).toBe(true);
+		// The old account still signs in with its own Google and sees why on /account.
+		const browser = await signedInBrowser(idp, squatter);
 		const accountPage = await (
-			await login.browser.request(`${idp.issuer}/account`)
+			await browser.request(`${idp.issuer}/account`)
 		).text();
 		expect(accountPage).toContain('data-id="account-email-reclaimed"');
 		expect(accountPage).toContain("Chưa có email");
 	});
 
 	it("stores a Google email normalised", async () => {
-		const { page, response } = await signInWith(idp, fake, "google", {
+		const { page, response } = await signInWith(idp, "google", {
 			id: "g-mixed",
 			email: "Mixed.Case@Example.com",
 			emailVerified: true,
@@ -117,13 +97,13 @@ describe("emails from Google/GitHub", () => {
 		const account = await repositoryOf(idp).findByProvider("google", "g-mixed");
 		expect(account?.email).toBe("mixed.case@example.com");
 		expect(
-			(await repositoryOf(idp).findByIdentifier("MIXED.CASE@example.com"))?._id,
+			(await repositoryOf(idp).findByEmail("MIXED.CASE@example.com"))?._id,
 		).toBe(account?._id);
 	});
 
 	it("says which field is taken when choosing a username", async () => {
 		const existing = await createTestAccount(repositoryOf(idp));
-		const { page, response } = await signInWith(idp, fake, "google", {
+		const { page, response } = await signInWith(idp, "google", {
 			id: "g-taken",
 			email: "someone.new@example.com",
 			emailVerified: true,

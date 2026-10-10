@@ -1,10 +1,10 @@
 import * as client from "openid-client";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { accountsCollection } from "../accounts/user-model.js";
 import { localmanWeb } from "./helpers/exchange-flows.js";
 import {
 	FAKE_UPSTREAM_ENV,
 	type FakeProfile,
-	FakeUpstreams,
 } from "./helpers/fake-upstreams.js";
 import {
 	createTestAccount,
@@ -20,11 +20,8 @@ import {
 import { signInWith } from "./helpers/upstream-sign-in.js";
 
 let idp: TestIdp;
-const fake = new FakeUpstreams();
-let uninstall: () => void;
 
 beforeAll(async () => {
-	uninstall = fake.install();
 	idp = await startTestIdp({
 		interactions: "real",
 		rateLimits: [],
@@ -33,16 +30,14 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-	uninstall?.();
 	await idp?.close();
 });
 
 function signIn(
 	provider: "google" | "github",
 	profile: FakeProfile,
-	query = "",
 ): ReturnType<typeof signInWith> {
-	return signInWith(idp, fake, provider, profile, query);
+	return signInWith(idp, provider, profile);
 }
 
 describe("Google and GitHub sign-in", () => {
@@ -71,7 +66,8 @@ describe("Google and GitHub sign-in", () => {
 			emailVerifiedBy: "google",
 			name: "New Person",
 		});
-		expect(account?.passwordHash).toBeUndefined();
+		expect(account).not.toHaveProperty("passwordHash");
+		expect(account).not.toHaveProperty("recoveryCodeHashes");
 	});
 
 	it("signs up through Google from the prompt=create page", async () => {
@@ -90,7 +86,7 @@ describe("Google and GitHub sign-in", () => {
 		expect(await start.response.text()).toContain(
 			`/interaction/${uid}/upstream/google`,
 		);
-		fake.nextLogins.push({
+		idp.fake.nextLogins.push({
 			id: "g-create",
 			email: "created.here@gmail.com",
 			emailVerified: true,
@@ -116,6 +112,7 @@ describe("Google and GitHub sign-in", () => {
 	it("links automatically when the account's email was already verified", async () => {
 		const account = await createTestAccount(repositoryOf(idp), {
 			emailVerifiedBy: "github",
+			providers: { github: "6006" },
 		});
 		const { location } = await signIn("google", {
 			id: "g-200",
@@ -141,28 +138,26 @@ describe("Google and GitHub sign-in", () => {
 		).toBeUndefined();
 	});
 
-	it("lets a linked Google account set a new password (forgot password)", async () => {
+	it("signs in an older account despite a review flag left by the old password reset", async () => {
 		const account = await createTestAccount(repositoryOf(idp), {
 			providers: { google: "g-400" },
 			emailVerifiedBy: "google",
 		});
-		const { page, response } = await signIn(
-			"google",
-			{ id: "g-400", email: account.email, emailVerified: true },
-			"?purpose=reset",
-		);
-		const html = await response.text();
-		expect(new URL(response.url).pathname).toMatch(/^\/reset\/[\w-]{43}$/);
-		const reset = await page.browser.navigate(response.url, {
-			form: {
-				csrf: formField(html, "csrf"),
-				password: "brand-new-pass",
-				password_confirm: "brand-new-pass",
+		await accountsCollection(idp.db).updateOne(
+			{ _id: account._id },
+			{
+				$set: {
+					securityReviewPendingSince: new Date(),
+					passwordHash: "$argon2id$legacy",
+				},
 			},
+		);
+		const { location } = await signIn("google", {
+			id: "g-400",
+			email: account.email,
+			emailVerified: true,
 		});
-		expect(await reset.response.text()).toContain("Rà soát bảo mật");
-		const replay = await page.browser.request(response.url);
-		expect(replay.status).toBe(410);
+		expect(location?.searchParams.get("code")).toEqual(expect.any(String));
 	});
 });
 

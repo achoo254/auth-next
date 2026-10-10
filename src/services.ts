@@ -8,11 +8,6 @@ import {
 import type { AccountRepository } from "./accounts/account-repository.js";
 import { AccountTokens } from "./accounts/account-tokens.js";
 import {
-	IDENTIFIER_POLICY,
-	LoginThrottle,
-	ensureLoginThrottleIndexes,
-} from "./accounts/login-throttle.js";
-import {
 	OneTimeTokenStore,
 	ensureOneTimeTokenIndexes,
 } from "./accounts/one-time-tokens.js";
@@ -24,7 +19,6 @@ import { auditProviderEvents } from "./audit/provider-events.js";
 import type { Env } from "./config/env.js";
 import { telegramBotConfig } from "./config/integrations-env.js";
 import { type Csrf, createCsrf } from "./http/csrf.js";
-import { type DeviceMemory, createDeviceMemory } from "./http/device-cookie.js";
 import type { Logger } from "./logger.js";
 import { type TelegramBot, createTelegramBot } from "./telegram/bot-client.js";
 
@@ -43,17 +37,9 @@ export interface AppServices {
 	/** Account-bound one-time tokens, checked against `securityVersion`. */
 	readonly accountTokens: AccountTokens;
 	readonly csrf: Csrf;
-	/** Browsers that signed in to an account before (exempt from its lock). */
-	readonly devices: DeviceMemory;
-	/** Wrong passwords (login, link, change password). */
-	readonly passwordThrottle: LoginThrottle;
-	/** Wrong recovery codes. */
-	readonly recoveryThrottle: LoginThrottle;
-	/** Telegram reset requests, so nobody can flood someone's chat. */
-	readonly telegramResetThrottle: LoginThrottle;
 	readonly upstreams: Upstreams;
 	readonly telegram?: TelegramBot;
-	/** Per-IP budget for form POSTs (login, signup, reset...). */
+	/** Per-IP budget for form POSTs and Google/GitHub sign-in starts. */
 	readonly formPostsPerMinute: number;
 }
 
@@ -87,13 +73,6 @@ export function createServices(deps: ServiceDependencies): AppServices {
 		tokens: new OneTimeTokenStore(db),
 		accountTokens: new AccountTokens(db, deps.accounts),
 		csrf: createCsrf(env.COOKIE_KEYS, secureCookies),
-		devices: createDeviceMemory(env.COOKIE_KEYS, secureCookies),
-		passwordThrottle: new LoginThrottle(db, "password"),
-		recoveryThrottle: new LoginThrottle(db, "recovery"),
-		telegramResetThrottle: new LoginThrottle(db, "telegram-reset", {
-			...IDENTIFIER_POLICY,
-			maxAttempts: 3,
-		}),
 		upstreams: deps.upstreams ?? createUpstreams(env),
 		formPostsPerMinute: deps.formPostsPerMinute ?? 30,
 		telegram:
@@ -107,7 +86,6 @@ export async function ensureAccountLayerIndexes(db: Db): Promise<void> {
 	await Promise.all([
 		ensureAccountIndexes(db),
 		ensureOneTimeTokenIndexes(db),
-		ensureLoginThrottleIndexes(db),
 		ensureAuditOutboxIndexes(db),
 		...[SESSION_META_COLLECTION, GRANT_META_COLLECTION].map((name) =>
 			db

@@ -18,7 +18,7 @@ export interface ProviderLink {
 	readonly login?: string;
 }
 
-/** What is stored about a link, for /account and the security review. */
+/** What is stored about a link, shown on /account. */
 export function providerDetail(link: ProviderLink): ProviderDetail {
 	const detail: ProviderDetail = { linkedAt: new Date() };
 	if (link.verifiedEmail) detail.email = normalizeEmail(link.verifiedEmail);
@@ -86,7 +86,7 @@ export class AccountLinks {
 
 	/**
 	 * Unlinks a provider unless it is the last way to sign in: the write
-	 * requires a password or the other provider, so racing unlinks cannot
+	 * requires the other provider to be linked, so racing unlinks cannot
 	 * leave an account without any login method. The email stays verified
 	 * only if the other linked provider verified the same address. The new
 	 * `emailVerifiedBy` is computed from a read, so the write is conditioned
@@ -120,10 +120,7 @@ export class AccountLinks {
 			readVersion,
 			{
 				[`providers.${provider}`]: { $type: "string" },
-				$or: [
-					{ passwordHash: { $type: "string" } },
-					{ [`providers.${other}`]: { $type: "string" } },
-				],
+				[`providers.${other}`]: { $type: "string" },
 			},
 			{
 				$unset: {

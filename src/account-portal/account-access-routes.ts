@@ -1,5 +1,8 @@
 import type { RequestHandler, Router } from "express";
-import { isUpstreamProvider } from "../accounts/user-model.js";
+import {
+	isUpstreamProvider,
+	usableSignInProviders,
+} from "../accounts/user-model.js";
 import { auditContext } from "../audit/audit-context.js";
 import { routeParam } from "../http/form.js";
 import { startUpstream } from "../interactions/upstream-start.js";
@@ -42,6 +45,15 @@ export function registerAccessRoutes(
 			const name = routeParam(req, "provider");
 			if (!isUpstreamProvider(name)) {
 				res.sendStatus(404);
+				return;
+			}
+			// Some other linked provider must still sign in here, or the owner
+			// would lock themselves out; the write re-checks it is linked.
+			const others = usableSignInProviders(account, [
+				...services.upstreams.keys(),
+			]).filter((provider) => provider !== name);
+			if (others.length === 0) {
+				res.redirect(303, "/account?notice=last-method");
 				return;
 			}
 			const write = await services.accounts.links.unlinkProvider(

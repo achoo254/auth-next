@@ -2,25 +2,18 @@ import type { KoaContextWithOIDC } from "oidc-provider";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { collectionNameFor } from "../oidc/mongo-adapter.js";
 import { createRotateAndSlideGrant } from "../oidc/sliding-grants.js";
-import { FAKE_UPSTREAM_ENV, FakeUpstreams } from "./helpers/fake-upstreams.js";
+import { FAKE_UPSTREAM_ENV } from "./helpers/fake-upstreams.js";
 import { signedInBrowser } from "./helpers/session-flows.js";
 import {
 	createTestAccount,
 	openLoginPage,
 	repositoryOf,
 } from "./helpers/test-accounts.js";
-import {
-	LOCALMAN_CALLBACK,
-	type TestIdp,
-	startTestIdp,
-} from "./helpers/test-idp.js";
+import { type TestIdp, startTestIdp } from "./helpers/test-idp.js";
 
 let idp: TestIdp;
-const fake = new FakeUpstreams();
-let uninstall: () => void;
 
 beforeAll(async () => {
-	uninstall = fake.install();
 	idp = await startTestIdp({
 		interactions: "real",
 		rateLimits: [],
@@ -30,7 +23,6 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-	uninstall?.();
 	await idp?.close();
 });
 
@@ -73,45 +65,6 @@ describe("smaller hardening", () => {
 		expect(page).toContain("@dat_tg · Đạt");
 	});
 
-	it("names the taken field on sign-up and logs in only after the codes are saved", async () => {
-		const existing = await createTestAccount(repositoryOf(idp));
-		const page = await openLoginPage(idp);
-		const signup = (fields: Record<string, string>) =>
-			page.browser.request(`${idp.issuer}/interaction/${page.uid}/signup`, {
-				form: {
-					csrf: page.csrf,
-					password: "1234567",
-					password_confirm: "1234567",
-					...fields,
-				},
-			});
-		const email = await signup({
-			email: existing.email.toUpperCase(),
-			username: "brand_new_one",
-		});
-		expect(email.status).toBe(409);
-		expect(await email.text()).toContain("Email này đã có tài khoản");
-		const username = await signup({
-			email: "fresh@example.com",
-			username: existing.username,
-		});
-		expect(await username.text()).toContain("Username này đã có người dùng");
-
-		const created = await signup({
-			email: "fresh@example.com",
-			username: "fresh_user",
-		});
-		expect(created.status).toBe(200);
-		// Resuming without confirming does not sign anyone in.
-		const resumed = await page.browser.navigate(
-			`${idp.issuer}/auth/${page.uid}`,
-			{},
-			LOCALMAN_CALLBACK,
-		);
-		expect(resumed.location).toBeUndefined();
-		expect(await resumed.response.text()).toContain('name="password"');
-	});
-
 	it("clears the OAuth state cookie with the attributes it was set with", async () => {
 		const page = await openLoginPage(idp);
 		const start = await page.browser.request(
@@ -120,7 +73,7 @@ describe("smaller hardening", () => {
 		expect(start.headers.getSetCookie().join("\n")).toMatch(
 			/upstream_state=.*HttpOnly.*SameSite=Lax/i,
 		);
-		fake.nextLogins.push({
+		idp.fake.nextLogins.push({
 			id: "g-cookie",
 			email: "cookie@example.com",
 			emailVerified: true,

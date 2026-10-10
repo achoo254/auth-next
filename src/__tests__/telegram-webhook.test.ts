@@ -4,7 +4,6 @@ import { SECRET_HEADER, WEBHOOK_PATH } from "../telegram/webhook-routes.js";
 import {
 	FAKE_TELEGRAM_SECRET,
 	FAKE_UPSTREAM_ENV,
-	FakeUpstreams,
 } from "./helpers/fake-upstreams.js";
 import { sessionUidOf, signedInBrowser } from "./helpers/session-flows.js";
 import {
@@ -24,16 +23,12 @@ async function linkCodeFor(account: TestAccount): Promise<string> {
 		sessionUid: await sessionUidOf(idp, account._id),
 	});
 }
-const fake = new FakeUpstreams();
-let uninstall: () => void;
 
 beforeAll(async () => {
-	uninstall = fake.install();
 	idp = await startTestIdp({ interactions: "real", env: FAKE_UPSTREAM_ENV });
 });
 
 afterAll(async () => {
-	uninstall?.();
 	await idp?.close();
 });
 
@@ -68,7 +63,7 @@ describe("Telegram webhook", () => {
 		expect((await post(startUpdate(code), FAKE_TELEGRAM_SECRET)).status).toBe(
 			200,
 		);
-		const ask = fake.telegramMessages.at(-1);
+		const ask = idp.fake.telegramMessages.at(-1);
 		expect(ask?.text).toContain(`@${account.username}`);
 		expect(ask?.callbackData).toBe(`link:${code}`);
 		expect(
@@ -99,7 +94,7 @@ describe("Telegram webhook", () => {
 		});
 		// The code was single-use: pressing again links nothing new.
 		await post(press(4242), FAKE_TELEGRAM_SECRET);
-		expect(fake.telegramMessages.at(-1)?.text).toMatch(
+		expect(idp.fake.telegramMessages.at(-1)?.text).toMatch(
 			/hết hạn hoặc đã được dùng/,
 		);
 	});
@@ -122,7 +117,7 @@ describe("Telegram webhook", () => {
 		expect(
 			(await repositoryOf(idp).findActiveById(account._id))?.telegram?.chatId,
 		).toBe("2222");
-		const toOld = fake.telegramMessages.filter((m) => m.chatId === "1111");
+		const toOld = idp.fake.telegramMessages.filter((m) => m.chatId === "1111");
 		expect(toOld.at(-1)?.text).toMatch(
 			/chuyển liên kết sang một chat Telegram khác/,
 		);

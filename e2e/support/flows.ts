@@ -11,7 +11,8 @@ import { E2E_ISSUER, E2E_TOOLS, MCP_CALLBACK } from "./e2e-config.js";
 export interface TestUser {
 	readonly email: string;
 	readonly username: string;
-	readonly password: string;
+	/** The Google account (played by the fake) this user signs in with. */
+	readonly googleId: string;
 }
 
 export function newUser(): TestUser {
@@ -19,76 +20,30 @@ export function newUser(): TestUser {
 	return {
 		email: `Nguoi.Dung.${id}@Example.com`,
 		username: `user_${id}`,
-		password: `mat-khau-${id}`,
+		googleId: `g-${id}`,
 	};
 }
 
-/** On the login page: fill identifier and password, submit. */
-export async function logIn(
-	page: Page,
-	identifier: string,
-	password: string,
-): Promise<void> {
-	await expect(page.getByRole("heading", { name: "Đăng nhập" })).toBeVisible();
-	await page.getByLabel("Email hoặc username").fill(identifier);
-	await page.locator('[data-id="input-password"]').fill(password);
-	await page.locator('[data-id="login-submit"]').click();
+export function googleProfile(user: TestUser): FakeProfile {
+	return { id: user.googleId, email: user.email, emailVerified: true };
 }
+
+const AUTHORIZE_URL: Readonly<Record<"google" | "github", string>> = {
+	google: "https://accounts.google.com/",
+	github: "https://github.com/login/oauth/authorize",
+};
 
 /**
- * From the login page: sign up, check the recovery codes page (including
- * the .txt download and the "saved" checkbox), continue. Returns the codes.
+ * Plays Google or GitHub for this browser. Playwright cannot route the
+ * target of a redirect, so the IdP's own "start sign-in/link" responses are
+ * routed instead: their redirect to the provider becomes a redirect straight
+ * back to the IdP callback with a code for `profile`. Requests that would
+ * still reach Google or GitHub are aborted: the test never touches the
+ * network.
  */
-export async function signUp(page: Page, user: TestUser): Promise<string[]> {
-	await page.locator('[data-id="login-to-signup"]').click();
-	await page.getByLabel("Email").fill(user.email);
-	await page.getByLabel("Username").fill(user.username);
-	await page.getByLabel("Mật khẩu", { exact: true }).fill(user.password);
-	await page.getByLabel("Nhập lại mật khẩu").fill(user.password);
-	await page.locator('[data-id="signup-submit"]').click();
-
-	const codes = await page
-		.locator('[data-id="recovery-codes"] code')
-		.allTextContents();
-	expect(codes).toHaveLength(8);
-	const [download] = await Promise.all([
-		page.waitForEvent("download"),
-		page.locator('[data-id="recovery-download"]').click(),
-	]);
-	expect(download.suggestedFilename()).toBe(
-		`hoandat-recovery-codes-${user.username}.txt`,
-	);
-
-	// The browser refuses to continue until the box is ticked.
-	await page.locator('[data-id="recovery-continue"]').click();
-	await expect(page.locator('[data-id="recovery-codes"]')).toBeVisible();
-	await page.locator('[data-id="recovery-saved"]').check();
-	await page.locator('[data-id="recovery-continue"]').click();
-	return codes;
-}
-
-/** Signs up through /account and ends on the account page, signed in. */
-export async function signUpViaAccountPage(
-	page: Page,
-	user: TestUser,
-): Promise<string[]> {
-	await page.goto("/account");
-	const codes = await signUp(page, user);
-	await expect(page.locator('[data-id="account-username"]')).toHaveText(
-		`@${user.username}`,
-	);
-	return codes;
-}
-
-/**
- * Plays Google for this browser. Playwright cannot route the target of a
- * redirect, so the IdP's own "start Google sign-in" responses are routed
- * instead: their redirect to Google becomes a redirect straight back to the
- * IdP callback with a code for `profile`. Requests that would still reach
- * Google or GitHub are aborted, so the test never touches the network.
- */
-export async function routeGoogle(
+export async function routeUpstream(
 	context: BrowserContext,
+	provider: "google" | "github",
 	profile: FakeProfile,
 ): Promise<void> {
 	await context.route(
@@ -96,11 +51,11 @@ export async function routeGoogle(
 		(route) => route.abort(),
 	);
 	await context.route(
-		/\/(account\/link|upstream)\/google(\?|$)/,
+		new RegExp(`/(account/link|upstream)/${provider}(\\?|$)`),
 		async (route) => {
 			const response = await route.fetch({ maxRedirects: 0 });
 			const location = response.headers().location ?? "";
-			if (!location.startsWith("https://accounts.google.com/")) {
+			if (!location.startsWith(AUTHORIZE_URL[provider])) {
 				await route.fulfill({ response });
 				return;
 			}
@@ -113,6 +68,39 @@ export async function routeGoogle(
 				},
 			});
 		},
+	);
+}
+
+/** On the login page: "Đăng nhập với Google" as `user`'s Google account. */
+export async function logIn(page: Page, user: TestUser): Promise<void> {
+	await expect(page.getByRole("heading", { name: "Đăng nhập" })).toBeVisible();
+	await expect(page.locator('input[type="password"]')).toHaveCount(0);
+	await routeUpstream(page.context(), "google", googleProfile(user));
+	await page.locator('[data-id="upstream-google"]').click();
+}
+
+/**
+ * From the login page: sign in with a Google account nobody has yet, which
+ * creates the account once a username is chosen.
+ */
+export async function signUp(page: Page, user: TestUser): Promise<void> {
+	await logIn(page, user);
+	await expect(
+		page.getByRole("heading", { name: "Chọn username" }),
+	).toBeVisible();
+	await page.getByLabel("Username").fill(user.username);
+	await page.locator('[data-id="upstream-signup-submit"]').click();
+}
+
+/** Signs up through /account and ends on the account page, signed in. */
+export async function signUpViaAccountPage(
+	page: Page,
+	user: TestUser,
+): Promise<void> {
+	await page.goto("/account");
+	await signUp(page, user);
+	await expect(page.locator('[data-id="account-username"]')).toHaveText(
+		`@${user.username}`,
 	);
 }
 

@@ -22,11 +22,11 @@ export function renderPrivacyPage(host: string): string {
 <h2>Dữ liệu được lưu</h2>
 <ul>
 <li>Tên đăng nhập, địa chỉ email, tên hiển thị và ảnh đại diện.</li>
-<li>Mật khẩu ở dạng băm argon2id và mã khôi phục ở dạng băm; không lưu mật khẩu gốc.</li>
+<li>Dịch vụ không dùng mật khẩu. Tài khoản tạo trước khi bỏ mật khẩu có thể vẫn còn bản băm argon2id của mật khẩu và mã khôi phục cũ; chúng không còn được dùng để đăng nhập.</li>
 <li>Khi bạn đăng nhập bằng Google hoặc GitHub: mã định danh tài khoản ở nhà cung cấp, email đã xác minh, tên và ảnh đại diện mà nhà cung cấp trả về.</li>
 <li>Khi bạn liên kết Telegram: mã chat và tên người dùng Telegram.</li>
 <li>Phiên đăng nhập, thiết bị và ứng dụng bạn đã cấp quyền, kèm thời điểm sử dụng.</li>
-<li>Nhật ký bảo mật (đăng nhập, đổi mật khẩu, liên kết hoặc gỡ phương thức đăng nhập) gồm địa chỉ IP và trình duyệt; IP và trình duyệt của sự kiện chưa gửi đi bị xoá sau 30 ngày.</li>
+<li>Nhật ký bảo mật (đăng nhập, liên kết hoặc gỡ phương thức đăng nhập, thu hồi phiên và quyền) gồm địa chỉ IP và trình duyệt; IP và trình duyệt của sự kiện chưa gửi đi bị xoá sau 30 ngày.</li>
 </ul>
 <h2>Mục đích sử dụng</h2>
 <p>Dữ liệu chỉ dùng để xác thực bạn, giữ phiên đăng nhập, khôi phục tài khoản và phát hiện truy cập bất thường. Dịch vụ không gửi email, không hiển thị quảng cáo và không bán dữ liệu.</p>

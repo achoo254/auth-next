@@ -1,20 +1,17 @@
 import * as client from "openid-client";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { generateRecoveryCodes } from "../accounts/recovery-codes.js";
-import { createPasswordResetToken } from "../telegram/reset-link-service.js";
+import { auditOutboxCollection } from "../audit/audit-outbox.js";
 import {
 	accountPageStatus,
 	cliLogin,
 	signedInBrowser,
 } from "./helpers/session-flows.js";
 import {
-	TEST_PASSWORD,
 	createTestAccount,
-	openLoginPage,
 	repositoryOf,
 	submitForm,
 } from "./helpers/test-accounts.js";
-import { TestBrowser, formField } from "./helpers/test-browser.js";
+import { type TestBrowser, formField } from "./helpers/test-browser.js";
 import { type TestIdp, startTestIdp } from "./helpers/test-idp.js";
 
 let idp: TestIdp;
@@ -27,106 +24,60 @@ afterAll(async () => {
 	await idp?.close();
 });
 
-const NEW_PASSWORD = "brand-new-password";
+async function accountPage(browser: TestBrowser): Promise<string> {
+	return (await browser.request(`${idp.issuer}/account`)).text();
+}
 
-describe("a password reset signs the account out everywhere", () => {
-	it("through a reset link (Telegram or Google/GitHub)", async () => {
-		const account = await createTestAccount(repositoryOf(idp));
-		const other = await signedInBrowser(idp, account);
-		const cli = await cliLogin(idp, other);
-		const token = await createPasswordResetToken(idp.services.accountTokens, {
-			accountId: account._id,
-		});
+/** The uid of the session `browser` itself is signed in with ("Phiên này"). */
+function ownSessionUid(page: string): string {
+	const uid =
+		/data-id="session-([\w-]+)">\s*<div><b>[^<]*<\/b> <span class="badge badge-primary">Phiên này/.exec(
+			page,
+		)?.[1];
+	if (!uid) throw new Error("no current session on the page");
+	return uid;
+}
 
-		const resetter = new TestBrowser();
-		const form = await (
-			await resetter.request(`${idp.issuer}/reset/${token}`)
-		).text();
-		expect(form).toContain(`@${account.username}`);
-		const done = await submitForm(resetter, `${idp.issuer}/reset/${token}`, {
-			csrf: formField(form, "csrf"),
-			password: NEW_PASSWORD,
-			password_confirm: NEW_PASSWORD,
-		});
-		expect(await done.response.text()).toContain("Rà soát bảo mật");
-
-		expect(await accountPageStatus(idp, other)).toBe(303);
-		await expect(
-			client.refreshTokenGrant(cli.config, cli.refreshToken),
-		).rejects.toMatchObject({ error: "invalid_grant" });
-	});
-
-	it("through a recovery code", async () => {
-		const { codes, hashes } = await generateRecoveryCodes();
-		const account = await createTestAccount(repositoryOf(idp), {
-			recoveryCodeHashes: [...hashes],
-		});
-		const other = await signedInBrowser(idp, account);
-		const cli = await cliLogin(idp, other);
-
-		const page = await openLoginPage(idp);
-		const reset = await page.browser.request(
-			`${idp.issuer}/interaction/${page.uid}/forgot/recovery`,
-			{
-				form: {
-					csrf: page.csrf,
-					identifier: account.email,
-					code: codes[0] ?? "",
-					password: NEW_PASSWORD,
-					password_confirm: NEW_PASSWORD,
-				},
-			},
-		);
-		expect(reset.status).toBe(303);
-
-		expect(await accountPageStatus(idp, other)).toBe(303);
-		await expect(
-			client.refreshTokenGrant(cli.config, cli.refreshToken),
-		).rejects.toMatchObject({ error: "invalid_grant" });
-	});
-});
-
-describe("changing the password on /account", () => {
-	async function changePassword(
-		browser: TestBrowser,
-		everywhere: boolean,
-	): Promise<string> {
-		const page = await (await browser.request(`${idp.issuer}/account`)).text();
-		expect(page).toContain('name="logout_everywhere" value="yes" checked');
-		const done = await submitForm(browser, `${idp.issuer}/account/password`, {
-			csrf: formField(page, "csrf"),
-			current_password: TEST_PASSWORD,
-			password: NEW_PASSWORD,
-			password_confirm: NEW_PASSWORD,
-			...(everywhere ? { logout_everywhere: "yes" } : {}),
-		});
-		return done.response.text();
-	}
-
-	it("signs other browsers out and, by default, every device and app", async () => {
+describe("/account revokes what the owner picks", () => {
+	it("signs another browser out", async () => {
 		const account = await createTestAccount(repositoryOf(idp));
 		const current = await signedInBrowser(idp, account);
 		const other = await signedInBrowser(idp, account);
-		const cli = await cliLogin(idp, other);
-		expect(await changePassword(current, true)).toContain("Đã đổi mật khẩu");
+		const otherUid = ownSessionUid(await accountPage(other));
+
+		const page = await accountPage(current);
+		expect(page).toContain(`/account/sessions/${otherUid}/revoke`);
+		const done = await submitForm(
+			current,
+			`${idp.issuer}/account/sessions/${otherUid}/revoke`,
+			{ csrf: formField(page, "csrf") },
+		);
+		expect(await done.response.text()).toContain("Đã thu hồi phiên");
 		expect(await accountPageStatus(idp, current)).toBe(200);
 		expect(await accountPageStatus(idp, other)).toBe(303);
+		const revoked = await auditOutboxCollection(idp.db).findOne({
+			sub: account._id,
+			type: "session.revoked",
+		});
+		expect(revoked?.data).toEqual({ count: 1, cause: "account-page" });
+	});
+
+	it("takes every grant away from an app", async () => {
+		const account = await createTestAccount(repositoryOf(idp));
+		const browser = await signedInBrowser(idp, account);
+		const cli = await cliLogin(idp, browser);
+		const done = await submitForm(
+			browser,
+			`${idp.issuer}/account/apps/tunelo-cli/revoke`,
+			{ csrf: formField(await accountPage(browser), "csrf") },
+		);
+		expect(await done.response.text()).toContain(
+			"Đã thu hồi quyền của ứng dụng",
+		);
 		await expect(
 			client.refreshTokenGrant(cli.config, cli.refreshToken),
 		).rejects.toMatchObject({ error: "invalid_grant" });
-	});
-
-	it("keeps devices and apps when the box is unticked", async () => {
-		const account = await createTestAccount(repositoryOf(idp));
-		const current = await signedInBrowser(idp, account);
-		const other = await signedInBrowser(idp, account);
-		const cli = await cliLogin(idp, other);
-		await changePassword(current, false);
-		expect(await accountPageStatus(idp, other)).toBe(303);
-		const refreshed = await client.refreshTokenGrant(
-			cli.config,
-			cli.refreshToken,
-		);
-		expect(refreshed.access_token).toEqual(expect.any(String));
+		// The browser session itself stays signed in.
+		expect(await accountPageStatus(idp, browser)).toBe(200);
 	});
 });

@@ -5,7 +5,7 @@ import { formValue, readCookie } from "./form.js";
 /**
  * CSRF protection for every server-rendered form: a random per-browser
  * secret in an HttpOnly cookie, and in each form an HMAC of that secret and
- * a scope (the interaction uid, the IdP session uid, or a reset token). A
+ * a scope (the interaction uid or the IdP session uid). A
  * token minted for one interaction or session is useless for another, and a
  * cross-site page can neither read the cookie nor compute the HMAC.
  */

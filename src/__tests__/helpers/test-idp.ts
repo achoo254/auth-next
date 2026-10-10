@@ -24,6 +24,11 @@ import {
 	ensureAccountLayerIndexes,
 } from "../../services.js";
 import { createAutoInteractions } from "./auto-interactions.js";
+import {
+	FAKE_OAUTH_ENV,
+	type FakeUpstreams,
+	sharedFakeUpstreams,
+} from "./fake-upstreams.js";
 
 export const TEST_ACCOUNT: AccountProfile = {
 	sub: "acc_test_1",
@@ -46,6 +51,8 @@ export interface TestIdp {
 	readonly db: Db;
 	readonly jwks: SigningJwks;
 	readonly services: AppServices;
+	/** Google, GitHub and Telegram for this process (see sharedFakeUpstreams). */
+	readonly fake: FakeUpstreams;
 	close(): Promise<void>;
 }
 
@@ -57,8 +64,13 @@ export interface TestIdpOptions {
 	 */
 	readonly interactions: "auto" | "real" | RequestHandler;
 	readonly rateLimits?: readonly RateLimitRule[];
-	/** Extra environment, e.g. Google/GitHub/Telegram credentials. */
+	/**
+	 * Extra environment, e.g. Telegram credentials. Google and GitHub (the
+	 * only sign-in) are always configured against the fakes, unless
+	 * `withoutUpstreams` is set.
+	 */
 	readonly env?: Readonly<Record<string, string>>;
+	readonly withoutUpstreams?: boolean;
 	readonly formPostsPerMinute?: number;
 }
 
@@ -104,6 +116,7 @@ export async function startTestIdp(options: TestIdpOptions): Promise<TestIdp> {
 		LOCALMAN_WEB_CLIENT_SECRET: LOCALMAN_WEB_SECRET,
 		TUNELO_WEB_CLIENT_SECRET: TUNELO_WEB_SECRET,
 		LOG_LEVEL: "silent",
+		...(options.withoutUpstreams ? {} : FAKE_OAUTH_ENV),
 		...options.env,
 	});
 	// Two keys: the first signs, the second is published for verification.
@@ -145,6 +158,7 @@ export async function startTestIdp(options: TestIdpOptions): Promise<TestIdp> {
 		db,
 		jwks,
 		services,
+		fake: sharedFakeUpstreams(),
 		close: async () => {
 			server.closeAllConnections();
 			await new Promise<void>((resolve) => server.close(() => resolve()));

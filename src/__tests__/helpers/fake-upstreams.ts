@@ -30,12 +30,17 @@ export interface SentTelegramMessage {
 	readonly callbackData?: string;
 }
 
-/** Environment that enables Google, GitHub and Telegram against the fakes. */
-export const FAKE_UPSTREAM_ENV: Readonly<Record<string, string>> = {
+/** Environment that enables Google and GitHub (the only sign-in) against the fakes. */
+export const FAKE_OAUTH_ENV: Readonly<Record<string, string>> = {
 	GOOGLE_CLIENT_ID: FAKE_GOOGLE_CLIENT_ID,
 	GOOGLE_CLIENT_SECRET: "test-google-secret",
 	GITHUB_CLIENT_ID: "test-github-client",
 	GITHUB_CLIENT_SECRET: "test-github-secret",
+};
+
+/** Environment that enables Google, GitHub and Telegram against the fakes. */
+export const FAKE_UPSTREAM_ENV: Readonly<Record<string, string>> = {
+	...FAKE_OAUTH_ENV,
 	TELEGRAM_BOT_TOKEN: FAKE_TELEGRAM_TOKEN,
 	TELEGRAM_BOT_USERNAME: "hoandat_test_bot",
 	TELEGRAM_WEBHOOK_SECRET: FAKE_TELEGRAM_SECRET,
@@ -181,4 +186,15 @@ export class FakeUpstreams {
 		}
 		return real(request);
 	}
+}
+
+let shared: FakeUpstreams | undefined;
+
+/** This process's fakes, installed once: browser and IdP must reach the same one. */
+export function sharedFakeUpstreams(): FakeUpstreams {
+	if (!shared) {
+		shared = new FakeUpstreams();
+		shared.install();
+	}
+	return shared;
 }

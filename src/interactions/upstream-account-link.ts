@@ -7,7 +7,6 @@ import {
 import { UPSTREAM_LABELS } from "../accounts/upstream-client.js";
 import type { AppServices } from "../services.js";
 import { notifyTelegram } from "../telegram/notify.js";
-import { createPasswordResetToken } from "../telegram/reset-link-service.js";
 import { sendInteractionError } from "./interaction-helpers.js";
 
 /**
@@ -71,50 +70,11 @@ export async function finishAccountLink(
 	notifyTelegram(
 		services,
 		portal.account,
-		`Tài khoản hoandat @${portal.account.username} vừa được liên kết với ${label}. Nếu không phải bạn, hãy đổi mật khẩu và huỷ liên kết ở trang tài khoản.`,
+		`Tài khoản hoandat @${portal.account.username} vừa được liên kết với ${label}. Nếu không phải bạn, hãy huỷ liên kết ở trang tài khoản.`,
 	);
 	services.logger.info(
 		{ accountId: portal.account._id, provider: profile.provider },
 		"Provider linked",
 	);
 	res.redirect(303, `/account?notice=linked-${profile.provider}`);
-}
-
-/** Same words whether the account is unknown, unlinked or under review. */
-export const PROVIDER_RESET_REFUSED =
-	"Không dùng được tài khoản này để đặt lại mật khẩu. Hãy dùng mã khôi phục hoặc cách khác.";
-
-/**
- * "Forgot password" through a linked Google/GitHub account: issues a reset
- * link bound to that provider account and the current security version.
- * While a security review is pending, nothing is issued (only recovery
- * codes and the new password work then); the answer does not say why.
- */
-export async function startProviderReset(
-	services: AppServices,
-	res: Response,
-	profile: UpstreamProfile,
-	interactionUid: string | undefined,
-	back: string,
-): Promise<void> {
-	const account = await services.accounts.findByProvider(
-		profile.provider,
-		profile.providerId,
-	);
-	const token =
-		account && !account.disabledAt && !account.securityReviewPendingSince
-			? await createPasswordResetToken(services.accountTokens, {
-					accountId: account._id,
-					interactionUid,
-					channel: { kind: profile.provider, providerId: profile.providerId },
-				})
-			: undefined;
-	if (!token) {
-		sendInteractionError(services, res, PROVIDER_RESET_REFUSED, 404, {
-			href: back,
-			label: "Quay lại",
-		});
-		return;
-	}
-	res.redirect(303, `/reset/${token}`);
 }

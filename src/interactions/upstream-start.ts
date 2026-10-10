@@ -9,13 +9,10 @@ import { isUpstreamProvider } from "../accounts/user-model.js";
 import { queryValue, readCookie, routeParam } from "../http/form.js";
 import type { AppServices } from "../services.js";
 import { asyncHandler, sendInteractionError } from "./interaction-helpers.js";
-import {
-	finishAccountLink,
-	startProviderReset,
-} from "./upstream-account-link.js";
+import { finishAccountLink } from "./upstream-account-link.js";
 import { savePendingUpstream } from "./upstream-pending.js";
 
-export type UpstreamPurpose = "login" | "reset" | "link";
+export type UpstreamPurpose = "login" | "link";
 
 const STATE_TTL_SECONDS = 10 * 60;
 
@@ -90,7 +87,7 @@ export async function startUpstream(
 }
 
 /**
- * Uses up an OAuth state: a sign-in/reset state, or a link state bound to
+ * Uses up an OAuth state: a sign-in state, or a link state bound to
  * an account. A link state from before a security change of that account
  * reads as missing (the flow is simply restarted).
  */
@@ -179,10 +176,6 @@ export function createUpstreamCallbackRouter(services: AppServices): Router {
 			if (data.purpose === "login" && data.uid) {
 				await savePendingUpstream(services, data.uid, profile);
 				res.redirect(303, `/interaction/${data.uid}/upstream`);
-				return;
-			}
-			if (data.purpose === "reset") {
-				await startProviderReset(services, res, profile, data.uid, back);
 				return;
 			}
 			if (data.purpose !== "link" || !data.accountId) {

@@ -6,13 +6,14 @@ import {
 	linkUpstream,
 } from "../accounts/account-linking.js";
 import { AccountRepository } from "../accounts/account-repository.js";
+import { accountsCollection } from "../accounts/user-model.js";
 import { createTestAccount, openTestDb } from "./helpers/test-accounts.js";
 
+let db: Db;
 let close: () => Promise<void>;
 let accounts: AccountRepository;
 
 beforeAll(async () => {
-	let db: Db;
 	({ db, close } = await openTestDb());
 	accounts = new AccountRepository(db);
 });
@@ -32,6 +33,7 @@ describe("account linking rules", () => {
 	it("links automatically when both sides verified the email", async () => {
 		const account = await createTestAccount(accounts, {
 			emailVerifiedBy: "github",
+			providers: { github: `gh-${Math.random()}` },
 		});
 		const google = profile({ verifiedEmail: account.email.toUpperCase() });
 		const decision = await decideUpstreamLogin(accounts, google);
@@ -65,10 +67,11 @@ describe("account linking rules", () => {
 		const after = await accounts.findActiveById(squatter._id);
 		expect(after?.email).toBeUndefined();
 		expect(after?.reclaimedEmail?.email).toBe("mixed.case@example.com");
-		// It still signs in by username, and the address is free again.
-		expect((await accounts.findByIdentifier(squatter.username))?._id).toBe(
-			squatter._id,
-		);
+		// It keeps its own Google sign-in, and the address is free again.
+		expect(
+			(await accounts.findByProvider("google", squatter.providers.google ?? ""))
+				?._id,
+		).toBe(squatter._id);
 		expect(
 			await accounts.findByEmail("mixed.case@example.com"),
 		).toBeUndefined();
@@ -80,7 +83,9 @@ describe("account linking rules", () => {
 	});
 
 	it("verifies the email on an explicit link and forgets it on unlink", async () => {
-		const account = await createTestAccount(accounts);
+		const account = await createTestAccount(accounts, {
+			providers: { github: `gh-${Math.random()}` },
+		});
 		const google = profile({ verifiedEmail: account.email.toUpperCase() });
 		await linkUpstream(accounts, account, google);
 		const linked = await accounts.findActiveById(account._id);
@@ -92,6 +97,18 @@ describe("account linking rules", () => {
 		const unlinked = await accounts.findActiveById(account._id);
 		expect(unlinked?.providers.google).toBeUndefined();
 		expect(unlinked?.emailVerifiedBy).toBeNull();
+	});
+
+	it("never unlinks the last provider, even with a password stored from before", async () => {
+		const account = await createTestAccount(accounts);
+		await accountsCollection(db).updateOne(
+			{ _id: account._id },
+			{ $set: { passwordHash: "$argon2id$legacy" } },
+		);
+		const write = await accounts.links.unlinkProvider(account._id, "google");
+		expect(write).toEqual({ applied: false, stale: false });
+		const after = await accounts.findActiveById(account._id);
+		expect(after?.providers.google).toBe(account.providers.google);
 	});
 
 	it("offers sign-up when no account has the email", async () => {
@@ -108,6 +125,7 @@ describe("account linking rules", () => {
 	it("refuses a provider account without a verified email", async () => {
 		const account = await createTestAccount(accounts, {
 			emailVerifiedBy: "google",
+			providers: {},
 		});
 		const decision = await decideUpstreamLogin(
 			accounts,
@@ -133,7 +151,7 @@ describe("account linking rules", () => {
 	});
 
 	it("keeps the email verified on unlink when the other provider verified it too", async () => {
-		const account = await createTestAccount(accounts);
+		const account = await createTestAccount(accounts, { providers: {} });
 		await linkUpstream(
 			accounts,
 			account,
@@ -159,7 +177,7 @@ describe("account linking rules", () => {
 		);
 
 		// GitHub vouching for a different address does not keep it verified.
-		const other = await createTestAccount(accounts);
+		const other = await createTestAccount(accounts, { providers: {} });
 		await linkUpstream(
 			accounts,
 			other,

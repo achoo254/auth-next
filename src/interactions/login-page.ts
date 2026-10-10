@@ -1,9 +1,8 @@
 import { UPSTREAM_LABELS } from "../accounts/upstream-client.js";
 import type { UpstreamProvider } from "../accounts/user-model.js";
 import {
+	alertBox,
 	csrfField,
-	inputField,
-	maybeAlert,
 	pageTitle,
 	submitButton,
 } from "../ui/components.js";
@@ -11,18 +10,25 @@ import { type SafeHtml, html } from "../ui/html.js";
 import { renderPage } from "../ui/layout.js";
 import { clientLabel } from "./client-label.js";
 
-/** "Đăng nhập với Google" style buttons; hidden for unconfigured providers. */
+/** Shown instead of the buttons when no Google/GitHub app is configured. */
+export const NO_PROVIDER_MESSAGE =
+	"Đăng nhập bằng Google và GitHub đang tạm tắt, nên chưa đăng nhập hay đăng ký được. Thử lại sau.";
+
+/**
+ * "Đăng nhập với Google" style buttons for the configured providers, or the
+ * unavailable notice when there is none (the only ways in are these).
+ */
 export function upstreamButtons(
 	uid: string,
 	providers: readonly UpstreamProvider[],
 	verb: string,
-	purpose: "login" | "reset" = "login",
 ): SafeHtml {
-	if (providers.length === 0) return html``;
-	const query = purpose === "reset" ? "?purpose=reset" : "";
+	if (providers.length === 0) {
+		return html`<div data-id="upstream-unavailable">${alertBox("error", NO_PROVIDER_MESSAGE)}</div>`;
+	}
 	return html`<div class="oauth">${providers.map(
 		(provider) =>
-			html`<a class="btn btn-secondary btn-block" href="/interaction/${uid}/upstream/${provider}${query}" data-id="upstream-${provider}${purpose === "reset" ? "-reset" : ""}">${verb} với ${UPSTREAM_LABELS[provider]}</a>`,
+			html`<a class="btn btn-secondary btn-block" href="/interaction/${uid}/upstream/${provider}" data-id="upstream-${provider}">${verb} với ${UPSTREAM_LABELS[provider]}</a>`,
 	)}</div>`;
 }
 
@@ -36,9 +42,6 @@ export interface LoginView {
 	/** The app registered through DCR: its name is self-declared. */
 	readonly externalClient?: boolean;
 	readonly forDevice: boolean;
-	readonly identifier?: string;
-	readonly error?: string;
-	readonly notice?: string;
 }
 
 export function renderLogin(view: LoginView): string {
@@ -48,19 +51,26 @@ export function renderLogin(view: LoginView): string {
 			? html`Để tiếp tục tới ${clientLabel(view.clientName, view.externalClient === true)}. Một tài khoản hoandat cho Localman và Tunelo.`
 			: "Một tài khoản hoandat cho Localman và Tunelo.";
 	const body = html`${pageTitle("Đăng nhập", subtitle)}
-${maybeAlert("error", view.error)}${maybeAlert("success", view.notice)}
-<form class="auth-form" method="post" action="/interaction/${view.uid}/login" novalidate>
-${csrfField(view.csrf)}
+<div class="auth-form">
 ${upstreamButtons(view.uid, view.providers, "Đăng nhập")}
-${view.providers.length > 0 ? html`<div class="divider">hoặc dùng mật khẩu</div>` : ""}
-${inputField({ name: "identifier", label: "Email hoặc username", value: view.identifier, autocomplete: "username", placeholder: "ban@example.com", maxlength: 254, autofocus: true })}
-<div class="field">
-<div class="auth-row"><label class="label" for="f-password">Mật khẩu</label><a class="link" href="/interaction/${view.uid}/forgot" data-id="login-forgot">Quên mật khẩu?</a></div>
-<input class="input" id="f-password" name="password" type="password" autocomplete="current-password" required maxlength="256" data-id="input-password">
 </div>
-${submitButton("Đăng nhập", { block: true, dataId: "login-submit" })}
-</form>
-<p class="auth-foot">Chưa có tài khoản? <a class="link" href="/interaction/${view.uid}/signup" data-id="login-to-signup">Đăng ký</a></p>
+${view.providers.length > 0 ? html`<p class="auth-foot" data-id="login-first-time">Lần đầu đăng nhập bằng Google hoặc GitHub sẽ tạo tài khoản hoandat mới.</p>` : ""}
 <form method="post" action="/interaction/${view.uid}/abort" class="auth-cancel">${csrfField(view.csrf)}${submitButton("Huỷ đăng nhập", { variant: "minimal", dataId: "login-cancel" })}</form>`;
 	return renderPage({ title: "Đăng nhập", body, host: view.host });
+}
+
+export interface SignupView {
+	readonly host: string;
+	readonly uid: string;
+	readonly providers: readonly UpstreamProvider[];
+}
+
+/** `prompt=create`: the same Google/GitHub choice, worded as a sign-up. */
+export function renderSignup(view: SignupView): string {
+	const body = html`${pageTitle("Tạo tài khoản hoandat", "Dùng chung cho Localman và Tunelo. Đăng ký bằng Google hoặc GitHub; hoandat không dùng mật khẩu và không gửi email.")}
+<div class="auth-form">
+${upstreamButtons(view.uid, view.providers, "Đăng ký")}
+</div>
+<p class="auth-foot">Đã có tài khoản? <a class="link" href="/interaction/${view.uid}/login" data-id="signup-to-login">Đăng nhập</a></p>`;
+	return renderPage({ title: "Đăng ký", body, host: view.host });
 }

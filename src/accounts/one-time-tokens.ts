@@ -6,13 +6,7 @@ import type { Collection, Db } from "mongodb";
  * `securityVersion` and only reachable through AccountTokens, which refuses
  * them once that version moved on (see account-tokens.ts).
  */
-export type AccountTokenKind =
-	| "telegram-link"
-	| "password-reset"
-	| "upstream-link-state"
-	| "signup-pending"
-	| "review-pending"
-	| "review-reset";
+export type AccountTokenKind = "telegram-link" | "upstream-link-state";
 
 /** Tokens not tied to an account (yet): OAuth sign-in state, a pending profile. */
 export type FreeTokenKind = "upstream-state" | "upstream-pending";
@@ -94,21 +88,6 @@ export class TokenCollection {
 		return document?.data;
 	}
 
-	/** Overwrites some data fields of a live token (expiry unchanged). */
-	async update(
-		kind: OneTimeTokenKind,
-		token: string,
-		fields: TokenData,
-	): Promise<void> {
-		const set = Object.fromEntries(
-			Object.entries(fields).map(([key, value]) => [`data.${key}`, value]),
-		);
-		await this.tokens.updateOne(
-			{ _id: keyOf(kind, token), kind },
-			{ $set: set },
-		);
-	}
-
 	async deleteFor(accountId: string, kind?: OneTimeTokenKind): Promise<void> {
 		await this.tokens.deleteMany({
 			"data.accountId": accountId,
@@ -140,14 +119,6 @@ export class OneTimeTokenStore {
 
 	take(kind: FreeTokenKind, token: string): Promise<TokenData | undefined> {
 		return this.collection.take(kind, token);
-	}
-
-	/**
-	 * Drops every token issued for one account, of any kind (link codes,
-	 * reset links, OAuth link states...): used when its password changes.
-	 */
-	revokeAllFor(accountId: string): Promise<void> {
-		return this.collection.deleteFor(accountId);
 	}
 }
 

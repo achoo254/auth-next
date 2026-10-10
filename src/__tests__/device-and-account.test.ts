@@ -2,20 +2,15 @@ import * as client from "openid-client";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { STATIC_CLIENT_IDS } from "../oidc/clients.js";
 import { discoverClient, pollDeviceCode } from "./helpers/flows.js";
+import { signedInBrowser } from "./helpers/session-flows.js";
 import {
-	TEST_PASSWORD,
 	createTestAccount,
-	openLoginPage,
-	postLogin,
 	repositoryOf,
 	submitForm,
 } from "./helpers/test-accounts.js";
 import { formField } from "./helpers/test-browser.js";
-import {
-	LOCALMAN_CALLBACK,
-	type TestIdp,
-	startTestIdp,
-} from "./helpers/test-idp.js";
+import { type TestIdp, startTestIdp } from "./helpers/test-idp.js";
+import { linkedGoogleProfile, signInWith } from "./helpers/upstream-sign-in.js";
 
 let idp: TestIdp;
 
@@ -28,19 +23,12 @@ afterAll(async () => {
 });
 
 describe("first-party apps and devices with an existing session", () => {
-	it("signs in to localman-web without a consent page, then approves a device without a password", async () => {
+	it("signs in to localman-web without a consent page, then approves a device without signing in again", async () => {
 		const account = await createTestAccount(repositoryOf(idp));
-		const page = await openLoginPage(idp);
-		const { location } = await page.browser.navigate(
-			`${idp.issuer}/interaction/${page.uid}/login`,
-			{
-				form: {
-					csrf: page.csrf,
-					identifier: account.username,
-					password: TEST_PASSWORD,
-				},
-			},
-			LOCALMAN_CALLBACK,
+		const { page, location } = await signInWith(
+			idp,
+			"google",
+			linkedGoogleProfile(account),
 		);
 		expect(location?.searchParams.get("code")).toEqual(expect.any(String));
 
@@ -102,36 +90,18 @@ describe("first-party apps and devices with an existing session", () => {
 
 	it("rejects account-page writes without the session's CSRF token", async () => {
 		const account = await createTestAccount(repositoryOf(idp));
-		const page = await openLoginPage(idp);
-		// Google, GitHub and Telegram are not configured here: no trace of them.
-		expect(page.html).not.toContain("/upstream/");
-		const forgot = await (
-			await page.browser.request(`${idp.issuer}/interaction/${page.uid}/forgot`)
+		const browser = await signedInBrowser(idp, account);
+		// Telegram is not configured here: no trace of it on /account.
+		const accountPage = await (
+			await browser.request(`${idp.issuer}/account`)
 		).text();
-		expect(forgot).toContain("Dùng mã khôi phục");
-		expect(forgot).not.toContain("Telegram");
-		await page.browser.navigate(
-			`${idp.issuer}/interaction/${page.uid}/login`,
-			{
-				form: {
-					csrf: page.csrf,
-					identifier: account.username,
-					password: TEST_PASSWORD,
-				},
-			},
-			LOCALMAN_CALLBACK,
-		);
-		const response = await page.browser.request(
-			`${idp.issuer}/account/profile`,
-			{ form: { name: "Kẻ giả mạo" } },
-		);
+		expect(accountPage).not.toContain("Telegram");
+		const response = await browser.request(`${idp.issuer}/account/profile`, {
+			form: { name: "Kẻ giả mạo" },
+		});
 		expect(response.headers.get("location")).toBe("/account?notice=expired");
 		expect(
 			(await repositoryOf(idp).findActiveById(account._id))?.name,
 		).toBeUndefined();
-		expect(
-			(await postLogin(idp, await openLoginPage(idp), account.username, "nope"))
-				.status,
-		).toBe(401);
 	});
 });

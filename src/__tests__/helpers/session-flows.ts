@@ -1,29 +1,26 @@
 import * as client from "openid-client";
 import { STATIC_CLIENT_IDS } from "../../oidc/clients.js";
 import { discoverClient } from "./flows.js";
-import {
-	TEST_PASSWORD,
-	type TestAccount,
-	openLoginPage,
-} from "./test-accounts.js";
-import { TestBrowser, formField } from "./test-browser.js";
-import { LOCALMAN_CALLBACK, type TestIdp } from "./test-idp.js";
+import type { TestAccount } from "./test-accounts.js";
+import { type TestBrowser, formField } from "./test-browser.js";
+import type { TestIdp } from "./test-idp.js";
+import { linkedGoogleProfile, signInWith } from "./upstream-sign-in.js";
 
-/** A browser signed in to the IdP as `account` (through localman-web). */
+/**
+ * A browser signed in to the IdP as `account` (through localman-web), with
+ * the Google account linked to it.
+ */
 export async function signedInBrowser(
 	idp: TestIdp,
 	account: TestAccount,
-	password = TEST_PASSWORD,
 ): Promise<TestBrowser> {
-	const browser = new TestBrowser();
-	const page = await openLoginPage(idp, browser);
-	const { location } = await browser.navigate(
-		`${idp.issuer}/interaction/${page.uid}/login`,
-		{ form: { csrf: page.csrf, identifier: account.username, password } },
-		LOCALMAN_CALLBACK,
+	const { page, location } = await signInWith(
+		idp,
+		"google",
+		linkedGoogleProfile(account),
 	);
 	if (!location) throw new Error("sign-in did not return to the client");
-	return browser;
+	return page.browser;
 }
 
 /** Tunelo CLI device login, approved in `browser` (already signed in). */

@@ -9,7 +9,7 @@ import {
 
 const SCOPE = "openid offline_access tunnels:open tunnels:read";
 
-test("with a session, approving a device asks no password", async ({
+test("with a session, approving a device asks to sign in no more", async ({
 	page,
 }) => {
 	await signUpViaAccountPage(page, newUser());
@@ -71,7 +71,7 @@ test("without a session, the device page signs in first, then asks", async ({
 	await page.locator('[data-id="device-continue"]').click();
 
 	await expect(page.getByText("Đăng nhập để duyệt thiết bị.")).toBeVisible();
-	await logIn(page, user.username, user.password);
+	await logIn(page, user);
 	await expect(page.locator('[data-id="device-question"]')).toHaveText(
 		"Cho phép tunelo trên máy may-ban?",
 	);

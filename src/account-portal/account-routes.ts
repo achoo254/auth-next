@@ -1,11 +1,7 @@
 import { type RequestHandler, Router } from "express";
-import { hashSecret, passwordProblem } from "../accounts/password-hasher.js";
-import { generateRecoveryCodes } from "../accounts/recovery-codes.js";
-import { auditContext } from "../audit/audit-context.js";
 import {
 	formRateLimit,
 	formText,
-	formValue,
 	parseForm,
 	queryValue,
 } from "../http/form.js";
@@ -13,17 +9,10 @@ import {
 	asyncHandler,
 	sendInteractionError,
 } from "../interactions/interaction-helpers.js";
-import {
-	checkPassword,
-	throttleSubject,
-} from "../interactions/login-handler.js";
-import { renderRecoveryCodes } from "../interactions/signup-page.js";
 import type { AppServices } from "../services.js";
-import { notifyTelegram } from "../telegram/notify.js";
 import { sendPage } from "../ui/send-page.js";
 import { registerAccessRoutes } from "./account-access-routes.js";
 import { renderAccountPage } from "./account-page.js";
-import { afterPasswordChange } from "./after-password-change.js";
 import {
 	listAuthorizedApps,
 	listDeviceGrants,
@@ -108,90 +97,6 @@ export function createAccountRouter(services: AppServices): Router {
 			const name = formText(req, "name", 100);
 			await services.accounts.updateName(account._id, name || undefined);
 			res.redirect(303, "/account?notice=profile");
-		}),
-	);
-
-	router.post(
-		"/password",
-		sensitive(async (req, res, { account, sessionUid }) => {
-			const password = formValue(req, "password") ?? "";
-			if (
-				passwordProblem(password) ||
-				password !== formValue(req, "password_confirm")
-			) {
-				res.redirect(303, "/account?notice=password-invalid");
-				return;
-			}
-			if (account.passwordHash) {
-				const check = await checkPassword(
-					services.passwordThrottle,
-					throttleSubject(services, req, account._id, account),
-					account,
-					formValue(req, "current_password") ?? "",
-				);
-				if (!check.ok) {
-					res.redirect(
-						303,
-						`/account?notice=${check.reason === "locked" ? "password-locked" : "password-wrong"}`,
-					);
-					return;
-				}
-			}
-			await services.accounts.setPassword(
-				account._id,
-				await hashSecret(password),
-			);
-			// Other browsers are signed out; with the box ticked (the default)
-			// every device and app loses its grant too.
-			const everywhere = formValue(req, "logout_everywhere") === "yes";
-			await afterPasswordChange(
-				services,
-				account,
-				"account-page",
-				{ exceptSessionUid: sessionUid, grants: everywhere },
-				auditContext(req),
-			);
-			res.redirect(303, "/account?notice=password");
-		}),
-	);
-
-	router.post(
-		"/recovery-codes",
-		sensitive(async (req, res, portal) => {
-			const recovery = await generateRecoveryCodes();
-			await services.accounts.replaceRecoveryCodes(
-				portal.account._id,
-				recovery.hashes,
-			);
-			services.logger.info(
-				{ accountId: portal.account._id },
-				"Recovery codes regenerated",
-			);
-			notifyTelegram(
-				services,
-				portal.account,
-				`Bộ mã khôi phục mới vừa được tạo cho tài khoản hoandat @${portal.account.username}; bộ cũ hết hiệu lực. Nếu không phải bạn, hãy đổi mật khẩu ngay.`,
-			);
-			sendPage(
-				res,
-				renderRecoveryCodes({
-					host: services.host,
-					csrf: services.csrf.token(req, res, portalCsrfScope(portal)),
-					action: "/account/recovery-codes/saved",
-					username: portal.account.username,
-					codes: recovery.codes,
-					continueLabel: "Về trang tài khoản",
-					intro:
-						"Bộ mã cũ đã hết hiệu lực. Mỗi mã dưới đây dùng được một lần để đặt lại mật khẩu.",
-				}),
-			);
-		}),
-	);
-
-	router.post(
-		"/recovery-codes/saved",
-		write(async (_req, res) => {
-			res.redirect(303, "/account?notice=codes");
 		}),
 	);
 

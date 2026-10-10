@@ -93,7 +93,7 @@ export function buildProviderConfiguration(
 	deps: Omit<ProviderDependencies, "logger">,
 ): Configuration {
 	const { env, db, jwks, accountStore } = deps;
-	const policy = buildInteractionPolicy(accountStore);
+	const policy = buildInteractionPolicy();
 	return {
 		adapter: createMongoAdapterFactory(db),
 		clients: buildStaticClients(env),

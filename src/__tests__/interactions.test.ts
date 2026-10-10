@@ -3,19 +3,14 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { EXTERNAL_APP_NOTICE } from "../interactions/consent-page.js";
 import { RESOURCES } from "../oidc/resources.js";
 import { discoverClient } from "./helpers/flows.js";
+import { signedInBrowser } from "./helpers/session-flows.js";
 import {
-	TEST_PASSWORD,
 	createTestAccount,
-	openLoginPage,
 	repositoryOf,
 	submitForm,
 } from "./helpers/test-accounts.js";
 import { TestBrowser, formField } from "./helpers/test-browser.js";
-import {
-	LOCALMAN_CALLBACK,
-	type TestIdp,
-	startTestIdp,
-} from "./helpers/test-idp.js";
+import { type TestIdp, startTestIdp } from "./helpers/test-idp.js";
 
 const MCP_REDIRECT = "http://127.0.0.1:33419/callback";
 let idp: TestIdp;
@@ -46,7 +41,7 @@ async function authorize(
 }
 
 describe("sign-up, consent and return to an MCP client", () => {
-	it("creates an account, shows recovery codes once, asks consent and returns a code", async () => {
+	it("creates an account through Google, asks consent and returns a code", async () => {
 		const registered = await client.dynamicClientRegistration(
 			new URL(idp.issuer),
 			{
@@ -70,40 +65,22 @@ describe("sign-up, consent and return to an MCP client", () => {
 		const browser = new TestBrowser();
 		const login = await browser.navigate(url, {}, MCP_REDIRECT);
 		const uid = /\/interaction\/([\w-]+)/.exec(login.response.url)?.[1] ?? "";
+		expect(await login.response.text()).not.toContain('type="password"');
 
-		const signupPage = await (
-			await browser.request(`${idp.issuer}/interaction/${uid}/signup`)
-		).text();
-		const created = await submitForm(
-			browser,
-			`${idp.issuer}/interaction/${uid}/signup`,
-			{
-				csrf: formField(signupPage, "csrf"),
-				email: "Minh.Anh@Example.com",
-				username: "minh_anh",
-				password: "1234567",
-				password_confirm: "1234567",
-			},
+		idp.fake.nextLogins.push({
+			id: "g-minh-anh",
+			email: "Minh.Anh@Example.com",
+			emailVerified: true,
+		});
+		const chosen = await browser.navigate(
+			`${idp.issuer}/interaction/${uid}/upstream/google`,
 		);
-		const codesPage = await created.response.text();
-		expect(
-			codesPage.match(/<li><code>[a-z2-9]{4}-[a-z2-9]{4}<\/code><\/li>/g),
-		).toHaveLength(8);
-		expect(codesPage).toContain(
-			'download="hoandat-recovery-codes-minh_anh.txt"',
-		);
-
-		const csrf = formField(codesPage, "csrf");
-		const unconfirmed = await submitForm(
-			browser,
-			`${idp.issuer}/interaction/${uid}/signup/done`,
-			{ csrf },
-		);
-		expect(unconfirmed.response.status).toBe(400);
+		const usernamePage = await chosen.response.text();
+		expect(usernamePage).toContain("Chọn username");
 		const consent = await submitForm(
 			browser,
-			`${idp.issuer}/interaction/${uid}/signup/done`,
-			{ csrf, saved: "yes" },
+			`${idp.issuer}/interaction/${uid}/upstream/signup`,
+			{ csrf: formField(usernamePage, "csrf"), username: "minh_anh" },
 		);
 		const consentPage = await consent.response.text();
 		expect(consentPage).toContain(EXTERNAL_APP_NOTICE);
@@ -129,38 +106,30 @@ describe("sign-up, consent and return to an MCP client", () => {
 		);
 		expect(tokens.access_token).toEqual(expect.any(String));
 
-		const account = await repositoryOf(idp).findByIdentifier(
-			"minh.anh@example.com",
-		);
+		const account = await repositoryOf(idp).findByEmail("minh.anh@example.com");
 		expect(account).toMatchObject({
 			username: "minh_anh",
-			emailVerifiedBy: null,
+			emailVerifiedBy: "google",
+			providers: { google: "g-minh-anh" },
 		});
-		expect(account?.recoveryCodeHashes).toHaveLength(8);
+		expect(account).not.toHaveProperty("passwordHash");
+		expect(account).not.toHaveProperty("recoveryCodeHashes");
 	});
 });
 
 describe("logout", () => {
 	it("asks on its own page, signs out, and /account then needs a login", async () => {
-		const account = await createTestAccount(repositoryOf(idp));
-		const page = await openLoginPage(idp);
-		await submitForm(
-			page.browser,
-			`${idp.issuer}/interaction/${page.uid}/login`,
-			{
-				csrf: page.csrf,
-				identifier: account.username,
-				password: TEST_PASSWORD,
-			},
-			LOCALMAN_CALLBACK,
+		const browser = await signedInBrowser(
+			idp,
+			await createTestAccount(repositoryOf(idp)),
 		);
 		const ask = await (
-			await page.browser.request(`${idp.issuer}/session/end`)
+			await browser.request(`${idp.issuer}/session/end`)
 		).text();
 		expect(ask).toContain('id="op.logoutForm"');
 		expect(ask).toContain("Đăng xuất khỏi tài khoản hoandat");
 		const done = await submitForm(
-			page.browser,
+			browser,
 			`${idp.issuer}/session/end/confirm`,
 			{
 				xsrf: formField(ask, "xsrf"),
@@ -168,7 +137,7 @@ describe("logout", () => {
 			},
 		);
 		expect(await done.response.text()).toContain("Đã đăng xuất");
-		const accountPage = await page.browser.request(`${idp.issuer}/account`);
+		const accountPage = await browser.request(`${idp.issuer}/account`);
 		expect(accountPage.status).toBe(303);
 		expect(accountPage.headers.get("location")).toContain(
 			"client_id=hoandat-account",

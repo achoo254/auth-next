@@ -34,7 +34,7 @@ interface Subject {
  * The subject token must be an opaque access token this issuer gave the
  * calling client, unexpired and not revoked (opaque tokens live in MongoDB
  * and die with their grant), whose grant still exists, for an account that
- * is active and not waiting for its post-reset security review. JWT access
+ * is still active. JWT access
  * tokens are refused: they carry no grant, so a revoked one would pass.
  * RFC 8693 §2.2.2: an unacceptable subject token is `invalid_request`.
  */
@@ -61,7 +61,7 @@ async function loadSubject(
 		throw invalid;
 	}
 	const account = await accounts.findAccount(accountId);
-	if (!account || account.securityReviewPending) throw invalid;
+	if (!account) throw invalid;
 	return { accountId, grantId };
 }
 
