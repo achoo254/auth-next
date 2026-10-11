@@ -44,6 +44,30 @@ describe("Privacy policy", () => {
 	});
 });
 
+describe("App list", () => {
+	it("serves the public app list without a session", async () => {
+		const response = await fetch(`${idp.issuer}/apps`);
+		expect(response.status).toBe(200);
+		expect(response.headers.get("cache-control")).toBe("private, no-cache");
+		const body = await response.text();
+		expect(body).toContain("Apps that use your hoandat account");
+		for (const name of ["Localman", "Localman MCP", "Tunelo CLI", "Tunelo"]) {
+			expect(body).toContain(`<b>${name}</b>`);
+		}
+		// Addresses come from the environment (the defaults here).
+		expect(body).toContain('href="https://localman.hoandat.com"');
+		expect(body).toContain('href="https://tunnel.hoandat.com"');
+		expect(body).toContain(`${idp.issuer}/device`);
+		expect(body).toContain("https://localman.hoandat.com/mcp");
+	});
+
+	it("sends the bare domain to the app list", async () => {
+		const response = await fetch(`${idp.issuer}/`, { redirect: "manual" });
+		expect(response.status).toBe(302);
+		expect(response.headers.get("location")).toBe("/apps");
+	});
+});
+
 describe("Host check", () => {
 	it("answers 421 for a Host that is not the issuer's, except /healthz", async () => {
 		const discovery = `${idp.issuer}/.well-known/openid-configuration`;

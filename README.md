@@ -4,6 +4,20 @@ IdP OpenID Connect tự host tại `auth.hoandat.com`: một nơi đăng nhập 
 
 Trạng thái: phase 03 (phần IdP). Có lõi OIDC (phase 01), trang đăng nhập, đăng ký, consent, duyệt thiết bị, đăng xuất, trang `/account` (phase 02), cùng token exchange Localman → Tunelo, script kiểm client và outbox sự kiện audit gửi sang Localman (phase 03). Đăng nhập và đăng ký chỉ bằng Google hoặc GitHub: không có mật khẩu, mã khôi phục hay quên mật khẩu (ADR 0004). Không gửi email ở bất kỳ đâu.
 
+## Ứng dụng đang đăng nhập qua `auth.hoandat.com`
+
+Người dùng xem danh sách này ở trang công khai `/apps` (mở `auth.hoandat.com` cũng được chuyển tới đó), ba ngôn ngữ, render ở `src/app-directory/apps-page.ts`.
+
+| Ứng dụng | Địa chỉ | `client_id` | Cách đăng nhập |
+|---|---|---|---|
+| Localman web | `https://localman.hoandat.com` | `localman-web` | Nút đăng nhập trên web (Code + PKCE); phiên gắn với phiên IdP, đăng xuất ở IdP là đăng xuất Localman |
+| Localman MCP | `https://localman.hoandat.com/mcp` | mỗi client MCP một id (DCR) | Client MCP (ví dụ Claude Code) tự đăng ký qua `/reg`, người dùng duyệt quyền ở trang consent |
+| Tunelo CLI | lệnh `tunelo` trên máy người dùng | `tunelo-cli` | `tunelo login` (device flow): mở `/device`, nhập mã, duyệt từng máy |
+| Tunelo web | `https://tunnel.hoandat.com` | `tunelo-web` | Nút đăng nhập trên web (Code + PKCE) |
+| Trang tài khoản | `https://auth.hoandat.com/account` | `hoandat-account` | Nội bộ IdP, không dành cho app bên ngoài |
+
+Địa chỉ trên là của production; môi trường khác đổi qua `LOCALMAN_WEB_URL`, `TUNELO_WEB_URL`, `ISSUER`. Localman còn nhận sự kiện audit từ IdP (mục **Audit** bên dưới). Client tĩnh chỉ khai ở [`src/oidc/clients.ts`](src/oidc/clients.ts); thêm app mới thì khai ở đó rồi cập nhật bảng này, trang `/apps`, mục [Client và audience](#client-và-audience) và [`docs/integration-guide.md`](docs/integration-guide.md) mục 2.
+
 ## Bắt đầu
 
 Yêu cầu: Node ≥ 22.12, pnpm 11, MongoDB (replica set) hoặc Docker.
@@ -74,6 +88,7 @@ Mọi trang là HTML render phía server, không có JavaScript (CSP `script-src
 
 | Đường dẫn | Việc |
 |---|---|
+| `/apps` | Trang công khai liệt kê ứng dụng đăng nhập qua IdP, địa chỉ lấy từ `LOCALMAN_WEB_URL`, `TUNELO_WEB_URL`, `ISSUER`; `/` chuyển hướng (302) tới đây |
 | `/interaction/:uid` | Đăng nhập và đăng ký bằng Google/GitHub, consent, duyệt thiết bị. Gắn với cookie interaction của `oidc-provider` |
 | `/device` | Nhập mã thiết bị (trang của `oidc-provider` đã thay giao diện) |
 | `/session/end` | Đăng xuất (trang của `oidc-provider` đã thay giao diện) |
@@ -119,6 +134,7 @@ src/audit/                    # sự kiện audit: outbox Mongo, ký SET, dispat
 src/accounts/                 # model tài khoản, token dùng một lần,
                               # luật liên kết, Google/GitHub qua openid-client
 src/telegram/                 # bot client, deep link liên kết, webhook, thông báo
+src/app-directory/            # /apps: danh sách ứng dụng đăng nhập qua IdP
 src/interactions/             # trang đăng nhập/đăng ký Google/GitHub, consent, thiết bị, logout, lỗi
 src/account-portal/           # /account: phiên, grant, thiết bị, ứng dụng
 src/i18n/                     # ngôn ngữ: chọn locale, từ điển en/zh-cn/vi, endpoint /lang

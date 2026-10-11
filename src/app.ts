@@ -1,5 +1,6 @@
 import express, { type Express, type RequestHandler } from "express";
 import { createAccountRouter } from "./account-portal/account-routes.js";
+import { createAppsRouter } from "./app-directory/apps-page.js";
 import { createAssetsRouter } from "./assets.js";
 import type { Env } from "./config/env.js";
 import { createErrorHandler } from "./http/error-handler.js";
@@ -20,7 +21,14 @@ import { createTelegramWebhookRouter } from "./telegram/webhook-routes.js";
 
 export interface AppOptions {
 	readonly services: AppServices;
-	readonly env: Pick<Env, "ISSUER" | "TRUST_PROXY" | "ALLOWED_HOSTS">;
+	readonly env: Pick<
+		Env,
+		| "ISSUER"
+		| "TRUST_PROXY"
+		| "ALLOWED_HOSTS"
+		| "LOCALMAN_WEB_URL"
+		| "TUNELO_WEB_URL"
+	>;
 	/**
 	 * Replaces the interaction pages under /interaction. Tests only: the
 	 * automatic sign-in helper never ships in production wiring.
@@ -31,7 +39,7 @@ export interface AppOptions {
 
 /**
  * Express shell: security layer, /healthz, static assets, the
- * server-rendered pages (interactions, /account, Google/GitHub callbacks,
+ * server-rendered pages (the app list at /apps, interactions, /account, Google/GitHub callbacks,
  * Telegram webhook), then the provider for everything else.
  */
 export function createApp(options: AppOptions): Express {
@@ -57,6 +65,7 @@ export function createApp(options: AppOptions): Express {
 	// read the same forwarded headers as the provider itself.
 	app.use(forwardTrustedClientInfo);
 	app.use("/assets", createAssetsRouter());
+	app.use(createAppsRouter(env));
 	app.use(createPrivacyRouter(new URL(env.ISSUER).host));
 	app.use(createLanguageRouter(services));
 	app.use(

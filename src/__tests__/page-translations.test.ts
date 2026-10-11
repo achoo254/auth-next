@@ -7,6 +7,7 @@ import {
 	type AccountView,
 	renderAccountPage,
 } from "../account-portal/account-page.js";
+import { renderAppsPage } from "../app-directory/apps-page.js";
 import type { Locale } from "../i18n/locales.js";
 import { renderConsent } from "../interactions/consent-page.js";
 import { renderDeviceApproval } from "../interactions/device-verify-page.js";
@@ -18,6 +19,11 @@ import { testPage } from "./helpers/test-page.js";
 
 const HOST = "auth.example.test";
 const NOW = new Date("2026-10-10T01:00:00Z");
+const APP_URLS = {
+	ISSUER: `https://${HOST}`,
+	LOCALMAN_WEB_URL: "https://localman.example.test",
+	TUNELO_WEB_URL: "https://tunnel.example.test",
+};
 
 function accountView(locale: Locale): AccountView {
 	return {
@@ -94,6 +100,7 @@ function pages(locale: Locale): Record<string, string> {
 		}),
 		error: renderErrorPage({ host: HOST, page, message: "x", code: "c" }),
 		privacy: renderPrivacyPage(HOST, page),
+		apps: renderAppsPage(APP_URLS, page),
 		account: renderAccountPage(view),
 		confirmApp: renderRemoveAppConfirm({
 			...base,
@@ -113,12 +120,19 @@ const EXPECTED: Readonly<Record<Locale, readonly string[]>> = {
 		"Sign in to continue to Localman",
 		"Sign in with Google",
 		"Remove app access",
+		"Apps that use your hoandat account",
 	],
-	"zh-CN": ["登录以继续使用 Localman", "使用 Google 登录", "移除应用访问权限"],
+	"zh-CN": [
+		"登录以继续使用 Localman",
+		"使用 Google 登录",
+		"移除应用访问权限",
+		"使用 hoandat 账号的应用",
+	],
 	vi: [
 		"Đăng nhập để tiếp tục tới Localman",
 		"Đăng nhập với Google",
 		"Gỡ quyền của ứng dụng",
+		"Ứng dụng dùng tài khoản hoandat",
 	],
 };
 

@@ -1,6 +1,7 @@
 import type { Locale } from "./locales.js";
 import { enAccountActions } from "./messages/en/account-actions.js";
 import { enAccount } from "./messages/en/account.js";
+import { enApps } from "./messages/en/apps.js";
 import { enCommon } from "./messages/en/common.js";
 import { enConsent } from "./messages/en/consent.js";
 import { enPrivacy } from "./messages/en/privacy.js";
@@ -8,6 +9,7 @@ import { enSignIn } from "./messages/en/sign-in.js";
 import { enTelegramBot } from "./messages/en/telegram-bot.js";
 import { viAccountActions } from "./messages/vi/account-actions.js";
 import { viAccount } from "./messages/vi/account.js";
+import { viApps } from "./messages/vi/apps.js";
 import { viCommon } from "./messages/vi/common.js";
 import { viConsent } from "./messages/vi/consent.js";
 import { viPrivacy } from "./messages/vi/privacy.js";
@@ -15,6 +17,7 @@ import { viSignIn } from "./messages/vi/sign-in.js";
 import { viTelegramBot } from "./messages/vi/telegram-bot.js";
 import { zhAccountActions } from "./messages/zh-cn/account-actions.js";
 import { zhAccount } from "./messages/zh-cn/account.js";
+import { zhApps } from "./messages/zh-cn/apps.js";
 import { zhCommon } from "./messages/zh-cn/common.js";
 import { zhConsent } from "./messages/zh-cn/consent.js";
 import { zhPrivacy } from "./messages/zh-cn/privacy.js";
@@ -29,6 +32,7 @@ const EN = {
 	...enAccount,
 	...enAccountActions,
 	...enPrivacy,
+	...enApps,
 	...enTelegramBot,
 };
 
@@ -49,6 +53,7 @@ export const DICTIONARIES: Readonly<Record<Locale, Messages>> = {
 		...zhAccount,
 		...zhAccountActions,
 		...zhPrivacy,
+		...zhApps,
 		...zhTelegramBot,
 	},
 	vi: {
@@ -58,6 +63,7 @@ export const DICTIONARIES: Readonly<Record<Locale, Messages>> = {
 		...viAccount,
 		...viAccountActions,
 		...viPrivacy,
+		...viApps,
 		...viTelegramBot,
 	},
 };
