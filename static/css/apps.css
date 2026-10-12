@@ -1,0 +1,361 @@
+/* /apps — the public front page: hero with the hub diagram, one card per
+   app, three sign-in steps. Colours come only from tokens.css; each app
+   carries one data-viz hue through --tone. */
+
+.tone-primary {
+	--tone: var(--c-primary);
+	--tone-text: var(--c-primary);
+}
+.tone-violet {
+	--tone: var(--c-viz-violet);
+	--tone-text: var(--c-viz-violet-text);
+}
+.tone-cyan {
+	--tone: var(--c-viz-cyan);
+	--tone-text: var(--c-viz-cyan-text);
+}
+.tone-green {
+	--tone: var(--c-viz-green);
+	--tone-text: var(--c-viz-green-text);
+}
+.tone-amber {
+	--tone: var(--c-viz-amber);
+	--tone-text: var(--c-viz-amber-text);
+}
+
+/* hero */
+.apps-hero {
+	display: grid;
+	gap: var(--space-6);
+	align-items: center;
+	padding-block: var(--space-5) var(--space-4);
+}
+@media (min-width: 960px) {
+	.apps-hero {
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+		gap: var(--space-7);
+		padding-block: var(--space-7) var(--space-6);
+	}
+}
+.apps-hero-text {
+	display: grid;
+	gap: var(--space-4);
+	justify-items: start;
+	min-width: 0;
+}
+.apps-eyebrow {
+	font-family: var(--font-mono);
+	font-size: 12px;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: var(--c-primary);
+	padding: var(--space-1) var(--space-3);
+	border: 1px solid color-mix(in srgb, var(--c-primary) 35%, var(--c-surface));
+	border-radius: var(--radius-full);
+	background: color-mix(in srgb, var(--c-primary) 8%, var(--c-surface));
+}
+.apps-title {
+	font-family: var(--font-mono);
+	font-weight: 700;
+	font-size: clamp(28px, 4.4vw, 46px);
+	line-height: 1.12;
+	letter-spacing: -0.02em;
+	text-wrap: balance;
+}
+/* Chinese breaks between any two characters; keep words such as 所有 whole. */
+:lang(zh-CN) .apps-title {
+	word-break: keep-all;
+	letter-spacing: 0;
+}
+.apps-lead {
+	font-size: 17px;
+	color: var(--c-text-muted);
+	max-width: 56ch;
+}
+.apps-trust {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: grid;
+	gap: var(--space-2);
+	font-size: 15px;
+}
+.apps-trust li {
+	display: flex;
+	align-items: center;
+	gap: var(--space-2);
+}
+.apps-trust .icon {
+	flex: none;
+	color: var(--c-primary);
+}
+.apps-actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--space-3);
+	padding-top: var(--space-2);
+}
+.apps-hero-art {
+	min-width: 0;
+	padding: var(--space-4);
+	border: 1px solid var(--c-border);
+	border-radius: var(--radius-xl);
+	background: radial-gradient(
+			ellipse at 50% 50%,
+			color-mix(in srgb, var(--c-primary) 14%, transparent),
+			transparent 70%
+		),
+		var(--c-surface);
+	box-shadow: var(--shadow-md);
+}
+@media (min-width: 480px) {
+	.apps-hero-art {
+		padding: var(--space-5);
+	}
+}
+
+/* hub diagram (SVG) */
+.hub {
+	display: block;
+	width: 100%;
+	height: auto;
+}
+.hub-line {
+	fill: none;
+	stroke: var(--c-border-strong);
+	stroke-width: 1.5;
+}
+.hub-flow {
+	fill: none;
+	stroke: var(--tone);
+	stroke-width: 2.5;
+	stroke-linecap: round;
+	stroke-dasharray: 2 16;
+	animation: hub-flow 1.4s linear infinite;
+}
+@keyframes hub-flow {
+	to {
+		stroke-dashoffset: -36;
+	}
+}
+@media (prefers-reduced-motion: reduce) {
+	.hub-flow {
+		animation: none;
+	}
+}
+.hub-node rect {
+	fill: var(--c-surface);
+	stroke: var(--c-border);
+	stroke-width: 1;
+}
+.hub-node {
+	color: var(--tone);
+}
+.hub-node .hub-chip {
+	fill: color-mix(in srgb, var(--tone) 18%, var(--c-surface));
+	stroke: none;
+}
+.hub-core rect {
+	fill: color-mix(in srgb, var(--c-primary) 12%, var(--c-surface));
+	stroke: color-mix(in srgb, var(--c-primary) 60%, var(--c-surface));
+	stroke-width: 1.5;
+}
+.hub-mark {
+	fill: var(--c-text);
+}
+.hub-text {
+	font-family: var(--font-mono);
+	font-size: 14px;
+	font-weight: 600;
+	fill: var(--c-text);
+}
+.hub-app {
+	font-size: 13px;
+}
+.hub-brand {
+	font-size: 20px;
+	font-weight: 700;
+	fill: var(--c-primary);
+}
+.hub-sub {
+	font-size: 10px;
+	font-weight: 400;
+	fill: var(--c-text-muted);
+}
+
+/* sections */
+.apps-section {
+	display: grid;
+	gap: var(--space-4);
+}
+.apps-section-title {
+	font-family: var(--font-mono);
+	font-size: 12px;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: var(--c-text-muted);
+}
+
+/* app cards */
+.apps-grid {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: var(--space-4);
+}
+@media (min-width: 760px) {
+	.apps-grid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+.app-card {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-3);
+	min-width: 0;
+	padding: var(--space-5) var(--space-4);
+	overflow: hidden;
+	background: var(--c-surface);
+	border: 1px solid var(--c-border);
+	border-radius: var(--radius-xl);
+	box-shadow: var(--shadow-sm);
+	transition: border-color var(--dur-base) var(--ease-standard),
+		box-shadow var(--dur-base) var(--ease-standard);
+}
+@media (min-width: 480px) {
+	.app-card {
+		padding: var(--space-5);
+	}
+}
+.app-card::before {
+	content: "";
+	position: absolute;
+	inset: 0 0 auto;
+	height: 3px;
+	background: var(--tone);
+}
+.app-card:hover {
+	border-color: color-mix(in srgb, var(--tone) 50%, var(--c-border));
+	box-shadow: var(--shadow-md);
+}
+.app-card-head {
+	display: flex;
+	align-items: center;
+	gap: var(--space-3);
+}
+.app-card-icon {
+	flex: none;
+	display: inline-grid;
+	place-items: center;
+	width: 44px;
+	height: 44px;
+	border-radius: var(--radius-md);
+	color: var(--tone);
+	background: color-mix(in srgb, var(--tone) 14%, var(--c-surface));
+	border: 1px solid color-mix(in srgb, var(--tone) 30%, var(--c-surface));
+}
+.app-card-heading {
+	display: grid;
+	gap: var(--space-1);
+	min-width: 0;
+}
+.app-card-name {
+	font-family: var(--font-mono);
+	font-size: 17px;
+	font-weight: 700;
+}
+.app-card-meta {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: var(--space-2);
+	font-size: 12px;
+	color: var(--c-text-muted);
+}
+.app-card-desc {
+	font-size: 15px;
+}
+.app-card-how {
+	display: grid;
+	gap: var(--space-1);
+	padding: var(--space-3) var(--space-4);
+	font-size: 14px;
+	color: var(--c-text-muted);
+	background: var(--c-surface-subtle);
+	border-radius: var(--radius-md);
+	overflow-wrap: anywhere;
+}
+.app-card-how-label {
+	font-family: var(--font-mono);
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: var(--tone-text);
+}
+.app-card-how code {
+	color: var(--c-text);
+}
+.app-card-foot {
+	margin-top: auto;
+	padding-top: var(--space-1);
+}
+
+/* sign-in steps */
+.apps-steps {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: var(--space-4);
+}
+@media (min-width: 860px) {
+	.apps-steps {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+	}
+}
+.apps-step {
+	display: flex;
+	align-items: flex-start;
+	gap: var(--space-3);
+	padding: var(--space-5) var(--space-4);
+	background: var(--c-surface);
+	border: 1px solid var(--c-border);
+	border-radius: var(--radius-lg);
+	min-width: 0;
+	overflow-wrap: anywhere;
+}
+.apps-step-number {
+	flex: none;
+	display: inline-grid;
+	place-items: center;
+	width: 32px;
+	height: 32px;
+	border-radius: var(--radius-full);
+	font-family: var(--font-mono);
+	font-weight: 700;
+	color: var(--c-primary);
+	background: color-mix(in srgb, var(--c-primary) 12%, var(--c-surface));
+	border: 1px solid color-mix(in srgb, var(--c-primary) 35%, var(--c-surface));
+}
+.apps-step-title {
+	font-family: var(--font-mono);
+	font-size: 15px;
+	font-weight: 700;
+	margin-bottom: var(--space-1);
+}
+.apps-step-body {
+	font-size: 14px;
+	color: var(--c-text-muted);
+}
+.apps-manage {
+	font-size: 14px;
+	color: var(--c-text-muted);
+	text-align: center;
+}

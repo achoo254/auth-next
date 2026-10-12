@@ -2,9 +2,22 @@ import type { enApps } from "../en/apps.js";
 import type { Translation } from "../translation.js";
 
 export const viApps: Translation<typeof enApps> = {
-	"apps.title": "Ứng dụng dùng tài khoản hoandat",
+	"apps.eyebrow": "Đăng nhập hoandat",
+	"apps.title": "Một tài khoản cho mọi ứng dụng hoandat",
 	"apps.subtitle":
-		"Một tài khoản hoandat đăng nhập được mọi ứng dụng dưới đây, bằng Google hoặc GitHub.",
+		"Đăng nhập một lần bằng Google hoặc GitHub, rồi dùng cùng tài khoản đó trong Localman, MCP server của nó và Tunelo.",
+	"apps.trust.providers": "Đăng nhập bằng Google hoặc GitHub",
+	"apps.trust.noPassword": "Không phải tạo hay nhớ mật khẩu",
+	"apps.trust.control": "Bạn chọn ứng dụng nào được quyền truy cập",
+	"apps.cta.account": "Quản lý tài khoản",
+	"apps.cta.how": "Đăng nhập diễn ra thế nào",
+	"apps.diagram.label":
+		"Tài khoản hoandat, vào bằng Google hoặc GitHub, đăng nhập cho bạn vào Localman, Localman MCP, Tunelo CLI và Tunelo.",
+	"apps.list.title": "Ứng dụng bạn dùng được",
+	"apps.kind.web": "Ứng dụng web",
+	"apps.kind.mcp": "MCP server",
+	"apps.kind.cli": "Dòng lệnh",
+	"apps.signInLabel": "Cách đăng nhập",
 	"apps.open": "Mở",
 	"apps.localmanWeb.description":
 		"Mock API và API client ngay trên trình duyệt.",
@@ -18,6 +31,16 @@ export const viApps: Translation<typeof enApps> = {
 		"Chạy {command} trong terminal, rồi nhập mã nó hiện ở {device}.",
 	"apps.tuneloWeb.description": "Tunnel của bạn trên trình duyệt.",
 	"apps.tuneloWeb.signIn": "Chọn Đăng nhập trên trang.",
+	"apps.steps.title": "Đăng nhập diễn ra thế nào",
+	"apps.steps.choose.title": "Chọn một ứng dụng",
+	"apps.steps.choose.body":
+		"Chọn Đăng nhập trên trang của nó, hoặc chạy {command} trong terminal.",
+	"apps.steps.provider.title": "Tiếp tục với Google hoặc GitHub",
+	"apps.steps.provider.body":
+		"Tài khoản bạn đã liên kết sẽ đăng nhập cho bạn. Lần đầu, bạn chọn một tên đăng nhập.",
+	"apps.steps.back.title": "Quay lại ứng dụng",
+	"apps.steps.back.body":
+		"Ứng dụng bên ngoài hoandat, như công cụ AI, sẽ hỏi bạn đồng ý trước.",
 	"apps.manage":
 		"Để xem hoặc gỡ các ứng dụng đang có quyền vào tài khoản, mở trang {account}.",
 };

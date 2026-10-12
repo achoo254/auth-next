@@ -62,3 +62,16 @@ test("/account fits a 375 px phone without sideways scrolling", async ({
 	);
 	expect(overflow).toBeLessThanOrEqual(0);
 });
+
+test("/apps fits a 375 px phone without sideways scrolling", async ({
+	page,
+}) => {
+	await page.setViewportSize({ width: 375, height: 812 });
+	await page.goto("/apps");
+	await expect(page.locator('[data-id="apps-hub"]')).toBeVisible();
+	await expect(page.locator('[data-id="app-list"] > li')).toHaveCount(4);
+	const overflow = await page.evaluate(
+		() => document.documentElement.scrollWidth - window.innerWidth,
+	);
+	expect(overflow).toBeLessThanOrEqual(0);
+});

@@ -13,6 +13,8 @@ export interface PageOptions {
 	 * reading; `portal` drops the outer card for pages made of cards.
 	 */
 	readonly layout?: "card" | "wide" | "portal";
+	/** Extra stylesheets under /assets/css, after app.css (one page's own styles). */
+	readonly stylesheets?: readonly string[];
 }
 
 const FONT_STYLESHEETS = [
@@ -71,6 +73,7 @@ export function renderPage(options: PageOptions): string {
 ${FONT_STYLESHEETS.map((href) => html`<link rel="stylesheet" href="${href}">`)}
 <link rel="stylesheet" href="/assets/css/tokens.css">
 <link rel="stylesheet" href="/assets/css/app.css">
+${(options.stylesheets ?? []).map((href) => html`<link rel="stylesheet" href="${href}">`)}
 </head>
 <body>
 <header class="topbar"><div class="topbar-inner container">

@@ -1,8 +1,21 @@
 /** The public list of apps that sign in through the IdP, at /apps. */
 export const enApps = {
-	"apps.title": "Apps that use your hoandat account",
+	"apps.eyebrow": "hoandat sign-in",
+	"apps.title": "One account for every hoandat app",
 	"apps.subtitle":
-		"One hoandat account signs you in to every app below, with Google or GitHub.",
+		"Sign in once with Google or GitHub and use the same account in Localman, its MCP server and Tunelo.",
+	"apps.trust.providers": "Sign in with Google or GitHub",
+	"apps.trust.noPassword": "No password to create or remember",
+	"apps.trust.control": "You choose which apps get access",
+	"apps.cta.account": "Manage your account",
+	"apps.cta.how": "How sign-in works",
+	"apps.diagram.label":
+		"Your hoandat account, reached with Google or GitHub, signs you in to Localman, Localman MCP, Tunelo CLI and Tunelo.",
+	"apps.list.title": "Apps you can open",
+	"apps.kind.web": "Web app",
+	"apps.kind.mcp": "MCP server",
+	"apps.kind.cli": "Command line",
+	"apps.signInLabel": "How to sign in",
 	"apps.open": "Open",
 	"apps.localmanWeb.description":
 		"Mock APIs and an API client in your browser.",
@@ -17,6 +30,16 @@ export const enApps = {
 		"Run {command} in a terminal, then enter the code it shows at {device}.",
 	"apps.tuneloWeb.description": "Your tunnels in the browser.",
 	"apps.tuneloWeb.signIn": "Choose Sign in on the site.",
+	"apps.steps.title": "How sign-in works",
+	"apps.steps.choose.title": "Pick an app",
+	"apps.steps.choose.body":
+		"Choose Sign in on its site, or run {command} in a terminal.",
+	"apps.steps.provider.title": "Continue with Google or GitHub",
+	"apps.steps.provider.body":
+		"The account you linked signs you in. The first time, you pick a username.",
+	"apps.steps.back.title": "You are back in the app",
+	"apps.steps.back.body":
+		"Apps from outside hoandat, such as AI tools, ask for your approval first.",
 	"apps.manage":
 		"To see or remove the apps that can access your account, open {account}.",
 };

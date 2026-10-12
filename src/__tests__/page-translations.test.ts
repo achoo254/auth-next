@@ -120,19 +120,19 @@ const EXPECTED: Readonly<Record<Locale, readonly string[]>> = {
 		"Sign in to continue to Localman",
 		"Sign in with Google",
 		"Remove app access",
-		"Apps that use your hoandat account",
+		"One account for every hoandat app",
 	],
 	"zh-CN": [
 		"登录以继续使用 Localman",
 		"使用 Google 登录",
 		"移除应用访问权限",
-		"使用 hoandat 账号的应用",
+		"一个账号，通用所有 hoandat 应用",
 	],
 	vi: [
 		"Đăng nhập để tiếp tục tới Localman",
 		"Đăng nhập với Google",
 		"Gỡ quyền của ứng dụng",
-		"Ứng dụng dùng tài khoản hoandat",
+		"Một tài khoản cho mọi ứng dụng hoandat",
 	],
 };
 

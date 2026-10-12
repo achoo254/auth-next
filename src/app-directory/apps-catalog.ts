@@ -1,0 +1,120 @@
+import type { Env } from "../config/env.js";
+import type { MessageKey } from "../i18n/dictionaries.js";
+import type { Translator } from "../i18n/translator.js";
+import { STATIC_CLIENT_IDS } from "../oidc/clients.js";
+import { OIDC_ROUTES } from "../oidc/provider.js";
+import { RESOURCES } from "../oidc/resources.js";
+import { type SafeHtml, html } from "../ui/html.js";
+
+/** Where the apps that sign in through this IdP live, per environment. */
+export type AppDirectoryEnv = Pick<
+	Env,
+	"ISSUER" | "LOCALMAN_WEB_URL" | "TUNELO_WEB_URL"
+>;
+
+/** One palette hue per app, from the data-viz tokens (apps.css). */
+export type AppTone = "violet" | "cyan" | "green" | "amber";
+
+type AppIconName = "localman" | "mcp" | "terminal" | "tunnel";
+
+/** One app on the page; `id` is its `client_id` when it has a fixed one. */
+export interface ListedApp {
+	readonly id: string;
+	readonly name: string;
+	readonly tone: AppTone;
+	readonly icon: AppIconName;
+	readonly kind: MessageKey;
+	readonly description: MessageKey;
+	/** "How to sign in", in markup (it can name a command or an address). */
+	readonly signIn: SafeHtml;
+	/** Web apps get an "Open" button; CLI and MCP have nothing to open. */
+	readonly href?: string;
+}
+
+/** Line icons in currentColor, 24×24, stroke width from --icon-stroke. */
+const ICON_SHAPES: Readonly<Record<AppIconName, SafeHtml>> = {
+	localman: html`<path d="M8 4H7a2 2 0 0 0-2 2v4l-2 2 2 2v4a2 2 0 0 0 2 2h1M16 4h1a2 2 0 0 1 2 2v4l2 2-2 2v4a2 2 0 0 1-2 2h-1"/><circle cx="12" cy="12" r="1.5"/>`,
+	mcp: html`<path d="M9 3v4M15 3v4M7 7h10v4a5 5 0 0 1-10 0V7zM12 16v5"/>`,
+	terminal: html`<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9l3 3-3 3M13 15h4"/>`,
+	tunnel: html`<path d="M3 20V12a9 9 0 0 1 18 0v8M7 20v-8a5 5 0 0 1 10 0v8M3 20h18"/>`,
+};
+
+/**
+ * An app's icon. `size` sets the drawn size; inside another SVG pass `x`/`y`
+ * to place it (a nested <svg>).
+ */
+export function appIcon(
+	name: AppIconName,
+	options: {
+		readonly size?: number;
+		readonly x?: number;
+		readonly y?: number;
+	} = {},
+): SafeHtml {
+	const size = options.size ?? 22;
+	const place =
+		options.x === undefined
+			? ""
+			: html` x="${options.x}" y="${options.y ?? 0}"`;
+	return html`<svg class="icon"${place} viewBox="0 0 24 24" width="${size}" height="${size}" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${ICON_SHAPES[name]}</svg>`;
+}
+
+function code(value: string): SafeHtml {
+	return html`<code class="mono">${value}</code>`;
+}
+
+/**
+ * The first-party apps of src/oidc/clients.ts, plus the MCP clients that
+ * register themselves for Localman's MCP resource.
+ */
+export function listedApps(
+	env: AppDirectoryEnv,
+	i18n: Translator,
+): ListedApp[] {
+	const deviceUrl = new URL(OIDC_ROUTES.code_verification, env.ISSUER).href;
+	return [
+		{
+			id: STATIC_CLIENT_IDS.localmanWeb,
+			name: "Localman",
+			tone: "violet",
+			icon: "localman",
+			kind: "apps.kind.web",
+			description: "apps.localmanWeb.description",
+			signIn: html`${i18n.t("apps.localmanWeb.signIn")}`,
+			href: env.LOCALMAN_WEB_URL,
+		},
+		{
+			id: "localman-mcp",
+			name: "Localman MCP",
+			tone: "cyan",
+			icon: "mcp",
+			kind: "apps.kind.mcp",
+			description: "apps.localmanMcp.description",
+			signIn: i18n.rich("apps.localmanMcp.signIn", {
+				address: code(RESOURCES.localmanMcp),
+			}),
+		},
+		{
+			id: STATIC_CLIENT_IDS.tuneloCli,
+			name: "Tunelo CLI",
+			tone: "green",
+			icon: "terminal",
+			kind: "apps.kind.cli",
+			description: "apps.tuneloCli.description",
+			signIn: i18n.rich("apps.tuneloCli.signIn", {
+				command: code("tunelo login"),
+				device: html`<a class="link" href="${deviceUrl}">${deviceUrl}</a>`,
+			}),
+		},
+		{
+			id: STATIC_CLIENT_IDS.tuneloWeb,
+			name: "Tunelo",
+			tone: "amber",
+			icon: "tunnel",
+			kind: "apps.kind.web",
+			description: "apps.tuneloWeb.description",
+			signIn: html`${i18n.t("apps.tuneloWeb.signIn")}`,
+			href: env.TUNELO_WEB_URL,
+		},
+	];
+}

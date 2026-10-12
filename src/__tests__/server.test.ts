@@ -50,9 +50,10 @@ describe("App list", () => {
 		expect(response.status).toBe(200);
 		expect(response.headers.get("cache-control")).toBe("private, no-cache");
 		const body = await response.text();
-		expect(body).toContain("Apps that use your hoandat account");
+		expect(body).toContain("One account for every hoandat app");
+		expect(body).toContain('href="/assets/css/apps.css"');
 		for (const name of ["Localman", "Localman MCP", "Tunelo CLI", "Tunelo"]) {
-			expect(body).toContain(`<b>${name}</b>`);
+			expect(body).toContain(`class="app-card-name">${name}</h3>`);
 		}
 		// Addresses come from the environment (the defaults here).
 		expect(body).toContain('href="https://localman.hoandat.com"');
