@@ -4,7 +4,7 @@ import { auditContext, auditLabel } from "../audit/audit-context.js";
 import { clientIp } from "../http/client-ip.js";
 import { isStaticClientId } from "../oidc/clients.js";
 import { imitatesFirstPartyName } from "../oidc/first-party-name.js";
-import { GRANT_MAX_SECONDS } from "../oidc/sliding-grants.js";
+import { GRANT_IDLE_SECONDS } from "../oidc/sliding-grants.js";
 import type { AppServices } from "../services.js";
 import { sendPage } from "../ui/send-page.js";
 import { renderConsent } from "./consent-page.js";
@@ -81,7 +81,8 @@ export async function completeConsent(
 						? code.deviceInfo.ua
 						: undefined,
 			},
-			GRANT_MAX_SECONDS,
+			// Device grants slide on every refresh; the metadata slides with them.
+			GRANT_IDLE_SECONDS,
 		);
 		services.logger.info(
 			{ accountId, clientId, ip: clientIp(req) },

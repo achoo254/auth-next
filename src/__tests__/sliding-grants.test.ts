@@ -8,8 +8,14 @@ import {
 	it,
 	vi,
 } from "vitest";
+import { GRANT_META_COLLECTION } from "../account-portal/grant-directory.js";
 import { STATIC_CLIENT_IDS } from "../oidc/clients.js";
 import { collectionNameFor } from "../oidc/mongo-adapter.js";
+import {
+	GRANT_IDLE_SECONDS,
+	hasHardCap,
+	slidingLifetime,
+} from "../oidc/sliding-grants.js";
 import { deviceLogin, discoverClient } from "./helpers/flows.js";
 import { type TestIdp, startTestIdp } from "./helpers/test-idp.js";
 
@@ -68,35 +74,39 @@ async function expiresAt(model: string, id: string): Promise<number> {
 }
 
 describe("sliding Tunelo CLI sessions", () => {
-	it("extends on every refresh, never past 90 days from sign-in", async () => {
+	it("keeps an always-on device signed in past 90 days, sliding its /account entry too", async () => {
 		const { config, start, refreshToken } = await cliLogin();
-		// Day 29 refresh keeps the session alive until day 59, so day 58 works.
+		const grantOf = async (token: string): Promise<string> =>
+			(
+				await idp.db
+					.collection<{ _id: string; grantId?: string }>(
+						collectionNameFor("RefreshToken"),
+					)
+					.findOne({ _id: token })
+			)?.grantId ?? "";
+		const grantId = await grantOf(refreshToken);
+		// The device name row that consent writes for a real approval.
+		await idp.db
+			.collection<{ _id: string; expiresAt: Date }>(GRANT_META_COLLECTION)
+			.insertOne({ _id: grantId, expiresAt: new Date(start + 30 * DAY_MS) });
+
 		const day29 = await refreshAt(config, refreshToken, start + 29 * DAY_MS);
 		const day58 = await refreshAt(config, day29, start + 58 * DAY_MS);
 		const day87 = await refreshAt(config, day58, start + 87 * DAY_MS);
+		const day116 = await refreshAt(config, day87, start + 116 * DAY_MS);
+		const day145 = await refreshAt(config, day116, start + 145 * DAY_MS);
 
-		const grantId = (
-			await idp.db
-				.collection<{ _id: string; grantId?: string }>(
-					collectionNameFor("RefreshToken"),
-				)
-				.findOne({ _id: day87 })
-		)?.grantId;
-		const cap = start + 90 * DAY_MS;
-		// At day 87 neither the token nor the grant may run the full 30 days.
-		expect(await expiresAt("RefreshToken", day87)).toBeLessThanOrEqual(
-			cap + 1_000,
+		const thirtyDaysLater = start + (145 + 30) * DAY_MS;
+		expect(await expiresAt("RefreshToken", day145)).toBeGreaterThan(
+			thirtyDaysLater - 2_000,
 		);
-		expect(await expiresAt("RefreshToken", day87)).toBeGreaterThan(cap - 2_000);
-		expect(await expiresAt("Grant", grantId ?? "")).toBeLessThanOrEqual(
-			cap + 1_000,
+		expect(await expiresAt("Grant", grantId)).toBeGreaterThan(
+			thirtyDaysLater - 2_000,
 		);
-
-		// Day 89 still works; past day 90 nothing does.
-		const day89 = await refreshAt(config, day87, start + 89 * DAY_MS);
-		await expect(refreshAt(config, day89, cap + 60_000)).rejects.toMatchObject({
-			error: "invalid_grant",
-		});
+		const meta = await idp.db
+			.collection<{ _id: string; expiresAt: Date }>(GRANT_META_COLLECTION)
+			.findOne({ _id: grantId });
+		expect(meta?.expiresAt.getTime()).toBeGreaterThan(thirtyDaysLater - 2_000);
 	});
 
 	it("expires after 30 days without a refresh", async () => {
@@ -112,5 +122,25 @@ describe("sliding Tunelo CLI sessions", () => {
 		await expect(
 			refreshAt(config, day29, start + 58 * DAY_MS),
 		).resolves.toEqual(expect.any(String));
+	});
+});
+
+describe("the 90-day cap", () => {
+	const DAY = 24 * 60 * 60;
+	it("still ends every other client's grant 90 days after sign-in", () => {
+		const start = 1_000_000;
+		expect(hasHardCap(STATIC_CLIENT_IDS.localmanWeb)).toBe(true);
+		expect(hasHardCap(STATIC_CLIENT_IDS.tuneloWeb)).toBe(true);
+		expect(hasHardCap("some-mcp-client")).toBe(true);
+		expect(hasHardCap(undefined)).toBe(true);
+		expect(slidingLifetime(start, start + 87 * DAY)).toBe(3 * DAY);
+	});
+
+	it("does not apply to Tunelo CLI devices, which keep the 30-day idle limit", () => {
+		const start = 1_000_000;
+		expect(hasHardCap(STATIC_CLIENT_IDS.tuneloCli)).toBe(false);
+		expect(slidingLifetime(start, start + 300 * DAY, false)).toBe(
+			GRANT_IDLE_SECONDS,
+		);
 	});
 });
