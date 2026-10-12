@@ -25,6 +25,7 @@ Yêu cầu: Node ≥ 22.12, pnpm 11, MongoDB (replica set) hoặc Docker.
 ```bash
 pnpm install
 pnpm generate-key            # tạo secrets/signing-keys.json (ES256, có kid)
+pnpm generate-key secrets/signing-keys.json --alg RS256   # thêm khoá RSA cho ID token RS256
 cp .env.example .env         # điền COOKIE_KEYS và hai client secret
 pnpm dev                     # http://localhost:4500, cần MONGO_URL trỏ tới MongoDB
 ```
@@ -40,7 +41,7 @@ Hoặc chạy cả MongoDB lẫn IdP bằng Docker: `docker compose up --build` 
 | `pnpm test` | Vitest (unit + integration HTTP); tự chạy một mongod thật qua `mongodb-memory-server` (lần đầu tải binary). Tối đa 2 worker (đặt trong `vitest.config.ts`); thêm tham số thì viết `pnpm test <args>`, vì `pnpm test -- <args>` không chuyển tham số |
 | `pnpm test:e2e` | Playwright (Chromium, 1 worker) trên server thật ở cổng 4590/4591 với Google, GitHub, Telegram giả. Cài trình duyệt một lần: `pnpm exec playwright install chromium` |
 | `pnpm check:tokens` | Không có mã màu (hex, `rgb()`, `hsl()`) trong `src/` và `static/` ngoài `static/css/tokens.css` |
-| `pnpm generate-key [file]` | Sinh khoá ES256 và thêm vào cuối JWKS (chỉ để xác minh, xem ADR về xoay khoá) |
+| `pnpm generate-key [file] [--alg ES256\|RS256]` | Sinh khoá (mặc định ES256) và thêm vào cuối JWKS; khoá đầu tiên của mỗi thuật toán ký, khoá sau chỉ để xác minh (ADR 0001 mục 4, ADR 0005) |
 | `pnpm seed:clients [--skip-discovery]` | Kiểm client tĩnh với env hiện tại (validator của `oidc-provider`, bản ghi MongoDB che id tĩnh, discovery và JWKS của issuer), in kế hoạch kèm fingerprint; chỉ đọc, chạy lại cho cùng kết quả. Trong image production: `node dist/seed-clients.mjs` |
 
 ## Endpoint
@@ -63,7 +64,7 @@ Back-channel logout: `localman-web` tới `${LOCALMAN_WEB_URL}/auth/backchannel-
 
 `hoandat-account` là client riêng của trang `/account`: chưa đăng nhập thì `/account` gửi trình duyệt qua một authorization request bình thường của client này, nên đăng nhập dùng chung trang và chung cơ chế khoá; sau đó chỉ cookie phiên của IdP có ý nghĩa. App bên ngoài không dùng client này.
 
-Access token là JWT ES256 (`typ: at+jwt`) sống 15 phút. App xác minh offline bằng `jose` với JWKS đã cache, kiểm `iss`, `aud` của chính mình, `alg: ES256` và `typ`; mẫu tham chiếu: [`src/__tests__/helpers/verify-access-token.ts`](src/__tests__/helpers/verify-access-token.ts).
+ID token mặc định ký ES256; client tĩnh khai `id_token_signed_response_alg: "RS256"` thì nhận RS256 (discovery quảng bá cả hai, theo OpenID Connect Discovery; ADR 0005). Access token là JWT ES256 (`typ: at+jwt`) sống 15 phút. App xác minh offline bằng `jose` với JWKS đã cache, kiểm `iss`, `aud` của chính mình, `alg: ES256` và `typ`; mẫu tham chiếu: [`src/__tests__/helpers/verify-access-token.ts`](src/__tests__/helpers/verify-access-token.ts).
 
 Scope `telegram` (chỉ `localman-web`, không hỏi consent vì là app first-party) trả `telegram_chat_id` và `telegram_username` của chat đã liên kết **chỉ qua userinfo**, không bao giờ trong ID token hay access token; chưa liên kết thì không có hai claim này (`telegram_linked` của scope `profile` vẫn như cũ). Localman dùng nó để gửi thông báo bằng bot riêng: [`docs/integration-guide.md`](docs/integration-guide.md) mục 4.
 

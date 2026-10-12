@@ -126,7 +126,10 @@ describe("discovery", () => {
 			expect(metadata[endpoint], endpoint).toEqual(expect.any(String));
 		}
 		expect(metadata.backchannel_logout_supported).toBe(true);
-		expect(metadata.id_token_signing_alg_values_supported).toEqual(["ES256"]);
+		expect(metadata.id_token_signing_alg_values_supported).toEqual([
+			"ES256",
+			"RS256",
+		]);
 		expect(metadata.code_challenge_methods_supported).toEqual(["S256"]);
 		expect(metadata.response_types_supported).toEqual(["code"]);
 		expect(metadata.scopes_supported).toEqual(
@@ -143,8 +146,14 @@ describe("discovery", () => {
 			idp.jwks.keys.map((key) => key.kid),
 		);
 		for (const key of keys) {
-			expect(key).toMatchObject({ kty: "EC", crv: "P-256", alg: "ES256" });
-			expect(key).not.toHaveProperty("d");
+			if (key.kty === "RSA") {
+				expect(key).toMatchObject({ alg: "RS256", use: "sig" });
+			} else {
+				expect(key).toMatchObject({ kty: "EC", crv: "P-256", alg: "ES256" });
+			}
+			for (const secret of ["d", "p", "q", "dp", "dq", "qi"]) {
+				expect(key).not.toHaveProperty(secret);
+			}
 		}
 	});
 });

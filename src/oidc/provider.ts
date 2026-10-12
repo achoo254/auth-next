@@ -30,7 +30,7 @@ import {
 	buildInteractionPolicy,
 	promptValuesSupported,
 } from "./interaction-policy.js";
-import { SIGNING_ALG, type SigningJwks } from "./jwks.js";
+import { SIGNING_ALG, type SigningJwks, idTokenSigningAlgs } from "./jwks.js";
 import { createMongoAdapterFactory } from "./mongo-adapter.js";
 import { logProviderEvents } from "./provider-logging.js";
 import { validateClientMetadata } from "./registration-policy.js";
@@ -110,7 +110,7 @@ export function buildProviderConfiguration(
 			token_endpoint_auth_method: "client_secret_basic",
 			id_token_signed_response_alg: SIGNING_ALG,
 		},
-		enabledJWA: { idTokenSigningAlgValues: [SIGNING_ALG] },
+		enabledJWA: { idTokenSigningAlgValues: idTokenSigningAlgs(jwks) },
 		extraClientMetadata: {
 			properties: [ALLOWED_RESOURCES_PROPERTY],
 			validator: validateClientMetadata,

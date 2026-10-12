@@ -21,7 +21,11 @@ import {
 	formatSeedReport,
 	inspectStaticClients,
 } from "../src/oidc/client-seed.js";
-import { loadSigningJwks } from "../src/oidc/jwks.js";
+import {
+	loadSigningJwks,
+	primarySigningKey,
+	rsaSigningKey,
+} from "../src/oidc/jwks.js";
 
 async function main(): Promise<number> {
 	const env = parseEnv(process.env);
@@ -37,11 +41,13 @@ async function main(): Promise<number> {
 		const problems = [...report.shadowedIds].map(
 			(id) => `MongoDB holds a client record for static id ${id}`,
 		);
-		const signingKid = jwks.keys[0]?.kid ?? "";
+		const signingKids = [primarySigningKey(jwks), rsaSigningKey(jwks)]
+			.filter((key) => key !== undefined)
+			.map((key) => key.kid);
 		if (process.argv.includes("--skip-discovery")) {
 			process.stdout.write("Discovery: skipped\n");
 		} else {
-			problems.push(...(await checkDiscovery(env.ISSUER, signingKid)));
+			problems.push(...(await checkDiscovery(env.ISSUER, signingKids)));
 			process.stdout.write(`Discovery: checked ${env.ISSUER}\n`);
 		}
 		for (const problem of problems) {

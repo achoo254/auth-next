@@ -30,6 +30,8 @@ const config = await oidc.discovery(
 
 ## 2. Client, luồng, scope và `aud`
 
+ID token mặc định ký **ES256**. Discovery quảng bá `id_token_signing_alg_values_supported: ["ES256", "RS256"]` (OpenID Connect Discovery bắt buộc RS256): app mới dùng thư viện chờ RS256 thì khai `id_token_signed_response_alg: "RS256"` trong client tĩnh của nó (`src/oidc/clients.ts`). Access token và sự kiện audit luôn ES256. Xác minh ID token bằng JWKS, chọn khoá theo `kid` (`jose` làm sẵn); JWKS có cả khoá EC và RSA (ADR 0005).
+
 | `client_id` | Loại | Luồng | Scope được phép | `aud` của access token | Back-channel logout |
 |---|---|---|---|---|---|
 | `localman-web` | confidential (`client_secret_basic`) | Code + PKCE, refresh (gắn phiên IdP), **token exchange** | `openid profile email telegram` + scope API Localman (không có `offline_access`) | `https://localman.hoandat.com` (chỉ khi xin scope API); đổi được token `https://tunnel.hoandat.com` | `https://localman.hoandat.com/auth/backchannel-logout` |

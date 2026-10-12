@@ -4,7 +4,7 @@ import type { Env } from "../config/env.js";
 import { createLogger } from "../logger.js";
 import { createInMemoryAccountStore } from "./claims.js";
 import { STATIC_CLIENT_IDS, TOKEN_EXCHANGE_GRANT } from "./clients.js";
-import { SIGNING_ALG, type SigningJwks } from "./jwks.js";
+import { RSA_ID_TOKEN_ALG, SIGNING_ALG, type SigningJwks } from "./jwks.js";
 import { collectionNameFor } from "./mongo-adapter.js";
 import { createProvider } from "./provider.js";
 
@@ -106,12 +106,13 @@ function objectOf(value: unknown): Record<string, unknown> {
 /**
  * Checks the deployed issuer serves what this configuration expects: its
  * discovery names the issuer, token exchange, device flow, back-channel
- * logout and ES256, and its JWKS publishes the local signing key. Returns
- * the problems found (empty when all is well).
+ * logout, ES256 and RS256 (OpenID Connect Discovery requires RS256 among
+ * the ID token algorithms, ADR 0005), and its JWKS publishes every local
+ * signing key. Returns the problems found (empty when all is well).
  */
 export async function checkDiscovery(
 	issuer: string,
-	signingKid: string,
+	signingKids: readonly string[],
 	fetchFn: typeof fetch = fetch,
 ): Promise<string[]> {
 	const response = await fetchFn(`${issuer}/.well-known/openid-configuration`);
@@ -129,12 +130,9 @@ export async function checkDiscovery(
 	if (discovery.backchannel_logout_supported !== true) {
 		problems.push("back-channel logout missing");
 	}
-	if (
-		!strings(discovery.id_token_signing_alg_values_supported).includes(
-			SIGNING_ALG,
-		)
-	) {
-		problems.push(`${SIGNING_ALG} missing`);
+	const idTokenAlgs = strings(discovery.id_token_signing_alg_values_supported);
+	for (const alg of [SIGNING_ALG, RSA_ID_TOKEN_ALG]) {
+		if (!idTokenAlgs.includes(alg)) problems.push(`${alg} missing`);
 	}
 	const jwksUri = text(discovery.jwks_uri);
 	if (!jwksUri) return [...problems, "jwks_uri missing"];
@@ -142,8 +140,10 @@ export async function checkDiscovery(
 	const kids = (Array.isArray(jwks.keys) ? jwks.keys : []).map(
 		(key) => objectOf(key).kid,
 	);
-	if (!kids.includes(signingKid)) {
-		problems.push(`signing key ${signingKid} is not published at ${jwksUri}`);
+	for (const kid of signingKids) {
+		if (!kids.includes(kid)) {
+			problems.push(`signing key ${kid} is not published at ${jwksUri}`);
+		}
 	}
 	return problems;
 }

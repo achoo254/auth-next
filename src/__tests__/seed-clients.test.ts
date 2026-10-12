@@ -115,9 +115,9 @@ describe("seed-clients", () => {
 	});
 
 	it("checks the live discovery document and JWKS", async () => {
-		const kid = idp.jwks.keys[0]?.kid ?? "";
-		expect(await checkDiscovery(idp.issuer, kid)).toEqual([]);
-		expect(await checkDiscovery(idp.issuer, "unknown-kid")).toEqual([
+		const kids = idp.jwks.keys.map((key) => key.kid);
+		expect(await checkDiscovery(idp.issuer, kids)).toEqual([]);
+		expect(await checkDiscovery(idp.issuer, ["unknown-kid"])).toEqual([
 			expect.stringContaining("signing key unknown-kid is not published"),
 		]);
 	});

@@ -5,8 +5,11 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import {
 	SigningKeysError,
 	generateSigningJwk,
+	idTokenSigningAlgs,
 	loadSigningJwks,
 	parseSigningJwks,
+	primarySigningKey,
+	rsaSigningKey,
 } from "./jwks.js";
 
 let dir: string;
@@ -42,7 +45,7 @@ describe("signing keys", () => {
 		);
 	});
 
-	it("rejects keys without kid, duplicate kids and non-ES256 keys", async () => {
+	it("rejects keys without kid, duplicate kids and unsupported keys", async () => {
 		const key = await generateSigningJwk();
 		const { kid: _kid, ...withoutKid } = key;
 		expect(() => parseSigningJwks({ keys: [withoutKid] })).toThrow(
@@ -55,6 +58,39 @@ describe("signing keys", () => {
 			parseSigningJwks({ keys: [{ ...key, crv: "P-384" }] }),
 		).toThrow(SigningKeysError);
 		expect(() => parseSigningJwks({ keys: [] })).toThrow(/must contain a key/);
+	});
+
+	it("generates RSA keys for RS256 ID tokens, kid being the thumbprint", async () => {
+		const key = await generateSigningJwk("RS256");
+		expect(key).toMatchObject({ kty: "RSA", alg: "RS256", use: "sig" });
+		expect(key.kid).toMatch(/^[A-Za-z0-9_-]{43}$/);
+	});
+
+	it("signs with the first key of each algorithm", async () => {
+		const rsa = await generateSigningJwk("RS256");
+		const [first, second] = [
+			await generateSigningJwk(),
+			await generateSigningJwk(),
+		];
+		const jwks = parseSigningJwks({ keys: [rsa, first, second] });
+		expect(primarySigningKey(jwks).kid).toBe(first?.kid);
+		expect(rsaSigningKey(jwks)?.kid).toBe(rsa.kid);
+		expect(idTokenSigningAlgs(jwks)).toEqual(["ES256", "RS256"]);
+		const ecOnly = parseSigningJwks({ keys: [first] });
+		expect(rsaSigningKey(ecOnly)).toBeUndefined();
+		expect(idTokenSigningAlgs(ecOnly)).toEqual(["ES256"]);
+	});
+
+	it("needs an ES256 key and RSA keys of at least 2048 bits", async () => {
+		const rsa = await generateSigningJwk("RS256");
+		expect(() => parseSigningJwks({ keys: [rsa] })).toThrow(
+			/must contain an ES256 key/,
+		);
+		const ec = await generateSigningJwk();
+		const short = { ...rsa, n: rsa.kty === "RSA" ? rsa.n.slice(0, 170) : "" };
+		expect(() => parseSigningJwks({ keys: [ec, short] })).toThrow(
+			/at least 2048 bits/,
+		);
 	});
 
 	it("never puts private key material in error messages", async () => {

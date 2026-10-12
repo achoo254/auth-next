@@ -119,9 +119,14 @@ export async function startTestIdp(options: TestIdpOptions): Promise<TestIdp> {
 		...(options.withoutUpstreams ? {} : FAKE_OAUTH_ENV),
 		...options.env,
 	});
-	// Two keys: the first signs, the second is published for verification.
+	// As in production: the first ES256 key signs, a second one is published
+	// for verification, and an RSA key signs ID tokens of RS256 clients.
 	const jwks: SigningJwks = {
-		keys: [await generateSigningJwk(), await generateSigningJwk()],
+		keys: [
+			await generateSigningJwk(),
+			await generateSigningJwk(),
+			await generateSigningJwk("RS256"),
+		],
 	};
 	const logger = createLogger(env.LOG_LEVEL);
 	const accounts = new AccountRepository(db, new AuditOutbox(db, logger));

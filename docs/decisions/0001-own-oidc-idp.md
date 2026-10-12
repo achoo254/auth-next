@@ -28,7 +28,7 @@ User đã đặt quy tắc: không chạy mail server, không gửi email; thôn
 
 ### 3. ES256 và token ngắn hạn
 
-- Mọi ID token và access token ký bằng ES256 (ECDSA P-256): chữ ký nhỏ, ký và xác minh nhanh, được mọi thư viện JOSE hỗ trợ. Discovery chỉ quảng bá `ES256`.
+- Mọi ID token và access token ký bằng ES256 (ECDSA P-256): chữ ký nhỏ, ký và xác minh nhanh, được mọi thư viện JOSE hỗ trợ. Discovery chỉ quảng bá `ES256`. *(Cập nhật 2026-10-12, ADR 0005: discovery quảng bá thêm `RS256` cho ID token theo OpenID Connect Discovery; ES256 vẫn là mặc định và vẫn là thuật toán duy nhất của access token.)*
 - Access token là JWT (`typ: at+jwt`, RFC 9068), sống 15 phút, `aud` đúng bằng resource indicator: `https://localman.hoandat.com`, `https://localman.hoandat.com/mcp` hoặc `https://tunnel.hoandat.com`. Mỗi app tự xác minh offline bằng JWKS đã cache (thư viện `jose`), không gọi IdP ở mỗi request; app nào cũng phải kiểm `iss`, `aud` của chính mình, `alg` và `typ`. Vì vậy token của Tunelo không dùng được cho Localman và ngược lại.
 - Mỗi client chỉ được xin token cho các resource khai báo sẵn trong `allowed_resources`. Client MCP đăng ký động luôn bị gán đúng `https://localman.hoandat.com/mcp`.
 - Token ngắn hạn giới hạn thiệt hại khi lộ token, vì JWT không thu hồi được trước khi hết hạn. Phiên dài hạn dựa vào refresh token: xoay vòng sau mỗi lần dùng, phiên trượt 30 ngày với trần 90 ngày (xem ADR 0002, mục 7); nếu một refresh token đã dùng bị đưa ra lại (dấu hiệu bị đánh cắp) thì cả grant bị thu hồi, kể cả refresh token mới nhất.
@@ -37,7 +37,7 @@ User đã đặt quy tắc: không chạy mail server, không gửi email; thôn
 ### 4. Khoá ký và cách xoay vòng
 
 - Khoá ký là JWKS private nằm trong file secret (`SIGNING_KEYS_PATH`, mặc định `secrets/signing-keys.json`), mount read-only vào container; thư mục `secrets/` không bao giờ được commit. Mỗi khoá có `kid` bằng thumbprint RFC 7638 của nó.
-- Khoá **đầu tiên** trong `keys` dùng để ký; các khoá sau chỉ được công bố ở `/jwks` để xác minh token cũ.
+- Khoá **đầu tiên** trong `keys` dùng để ký; các khoá sau chỉ được công bố ở `/jwks` để xác minh token cũ. *(Cập nhật 2026-10-12, ADR 0005: file có cả khoá ES256 và RS256; khoá ký là khoá đầu tiên **của mỗi thuật toán**, và quy trình dưới đây áp dụng riêng cho từng thuật toán.)*
 - Quy trình xoay vòng (theo khuyến nghị của `oidc-provider`):
   1. Chạy `pnpm generate-key <đường dẫn file>`: khoá mới được thêm vào **cuối** danh sách, nên chỉ được công bố để xác minh.
   2. Deploy lại. Chờ ít nhất bằng thời gian cache JWKS của các app (để app nào cũng đã thấy khoá mới).

@@ -1,17 +1,22 @@
 /**
- * Generates an ES256 signing key and appends it to the private JWKS file.
+ * Generates a signing key and appends it to the private JWKS file.
  *
- *   pnpm generate-key [path]   (default: secrets/signing-keys.json)
+ *   pnpm generate-key [path] [--alg ES256|RS256]
+ *   (default: secrets/signing-keys.json, ES256)
  *
- * A new file starts with the generated key, which then signs. In an existing
- * file the key is appended, so it is published for verification only; move
- * it to the front of "keys" in a later deploy to start signing with it (see
- * docs/decisions/0001-own-oidc-idp.md). Key material is never printed.
+ * The first key of each algorithm signs with it; a later one is published
+ * for verification only, until it is moved before the others of its
+ * algorithm in a later deploy (see docs/decisions/0001-own-oidc-idp.md and
+ * 0005-rs256-id-tokens.md). The file must keep an ES256 key, so a new file
+ * starts with ES256. Key material is never printed.
  */
 import { existsSync } from "node:fs";
 import { mkdir, readFile, rename, rm, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import {
+	RSA_ID_TOKEN_ALG,
+	SIGNING_ALG,
+	type SigningAlg,
 	type SigningJwk,
 	generateSigningJwk,
 	parseSigningJwks,
@@ -25,14 +30,36 @@ async function readExistingKeys(path: string): Promise<SigningJwk[]> {
 	return [...parseSigningJwks(document).keys];
 }
 
+function parseArgs(args: readonly string[]): { path: string; alg: SigningAlg } {
+	let path = DEFAULT_PATH;
+	let alg: SigningAlg = SIGNING_ALG;
+	for (let index = 0; index < args.length; index += 1) {
+		const arg = args[index];
+		if (arg === "--alg") {
+			const value = args[index + 1];
+			if (value !== SIGNING_ALG && value !== RSA_ID_TOKEN_ALG) {
+				throw new Error(`--alg must be ${SIGNING_ALG} or ${RSA_ID_TOKEN_ALG}`);
+			}
+			alg = value;
+			index += 1;
+		} else if (arg !== undefined) {
+			path = arg;
+		}
+	}
+	return { path: resolve(path), alg };
+}
+
 async function main(): Promise<void> {
-	const path = resolve(process.argv[2] ?? DEFAULT_PATH);
+	const { path, alg } = parseArgs(process.argv.slice(2));
 	const keys = await readExistingKeys(path);
-	const key = await generateSigningJwk();
+	const key = await generateSigningJwk(alg);
 	if (keys.some((existing) => existing.kid === key.kid)) {
 		throw new Error("Generated a duplicate kid; run the script again");
 	}
+	const signs = !keys.some((existing) => existing.alg === alg);
 	keys.push(key);
+	// Refuse to write a file the server would refuse to start with.
+	parseSigningJwks({ keys });
 
 	await mkdir(dirname(path), { recursive: true, mode: 0o700 });
 	// Write a sibling temp file, then rename: a crash or full disk never
@@ -49,9 +76,9 @@ async function main(): Promise<void> {
 		throw error;
 	}
 
-	const role = keys.length === 1 ? "signing" : "verification only";
+	const role = signs ? `signing ${alg}` : "verification only";
 	process.stdout.write(
-		`Added key kid=${key.kid} (${role}) to ${path}; the file now holds ${keys.length} key(s).\n`,
+		`Added ${alg} key kid=${key.kid} (${role}) to ${path}; the file now holds ${keys.length} key(s).\n`,
 	);
 }
 

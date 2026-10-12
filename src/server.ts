@@ -11,7 +11,11 @@ import { type Env, parseEnv } from "./config/env.js";
 import { auditDeliveryConfig } from "./config/integrations-env.js";
 import { connectMongo } from "./db/connect-mongo.js";
 import { type Logger, createLogger } from "./logger.js";
-import { loadSigningJwks } from "./oidc/jwks.js";
+import {
+	loadSigningJwks,
+	primarySigningKey,
+	rsaSigningKey,
+} from "./oidc/jwks.js";
 import { ensureOidcIndexes } from "./oidc/mongo-adapter.js";
 import { createProvider } from "./oidc/provider.js";
 import { createServices, ensureAccountLayerIndexes } from "./services.js";
@@ -100,7 +104,11 @@ process.on("uncaughtException", (error) => {
 try {
 	const jwks = await loadSigningJwks(env.SIGNING_KEYS_PATH);
 	logger.info(
-		{ signingKid: jwks.keys[0]?.kid, keyCount: jwks.keys.length },
+		{
+			signingKid: primarySigningKey(jwks).kid,
+			rs256Kid: rsaSigningKey(jwks)?.kid,
+			keyCount: jwks.keys.length,
+		},
 		"Signing keys loaded",
 	);
 	const connection = await connectMongo(env.MONGO_URL, logger);

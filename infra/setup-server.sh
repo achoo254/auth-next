@@ -12,7 +12,10 @@ secret() { openssl rand -base64 48 | tr -d '\n=+/' | cut -c1-48; }
 
 mkdir -p secrets backups
 if [ ! -s secrets/signing-keys.json ]; then
+	# ES256 signs everything by default; the RSA key is for RS256 ID tokens,
+	# which OpenID Connect Discovery requires an OP to offer (ADR 0005).
 	node dist/generate-signing-key.mjs secrets/signing-keys.json
+	node dist/generate-signing-key.mjs secrets/signing-keys.json --alg RS256
 fi
 
 if [ ! -f .env ]; then

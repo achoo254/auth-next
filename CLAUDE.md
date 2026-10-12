@@ -42,3 +42,4 @@ Commands: `pnpm dev`, `pnpm build`, `pnpm lint`, `pnpm typecheck`, `pnpm test`, 
 - Không `console.log` ở runtime; dùng logger pino (`src/logger.ts`).
 - Đường dẫn endpoint chỉ khai báo ở `OIDC_ROUTES` (`src/oidc/provider.ts`); rate limit đọc từ đó và so khớp sau `normalizeRoutePath` (router của provider không phân biệt hoa/thường, bỏ `/` cuối).
 - Audience và scope theo resource chỉ khai báo ở `src/oidc/resources.ts`.
+- Ký token (ADR 0005): ES256 cho mọi token và là mặc định của ID token; RS256 chỉ cho ID token của client khai nó. Khoá ký là khoá đầu tiên **của mỗi thuật toán** trong JWKS: lấy qua `primarySigningKey`/`rsaSigningKey` (`src/oidc/jwks.ts`), không bao giờ `keys[0]`. Discovery production phải có cả `ES256` và `RS256` (`seed-clients` kiểm).

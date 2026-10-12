@@ -1,5 +1,9 @@
 import { SignJWT, importJWK } from "jose";
-import { SIGNING_ALG, type SigningJwks } from "../oidc/jwks.js";
+import {
+	SIGNING_ALG,
+	type SigningJwks,
+	primarySigningKey,
+} from "../oidc/jwks.js";
 import { auditEventUri } from "./audit-events.js";
 import type { AuditOutboxDocument } from "./audit-outbox.js";
 
@@ -32,8 +36,7 @@ export function createSecurityEventSigner(options: {
 	readonly jwks: SigningJwks;
 	readonly now?: () => Date;
 }): SecurityEventSigner {
-	const signingKey = options.jwks.keys[0];
-	if (!signingKey) throw new Error("No signing key to sign audit events with");
+	const signingKey = primarySigningKey(options.jwks);
 	const { kid } = signingKey;
 	let key: ReturnType<typeof importJWK> | undefined;
 	const now = options.now ?? (() => new Date());
