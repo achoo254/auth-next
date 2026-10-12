@@ -1,0 +1,166 @@
+/**
+ * TEST ONLY. A throwaway IdP for the OpenID Foundation conformance suite
+ * (Basic OP, static clients): the production provider configuration
+ * (`buildProviderConfiguration`) on mongodb-memory-server, with fresh ES256
+ * and RS256 keys and sign-in completed automatically as the test account, so
+ * the suite's many authorization requests need no clicks. Nothing here is
+ * trusted by any app: its keys die with the process.
+ *
+ * The suite reaches it over the Internet, so expose the port through Tunelo
+ * and pass the public URL as the issuer:
+ *
+ *   tunelo http 4595:<subdomain>
+ *   CONFORMANCE_ISSUER=https://<subdomain>.tunnel.hoandat.com pnpm conformance:idp
+ *
+ * `localman-web` and `tunelo-web` keep their real metadata (scope, grants,
+ * algorithms) and only redirect to the suite: they are the plan's `client`
+ * and `client2`. Their secrets exist only in this process and are never
+ * printed: the plan configuration (paste it in the suite's JSON tab) is
+ * written to secrets/conformance-plan.json, mode 600, outside git. Token
+ * exchange and audit are not wired: Basic OP does not use them.
+ */
+import { randomBytes } from "node:crypto";
+import { mkdir, writeFile } from "node:fs/promises";
+import { createServer } from "node:http";
+import { MongoClient } from "mongodb";
+import { MongoMemoryServer } from "mongodb-memory-server";
+import Provider from "oidc-provider";
+import { createAutoInteractions } from "../../src/__tests__/helpers/auto-interactions.js";
+import { FAKE_OAUTH_ENV } from "../../src/__tests__/helpers/fake-upstreams.js";
+import { AccountRepository } from "../../src/accounts/account-repository.js";
+import { createApp } from "../../src/app.js";
+import { parseEnv } from "../../src/config/env.js";
+import { createLogger } from "../../src/logger.js";
+import {
+	type AccountProfile,
+	createInMemoryAccountStore,
+} from "../../src/oidc/claims.js";
+import { STATIC_CLIENT_IDS } from "../../src/oidc/clients.js";
+import { generateSigningJwk } from "../../src/oidc/jwks.js";
+import { ensureOidcIndexes } from "../../src/oidc/mongo-adapter.js";
+import { buildProviderConfiguration } from "../../src/oidc/provider.js";
+import {
+	createServices,
+	ensureAccountLayerIndexes,
+} from "../../src/services.js";
+
+const issuer = process.env.CONFORMANCE_ISSUER;
+if (!issuer?.startsWith("https://")) {
+	throw new Error(
+		"Set CONFORMANCE_ISSUER to the public https URL of the tunnel",
+	);
+}
+const port = Number(process.env.CONFORMANCE_PORT ?? 4595);
+const alias = process.env.CONFORMANCE_ALIAS ?? "hoandat-auth-basic";
+const suiteCallback =
+	process.env.CONFORMANCE_REDIRECT_URI ??
+	`https://www.certification.openid.net/test/a/${alias}/callback`;
+
+/** The only account; every authorization request signs it in. */
+const ACCOUNT: AccountProfile = {
+	sub: "acc_conformance_1",
+	username: "conformance",
+	email: "conformance@example.com",
+	emailVerified: true,
+	name: "Conformance Tester",
+	picture: "https://example.com/avatar.png",
+	telegramLinked: false,
+};
+
+const mongod = await MongoMemoryServer.create();
+const mongoUrl = `${mongod.getUri().replace(/\/$/, "")}/auth`;
+const mongo = new MongoClient(mongoUrl);
+await mongo.connect();
+const db = mongo.db();
+await ensureOidcIndexes(db);
+await ensureAccountLayerIndexes(db);
+
+const secrets = {
+	client: randomBytes(32).toString("base64url"),
+	client2: randomBytes(32).toString("base64url"),
+};
+const env = parseEnv({
+	NODE_ENV: "test",
+	ISSUER: issuer,
+	MONGO_URL: mongoUrl,
+	SIGNING_KEYS_PATH: "unused-in-conformance.json",
+	COOKIE_KEYS: randomBytes(32).toString("base64url"),
+	LOCALMAN_WEB_CLIENT_SECRET: secrets.client,
+	TUNELO_WEB_CLIENT_SECRET: secrets.client2,
+	LOG_LEVEL: process.env.CONFORMANCE_LOG_LEVEL ?? "warn",
+	...FAKE_OAUTH_ENV,
+});
+const logger = createLogger(env.LOG_LEVEL);
+const configuration = buildProviderConfiguration({
+	env,
+	db,
+	jwks: {
+		keys: [await generateSigningJwk(), await generateSigningJwk("RS256")],
+	},
+	accountStore: createInMemoryAccountStore([ACCOUNT]),
+});
+const suiteClients = new Set<string>([
+	STATIC_CLIENT_IDS.localmanWeb,
+	STATIC_CLIENT_IDS.tuneloWeb,
+]);
+configuration.clients = (configuration.clients ?? []).map((client) =>
+	suiteClients.has(client.client_id)
+		? { ...client, redirect_uris: [suiteCallback] }
+		: client,
+);
+const provider = new Provider(issuer, configuration);
+provider.proxy = true;
+
+const services = createServices({
+	env,
+	db,
+	provider,
+	logger,
+	accounts: new AccountRepository(db),
+	formPostsPerMinute: 1_000,
+});
+const app = createApp({
+	services,
+	env,
+	rateLimits: [],
+	interactions: createAutoInteractions(provider, ACCOUNT.sub),
+});
+const server = createServer(app);
+await new Promise<void>((resolve) => server.listen(port, "127.0.0.1", resolve));
+
+const planPath = "secrets/conformance-plan.json";
+await mkdir("secrets", { recursive: true, mode: 0o700 });
+const plan = {
+	alias,
+	description: "Basic OP against a throwaway hoandat-auth instance",
+	server: { discoveryUrl: `${issuer}/.well-known/openid-configuration` },
+	client: {
+		client_id: STATIC_CLIENT_IDS.localmanWeb,
+		client_secret: secrets.client,
+	},
+	client2: {
+		client_id: STATIC_CLIENT_IDS.tuneloWeb,
+		client_secret: secrets.client2,
+	},
+};
+await writeFile(planPath, `${JSON.stringify(plan, null, "\t")}\n`, {
+	mode: 0o600,
+});
+process.stdout.write(
+	[
+		`Conformance IdP on 127.0.0.1:${port}, issuer ${issuer}`,
+		`Redirect URI of both clients: ${suiteCallback}`,
+		`Plan configuration (with client secrets): ${planPath}`,
+		"",
+	].join("\n"),
+);
+
+async function stop(): Promise<void> {
+	server.closeAllConnections();
+	await new Promise((resolve) => server.close(resolve));
+	await mongo.close();
+	await mongod.stop();
+	process.exit(0);
+}
+process.once("SIGTERM", () => void stop());
+process.once("SIGINT", () => void stop());

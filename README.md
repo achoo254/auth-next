@@ -42,6 +42,7 @@ Hoặc chạy cả MongoDB lẫn IdP bằng Docker: `docker compose up --build` 
 | `pnpm test:e2e` | Playwright (Chromium, 1 worker) trên server thật ở cổng 4590/4591 với Google, GitHub, Telegram giả. Cài trình duyệt một lần: `pnpm exec playwright install chromium` |
 | `pnpm check:tokens` | Không có mã màu (hex, `rgb()`, `hsl()`) trong `src/` và `static/` ngoài `static/css/tokens.css` |
 | `pnpm generate-key [file] [--alg ES256\|RS256]` | Sinh khoá (mặc định ES256) và thêm vào cuối JWKS; khoá đầu tiên của mỗi thuật toán ký, khoá sau chỉ để xác minh (ADR 0001 mục 4, ADR 0005) |
+| `pnpm conformance:idp` | Bản IdP thử cho bộ conformance OpenID (Basic OP): cấu hình provider thật trên MongoDB trong bộ nhớ, khoá ES256 + RS256 sinh tạm, đăng nhập tự hoàn tất bằng tài khoản thử; cần `CONFORMANCE_ISSUER` là URL https công khai (mở bằng `tunelo http 4595:<subdomain>`). Ghi cấu hình plan kèm secret thử vào `secrets/conformance-plan.json` (mode 600). Chỉ để kiểm thử, xem đầu `e2e/support/conformance-server.ts` |
 | `pnpm seed:clients [--skip-discovery]` | Kiểm client tĩnh với env hiện tại (validator của `oidc-provider`, bản ghi MongoDB che id tĩnh, discovery và JWKS của issuer), in kế hoạch kèm fingerprint; chỉ đọc, chạy lại cho cùng kết quả. Trong image production: `node dist/seed-clients.mjs` |
 
 ## Endpoint
