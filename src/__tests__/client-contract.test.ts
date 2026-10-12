@@ -77,6 +77,9 @@ describe("static clients match the integration contract", () => {
 		});
 		// Its refresh tokens are bound to the IdP session, never offline.
 		expect(scopes(metadata)).not.toContain("offline_access");
+		expect(scopes(await metadataOf(STATIC_CLIENT_IDS.tuneloWeb))).not.toContain(
+			"offline_access",
+		);
 		for (const id of [
 			STATIC_CLIENT_IDS.tuneloCli,
 			STATIC_CLIENT_IDS.tuneloWeb,

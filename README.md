@@ -53,7 +53,7 @@ Client phải đọc endpoint từ `/.well-known/openid-configuration`, không h
 |---|---|---|---|---|
 | `localman-web` | confidential | Code + PKCE, refresh (gắn phiên IdP), token exchange | `openid profile email telegram` + scope API Localman | `https://localman.hoandat.com`; token exchange cấp `https://tunnel.hoandat.com` |
 | `tunelo-cli` | public | device code, refresh | `openid offline_access tunnels:open tunnels:read` | `https://tunnel.hoandat.com` |
-| `tunelo-web` | confidential | Code + PKCE, refresh | `openid profile email offline_access tunnels:open tunnels:read` | `https://tunnel.hoandat.com` |
+| `tunelo-web` | confidential | Code + PKCE, refresh (gắn phiên IdP) | `openid profile email tunnels:open tunnels:read` | `https://tunnel.hoandat.com` (trang web Tunelo chỉ xin `openid profile`, nhận access token opaque cho userinfo) |
 | Client MCP (DCR) | public hoặc confidential | Code + PKCE, refresh | chỉ `mock:read mock:write client:read client:write client:send`, cộng `credentials:write` nếu khai rõ lúc đăng ký | luôn `https://localman.hoandat.com/mcp` |
 | `hoandat-account` | public, nội bộ | Code + PKCE (code không bao giờ được đổi) | `openid` | không có |
 
@@ -72,7 +72,7 @@ Khi request không có `resource`, IdP chỉ gắn audience nếu scope xin có 
 ### Lưu ý cho client
 - **Refresh token dùng một lần và xoay vòng.** Mỗi lần refresh trả về refresh token mới; dùng lại token cũ sẽ thu hồi cả grant. Hai request refresh song song với cùng một token thì chỉ một cái thắng, cái còn lại nhận `invalid_grant`. Vì vậy client (đặc biệt Tunelo CLI chạy nhiều tiến trình) **phải khoá khi refresh** (file lock hoặc mutex) và lưu token mới trước khi nhả khoá.
 - **Phiên trượt, trần 90 ngày.** Mỗi lần refresh thành công, grant (và refresh token mới) được gia hạn thêm 30 ngày tính từ lúc refresh, nhưng không bao giờ quá 90 ngày kể từ lúc đăng nhập. Bỏ không refresh quá 30 ngày thì phiên hết hạn; tới ngày thứ 90 thì dù đang dùng cũng phải đăng nhập lại (`tunelo login`, hoặc đăng nhập lại ở app web). Refresh token gần trần chỉ sống tới đúng trần. Áp cho mọi grant có refresh token. Riêng `localman-web` và client MCP (không có `offline_access`) thì refresh token còn gắn với phiên trình duyệt ở IdP: đăng xuất ở IdP thu hồi grant của chúng, kể cả token exchange của Localman (Jev 0.94).
-- `offline_access` chỉ có hiệu lực khi request kèm `prompt=consent` (OIDC Core); chỉ `tunelo-cli` và `tunelo-web` có scope này.
+- `offline_access` chỉ có hiệu lực khi request kèm `prompt=consent` (OIDC Core); chỉ `tunelo-cli` có scope này. `tunelo-web` (trang web Tunelo), như `localman-web`, có refresh token gắn với phiên IdP: đăng xuất ở IdP thì lần refresh sau của nó nhận `invalid_grant`, kể cả khi back-channel logout không tới.
 - Revocation: client chỉ thu hồi được token của chính nó.
 - Introspection: client chỉ xem được token của chính mình; riêng `localman-web` và `tunelo-web` xem được mọi token. Token không được phép xem trả `{"active": false}`.
 

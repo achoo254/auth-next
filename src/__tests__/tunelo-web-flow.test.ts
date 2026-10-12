@@ -13,7 +13,7 @@ import { formField } from "./helpers/test-browser.js";
 import { type TestIdp, startTestIdp } from "./helpers/test-idp.js";
 
 /** What the Tunelo web console asks for (its sign-in route). */
-const TUNELO_WEB_SCOPE = "openid profile offline_access";
+const TUNELO_WEB_SCOPE = "openid profile";
 
 /**
  * oidc-provider refuses outgoing calls to special-use addresses (its SSRF
@@ -58,13 +58,13 @@ async function signInToTuneloWeb() {
 		browser,
 		`${TUNELO_URL}/auth/callback`,
 		TUNELO_WEB_SCOPE,
-		{ prompt: "consent" },
+		{},
 	);
 	return { browser, config, tokens };
 }
 
 describe("tunelo-web (Tunelo web console)", () => {
-	it("signs in without a consent page, with a refresh token and the user's name at userinfo", async () => {
+	it("signs in without a consent page, with a session-bound refresh token and the user's name at userinfo", async () => {
 		const { config, tokens } = await signInToTuneloWeb();
 		expect(tokens.refresh_token).toEqual(expect.any(String));
 		expect(tokens.id_token).toEqual(expect.any(String));
@@ -89,8 +89,10 @@ describe("tunelo-web (Tunelo web console)", () => {
 		expect(refreshed.refresh_token).not.toBe(first);
 	});
 
-	it("logs Tunelo out over the back channel when the IdP session ends", async () => {
-		const { browser, tokens } = await signInToTuneloWeb();
+	it("ends Tunelo's refresh and logs it out over the back channel when the IdP session ends", async () => {
+		const { browser, config, tokens } = await signInToTuneloWeb();
+		const refreshToken = tokens.refresh_token;
+		if (!refreshToken) throw new Error("no refresh token for tunelo-web");
 		const sid = decodeJwt(tokens.id_token ?? "").sid;
 		expect(sid).toEqual(expect.any(String));
 
@@ -104,5 +106,10 @@ describe("tunelo-web (Tunelo web console)", () => {
 		await expect
 			.poll(() => backchannel, { timeout: 5000 })
 			.toContainEqual({ clientId: STATIC_CLIENT_IDS.tuneloWeb, sid });
+		// Bound to the IdP session: even if the back channel were lost, the
+		// console's next refresh fails and its session ends.
+		await expect(
+			client.refreshTokenGrant(config, refreshToken),
+		).rejects.toMatchObject({ error: "invalid_grant" });
 	});
 });

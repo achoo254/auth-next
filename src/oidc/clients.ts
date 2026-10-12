@@ -44,12 +44,18 @@ export function isStaticClientId(clientId: unknown): boolean {
 
 /**
  * Clients whose refresh tokens are bound to the IdP browser session instead
- * of `offline_access`: every DCR (MCP) client, and Localman web (Jev 0.94):
- * signing out at the IdP ends its grant, refresh tokens and token exchange.
+ * of `offline_access`: every DCR (MCP) client, Localman web (Jev 0.94) and
+ * the Tunelo web console (Jev 1.00): signing out at the IdP ends their grant
+ * and refresh tokens, even when a back-channel logout is lost.
  */
+const SESSION_BOUND_STATIC_CLIENTS: ReadonlySet<string> = new Set([
+	STATIC_CLIENT_IDS.localmanWeb,
+	STATIC_CLIENT_IDS.tuneloWeb,
+]);
+
 export function refreshesWithSession(clientId: string): boolean {
 	return (
-		!isStaticClientId(clientId) || clientId === STATIC_CLIENT_IDS.localmanWeb
+		!isStaticClientId(clientId) || SESSION_BOUND_STATIC_CLIENTS.has(clientId)
 	);
 }
 
@@ -117,10 +123,8 @@ export function buildStaticClients(env: Env): ClientMetadata[] {
 			post_logout_redirect_uris: [appUrl(tunelo, "/")],
 			backchannel_logout_uri: appUrl(tunelo, "/auth/backchannel-logout"),
 			backchannel_logout_session_required: true,
-			scope: scopeOf(
-				["openid", "profile", "email", "offline_access"],
-				TUNNEL_SCOPES,
-			),
+			// No offline_access: its refresh tokens live with the IdP session.
+			scope: scopeOf(["openid", "profile", "email"], TUNNEL_SCOPES),
 			[ALLOWED_RESOURCES_PROPERTY]: [RESOURCES.tunnel],
 		},
 		{
