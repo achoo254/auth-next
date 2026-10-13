@@ -1,5 +1,12 @@
 import { request } from "node:http";
+import type { Db } from "mongodb";
+import { AccountRepository } from "../accounts/account-repository.js";
+import { AuditOutbox } from "../audit/audit-outbox.js";
+import type { Logger } from "../logger.js";
 import type { SigningJwks } from "../oidc/jwks.js";
+import type { TenantRegistry } from "./tenant-registry.js";
+import { resourcesFor } from "./tenant-resources.js";
+import type { Tenant } from "./tenant.js";
 import { normalizeTenantDomain } from "./tenant.js";
 
 /**
@@ -70,4 +77,53 @@ export function discoveryOf(
 		req.once("error", reject);
 		req.end();
 	});
+}
+
+export interface SummaryDependencies {
+	readonly db: Db;
+	readonly registry: TenantRegistry;
+	readonly logger: Logger;
+	readonly primaryTenantId: string;
+}
+
+/** The tenant's accounts linked to its owner's identity (none for the primary). */
+async function ownerSubsOf(
+	tenant: Tenant,
+	deps: SummaryDependencies,
+): Promise<string[]> {
+	if (tenant.id === deps.primaryTenantId) return [];
+	const owner = (await deps.registry.findById(tenant.id))?.owner;
+	if (!owner) return [];
+	const accounts = new AccountRepository(
+		deps.db,
+		tenant,
+		new AuditOutbox(deps.db, tenant, deps.logger),
+	);
+	const account = await accounts.findByProvider(
+		owner.provider,
+		owner.providerId,
+	);
+	return account ? [account._id] : [];
+}
+
+/**
+ * What an app may know about a tenant: nothing secret. `ownerSubs` are the
+ * tenant's accounts linked to its owner's identity (Localman makes them
+ * its admins there); empty for the primary tenant, whose apps configure
+ * their own.
+ */
+export async function tenantSummary(
+	tenant: Tenant,
+	deps: SummaryDependencies,
+): Promise<object> {
+	return {
+		ownerSubs: await ownerSubsOf(tenant, deps),
+		id: tenant.id,
+		domain: tenant.domain,
+		displayName: tenant.displayName,
+		issuer: tenant.issuer,
+		status: tenant.status,
+		resources: resourcesFor(tenant.domain),
+		webApps: tenant.webApps,
+	};
 }

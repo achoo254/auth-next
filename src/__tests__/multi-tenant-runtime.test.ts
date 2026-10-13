@@ -147,6 +147,25 @@ describe("internal API", () => {
 				resources: { tunnel: "https://tunnel.acme.example.org" },
 			});
 		}
+		const owner = { provider: "google" as const, providerId: "g-acme-owner" };
+		await server.db
+			.collection("tenants")
+			.updateOne({ _id: acme._id as never }, { $set: { owner } });
+		const ownerAccount = await server.db.collection("accounts").insertOne({
+			_id: "acc_acme_owner" as never,
+			tenantId: acme._id,
+			username: "owner",
+			emailVerifiedBy: null,
+			providers: { google: owner.providerId },
+			createdAt: new Date(),
+		});
+		const withOwner = await json(
+			await fetch(
+				`${server.internalOrigin}/internal/tenants/lookup?host=localman.acme.example.org`,
+				{ headers: localman },
+			),
+		);
+		expect(withOwner.ownerSubs).toEqual([ownerAccount.insertedId]);
 		const primary = await json(
 			await fetch(
 				`${server.internalOrigin}/internal/tenants/lookup?host=localman.hoandat.com`,

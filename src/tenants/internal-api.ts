@@ -14,13 +14,13 @@ import {
 	discoveryOf,
 	publicJwks,
 	tenantDomainCandidates,
+	tenantSummary,
 } from "./internal-lookups.js";
 import {
 	SERVING_STATUSES,
 	type TenantDocument,
 	type TenantRegistry,
 } from "./tenant-registry.js";
-import { resourcesFor } from "./tenant-resources.js";
 import { tenantFromDocument, tenantSigningKeys } from "./tenant-runtime.js";
 import type { TenantSecrets } from "./tenant-secrets.js";
 import type { Tenant } from "./tenant.js";
@@ -36,19 +36,6 @@ export interface InternalApiDependencies {
 	/** Base URL of the public listener on loopback (discovery is read there). */
 	readonly publicOrigin: string;
 	readonly logger: Logger;
-}
-
-/** What an app may know about a tenant: nothing secret. */
-function summary(tenant: Tenant): object {
-	return {
-		id: tenant.id,
-		domain: tenant.domain,
-		displayName: tenant.displayName,
-		issuer: tenant.issuer,
-		status: tenant.status,
-		resources: resourcesFor(tenant.domain),
-		webApps: tenant.webApps,
-	};
 }
 
 /**
@@ -116,7 +103,12 @@ export function createInternalApi(deps: InternalApiDependencies): Express {
 				res.status(404).json({ error: "unknown_tenant" });
 				return;
 			}
-			res.json(summary(tenant));
+			res.json(
+				await tenantSummary(tenant, {
+					...deps,
+					primaryTenantId: deps.primary.tenant.id,
+				}),
+			);
 		} catch (error) {
 			next(error);
 		}
