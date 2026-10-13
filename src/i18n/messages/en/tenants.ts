@@ -31,6 +31,8 @@ export const enTenants = {
 		"This domain, or one above or below it, is already in use.",
 	"claim.error.tooManyPending":
 		"You already have claims waiting. Finish one or let it expire first.",
+	"claim.error.tooManyTenants":
+		"You already hold the most domains one account can have here.",
 	"claim.error.capacity":
 		"This server cannot take another domain right now. Try again later.",
 	"claim.error.notFound": "This claim has expired or is not yours.",

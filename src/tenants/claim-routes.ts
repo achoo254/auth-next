@@ -29,6 +29,7 @@ const ERRORS: Readonly<Record<ClaimError, MessageKey>> = {
 	"invalid-domain": "claim.error.invalidDomain",
 	taken: "claim.error.taken",
 	"too-many-pending": "claim.error.tooManyPending",
+	"too-many-tenants": "claim.error.tooManyTenants",
 	capacity: "claim.error.capacity",
 	unavailable: "claim.unavailable",
 	"not-found": "claim.error.notFound",
@@ -55,7 +56,7 @@ function identitiesOf(account: AccountDocument): ClaimIdentity[] {
 }
 
 function isClaimError(value: unknown): value is ClaimError {
-	return typeof value === "string" && value in ERRORS;
+	return typeof value === "string" && Object.hasOwn(ERRORS, value);
 }
 
 /**
@@ -80,7 +81,8 @@ export function createClaimRouter(
 				const identities = identitiesOf(portal.account);
 				const error = req.query.error;
 				const notice =
-					typeof req.query.notice === "string"
+					typeof req.query.notice === "string" &&
+					Object.hasOwn(NOTICES, req.query.notice)
 						? NOTICES[req.query.notice]
 						: undefined;
 				sendPage(
@@ -130,6 +132,7 @@ export function createClaimRouter(
 					domain: formValue(req, "domain") ?? "",
 					owner: { provider: owner.provider, providerId: owner.providerId },
 					accountId: portal.account._id,
+					identities: identitiesOf(portal.account),
 				});
 				res.redirect(
 					303,
@@ -147,11 +150,10 @@ export function createClaimRouter(
 		portalRoute(
 			services,
 			async (req, res, portal) => {
-				const result = await verifyClaim(
-					tenancy,
-					routeParam(req, "claimId"),
-					portal.account._id,
-				);
+				const result = await verifyClaim(tenancy, routeParam(req, "claimId"), {
+					id: portal.account._id,
+					identities: identitiesOf(portal.account),
+				});
 				if (result.ok) tenancy.changed(result.value._id);
 				res.redirect(
 					303,

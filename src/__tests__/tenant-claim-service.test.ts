@@ -22,6 +22,11 @@ const IP = "203.0.113.65";
 const ALICE = { provider: "google" as const, providerId: "g-alice" };
 const BOB = { provider: "github" as const, providerId: "gh-bob" };
 
+/** Who starts a claim: the owner identity and the account it is linked to. */
+function by(owner: typeof ALICE | typeof BOB, accountId: string) {
+	return { owner, accountId, identities: [owner] };
+}
+
 let db: Db;
 let close: () => Promise<void>;
 let dns: { txt: Map<string, string>; a: Map<string, string[]> };
@@ -113,8 +118,7 @@ describe("starting a claim", () => {
 	])("refuses %s", async (_label, domain) => {
 		const result = await startClaim(tenancy(), {
 			domain,
-			owner: ALICE,
-			accountId: "acc_a",
+			...by(ALICE, "acc_a"),
 		});
 		expect(result).toEqual({ ok: false, error: "invalid-domain" });
 	});
@@ -132,8 +136,7 @@ describe("starting a claim", () => {
 			expect(
 				await startClaim(tenancy(), {
 					domain,
-					owner: ALICE,
-					accountId: "acc_a",
+					...by(ALICE, "acc_a"),
 				}),
 			).toEqual({ ok: false, error: "taken" });
 		}
@@ -147,8 +150,7 @@ describe("starting a claim", () => {
 		expect(
 			await startClaim(tenancy(), {
 				domain: "beta.org",
-				owner: ALICE,
-				accountId: "acc_a",
+				...by(ALICE, "acc_a"),
 			}),
 		).toEqual({ ok: false, error: "taken" });
 	});
@@ -156,13 +158,11 @@ describe("starting a claim", () => {
 	it("lets several people claim the same domain until one proves it", async () => {
 		const a = await startClaim(tenancy(), {
 			domain: "shared.org",
-			owner: ALICE,
-			accountId: "acc_a",
+			...by(ALICE, "acc_a"),
 		});
 		const b = await startClaim(tenancy(), {
 			domain: "shared.org",
-			owner: BOB,
-			accountId: "acc_b",
+			...by(BOB, "acc_b"),
 		});
 		expect(a.ok && b.ok).toBe(true);
 		if (!a.ok || !b.ok) return;
@@ -175,8 +175,7 @@ describe("starting a claim", () => {
 				(
 					await startClaim(tenancy(), {
 						domain,
-						owner: ALICE,
-						accountId: "acc_a",
+						...by(ALICE, "acc_a"),
 					})
 				).ok,
 			).toBe(true);
@@ -184,31 +183,27 @@ describe("starting a claim", () => {
 		expect(
 			await startClaim(tenancy(), {
 				domain: "four.org",
-				owner: ALICE,
-				accountId: "acc_a",
+				...by(ALICE, "acc_a"),
 			}),
 		).toEqual({ ok: false, error: "too-many-pending" });
 		memoryMb = 100;
 		expect(
 			await startClaim(tenancy(), {
 				domain: "five.org",
-				owner: BOB,
-				accountId: "acc_b",
+				...by(BOB, "acc_b"),
 			}),
 		).toEqual({ ok: false, error: "capacity" });
 		memoryMb = 2_000;
 		expect(
 			await startClaim(tenancy({ maxActive: 0 }), {
 				domain: "six.org",
-				owner: BOB,
-				accountId: "acc_b",
+				...by(BOB, "acc_b"),
 			}),
 		).toEqual({ ok: false, error: "capacity" });
 		expect(
 			await startClaim(tenancy({ serviceIp: undefined }), {
 				domain: "seven.org",
-				owner: BOB,
-				accountId: "acc_b",
+				...by(BOB, "acc_b"),
 			}),
 		).toEqual({ ok: false, error: "unavailable" });
 	});
@@ -218,36 +213,57 @@ describe("verifying a claim", () => {
 	it("needs this claim's TXT value and every host pointing here, DNS only", async () => {
 		const mine = await startClaim(tenancy(), {
 			domain: "acme.org",
-			owner: ALICE,
-			accountId: "acc_a",
+			...by(ALICE, "acc_a"),
 		});
 		const theirs = await startClaim(tenancy(), {
 			domain: "acme.org",
-			owner: BOB,
-			accountId: "acc_b",
+			...by(BOB, "acc_b"),
 		});
 		if (!mine.ok || !theirs.ok) throw new Error("claims not started");
-		expect(await verifyClaim(tenancy(), mine.value._id, "acc_a")).toEqual({
+		expect(
+			await verifyClaim(tenancy(), mine.value._id, {
+				id: "acc_a",
+				identities: [ALICE],
+			}),
+		).toEqual({
 			ok: false,
 			error: "dns-txt",
 		});
 		// The other claimant's TXT does not prove mine.
 		pointAt("acme.org", theirs.value.txt);
-		expect(await verifyClaim(tenancy(), mine.value._id, "acc_a")).toEqual({
+		expect(
+			await verifyClaim(tenancy(), mine.value._id, {
+				id: "acc_a",
+				identities: [ALICE],
+			}),
+		).toEqual({
 			ok: false,
 			error: "dns-txt",
 		});
 		pointAt("acme.org", mine.value.txt, "104.16.0.1");
-		expect(await verifyClaim(tenancy(), mine.value._id, "acc_a")).toEqual({
+		expect(
+			await verifyClaim(tenancy(), mine.value._id, {
+				id: "acc_a",
+				identities: [ALICE],
+			}),
+		).toEqual({
 			ok: false,
 			error: "dns-address",
 		});
-		expect(await verifyClaim(tenancy(), mine.value._id, "acc_b")).toEqual({
+		expect(
+			await verifyClaim(tenancy(), mine.value._id, {
+				id: "acc_b",
+				identities: [BOB],
+			}),
+		).toEqual({
 			ok: false,
 			error: "not-found",
 		});
 		pointAt("acme.org", mine.value.txt);
-		const done = await verifyClaim(tenancy(), mine.value._id, "acc_a");
+		const done = await verifyClaim(tenancy(), mine.value._id, {
+			id: "acc_a",
+			identities: [ALICE],
+		});
 		expect(done).toMatchObject({
 			ok: true,
 			value: {
@@ -258,7 +274,12 @@ describe("verifying a claim", () => {
 			},
 		});
 		// The rival claim ends; the domain is taken.
-		expect(await verifyClaim(tenancy(), theirs.value._id, "acc_b")).toEqual({
+		expect(
+			await verifyClaim(tenancy(), theirs.value._id, {
+				id: "acc_b",
+				identities: [BOB],
+			}),
+		).toEqual({
 			ok: false,
 			error: "not-found",
 		});
@@ -275,8 +296,7 @@ describe("verifying a claim", () => {
 	it("does not conclude anything when DNS cannot be asked", async () => {
 		const claim = await startClaim(tenancy(), {
 			domain: "flaky.org",
-			owner: ALICE,
-			accountId: "acc_a",
+			...by(ALICE, "acc_a"),
 		});
 		if (!claim.ok) throw new Error("claim not started");
 		const broken: OwnershipResolver = {
@@ -286,19 +306,43 @@ describe("verifying a claim", () => {
 			resolve4: async () => [IP],
 		};
 		expect(
-			await verifyClaim(
-				tenancy({ resolver: broken }),
-				claim.value._id,
-				"acc_a",
-			),
+			await verifyClaim(tenancy({ resolver: broken }), claim.value._id, {
+				id: "acc_a",
+				identities: [ALICE],
+			}),
 		).toEqual({ ok: false, error: "dns-unreachable" });
+	});
+
+	it("lets one account hold only a few tenants, and only ICANN domains", async () => {
+		expect(
+			await startClaim(tenancy(), {
+				domain: "me.duckdns.org",
+				...by(ALICE, "acc_a"),
+			}),
+		).toEqual({ ok: false, error: "invalid-domain" });
+		const registry = new TenantRegistry(db);
+		for (const domain of ["first.org", "second.org"]) {
+			await registry.insert({
+				_id: newTenantId(),
+				domain,
+				displayName: domain,
+				status: "active",
+				owner: ALICE,
+				createdAt: new Date(),
+			});
+		}
+		expect(
+			await startClaim(tenancy(), {
+				domain: "third.org",
+				...by(ALICE, "acc_a"),
+			}),
+		).toEqual({ ok: false, error: "too-many-tenants" });
 	});
 
 	it("refuses an expired claim", async () => {
 		const claim = await startClaim(tenancy(), {
 			domain: "late.org",
-			owner: ALICE,
-			accountId: "acc_a",
+			...by(ALICE, "acc_a"),
 		});
 		if (!claim.ok) throw new Error("claim not started");
 		await db
@@ -308,7 +352,12 @@ describe("verifying a claim", () => {
 				{ $set: { expiresAt: new Date(0) } },
 			);
 		pointAt("late.org", claim.value.txt);
-		expect(await verifyClaim(tenancy(), claim.value._id, "acc_a")).toEqual({
+		expect(
+			await verifyClaim(tenancy(), claim.value._id, {
+				id: "acc_a",
+				identities: [ALICE],
+			}),
+		).toEqual({
 			ok: false,
 			error: "not-found",
 		});

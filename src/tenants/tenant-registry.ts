@@ -1,4 +1,4 @@
-import type { Collection, Db } from "mongodb";
+import type { Db } from "mongodb";
 import {
 	SERVING_STATUSES,
 	TENANTS_COLLECTION,
@@ -6,6 +6,7 @@ import {
 	type TenantDocument,
 	type TenantOwner,
 } from "./tenant-document.js";
+import { TenantLifecycle } from "./tenant-lifecycle.js";
 
 export {
 	SERVING_STATUSES,
@@ -20,13 +21,7 @@ export {
  * The tenant registry, owned by the IdP: Localman and Tunelo look tenants up
  * through the internal API, never in this database.
  */
-export class TenantRegistry {
-	private readonly tenants: Collection<TenantDocument>;
-
-	constructor(db: Db) {
-		this.tenants = db.collection<TenantDocument>(TENANTS_COLLECTION);
-	}
-
+export class TenantRegistry extends TenantLifecycle {
 	async findByDomain(domain: string): Promise<TenantDocument | undefined> {
 		return (await this.tenants.findOne({ domain })) ?? undefined;
 	}
@@ -115,73 +110,6 @@ export class TenantRegistry {
 			{ _id: id },
 			certificate ? { $set: { certificate } } : { $unset: { certificate: "" } },
 		);
-	}
-
-	/** Serving tenants whose ownership was last checked before `before`. */
-	listDueForOwnershipCheck(before: Date): Promise<TenantDocument[]> {
-		return this.tenants
-			.find({
-				status: { $in: [...SERVING_STATUSES] },
-				$or: [
-					{ ownershipCheckedAt: { $exists: false } },
-					{ ownershipCheckedAt: { $lt: before } },
-				],
-			})
-			.limit(200)
-			.toArray();
-	}
-
-	/**
-	 * Suspends tenants claimed before `before` that never became active
-	 * (nobody can have signed in to them) and queues their certificates for
-	 * removal; the provisioner's "removed" report then deletes them, which
-	 * frees the domain. Returns them.
-	 */
-	async expireUnactivated(before: Date): Promise<TenantDocument[]> {
-		const stale = await this.tenants
-			.find({ status: "claimed", claimedAt: { $lt: before } })
-			.limit(50)
-			.toArray();
-		for (const tenant of stale) {
-			await this.tenants.updateOne(
-				{ _id: tenant._id, status: "claimed" },
-				{
-					$set: {
-						status: "suspended",
-						suspendedAt: new Date(),
-						suspendedReason: "not-activated",
-						certificate: { status: "removing", attempts: 0 },
-					},
-					$inc: { configVersion: 1 },
-				},
-			);
-		}
-		return stale;
-	}
-
-	/** Deletes a tenant that never served anyone (expired before activation). */
-	async deleteUnactivated(id: string): Promise<boolean> {
-		const result = await this.tenants.deleteOne({
-			_id: id,
-			status: "suspended",
-			suspendedReason: "not-activated",
-		});
-		return result.deletedCount === 1;
-	}
-
-	/** Records an ownership check; returns the failures in a row after it. */
-	async recordOwnershipCheck(id: string, ok: boolean): Promise<number> {
-		const after = await this.tenants.findOneAndUpdate(
-			{ _id: id },
-			ok
-				? { $set: { ownershipCheckedAt: new Date(), ownershipFailures: 0 } }
-				: {
-						$set: { ownershipCheckedAt: new Date() },
-						$inc: { ownershipFailures: 1 },
-					},
-			{ returnDocument: "after" },
-		);
-		return after?.ownershipFailures ?? 0;
 	}
 }
 

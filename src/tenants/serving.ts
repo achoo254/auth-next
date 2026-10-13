@@ -19,7 +19,7 @@ import { RuntimeRegistry } from "./runtime-registry.js";
 import { parseKeyring } from "./secret-keyring.js";
 import { type TenancyOverrides, createTenancy } from "./tenancy.js";
 import { createTenantMaintenance } from "./tenant-maintenance.js";
-import { SERVING_STATUSES, TenantRegistry } from "./tenant-registry.js";
+import { TenantRegistry } from "./tenant-registry.js";
 import {
 	type TenantRuntime,
 	buildPrimaryRuntime,
@@ -118,7 +118,6 @@ export async function createServing(
 				tenantKeys: async (tenantId) => {
 					const document = await registry.findById(tenantId);
 					if (!secrets || !document) return undefined;
-					if (!SERVING_STATUSES.includes(document.status)) return undefined;
 					return {
 						tenant: tenantFromDocument(document),
 						jwks: await tenantSigningKeys(secrets, tenantId),
@@ -133,6 +132,7 @@ export async function createServing(
 		credentials.size > 0
 			? createInternalApi({
 					credentials,
+					db,
 					registry,
 					secrets,
 					primary,

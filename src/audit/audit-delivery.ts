@@ -25,9 +25,9 @@ export interface AuditDeliveryResolverOptions {
  * Who signs each event: the tenant it belongs to, as its own issuer with
  * its own keys. Every event goes to the one intake, AUDIT_EVENTS_URL (one
  * Localman process serves every tenant and tells them apart by `iss`), so
- * the Basic credentials never follow a tenant's DNS. A registry tenant is
- * looked up for every event, so one suspended meanwhile gets no delivery
- * and its events wait with backoff.
+ * the Basic credentials never follow a tenant's DNS. A suspended tenant's
+ * events still go out (its keys are kept); a tenant that no longer exists
+ * gets no delivery and its events wait with backoff.
  */
 export function createAuditDeliveryResolver(
 	options: AuditDeliveryResolverOptions,

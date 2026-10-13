@@ -4,6 +4,7 @@ import express, {
 	type Request,
 	type Response,
 } from "express";
+import type { Db } from "mongodb";
 import { routeParam } from "../http/form.js";
 import type { Logger } from "../logger.js";
 import type { SigningJwks } from "../oidc/jwks.js";
@@ -26,6 +27,7 @@ import type { Tenant } from "./tenant.js";
 
 export interface InternalApiDependencies {
 	readonly credentials: InternalCredentials;
+	readonly db: Db;
 	readonly registry: TenantRegistry;
 	readonly secrets: TenantSecrets | undefined;
 	readonly primary: { readonly tenant: Tenant; readonly jwks: SigningJwks };
@@ -157,7 +159,7 @@ export function createInternalApi(deps: InternalApiDependencies): Express {
 	app.use(
 		"/internal/certificates",
 		requireRole(deps.credentials, ["provisioner"]),
-		certificateRouter(deps.registry, deps.secrets),
+		certificateRouter(deps.registry, deps.secrets, deps.db),
 	);
 
 	app.use((_req, res) => {

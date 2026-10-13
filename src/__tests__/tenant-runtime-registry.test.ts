@@ -283,6 +283,45 @@ function resolverFor(records: {
 }
 
 describe("ownership re-check", () => {
+	it("restores a tenant suspended for ownership once its DNS is right again", async () => {
+		const isolated = await openTestDb();
+		const local = new TenantRegistry(isolated.db);
+		const ip = "203.0.113.65";
+		const tenant: TenantDocument = {
+			_id: newTenantId(),
+			domain: "back.example.org",
+			displayName: "back",
+			status: "suspended",
+			suspendedReason: "ownership",
+			activatedAt: new Date(),
+			claimTxt: "proof",
+			createdAt: new Date(),
+		};
+		await local.insert(tenant);
+		const restored: string[] = [];
+		await checkAllOwnership({
+			registry: local,
+			resolver: resolverFor({
+				txt: { [claimTxtName("back.example.org")]: "proof" },
+				a: pointingHere("back.example.org"),
+				wildcardA: {
+					"localman.back.example.org": [ip],
+					"tunnel.back.example.org": [ip],
+				},
+			}),
+			serviceIp: ip,
+			logger,
+			onSuspended: () => undefined,
+			onRestored: (restoredTenant) => restored.push(restoredTenant.domain),
+		});
+		expect(restored).toEqual(["back.example.org"]);
+		expect(await local.findById(tenant._id)).toMatchObject({
+			status: "active",
+		});
+		expect((await local.findById(tenant._id))?.suspendedReason).toBeUndefined();
+		await isolated.close();
+	});
+
 	const ip = "203.0.113.65";
 	const pointingHere = (domain: string) => ({
 		[`auth.${domain}`]: [ip],

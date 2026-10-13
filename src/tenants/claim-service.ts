@@ -1,8 +1,11 @@
+import { MongoServerError } from "mongodb";
+import { parse } from "tldts";
 import { AuditOutbox } from "../audit/audit-outbox.js";
 import { checkOwnership } from "./ownership-check.js";
 import type { Tenancy } from "./tenancy.js";
 import { type ClaimDocument, MAX_PENDING_CLAIMS } from "./tenant-claims.js";
 import {
+	SERVING_STATUSES,
 	type TenantDocument,
 	type TenantOwner,
 	newTenantId,
@@ -14,6 +17,7 @@ export type ClaimError =
 	| "invalid-domain"
 	| "taken"
 	| "too-many-pending"
+	| "too-many-tenants"
 	| "capacity"
 	| "unavailable"
 	| "not-found"
@@ -26,6 +30,21 @@ export type ClaimResult<T> =
 	| { readonly ok: false; readonly error: ClaimError };
 
 const APP_LABELS: ReadonlySet<string> = new Set(["auth", "localman", "tunnel"]);
+
+/** Tenants holding a slot (claimed or active) per account, so one person cannot fill TENANT_MAX_ACTIVE. */
+export const MAX_TENANTS_PER_ACCOUNT = 2;
+
+/** True when the account's identities already own the most tenants allowed. */
+async function ownsTooMany(
+	tenancy: Tenancy,
+	identities: readonly TenantOwner[],
+): Promise<boolean> {
+	const owned = await tenancy.registry.listByOwners(identities);
+	const holding = owned.filter((tenant) =>
+		SERVING_STATUSES.includes(tenant.status),
+	);
+	return holding.length >= MAX_TENANTS_PER_ACCOUNT;
+}
 
 /** How the audit trail names an owner: the upstream identity, not an account. */
 export function ownerSubject(owner: TenantOwner): string {
@@ -50,13 +69,21 @@ export async function startClaim(
 		readonly domain: string;
 		readonly owner: TenantOwner;
 		readonly accountId: string;
+		/** Every identity linked to the account (counts its tenants). */
+		readonly identities: readonly TenantOwner[];
 	},
 ): Promise<ClaimResult<ClaimDocument>> {
 	if (!tenancy.serviceIp) return { ok: false, error: "unavailable" };
 	const domain = normalizeTenantDomain(input.domain, tenancy.blockedDomains);
 	// auth.x, localman.x, tunnel.x would read as hosts of tenant x (nginx
 	// maps hosts to certificates by those labels).
-	if (!domain || APP_LABELS.has(domain.split(".")[0] ?? "")) {
+	// Only domains under an ICANN suffix: free dynamic-DNS names (private
+	// suffixes) would let one person mint tenants without end.
+	if (
+		!domain ||
+		APP_LABELS.has(domain.split(".")[0] ?? "") ||
+		!parse(domain, { allowPrivateDomains: true }).isIcann
+	) {
 		return { ok: false, error: "invalid-domain" };
 	}
 	if (await tenancy.registry.findOverlapping(domain)) {
@@ -64,6 +91,9 @@ export async function startClaim(
 	}
 	if ((await tenancy.claims.countFor(input.accountId)) >= MAX_PENDING_CLAIMS) {
 		return { ok: false, error: "too-many-pending" };
+	}
+	if (await ownsTooMany(tenancy, input.identities)) {
+		return { ok: false, error: "too-many-tenants" };
 	}
 	if (!(await hasCapacity(tenancy))) return { ok: false, error: "capacity" };
 	const claim = await tenancy.claims.create({
@@ -83,10 +113,16 @@ export async function startClaim(
 export async function verifyClaim(
 	tenancy: Tenancy,
 	claimId: string,
-	accountId: string,
+	account: {
+		readonly id: string;
+		readonly identities: readonly TenantOwner[];
+	},
 ): Promise<ClaimResult<TenantDocument>> {
-	const claim = await tenancy.claims.find(claimId, accountId);
+	const claim = await tenancy.claims.find(claimId, account.id);
 	if (!claim) return { ok: false, error: "not-found" };
+	if (await ownsTooMany(tenancy, account.identities)) {
+		return { ok: false, error: "too-many-tenants" };
+	}
 	if (!tenancy.serviceIp) return { ok: false, error: "unavailable" };
 	if (await tenancy.registry.findOverlapping(claim.domain)) {
 		return { ok: false, error: "taken" };
@@ -120,9 +156,12 @@ export async function verifyClaim(
 	};
 	try {
 		await tenancy.registry.insert(tenant);
-	} catch {
+	} catch (error) {
 		// Someone verified the same domain a moment earlier.
-		return { ok: false, error: "taken" };
+		if (error instanceof MongoServerError && error.code === 11000) {
+			return { ok: false, error: "taken" };
+		}
+		throw error;
 	}
 	await tenancy.claims.removeDomain(claim.domain);
 	await new AuditOutbox(tenancy.db, { id: tenant._id }, tenancy.logger).record(

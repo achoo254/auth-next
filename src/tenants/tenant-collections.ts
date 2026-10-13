@@ -5,6 +5,7 @@ import { ONE_TIME_TOKENS_COLLECTION } from "../accounts/one-time-tokens.js";
 import { ACCOUNTS_COLLECTION } from "../accounts/user-model.js";
 import { AUDIT_OUTBOX_COLLECTION } from "../audit/audit-outbox-model.js";
 import { OIDC_MODEL_NAMES, collectionNameFor } from "../oidc/mongo-adapter.js";
+import { TENANT_SECRETS_COLLECTION } from "./tenant-secrets.js";
 
 /** Every collection whose documents belong to one tenant (`tenantId`). */
 export const TENANT_COLLECTIONS: readonly string[] = [
@@ -15,6 +16,16 @@ export const TENANT_COLLECTIONS: readonly string[] = [
 	GRANT_META_COLLECTION,
 	...OIDC_MODEL_NAMES.map(collectionNameFor),
 ];
+
+/**
+ * Deletes everything a tenant owned, its sealed secrets included. Only for
+ * a tenant that never served anyone (expired before activation).
+ */
+export async function purgeTenantData(db: Db, tenantId: string): Promise<void> {
+	for (const name of [...TENANT_COLLECTIONS, TENANT_SECRETS_COLLECTION]) {
+		await db.collection(name).deleteMany({ tenantId });
+	}
+}
 
 export interface BackfillCount {
 	readonly collection: string;

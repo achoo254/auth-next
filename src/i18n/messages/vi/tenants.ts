@@ -34,6 +34,8 @@ export const viTenants: Translation<typeof enTenants> = {
 		"Domain này, hoặc một domain cha hay con của nó, đã được dùng.",
 	"claim.error.tooManyPending":
 		"Bạn đang có lượt nhận chờ DNS. Hoàn tất một lượt hoặc đợi nó hết hạn trước.",
+	"claim.error.tooManyTenants":
+		"Tài khoản của bạn đã giữ số domain tối đa được phép ở đây.",
 	"claim.error.capacity":
 		"Máy chủ chưa nhận thêm domain lúc này. Hãy thử lại sau.",
 	"claim.error.notFound": "Lượt nhận này đã hết hạn hoặc không phải của bạn.",

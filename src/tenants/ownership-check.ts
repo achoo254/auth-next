@@ -103,6 +103,8 @@ export interface OwnershipCheckDependencies {
 	readonly logger: Logger;
 	/** Called once a tenant is suspended (drops its runtime). */
 	readonly onSuspended: (tenant: TenantDocument) => void;
+	/** Called once a suspended tenant is restored. */
+	readonly onRestored?: (tenant: TenantDocument) => void;
 }
 
 /**
@@ -153,6 +155,19 @@ export async function checkAllOwnership(
 	let suspended = 0;
 	for (const { tenant, result } of results) {
 		if (result === "unknown") continue;
+		if (tenant.status === "suspended") {
+			// Suspended for ownership: back as soon as the domain checks out.
+			if (result === "ok" && (await deps.registry.restoreOwnership(tenant))) {
+				deps.onRestored?.(tenant);
+				deps.logger.info(
+					{ tenantId: tenant._id },
+					"Tenant restored: domain ownership holds again",
+				);
+			} else {
+				await deps.registry.recordOwnershipCheck(tenant._id, false);
+			}
+			continue;
+		}
 		const failures = await deps.registry.recordOwnershipCheck(
 			tenant._id,
 			result === "ok",

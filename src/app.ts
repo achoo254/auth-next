@@ -63,13 +63,20 @@ export function createTenantApp(options: TenantAppOptions): Express {
 	}
 	if (tenancy && tenant.id !== PRIMARY_TENANT_ID) {
 		app.use(createAdminRouter(services, tenancy));
-		// Until its owner adds a sign-in provider, a claimed tenant serves
-		// nothing but /admin: no sign-in page, no provider endpoint.
-		if (tenant.status !== "active") app.use(inactiveTenant(tenant));
 	}
-	app.use(createAppsRouter(tenant));
 	app.use(createPrivacyRouter(new URL(tenant.issuer).host));
 	app.use(createLanguageRouter(services));
+	// Until its owner adds a sign-in provider, a claimed tenant serves only
+	// /admin, its assets, the language switch and the privacy page: no
+	// sign-in page, no provider endpoint.
+	if (
+		tenancy &&
+		tenant.id !== PRIMARY_TENANT_ID &&
+		tenant.status !== "active"
+	) {
+		app.use(inactiveTenant(tenant));
+	}
+	app.use(createAppsRouter(tenant));
 	app.use(
 		INTERACTION_PATH,
 		options.interactions ?? createInteractionRouter(services),

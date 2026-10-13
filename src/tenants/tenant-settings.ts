@@ -52,10 +52,7 @@ async function applied(
 	}
 	const providers = await configuredProviders(tenancy, tenant._id);
 	if (tenant.status === "claimed" && tenant.owner && providers.length > 0) {
-		await tenancy.registry.update(tenant._id, {
-			status: "active",
-			activatedAt: new Date(),
-		});
+		await tenancy.registry.activateIfClaimed(tenant._id);
 	}
 	tenancy.changed(tenant._id);
 	return "saved";
@@ -69,6 +66,9 @@ export async function saveDisplayName(
 	name: string,
 ): Promise<SettingResult> {
 	const displayName = name.trim().replace(/\s+/g, " ");
+	// No control, bidi or zero-width characters: the name is shown on every
+	// page and as the account portal's client name.
+	if (/[\p{Cc}\p{Cf}]/u.test(displayName)) return "invalid";
 	if (displayName.length === 0 || displayName.length > 40) return "invalid";
 	await tenancy.registry.update(tenant._id, { displayName });
 	return applied(tenancy, tenant, "display-name");
@@ -124,7 +124,11 @@ export async function saveCloudflareToken(
 	const check = await checkCloudflareToken(tenancy.fetch, value, tenant.domain);
 	if (check !== "ok") return `cloudflare-${check}`;
 	await tenancy.secrets.putForProvisioner(tenant._id, value, publicKey);
-	if (tenant.certificate?.status !== "removing") {
+	// An issued certificate gets the wildcard (or the new token) on the next
+	// pass; a failing one keeps its backoff, so saving again and again never
+	// hammers Let's Encrypt.
+	const status = tenant.certificate?.status;
+	if (status === undefined || status === "issued") {
 		await tenancy.registry.setCertificate(tenant._id, {
 			status: "pending",
 			attempts: 0,

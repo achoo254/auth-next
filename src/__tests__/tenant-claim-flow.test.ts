@@ -190,7 +190,23 @@ describe("claiming a domain", () => {
 		expect(
 			(await client.request("/.well-known/openid-configuration")).status,
 		).toBe(404);
-		expect((await client.request("/account")).status).toBe(404);
+		for (const path of [
+			"/account",
+			"/apps",
+			"/interaction/x",
+			"/oauth/google/callback",
+			"/telegram/webhook",
+			"/me",
+		]) {
+			expect((await client.request(path)).status, path).toBe(404);
+		}
+		expect((await client.request("/privacy")).status).toBe(200);
+		const token = await fetchAs(server.origin, AUTH, "/token", {
+			method: "POST",
+			headers: { "content-type": "application/x-www-form-urlencoded" },
+			body: "grant_type=client_credentials",
+		});
+		expect(token.status).toBe(404);
 		const admin = await client.request("/admin");
 		expect(admin.status).toBe(200);
 		const html = await admin.text();
@@ -315,12 +331,35 @@ describe("tenant admin", () => {
 		expect(await adminForm()).toContain("@acme_bot");
 	});
 
-	it("does not open another tenant's admin with this session", async () => {
-		await server.addTenant("beta.example.org", "claimed");
+	it("does not open another tenant's admin with this session, even of the same owner", async () => {
+		const acme = await server.registry.findByDomain(DOMAIN);
+		const beta = await server.addTenant("beta.example.org", "claimed");
+		await server.db
+			.collection("tenants")
+			.updateOne({ _id: beta._id as never }, { $set: { owner: acme?.owner } });
 		const elsewhere = new HostClient("auth.beta.example.org");
 		elsewhere.copyCookiesFrom(owner);
-		expect(await (await elsewhere.request("/admin")).text()).not.toContain(
-			'data-id="admin-save-name"',
-		);
+		const html = await (await elsewhere.request("/admin")).text();
+		expect(html).toContain('data-id="admin-claim-link"');
+		expect(html).not.toContain('data-id="admin-save-name"');
+	});
+
+	it("ignores unknown result and error codes in the query", async () => {
+		expect((await owner.request("/admin?result=constructor")).status).toBe(200);
+		expect(
+			(await browser.request(`${server.origin}/claim?error=toString`)).status,
+		).toBe(200);
+		expect(
+			(await browser.request(`${server.origin}/claim?notice=__proto__`)).status,
+		).toBe(200);
+	});
+
+	it("refuses a display name with control or invisible characters", async () => {
+		await adminForm();
+		const saved = await owner.request("/admin/name", {
+			csrf,
+			displayName: "Acme\u202Egro",
+		});
+		expect(saved.headers.get("location")).toBe("/admin?result=invalid");
 	});
 });

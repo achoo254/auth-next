@@ -31,6 +31,7 @@ export const zhTenants: Translation<typeof enTenants> = {
 	"claim.error.taken": "该域名或其上级、下级域名已被使用。",
 	"claim.error.tooManyPending":
 		"你已有等待中的认领。请先完成一个或等待其过期。",
+	"claim.error.tooManyTenants": "你的账号已拥有此处允许的最多域名。",
 	"claim.error.capacity": "此服务器暂时无法接收更多域名，请稍后再试。",
 	"claim.error.notFound": "此认领已过期或不属于你。",
 	"claim.error.dnsTxt": "未找到 TXT 记录或其值不同。DNS 更改可能需要几分钟。",

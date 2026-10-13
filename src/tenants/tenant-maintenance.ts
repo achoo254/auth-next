@@ -9,8 +9,8 @@ import {
 import type { RuntimeRegistry } from "./runtime-registry.js";
 import type { TenantDocument, TenantRegistry } from "./tenant-registry.js";
 
-/** A claimed tenant not activated within this long expires (frees its slot). */
-const UNACTIVATED_TTL_MS = 7 * 24 * 60 * 60 * 1000;
+/** A claimed tenant not activated within 48 hours expires (frees its slot). */
+const UNACTIVATED_TTL_MS = 48 * 60 * 60 * 1000;
 /** Tick of the job; each tenant's ownership is re-checked every 6 hours. */
 const TICK_MS = 60 * 60 * 1000;
 
@@ -54,6 +54,7 @@ export function createTenantMaintenance(deps: TenantMaintenanceDependencies): {
 			serviceIp: deps.serviceIp,
 			logger,
 			onSuspended: (tenant) => void suspended(tenant, "ownership"),
+			onRestored: (tenant) => runtimes.dispose(tenant._id),
 		});
 		const expired = await registry.expireUnactivated(
 			new Date(Date.now() - UNACTIVATED_TTL_MS),

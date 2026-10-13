@@ -19,5 +19,5 @@ export const SETTING_RESULT_MESSAGES: Readonly<
 export function isSettingResult(
 	value: string | undefined,
 ): value is SettingResult {
-	return value !== undefined && value in SETTING_RESULT_MESSAGES;
+	return value !== undefined && Object.hasOwn(SETTING_RESULT_MESSAGES, value);
 }

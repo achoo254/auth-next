@@ -48,6 +48,8 @@ function fill(message: string, params: MessageParams): string {
 }
 
 const cache = new Map<string, Translator>();
+/** Brands are tenants' names and change: the cache stays bounded. */
+const MAX_CACHED_TRANSLATORS = 300;
 
 function createTranslator(locale: Locale, brand: Brand): Translator {
 	const brandParams: MessageParams = {
@@ -87,6 +89,7 @@ export function translator(locale: Locale, brand: Brand): Translator {
 	const key = `${locale}\n${brand.name}\n${brand.domain}`;
 	let found = cache.get(key);
 	if (!found) {
+		if (cache.size >= MAX_CACHED_TRANSLATORS) cache.clear();
 		found = createTranslator(locale, brand);
 		cache.set(key, found);
 	}

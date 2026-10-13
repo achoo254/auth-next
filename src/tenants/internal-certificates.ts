@@ -1,5 +1,7 @@
 import express, { Router } from "express";
+import type { Db } from "mongodb";
 import { routeParam } from "../http/form.js";
+import { purgeTenantData } from "./tenant-collections.js";
 import type { TenantCertificate, TenantRegistry } from "./tenant-registry.js";
 import type { TenantSecrets } from "./tenant-secrets.js";
 import { appHostsFor } from "./tenant.js";
@@ -26,6 +28,7 @@ function shortReason(value: unknown): string {
 export function certificateRouter(
 	registry: TenantRegistry,
 	secrets: TenantSecrets | undefined,
+	db: Db,
 ): Router {
 	const router = Router();
 	router.use(express.json({ limit: "4kb" }));
@@ -69,7 +72,10 @@ export function certificateRouter(
 			const now = new Date();
 			const previous = tenant.certificate;
 			let certificate: TenantCertificate | undefined;
-			if (outcome === "issued") {
+			if (outcome === "issued" && previous.status === "removing") {
+				// Expired or removed while this issuance ran: removal stands.
+				certificate = previous;
+			} else if (outcome === "issued") {
 				certificate = { status: "issued", attempts: 0, issuedAt: now };
 			} else if (outcome === "failed") {
 				const attempts = previous.attempts + 1;
@@ -94,6 +100,7 @@ export function certificateRouter(
 				outcome === "removed" &&
 				(await registry.deleteUnactivated(tenant._id))
 			) {
+				await purgeTenantData(db, tenant._id);
 				res.status(204).end();
 				return;
 			}

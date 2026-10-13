@@ -248,6 +248,45 @@ describe("certificate queue (provisioner)", () => {
 		).toBeUndefined();
 	});
 
+	it("never revives a suspended tenant, and keeps a removal against a late issuance", async () => {
+		const gone = await server.addTenant("gone2.example.org", "suspended");
+		expect(await server.registry.activateIfClaimed(gone._id)).toBe(false);
+		expect((await server.registry.findById(gone._id))?.status).toBe(
+			"suspended",
+		);
+		const late = await server.addTenant("late.example.org", "claimed");
+		await server.registry.setCertificate(late._id, {
+			status: "removing",
+			attempts: 0,
+		});
+		expect((await report(late._id, { outcome: "issued" })).status).toBe(204);
+		expect(
+			(await server.registry.findById(late._id))?.certificate?.status,
+		).toBe("removing");
+	});
+
+	it("deletes an expired tenant's secrets and data with it", async () => {
+		const doomed = await server.addTenant("doomed.example.org", "claimed");
+		await server.secrets.put(doomed._id, "telegram", "{}");
+		await server.db
+			.collection("tenants")
+			.updateOne(
+				{ _id: doomed._id as never },
+				{ $set: { claimedAt: new Date(0) } },
+			);
+		await server.registry.expireUnactivated(new Date(Date.now() - 1_000));
+		expect((await report(doomed._id, { outcome: "removed" })).status).toBe(204);
+		expect(await server.secrets.has(doomed._id, "telegram")).toBe(false);
+		// An active tenant reported removed is never deleted.
+		const kept = await server.addTenant("kept2.example.org", "active");
+		await server.registry.setCertificate(kept._id, {
+			status: "removing",
+			attempts: 0,
+		});
+		await report(kept._id, { outcome: "removed" });
+		expect(await server.registry.findById(kept._id)).toBeDefined();
+	});
+
 	it("backs off after a failure and records issuance", async () => {
 		expect(
 			(
