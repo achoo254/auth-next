@@ -75,7 +75,7 @@ export const viTenants: Translation<typeof enTenants> = {
 	"admin.oauth.remove": "Gỡ",
 	"admin.dns.title": "Token DNS Cloudflare",
 	"admin.dns.help":
-		"Chứng chỉ wildcard (*.localman., *.tunnel.) cần một API token Cloudflare có quyền Zone, DNS, Edit trên zone của {domain}. Token được niêm phong cho dịch vụ cấp chứng chỉ; không ai đọc lại được.",
+		"Chỉ cần khi DNS của {domain} nằm trên Cloudflare: chứng chỉ wildcard (*.localman., *.tunnel.) được cấp qua DNS. Tạo token ở dash.cloudflare.com → My Profile → API Tokens → Create Token → mẫu “Edit zone DNS”, mục Zone Resources chọn zone của {domain} (token của tài khoản cùng quyền cũng được). Token được niêm phong cho dịch vụ cấp chứng chỉ; không ai đọc lại được.",
 	"admin.dns.token": "API token",
 	"admin.dns.configured": "Đã lưu một token.",
 	"admin.dns.unavailable": "Máy chủ này chưa lưu được token DNS.",

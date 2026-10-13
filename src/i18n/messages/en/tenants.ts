@@ -72,7 +72,7 @@ export const enTenants = {
 	"admin.oauth.remove": "Remove",
 	"admin.dns.title": "Cloudflare DNS token",
 	"admin.dns.help":
-		"Wildcard certificates (*.localman., *.tunnel.) need a Cloudflare API token with Zone, DNS, Edit on the zone of {domain}. It is sealed for the certificate service; nobody can read it back.",
+		"Needed only when the DNS of {domain} is on Cloudflare: the wildcard certificate (*.localman., *.tunnel.) is issued through DNS. Create the token at dash.cloudflare.com → My Profile → API Tokens → Create Token → template “Edit zone DNS”, with the zone of {domain} under Zone Resources (an account API token with the same permission works too). It is sealed for the certificate service; nobody can read it back.",
 	"admin.dns.token": "API token",
 	"admin.dns.configured": "A token is saved.",
 	"admin.dns.unavailable": "DNS tokens cannot be saved on this server yet.",

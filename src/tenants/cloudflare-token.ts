@@ -56,10 +56,12 @@ function idOf(value: unknown): string | undefined {
 }
 
 /**
- * Checks a token before it is kept for DNS-01 certificates: it is active,
- * it sees the zone of `domain`, and it can edit DNS there (a throwaway TXT
- * record is created and deleted again). Anything less would only fail
- * later, at issuance or renewal.
+ * Checks a token before it is kept for DNS-01 certificates: Cloudflare
+ * accepts it, it sees the zone of `domain`, and it can edit DNS there (a
+ * throwaway TXT record is created and deleted again), the calls certbot
+ * makes. Anything less would only fail later, at issuance or renewal.
+ * Both user and account-owned tokens pass: `/user/tokens/verify` refuses
+ * the latter, so it is not asked.
  */
 export async function checkCloudflareToken(
 	fetchFn: typeof fetch,
@@ -67,22 +69,17 @@ export async function checkCloudflareToken(
 	domain: string,
 ): Promise<CloudflareTokenCheck> {
 	try {
-		const verify = await call(fetchFn, token, "/user/tokens/verify");
-		const status =
-			typeof verify.result === "object" && verify.result !== null
-				? Reflect.get(verify.result, "status")
-				: undefined;
-		if (!verify.success || status !== "active") return "invalid";
 		const zoneName = getDomain(domain, { allowPrivateDomains: true }) ?? domain;
 		const zones = await call(
 			fetchFn,
 			token,
 			`/zones?name=${encodeURIComponent(zoneName)}`,
 		);
+		if (!zones.success) return "invalid";
 		const zoneId = Array.isArray(zones.result)
 			? idOf(zones.result[0])
 			: undefined;
-		if (!zones.success || !zoneId) return "no-zone";
+		if (!zoneId) return "no-zone";
 		const zone = encodeURIComponent(zoneId);
 		const created = await call(fetchFn, token, `/zones/${zone}/dns_records`, {
 			method: "POST",

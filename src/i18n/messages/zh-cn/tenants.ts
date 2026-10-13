@@ -64,7 +64,7 @@ export const zhTenants: Translation<typeof enTenants> = {
 	"admin.oauth.remove": "移除",
 	"admin.dns.title": "Cloudflare DNS 令牌",
 	"admin.dns.help":
-		"通配符证书（*.localman.、*.tunnel.）需要一个在 {domain} 所在 zone 上拥有 Zone、DNS、Edit 权限的 Cloudflare API 令牌。令牌会为证书服务加密保存，任何人都无法读回。",
+		"仅当 {domain} 的 DNS 托管在 Cloudflare 时需要：通配符证书（*.localman.、*.tunnel.）通过 DNS 签发。在 dash.cloudflare.com → My Profile → API Tokens → Create Token 选择模板“Edit zone DNS”，并在 Zone Resources 中选择 {domain} 所在的 zone（具有相同权限的账户 API 令牌也可以）。令牌会为证书服务加密保存，任何人都无法读回。",
 	"admin.dns.token": "API 令牌",
 	"admin.dns.configured": "已保存令牌。",
 	"admin.dns.unavailable": "此服务器暂时无法保存 DNS 令牌。",

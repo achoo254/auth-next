@@ -53,7 +53,6 @@ const fakeApis: typeof fetch = async (input, init) => {
 	);
 	const ok = (result: unknown): Response =>
 		Response.json({ success: true, ok: true, result });
-	if (url.endsWith("/user/tokens/verify")) return ok({ status: "active" });
 	if (url.includes("/zones?name=example.org")) return ok([{ id: "zone1" }]);
 	if (url.endsWith("/zones/zone1/dns_records")) return ok({ id: "rec1" });
 	if (url.endsWith("/zones/zone1/dns_records/rec1")) return ok({});
