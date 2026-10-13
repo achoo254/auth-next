@@ -163,7 +163,8 @@ describe("claiming a domain", () => {
 		const page = await claimPage();
 		const claimId = /data-id="claim-verify-(clm_[\w-]+)"/.exec(page)?.[1] ?? "";
 		const txt = /data-id="claim-txt-value">([^<]+)</.exec(page)?.[1] ?? "";
-		expect(page).toContain(`_auth-claim.${DOMAIN}`);
+		// Host names wrap after their dots (`<wbr>`), which copies as nothing.
+		expect(page.replaceAll("<wbr>", "")).toContain(`_auth-claim.${DOMAIN}`);
 		const unproven = await postClaim(`/claim/${claimId}/verify`);
 		expect(unproven.searchParams.get("error")).toBe("dns-txt");
 		records.set(`TXT _auth-claim.${DOMAIN}`, [txt]);

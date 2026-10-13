@@ -14,8 +14,13 @@ export const enTenants = {
 	"claim.pending.title": "Waiting for DNS: {domain}",
 	"claim.pending.lead":
 		"Add these records at your DNS provider, then check. The A records must be DNS only (no proxy).",
-	"claim.pending.txt": "TXT record",
-	"claim.pending.address": "A records, value {ip}",
+	"claim.records.hint":
+		"Click a name or value to select all of it, then copy it into your DNS provider.",
+	"claim.records.type": "Type",
+	"claim.records.name": "Name",
+	"claim.records.content": "Content",
+	"claim.records.proxy": "Proxy",
+	"claim.records.dnsOnly": "DNS only",
 	"claim.pending.expires": "The claim expires {date}.",
 	"claim.pending.verify": "Check DNS",
 	"claim.tenants.title": "Your domains",

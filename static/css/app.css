@@ -546,3 +546,50 @@ button {
 		width: 100%;
 	}
 }
+
+/* DNS records of a pending claim: one click selects a whole name or value */
+.claim-pending {
+	flex-direction: column;
+	align-items: stretch;
+}
+.dns-records {
+	overflow-x: auto;
+	margin: var(--space-2) 0;
+}
+.dns-records table {
+	width: 100%;
+	border-collapse: collapse;
+	font-size: 13px;
+}
+.dns-records caption {
+	text-align: left;
+	padding-bottom: var(--space-1);
+}
+.dns-records th {
+	text-align: left;
+	font-weight: 600;
+	color: var(--c-text-muted);
+	white-space: nowrap;
+}
+.dns-records th,
+.dns-records td {
+	padding: var(--space-1) var(--space-2);
+	border-bottom: 1px solid var(--c-border-subtle);
+	vertical-align: top;
+}
+.dns-records td:first-child,
+.dns-records td:last-child {
+	white-space: nowrap;
+	color: var(--c-text-muted);
+}
+.copyable {
+	color: var(--c-text);
+	cursor: text;
+	user-select: all;
+	-webkit-user-select: all;
+	overflow-wrap: anywhere;
+}
+.copyable.host {
+	overflow-wrap: normal;
+	word-break: keep-all;
+}

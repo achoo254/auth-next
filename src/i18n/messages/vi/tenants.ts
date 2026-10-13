@@ -16,8 +16,13 @@ export const viTenants: Translation<typeof enTenants> = {
 	"claim.pending.title": "Đang chờ DNS: {domain}",
 	"claim.pending.lead":
 		"Thêm các bản ghi này ở nhà cung cấp DNS rồi bấm kiểm tra. Bản ghi A phải là DNS only (không proxy).",
-	"claim.pending.txt": "Bản ghi TXT",
-	"claim.pending.address": "Bản ghi A, giá trị {ip}",
+	"claim.records.hint":
+		"Bấm vào tên hoặc giá trị để chọn cả ô, rồi copy sang nhà cung cấp DNS.",
+	"claim.records.type": "Loại",
+	"claim.records.name": "Tên",
+	"claim.records.content": "Giá trị",
+	"claim.records.proxy": "Proxy",
+	"claim.records.dnsOnly": "Chỉ DNS",
 	"claim.pending.expires": "Lượt nhận hết hạn lúc {date}.",
 	"claim.pending.verify": "Kiểm tra DNS",
 	"claim.tenants.title": "Domain của bạn",

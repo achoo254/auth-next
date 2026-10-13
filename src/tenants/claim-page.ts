@@ -43,21 +43,52 @@ const STATUS_KEYS: Readonly<Record<string, MessageKey>> = {
 	suspended: "claim.tenants.suspended",
 };
 
-function pendingClaim(view: ClaimView, claim: ClaimDocument): SafeHtml {
+/** A host name that wraps only after its dots (`<wbr>` copies as nothing). */
+function hostName(name: string): SafeHtml {
+	const labels = name.split(".");
+	return html`${labels.map((label, index) =>
+		index < labels.length - 1 ? html`${label}.<wbr>` : html`${label}`,
+	)}`;
+}
+
+/**
+ * The records to add, one row each in the order of a DNS provider's form
+ * (type, name, content, proxy). One click selects a whole name or value.
+ */
+function dnsRecords(view: ClaimView, claim: ClaimDocument): SafeHtml {
 	const { i18n } = view.page;
-	const record = claimRecord(claim);
+	const txt = claimRecord(claim);
 	const hosts = appHostsFor(claim.domain);
-	return html`<li class="item-row" data-id="claim-${claim._id}"><div>
-<p><b>${i18n.t("claim.pending.title", { domain: claim.domain })}</b></p>
-<p class="help">${i18n.t("claim.pending.lead")}</p>
-<p class="help">${i18n.t("claim.pending.txt")}: <code class="mono" data-id="claim-txt-name">${record.name}</code> = <code class="mono" data-id="claim-txt-value">${record.value}</code></p>
-<p class="help">${i18n.t("claim.pending.address", { ip: view.serviceIp ?? "" })}: ${[
+	const ip = view.serviceIp ?? "";
+	const addresses = [
 		hosts.auth,
 		hosts.localman,
 		hosts.localmanWildcard,
 		hosts.tunnel,
 		hosts.tunnelWildcard,
-	].map((host) => html`<code class="mono">${host}</code> `)}</p>
+	];
+	const dnsOnly = i18n.t("claim.records.dnsOnly");
+	return html`<div class="dns-records" data-id="claim-records">
+<table>
+<caption class="help">${i18n.t("claim.records.hint")}</caption>
+<thead><tr><th scope="col">${i18n.t("claim.records.type")}</th><th scope="col">${i18n.t("claim.records.name")}</th><th scope="col">${i18n.t("claim.records.content")}</th><th scope="col">${i18n.t("claim.records.proxy")}</th></tr></thead>
+<tbody>
+<tr><td>TXT</td><td><code class="copyable host" data-id="claim-txt-name">${hostName(txt.name)}</code></td><td><code class="copyable" data-id="claim-txt-value">${txt.value}</code></td><td></td></tr>
+${addresses.map(
+	(host) =>
+		html`<tr><td>A</td><td><code class="copyable host">${hostName(host)}</code></td><td><code class="copyable host">${ip}</code></td><td>${dnsOnly}</td></tr>`,
+)}
+</tbody>
+</table>
+</div>`;
+}
+
+function pendingClaim(view: ClaimView, claim: ClaimDocument): SafeHtml {
+	const { i18n } = view.page;
+	return html`<li class="item-row claim-pending" data-id="claim-${claim._id}"><div>
+<p><b>${i18n.t("claim.pending.title", { domain: claim.domain })}</b></p>
+<p class="help">${i18n.t("claim.pending.lead")}</p>
+${dnsRecords(view, claim)}
 <p class="help">${i18n.t("claim.pending.expires", { date: i18n.date(claim.expiresAt) })}</p>
 </div>
 <form method="post" action="/claim/${claim._id}/verify" class="inline-form">${csrfField(view.csrf)}${submitButton(i18n.t("claim.pending.verify"), { dataId: `claim-verify-${claim._id}` })}</form>
