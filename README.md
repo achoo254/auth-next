@@ -18,6 +18,10 @@ Người dùng xem danh sách này ở trang công khai `/apps` (mở `auth.hoan
 
 Địa chỉ trên là của production; môi trường khác đổi qua `LOCALMAN_WEB_URL`, `TUNELO_WEB_URL`, `ISSUER`. Localman còn nhận sự kiện audit từ IdP (mục **Audit** bên dưới). Client tĩnh chỉ khai ở [`src/oidc/clients.ts`](src/oidc/clients.ts); thêm app mới thì khai ở đó rồi cập nhật bảng này, trang `/apps`, mục [Client và audience](#client-và-audience) và [`docs/integration-guide.md`](docs/integration-guide.md) mục 2.
 
+## Domain riêng (tenant)
+
+Từ 13/10/2026 IdP phục vụ cả các domain khác: chủ domain nhận domain ở `https://auth.hoandat.com/claim` (TXT + bản ghi A), khai OAuth Google/GitHub và token Cloudflare ở `https://auth.<domain>/admin`; người dùng của domain đăng nhập ở `auth.<domain>`, dùng `localman.<domain>` và `tunnel.<domain>`, dữ liệu tách hẳn hoandat.com. Hướng dẫn cho chủ domain: [`docs/tenant-owner-guide.md`](docs/tenant-owner-guide.md). Thiết kế: ADR [0006](docs/decisions/0006-tenants-by-domain.md). Vận hành (env, provisioner chứng chỉ, nginx): [`docs/deployment-guide.md`](docs/deployment-guide.md). Tenant đầu tiên: `inetdev.io.vn`.
+
 ## Bắt đầu
 
 Yêu cầu: Node ≥ 22.12, pnpm 11, MongoDB (replica set) hoặc Docker.
