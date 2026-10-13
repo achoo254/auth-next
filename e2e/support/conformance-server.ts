@@ -112,12 +112,19 @@ const suiteClients = new Set<string>([
 	STATIC_CLIENT_IDS.tuneloWeb,
 ]);
 // Token exchange is not wired here (see above): a client declaring its
-// grant would be refused as invalid metadata, so it is left out.
+// grant would be refused as invalid metadata, so it is left out. The real
+// back-channel logout URIs point at production Localman and Tunelo: this
+// throwaway IdP must never call them, so they go too.
 configuration.clients = (configuration.clients ?? []).map((client) => {
-	const grantTypes = client.grant_types?.filter(
+	const {
+		backchannel_logout_uri: _backchannelUri,
+		backchannel_logout_session_required: _backchannelSession,
+		...rest
+	} = client;
+	const grantTypes = rest.grant_types?.filter(
 		(grant) => grant !== TOKEN_EXCHANGE_GRANT,
 	);
-	const base = grantTypes ? { ...client, grant_types: grantTypes } : client;
+	const base = grantTypes ? { ...rest, grant_types: grantTypes } : rest;
 	return suiteClients.has(client.client_id)
 		? { ...base, redirect_uris: [suiteCallback] }
 		: base;
