@@ -10,6 +10,8 @@ export const enCommon = {
 	"common.tooManyRequests": "Too many requests. Try again in a few minutes.",
 	"layout.brand": "Account",
 	"layout.language": "Language",
+	"layout.nav": "Site",
+	"layout.home": "Home",
 	"client.external": "External app",
 	"client.quoted": "“{name}”",
 	"client.externalNamed": "{name} (external app)",

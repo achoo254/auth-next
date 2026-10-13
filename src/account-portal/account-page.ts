@@ -1,4 +1,3 @@
-import { UPSTREAM_LABELS } from "../accounts/upstream-client.js";
 import type {
 	AccountDocument,
 	UpstreamProvider,
@@ -10,6 +9,12 @@ import type { PageContext } from "../ui/page-context.js";
 import { accountGroup } from "./account-card.js";
 import { appsCard, telegramCard } from "./account-connection-cards.js";
 import { profileCard, signInCard } from "./account-identity-cards.js";
+import {
+	ACCOUNT_SECTIONS,
+	type AccountCardId,
+	accountNav,
+	accountOverview,
+} from "./account-overview.js";
 import { devicesCard, sessionsCard } from "./account-sections.js";
 import type { AuthorizedApp, DeviceGrant } from "./grant-directory.js";
 import { ACCOUNT_NOTICES } from "./notices.js";
@@ -29,30 +34,15 @@ export interface AccountView {
 	readonly notice?: string;
 }
 
-function emailLine(view: AccountView): SafeHtml {
-	const { i18n } = view.page;
-	const { account } = view;
-	if (!account.email) {
-		return html`<span data-id="account-email">${i18n.t("account.noEmail")}</span>`;
-	}
-	const badge = account.emailVerifiedBy
-		? html`<span class="badge badge-success" data-id="account-email-verified">${i18n.t("account.emailVerified", { provider: UPSTREAM_LABELS[account.emailVerifiedBy] })}</span>`
-		: html`<span class="badge badge-warning" data-id="account-email-unverified">${i18n.t("account.emailUnverified")}</span>`;
-	return html`<span data-id="account-email">${account.email}</span> ${badge}`;
-}
-
-function header(view: AccountView): SafeHtml {
-	const { i18n } = view.page;
-	const { account } = view;
-	return html`<header class="portal-head">
-<div class="portal-head-text">
-<h1 class="auth-title">${i18n.t("account.title")}</h1>
-<p class="auth-sub">${account.name ? html`${account.name} · ` : ""}<b data-id="account-username">@${account.username}</b></p>
-<p class="help account-anchor" id="account-email">${emailLine(view)}</p>
-</div>
-<a class="btn btn-secondary" href="/session/end" data-id="account-logout">${i18n.t("account.signOut")}</a>
-</header>`;
-}
+const CARDS: Readonly<Record<AccountCardId, (view: AccountView) => SafeHtml>> =
+	{
+		profile: profileCard,
+		"sign-in": signInCard,
+		sessions: sessionsCard,
+		devices: devicesCard,
+		apps: appsCard,
+		telegram: telegramCard,
+	};
 
 function alerts(view: AccountView): SafeHtml {
 	const { i18n } = view.page;
@@ -70,21 +60,31 @@ ${notice ? alertBox(notice.tone, i18n.t(notice.text)) : ""}`;
 }
 
 /**
- * /account: everything a user can manage about their hoandat account, in
- * three groups of cards (account, security, connections).
+ * /account: everything a user can manage about their account. An overview
+ * on top, then a section nav beside three groups of cards (account,
+ * security, connections), one card under another.
  */
 export function renderAccountPage(view: AccountView): string {
 	const { i18n } = view.page;
-	const body = html`${header(view)}
+	const groups = ACCOUNT_SECTIONS.map((section) =>
+		accountGroup(
+			section.group,
+			i18n.t(section.title),
+			section.cards.map((card) => CARDS[card.id](view)),
+		),
+	);
+	const body = html`${accountOverview(view)}
 ${alerts(view)}
-${accountGroup("account", i18n.t("account.group.account"), [profileCard(view), signInCard(view)])}
-${accountGroup("security", i18n.t("account.group.security"), [sessionsCard(view), devicesCard(view)])}
-${accountGroup("connections", i18n.t("account.group.connections"), [appsCard(view), telegramCard(view)])}`;
+<div class="account-layout">
+${accountNav(view)}
+<div class="account-sections">${groups}</div>
+</div>`;
 	return renderPage({
 		title: i18n.t("account.pageTitle"),
 		body,
 		host: view.host,
 		page: view.page,
 		layout: "portal",
+		stylesheets: ["/assets/css/account.css"],
 	});
 }

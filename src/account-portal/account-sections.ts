@@ -1,7 +1,7 @@
 import type { Translator } from "../i18n/translator.js";
 import { actionButton, actionLink } from "../ui/components.js";
 import { type SafeHtml, html } from "../ui/html.js";
-import { accountCard, emptyState } from "./account-card.js";
+import { accountCard, emptyState, itemList } from "./account-card.js";
 import { accountIcon } from "./account-icons.js";
 import type { AccountView } from "./account-page.js";
 import type { DeviceGrant } from "./grant-directory.js";
@@ -71,7 +71,10 @@ export function sessionsCard(view: AccountView): SafeHtml {
 		body:
 			sessions.length === 0
 				? emptyState(i18n.t("account.sessions.empty"), "account-sessions-empty")
-				: html`<ul class="item-list">${sessions.map((session) => sessionRow(view, session))}</ul>`,
+				: itemList(
+						i18n.t("account.sessions.title"),
+						sessions.map((session) => sessionRow(view, session)),
+					),
 		footer:
 			sessions.length >= 2
 				? actionLink(
@@ -113,6 +116,9 @@ export function devicesCard(view: AccountView): SafeHtml {
 						}),
 						"account-devices-empty",
 					)
-				: html`<ul class="item-list">${devices.map((device) => deviceRow(view, device))}</ul>`,
+				: itemList(
+						i18n.t("account.devices.title"),
+						devices.map((device) => deviceRow(view, device)),
+					),
 	});
 }

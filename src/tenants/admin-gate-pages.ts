@@ -18,6 +18,7 @@ export function renderAdminSignedOut(
 		title: i18n.t("admin.title"),
 		host: appHostsFor(domain).auth,
 		page,
+		nav: false,
 		body: html`${pageTitle(i18n.t("admin.title"), i18n.rich("admin.signedOut", { link: html`<a class="link" href="${claimUrl}" data-id="admin-claim-link">${claimUrl}</a>` }))}`,
 	});
 }
@@ -37,6 +38,7 @@ export function renderInactive(page: PageContext, host: string): string {
 		title: i18n.t("inactive.title"),
 		host,
 		page,
+		nav: false,
 		body: html`${pageTitle(i18n.t("inactive.title"), i18n.t("inactive.body", { host }))}`,
 	});
 }

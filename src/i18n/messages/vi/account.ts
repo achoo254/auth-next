@@ -14,6 +14,12 @@ export const viAccount: Translation<typeof enAccount> = {
 	"account.group.account": "Tài khoản",
 	"account.group.security": "Bảo mật",
 	"account.group.connections": "Kết nối",
+	"account.nav": "Các mục của tài khoản",
+	"account.overview": "Tóm tắt tài khoản",
+	"account.stat.signIn": "Cách đăng nhập",
+	"account.stat.sessions": "Phiên đang mở",
+	"account.stat.devices": "Thiết bị",
+	"account.stat.apps": "Ứng dụng được cấp quyền",
 	"account.profile.title": "Hồ sơ",
 	"account.profile.description": "Tên Localman và Tunelo hiển thị cho bạn.",
 	"account.profile.empty":
@@ -56,6 +62,7 @@ export const viAccount: Translation<typeof enAccount> = {
 	"account.apps.empty": "Chưa cấp quyền cho ứng dụng nào.",
 	"account.apps.redirects": "Chuyển về: {hosts}",
 	"account.apps.remove": "Gỡ quyền của ứng dụng",
+	"account.telegram.title": "Telegram",
 	"account.telegram.description":
 		"Thông báo bảo mật của tài khoản, gửi tới chat Telegram của bạn.",
 	"account.telegram.off": "Máy chủ này chưa bật thông báo qua Telegram.",

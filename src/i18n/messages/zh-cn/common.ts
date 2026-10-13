@@ -12,6 +12,8 @@ export const zhCommon: Translation<typeof enCommon> = {
 	"common.tooManyRequests": "请求过多，请几分钟后重试。",
 	"layout.brand": "账号",
 	"layout.language": "语言",
+	"layout.nav": "站点导航",
+	"layout.home": "首页",
 	"client.external": "外部应用",
 	"client.quoted": "“{name}”",
 	"client.externalNamed": "{name}（外部应用）",

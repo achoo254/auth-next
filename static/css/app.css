@@ -86,6 +86,50 @@ button {
 .idp-brand b {
 	color: var(--c-primary);
 }
+.topbar-nav {
+	display: flex;
+	align-items: center;
+	gap: var(--space-1);
+}
+.topbar-link {
+	font-family: var(--font-mono);
+	font-size: 13px;
+	font-weight: 600;
+	color: var(--c-text-muted);
+	text-decoration: none;
+	white-space: nowrap;
+	padding: var(--space-2) var(--space-3);
+	border-radius: var(--radius-sm);
+	transition: background-color var(--dur-fast) var(--ease-standard),
+		color var(--dur-fast) var(--ease-standard);
+}
+.topbar-link:hover {
+	color: var(--c-text);
+	background: color-mix(in srgb, var(--c-text) 6%, transparent);
+}
+.topbar-link[aria-current="page"] {
+	color: var(--c-primary);
+	background: color-mix(in srgb, var(--c-primary) 10%, transparent);
+}
+.idp-brand-suffix {
+	white-space: pre;
+}
+@media (pointer: coarse) {
+	.topbar-link {
+		display: inline-flex;
+		align-items: center;
+		min-height: 44px;
+	}
+}
+/* phones: the Account link in the nav already says it */
+@media (max-width: 479px) {
+	.idp-brand-suffix {
+		display: none;
+	}
+	.topbar-link {
+		padding-inline: var(--space-2);
+	}
+}
 
 /* layout */
 .auth {
@@ -196,6 +240,16 @@ button {
 }
 .btn-danger:hover {
 	background: color-mix(in srgb, var(--c-error) 88%, var(--c-text));
+}
+/* the quiet danger of a row action; the filled one confirms it */
+.btn-danger-outline {
+	background: var(--c-surface);
+	border-color: color-mix(in srgb, var(--c-error) 45%, var(--c-border));
+	color: var(--c-error);
+}
+.btn-danger-outline:hover {
+	background: color-mix(in srgb, var(--c-error) 8%, var(--c-surface));
+	border-color: var(--c-error);
 }
 .btn-block {
 	width: 100%;
@@ -420,24 +474,11 @@ button {
 	stroke-width: var(--icon-stroke);
 }
 
-/* /account: header, three groups, one card per section */
+/* /account, /admin, /claim: groups of cards (account.css lays out /account) */
 .portal {
 	display: grid;
 	gap: var(--space-6);
 	padding-block: var(--space-6) var(--space-7);
-}
-.portal-head {
-	display: flex;
-	flex-wrap: wrap;
-	align-items: flex-start;
-	justify-content: space-between;
-	gap: var(--space-4);
-}
-.portal-head-text {
-	display: grid;
-	gap: var(--space-1);
-	min-width: 0;
-	overflow-wrap: anywhere;
 }
 .account-group {
 	display: grid;
@@ -540,9 +581,6 @@ button {
 	.item-row > .inline-form,
 	.item-row > .btn,
 	.item-row > .inline-form .btn {
-		width: 100%;
-	}
-	.portal-head > .btn {
 		width: 100%;
 	}
 }

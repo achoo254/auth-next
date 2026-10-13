@@ -6,7 +6,7 @@ import {
 import { describeScopes } from "../interactions/consent-page.js";
 import { actionButton, actionLink } from "../ui/components.js";
 import { type SafeHtml, html } from "../ui/html.js";
-import { accountCard, emptyState } from "./account-card.js";
+import { accountCard, emptyState, itemList } from "./account-card.js";
 import { accountIcon } from "./account-icons.js";
 import type { AccountView } from "./account-page.js";
 import type { AuthorizedApp } from "./grant-directory.js";
@@ -25,7 +25,7 @@ function appRow(view: AccountView, app: AuthorizedApp): SafeHtml {
 <div>${name}
 ${app.redirectHosts.length > 0 ? html`<p class="help">${i18n.t("account.apps.redirects", { hosts: app.redirectHosts.join(", ") })}</p>` : ""}
 <p class="help">${describeScopes(i18n, app.scopes).join(" · ")}</p></div>
-${actionLink(appRevokePath(app.clientId), i18n.t("account.apps.remove"), { variant: "danger", dataId: `app-revoke-${app.clientId}` })}
+${actionLink(appRevokePath(app.clientId), i18n.t("account.apps.remove"), { variant: "danger-outline", dataId: `app-revoke-${app.clientId}` })}
 </li>`;
 }
 
@@ -40,7 +40,10 @@ export function appsCard(view: AccountView): SafeHtml {
 		body:
 			view.apps.length === 0
 				? emptyState(i18n.t("account.apps.empty"), "account-apps-empty")
-				: html`<ul class="item-list">${view.apps.map((app) => appRow(view, app))}</ul>`,
+				: itemList(
+						i18n.t("account.apps.title"),
+						view.apps.map((app) => appRow(view, app)),
+					),
 	});
 }
 
@@ -85,7 +88,7 @@ export function telegramCard(view: AccountView): SafeHtml {
 	return accountCard({
 		id: "telegram",
 		icon: accountIcon("telegram"),
-		title: "Telegram",
+		title: i18n.t("account.telegram.title"),
 		description: i18n.t("account.telegram.description"),
 		count: status,
 		body: telegramBody(view),

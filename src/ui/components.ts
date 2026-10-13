@@ -53,10 +53,22 @@ ${options.help ? html`<p class="help">${options.help}</p>` : ""}
 </div>`;
 }
 
+/**
+ * `danger-outline` is the quiet form of `danger`, for a destructive action
+ * repeated on every row of a list; the filled `danger` button is kept for
+ * the page that confirms it.
+ */
+export type ButtonVariant =
+	| "primary"
+	| "secondary"
+	| "danger"
+	| "danger-outline"
+	| "minimal";
+
 export function submitButton(
 	label: string,
 	options: {
-		readonly variant?: "primary" | "secondary" | "danger" | "minimal";
+		readonly variant?: ButtonVariant;
 		readonly name?: string;
 		readonly value?: string;
 		readonly block?: boolean;
@@ -84,7 +96,7 @@ export function actionButton(
 	csrf: string,
 	label: string,
 	options: {
-		readonly variant?: "primary" | "secondary" | "danger";
+		readonly variant?: "primary" | "secondary" | "danger" | "danger-outline";
 		readonly dataId?: string;
 	} = {},
 ): SafeHtml {
@@ -99,7 +111,7 @@ export function actionLink(
 	href: string,
 	label: string,
 	options: {
-		readonly variant?: "secondary" | "danger" | "minimal";
+		readonly variant?: "secondary" | "danger" | "danger-outline" | "minimal";
 		readonly dataId?: string;
 	} = {},
 ): SafeHtml {

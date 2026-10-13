@@ -98,6 +98,24 @@ function providerRow(view: AccountView, provider: UpstreamProvider): SafeHtml {
 <p class="help">${providerStatus(view, provider)}</p></div>${unlink}</li>`;
 }
 
+/** Configured providers plus any already linked (even if switched off). */
+function shownProviders(view: AccountView): readonly UpstreamProvider[] {
+	return UPSTREAM_PROVIDERS.filter(
+		(provider) =>
+			view.providers.includes(provider) ||
+			view.account.providers[provider] !== undefined,
+	);
+}
+
+/** "linked/shown", e.g. 1/2: the sign-in card's count and summary tile. */
+export function signInCount(view: AccountView): string {
+	const shown = shownProviders(view);
+	const linked = shown.filter(
+		(provider) => view.account.providers[provider] !== undefined,
+	);
+	return `${linked.length}/${shown.length}`;
+}
+
 /**
  * How this account signs in: Google and GitHub, the only ways in. Shown are
  * the configured providers (to link) plus any already linked, even if its
@@ -105,20 +123,13 @@ function providerRow(view: AccountView, provider: UpstreamProvider): SafeHtml {
  */
 export function signInCard(view: AccountView): SafeHtml {
 	const { i18n } = view.page;
-	const shown = UPSTREAM_PROVIDERS.filter(
-		(provider) =>
-			view.providers.includes(provider) ||
-			view.account.providers[provider] !== undefined,
-	);
-	const linked = shown.filter(
-		(provider) => view.account.providers[provider] !== undefined,
-	);
+	const shown = shownProviders(view);
 	return accountCard({
 		id: "sign-in",
 		icon: accountIcon("signIn"),
 		title: i18n.t("account.signIn.title"),
 		description: i18n.t("account.signIn.description"),
-		count: `${linked.length}/${shown.length}`,
+		count: signInCount(view),
 		body:
 			shown.length === 0
 				? emptyState(i18n.t("account.signIn.empty"), "account-sign-in-empty")

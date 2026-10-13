@@ -161,6 +161,7 @@ ${overview(view)}
 		host: appHostsFor(domain).auth,
 		page: view.page,
 		layout: "portal",
+		nav: false,
 		body,
 	});
 }

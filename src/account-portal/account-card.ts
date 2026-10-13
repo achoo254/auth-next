@@ -29,7 +29,7 @@ ${options.footer ? html`<div class="account-card-foot">${options.footer}</div>` 
 </section>`;
 }
 
-/** A headed group of cards ("Security"). */
+/** A headed group of cards ("Security"), one card under another. */
 export function accountGroup(
 	id: string,
 	title: string,
@@ -37,8 +37,22 @@ export function accountGroup(
 ): SafeHtml {
 	return html`<section class="account-group" aria-labelledby="group-${id}" data-id="group-${id}">
 <h2 class="account-group-title" id="group-${id}">${title}</h2>
-<div class="account-grid">${cards}</div>
+<div class="account-stack">${cards}</div>
 </section>`;
+}
+
+/** Past this many rows a list scrolls inside its card. */
+const SCROLL_AFTER_ROWS = 5;
+
+/**
+ * The rows of a card. A long list gets a scroll area of its own so one
+ * card never stretches the page; it is focusable (keyboard scrolling) and
+ * named after its card.
+ */
+export function itemList(label: string, rows: readonly SafeHtml[]): SafeHtml {
+	const list = html`<ul class="item-list">${rows}</ul>`;
+	if (rows.length <= SCROLL_AFTER_ROWS) return list;
+	return html`<div class="item-scroll" role="region" aria-label="${label}" tabindex="0">${list}</div>`;
 }
 
 /** What a card shows when it has nothing to list. */

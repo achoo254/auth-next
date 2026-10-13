@@ -15,6 +15,11 @@ export interface PageOptions {
 	readonly layout?: "card" | "wide" | "portal";
 	/** Extra stylesheets under /assets/css, after app.css (one page's own styles). */
 	readonly stylesheets?: readonly string[];
+	/**
+	 * Home and Account links in the topbar (default true). Off on /admin,
+	 * which a tenant serves before it has a home page or accounts.
+	 */
+	readonly nav?: boolean;
 }
 
 const FONT_STYLESHEETS = [
@@ -45,6 +50,24 @@ function languageSwitcher(page: PageContext): SafeHtml {
 	)}</nav>`;
 }
 
+const NAV_LINKS = [
+	{ href: "/apps", key: "layout.home", dataId: "nav-home" },
+	{ href: "/account", key: "layout.brand", dataId: "nav-account" },
+] as const;
+
+/** The page's own link is marked current; /account/... counts as Account. */
+function topbarNav(page: PageContext): SafeHtml {
+	const path = page.path.split("?")[0] ?? "";
+	return html`<nav class="topbar-nav" aria-label="${page.i18n.t("layout.nav")}">${NAV_LINKS.map(
+		(link) =>
+			html`<a class="topbar-link" href="${link.href}"${
+				path === link.href || path.startsWith(`${link.href}/`)
+					? html` aria-current="page"`
+					: ""
+			} data-id="${link.dataId}">${page.i18n.t(link.key)}</a>`,
+	)}</nav>`;
+}
+
 function main(options: PageOptions): SafeHtml {
 	if (options.layout === "portal") {
 		return html`<main class="page container portal">${options.body}</main>`;
@@ -58,8 +81,8 @@ ${options.body}
 
 /**
  * Shared shell of every IdP page: self-hosted fonts and token CSS, the
- * "<brand> · Account" wordmark (the tenant's brand), the language switcher,
- * no script at all.
+ * "<brand> · Account" wordmark (the tenant's brand) with the Home and
+ * Account links, the language switcher, no script at all.
  */
 export function renderPage(options: PageOptions): string {
 	const { i18n } = options.page;
@@ -78,11 +101,12 @@ ${(options.stylesheets ?? []).map((href) => html`<link rel="stylesheet" href="${
 </head>
 <body>
 <header class="topbar"><div class="topbar-inner container">
-<a class="idp-brand" href="/account" data-id="idp-brand"><b>${i18n.brand.name}</b> · ${i18n.t("layout.brand")}${
+<a class="idp-brand" href="${options.nav === false ? "/account" : "/apps"}" data-id="idp-brand"><span><b>${i18n.brand.name}</b><span class="idp-brand-suffix"> · ${i18n.t("layout.brand")}</span></span>${
 		options.host
 			? html` <span class="badge badge-neutral hide-sm">${options.host}</span>`
 			: ""
 	}</a>
+${options.nav === false ? "" : topbarNav(options.page)}
 </div></header>
 ${main(options)}
 <footer class="page-foot container">${languageSwitcher(options.page)}</footer>

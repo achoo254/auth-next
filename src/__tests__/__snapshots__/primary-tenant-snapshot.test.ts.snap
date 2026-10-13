@@ -33,7 +33,8 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 </head>
 <body>
 <header class="topbar"><div class="topbar-inner container">
-<a class="idp-brand" href="/account" data-id="idp-brand"><b>hoandat</b> · Account <span class="badge badge-neutral hide-sm">ISSUER_HOST</span></a>
+<a class="idp-brand" href="/apps" data-id="idp-brand"><span><b>hoandat</b><span class="idp-brand-suffix"> · Account</span></span> <span class="badge badge-neutral hide-sm">ISSUER_HOST</span></a>
+<nav class="topbar-nav" aria-label="Site"><a class="topbar-link" href="/apps" aria-current="page" data-id="nav-home">Home</a><a class="topbar-link" href="/account" data-id="nav-account">Account</a></nav>
 </div></header>
 <main class="page container portal"><section class="apps-hero" data-id="apps-hero">
 <div class="apps-hero-text">
@@ -151,7 +152,8 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 </head>
 <body>
 <header class="topbar"><div class="topbar-inner container">
-<a class="idp-brand" href="/account" data-id="idp-brand"><b>hoandat</b> · Tài khoản <span class="badge badge-neutral hide-sm">ISSUER_HOST</span></a>
+<a class="idp-brand" href="/apps" data-id="idp-brand"><span><b>hoandat</b><span class="idp-brand-suffix"> · Tài khoản</span></span> <span class="badge badge-neutral hide-sm">ISSUER_HOST</span></a>
+<nav class="topbar-nav" aria-label="Điều hướng"><a class="topbar-link" href="/apps" aria-current="page" data-id="nav-home">Trang chủ</a><a class="topbar-link" href="/account" data-id="nav-account">Tài khoản</a></nav>
 </div></header>
 <main class="page container portal"><section class="apps-hero" data-id="apps-hero">
 <div class="apps-hero-text">
@@ -269,7 +271,8 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 </head>
 <body>
 <header class="topbar"><div class="topbar-inner container">
-<a class="idp-brand" href="/account" data-id="idp-brand"><b>hoandat</b> · 账号 <span class="badge badge-neutral hide-sm">ISSUER_HOST</span></a>
+<a class="idp-brand" href="/apps" data-id="idp-brand"><span><b>hoandat</b><span class="idp-brand-suffix"> · 账号</span></span> <span class="badge badge-neutral hide-sm">ISSUER_HOST</span></a>
+<nav class="topbar-nav" aria-label="站点导航"><a class="topbar-link" href="/apps" aria-current="page" data-id="nav-home">首页</a><a class="topbar-link" href="/account" data-id="nav-account">账号</a></nav>
 </div></header>
 <main class="page container portal"><section class="apps-hero" data-id="apps-hero">
 <div class="apps-hero-text">
@@ -387,7 +390,8 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /privacy the same w
 </head>
 <body>
 <header class="topbar"><div class="topbar-inner container">
-<a class="idp-brand" href="/account" data-id="idp-brand"><b>hoandat</b> · Account <span class="badge badge-neutral hide-sm">ISSUER_HOST</span></a>
+<a class="idp-brand" href="/apps" data-id="idp-brand"><span><b>hoandat</b><span class="idp-brand-suffix"> · Account</span></span> <span class="badge badge-neutral hide-sm">ISSUER_HOST</span></a>
+<nav class="topbar-nav" aria-label="Site"><a class="topbar-link" href="/apps" data-id="nav-home">Home</a><a class="topbar-link" href="/account" data-id="nav-account">Account</a></nav>
 </div></header>
 <main class="page container auth">
 <div class="card auth-card auth-card-wide">
@@ -427,7 +431,8 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /privacy the same w
 </head>
 <body>
 <header class="topbar"><div class="topbar-inner container">
-<a class="idp-brand" href="/account" data-id="idp-brand"><b>hoandat</b> · Tài khoản <span class="badge badge-neutral hide-sm">ISSUER_HOST</span></a>
+<a class="idp-brand" href="/apps" data-id="idp-brand"><span><b>hoandat</b><span class="idp-brand-suffix"> · Tài khoản</span></span> <span class="badge badge-neutral hide-sm">ISSUER_HOST</span></a>
+<nav class="topbar-nav" aria-label="Điều hướng"><a class="topbar-link" href="/apps" data-id="nav-home">Trang chủ</a><a class="topbar-link" href="/account" data-id="nav-account">Tài khoản</a></nav>
 </div></header>
 <main class="page container auth">
 <div class="card auth-card auth-card-wide">
@@ -467,7 +472,8 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /privacy the same w
 </head>
 <body>
 <header class="topbar"><div class="topbar-inner container">
-<a class="idp-brand" href="/account" data-id="idp-brand"><b>hoandat</b> · 账号 <span class="badge badge-neutral hide-sm">ISSUER_HOST</span></a>
+<a class="idp-brand" href="/apps" data-id="idp-brand"><span><b>hoandat</b><span class="idp-brand-suffix"> · 账号</span></span> <span class="badge badge-neutral hide-sm">ISSUER_HOST</span></a>
+<nav class="topbar-nav" aria-label="站点导航"><a class="topbar-link" href="/apps" data-id="nav-home">首页</a><a class="topbar-link" href="/account" data-id="nav-account">账号</a></nav>
 </div></header>
 <main class="page container auth">
 <div class="card auth-card auth-card-wide">
@@ -731,7 +737,9 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in en 
   "account.group.account": "Account",
   "account.group.connections": "Connections",
   "account.group.security": "Security",
+  "account.nav": "Account sections",
   "account.noEmail": "No email yet",
+  "account.overview": "Account summary",
   "account.pageTitle": "Account",
   "account.profile.description": "The name Localman and Tunelo show for you.",
   "account.profile.empty": "No display name yet, so apps show @{username}.",
@@ -760,6 +768,10 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in en 
   "account.signIn.title": "Sign-in methods",
   "account.signIn.unlink": "Unlink {provider}",
   "account.signOut": "Sign out",
+  "account.stat.apps": "Authorized apps",
+  "account.stat.devices": "Devices",
+  "account.stat.sessions": "Open sessions",
+  "account.stat.signIn": "Sign-in methods",
   "account.telegram.description": "Security notices for your account, sent to your Telegram chat.",
   "account.telegram.empty": "Link a chat to get security notices for your account. Telegram isn't used to sign in.",
   "account.telegram.link": "Link Telegram",
@@ -768,6 +780,7 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in en 
   "account.telegram.statusLinked": "linked",
   "account.telegram.statusNone": "not linked",
   "account.telegram.statusOff": "off",
+  "account.telegram.title": "Telegram",
   "account.telegram.unlink": "Unlink Telegram",
   "account.title": "hoandat account",
   "admin.certificate.failed": "Certificates: the last attempt failed ({error}); next try {date}.",
@@ -951,7 +964,9 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in en 
   "inactive.body": "Sign-in at {host} is not set up yet.",
   "inactive.title": "Not set up yet",
   "layout.brand": "Account",
+  "layout.home": "Home",
   "layout.language": "Language",
+  "layout.nav": "Site",
   "login.cancel": "Cancel sign-in",
   "login.continueTo": "To continue to {app}.",
   "login.firstTime": "Signing in with Google or GitHub for the first time creates a new hoandat account.",
@@ -1076,7 +1091,9 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in vi 
   "account.group.account": "Tài khoản",
   "account.group.connections": "Kết nối",
   "account.group.security": "Bảo mật",
+  "account.nav": "Các mục của tài khoản",
   "account.noEmail": "Chưa có email",
+  "account.overview": "Tóm tắt tài khoản",
   "account.pageTitle": "Tài khoản",
   "account.profile.description": "Tên Localman và Tunelo hiển thị cho bạn.",
   "account.profile.empty": "Chưa có tên hiển thị, nên ứng dụng hiện @{username}.",
@@ -1105,6 +1122,10 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in vi 
   "account.signIn.title": "Cách đăng nhập",
   "account.signIn.unlink": "Huỷ liên kết {provider}",
   "account.signOut": "Đăng xuất",
+  "account.stat.apps": "Ứng dụng được cấp quyền",
+  "account.stat.devices": "Thiết bị",
+  "account.stat.sessions": "Phiên đang mở",
+  "account.stat.signIn": "Cách đăng nhập",
   "account.telegram.description": "Thông báo bảo mật của tài khoản, gửi tới chat Telegram của bạn.",
   "account.telegram.empty": "Liên kết để nhận thông báo bảo mật của tài khoản. Telegram không dùng để đăng nhập.",
   "account.telegram.link": "Liên kết Telegram",
@@ -1113,6 +1134,7 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in vi 
   "account.telegram.statusLinked": "đã liên kết",
   "account.telegram.statusNone": "chưa liên kết",
   "account.telegram.statusOff": "đang tắt",
+  "account.telegram.title": "Telegram",
   "account.telegram.unlink": "Huỷ liên kết Telegram",
   "account.title": "Tài khoản hoandat",
   "admin.certificate.failed": "Chứng chỉ: lần cấp gần nhất lỗi ({error}); thử lại lúc {date}.",
@@ -1296,7 +1318,9 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in vi 
   "inactive.body": "Đăng nhập tại {host} chưa được thiết lập.",
   "inactive.title": "Chưa thiết lập",
   "layout.brand": "Tài khoản",
+  "layout.home": "Trang chủ",
   "layout.language": "Ngôn ngữ",
+  "layout.nav": "Điều hướng",
   "login.cancel": "Huỷ đăng nhập",
   "login.continueTo": "Để tiếp tục tới {app}.",
   "login.firstTime": "Lần đầu đăng nhập bằng Google hoặc GitHub sẽ tạo tài khoản hoandat mới.",
@@ -1421,7 +1445,9 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in zh-
   "account.group.account": "账号",
   "account.group.connections": "关联",
   "account.group.security": "安全",
+  "account.nav": "账号各部分",
   "account.noEmail": "尚无邮箱",
+  "account.overview": "账号概览",
   "account.pageTitle": "账号",
   "account.profile.description": "Localman 和 Tunelo 中显示的你的名字。",
   "account.profile.empty": "尚未设置显示名称，应用会显示 @{username}。",
@@ -1450,6 +1476,10 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in zh-
   "account.signIn.title": "登录方式",
   "account.signIn.unlink": "取消关联 {provider}",
   "account.signOut": "退出登录",
+  "account.stat.apps": "已授权的应用",
+  "account.stat.devices": "设备",
+  "account.stat.sessions": "已登录的会话",
+  "account.stat.signIn": "登录方式",
   "account.telegram.description": "账号的安全通知，发送到你的 Telegram 聊天。",
   "account.telegram.empty": "关联一个聊天以接收账号的安全通知。Telegram 不用于登录。",
   "account.telegram.link": "关联 Telegram",
@@ -1458,6 +1488,7 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in zh-
   "account.telegram.statusLinked": "已关联",
   "account.telegram.statusNone": "未关联",
   "account.telegram.statusOff": "已关闭",
+  "account.telegram.title": "Telegram",
   "account.telegram.unlink": "取消关联 Telegram",
   "account.title": "hoandat 账号",
   "admin.certificate.failed": "证书：上次签发失败（{error}）；将于 {date} 重试。",
@@ -1641,7 +1672,9 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in zh-
   "inactive.body": "{host} 的登录尚未设置。",
   "inactive.title": "尚未设置",
   "layout.brand": "账号",
+  "layout.home": "首页",
   "layout.language": "语言",
+  "layout.nav": "站点导航",
   "login.cancel": "取消登录",
   "login.continueTo": "以继续使用 {app}。",
   "login.firstTime": "首次使用 Google 或 GitHub 登录将创建新的 hoandat 账号。",

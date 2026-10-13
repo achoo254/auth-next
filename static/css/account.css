@@ -1,0 +1,253 @@
+/* /account — overview, section nav beside one column of cards, lists that
+   scroll inside their card. Colours come only from tokens.css; the cards
+   themselves are styled in app.css (shared with /admin and /claim). */
+
+/* overview: who is signed in, then one tile per list */
+.account-overview {
+	display: grid;
+	gap: var(--space-5);
+	padding: var(--space-5) var(--space-4);
+	background: radial-gradient(
+			ellipse at 0% 0%,
+			color-mix(in srgb, var(--c-primary) 12%, transparent),
+			transparent 60%
+		),
+		var(--c-surface);
+	box-shadow: var(--shadow-md);
+}
+@media (min-width: 480px) {
+	.account-overview {
+		padding: var(--space-6);
+	}
+}
+.account-overview-main {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: var(--space-4);
+}
+.account-avatar {
+	flex: none;
+	display: inline-grid;
+	place-items: center;
+	width: 64px;
+	height: 64px;
+	border-radius: var(--radius-full);
+	font-family: var(--font-mono);
+	font-size: 26px;
+	font-weight: 700;
+	color: var(--c-on-primary);
+	background: var(--c-primary-solid);
+	box-shadow: var(--shadow-glow-primary);
+}
+.account-overview-text {
+	flex: 1 1 180px;
+	min-width: 0;
+	display: grid;
+	gap: var(--space-1);
+	overflow-wrap: anywhere;
+}
+@media (max-width: 479px) {
+	.account-avatar {
+		width: 48px;
+		height: 48px;
+		font-size: 20px;
+	}
+	.account-overview-logout {
+		width: 100%;
+	}
+}
+.account-overview-title {
+	font-family: var(--font-mono);
+	font-weight: 700;
+	font-size: clamp(22px, 3vw, 28px);
+	line-height: 1.2;
+	letter-spacing: -0.01em;
+}
+.account-overview-name {
+	font-size: 15px;
+	color: var(--c-text-muted);
+}
+.account-overview-name b {
+	color: var(--c-text);
+}
+.account-stats {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: var(--space-3);
+}
+@media (min-width: 768px) {
+	.account-stats {
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+	}
+}
+.account-stat {
+	display: grid;
+	gap: var(--space-1);
+	height: 100%;
+	padding: var(--space-3) var(--space-4);
+	border: 1px solid var(--c-border-subtle);
+	border-radius: var(--radius-md);
+	background: var(--c-surface-subtle);
+	color: var(--c-text);
+	text-decoration: none;
+	transition: border-color var(--dur-fast) var(--ease-standard),
+		background-color var(--dur-fast) var(--ease-standard);
+}
+.account-stat:hover {
+	border-color: color-mix(in srgb, var(--c-primary) 55%, var(--c-border));
+	background: color-mix(in srgb, var(--c-primary) 6%, var(--c-surface));
+}
+.account-stat-value {
+	font-family: var(--font-mono);
+	font-size: 24px;
+	font-weight: 700;
+	line-height: 1.1;
+}
+.account-stat-label {
+	font-size: 13px;
+	color: var(--c-text-muted);
+}
+
+/* section nav + one column of cards */
+.account-layout {
+	display: grid;
+	gap: var(--space-5);
+	min-width: 0;
+}
+.account-sections {
+	display: grid;
+	gap: var(--space-6);
+	min-width: 0;
+}
+.account-stack {
+	display: grid;
+	gap: var(--space-4);
+	min-width: 0;
+}
+.account-nav {
+	min-width: 0;
+}
+.account-nav-group {
+	display: none;
+}
+.account-nav-list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+.account-nav-link {
+	display: flex;
+	align-items: center;
+	gap: var(--space-2);
+	min-height: 40px;
+	padding: 0 var(--space-3);
+	border-radius: var(--radius-md);
+	font-size: 14px;
+	font-weight: 500;
+	color: var(--c-text-muted);
+	text-decoration: none;
+	white-space: nowrap;
+	transition: background-color var(--dur-fast) var(--ease-standard),
+		color var(--dur-fast) var(--ease-standard);
+}
+.account-nav-link:hover {
+	color: var(--c-text);
+	background: color-mix(in srgb, var(--c-text) 6%, transparent);
+}
+.account-nav-link .icon {
+	flex: none;
+	width: 18px;
+	height: 18px;
+	color: var(--c-primary);
+}
+
+/* phones and tablets: the nav is one row of links that scrolls sideways */
+@media (max-width: 959px) {
+	.account-nav {
+		display: flex;
+		gap: var(--space-2);
+		overflow-x: auto;
+		padding-bottom: var(--space-1);
+		scrollbar-width: thin;
+	}
+	.account-nav-list {
+		display: contents;
+	}
+	.account-nav-link {
+		border: 1px solid var(--c-border);
+		border-radius: var(--radius-full);
+		background: var(--c-surface);
+	}
+}
+
+/* wide screens: the nav is a sticky column beside the cards */
+@media (min-width: 960px) {
+	.account-layout {
+		grid-template-columns: 220px minmax(0, 1fr);
+		align-items: start;
+		gap: var(--space-6);
+	}
+	.account-nav {
+		position: sticky;
+		top: calc(var(--topbar-h) + var(--space-5));
+		display: grid;
+		gap: var(--space-1);
+	}
+	.account-nav-group {
+		display: block;
+		padding: var(--space-3) var(--space-3) var(--space-1);
+		font-family: var(--font-mono);
+		font-size: 11px;
+		font-weight: 700;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--c-text-muted);
+	}
+	.account-nav-group:first-child {
+		padding-top: 0;
+	}
+}
+
+/* long lists scroll inside their card; shadows show there is more */
+.item-scroll {
+	max-height: min(26rem, 60vh);
+	overflow-y: auto;
+	overscroll-behavior: contain;
+	margin-inline: calc(-1 * var(--space-2));
+	padding-inline: var(--space-2);
+	border-radius: var(--radius-sm);
+	background: linear-gradient(var(--c-surface) 30%, transparent) top / 100%
+			var(--space-6) no-repeat local,
+		linear-gradient(transparent, var(--c-surface) 70%) bottom / 100%
+			var(--space-6) no-repeat local,
+		radial-gradient(
+				farthest-side at 50% 0,
+				color-mix(in srgb, var(--c-text) 16%, transparent),
+				transparent
+			)
+			top / 100% var(--space-2) no-repeat scroll,
+		radial-gradient(
+				farthest-side at 50% 100%,
+				color-mix(in srgb, var(--c-text) 16%, transparent),
+				transparent
+			)
+			bottom / 100% var(--space-2) no-repeat scroll;
+}
+.item-scroll .item-row:first-child {
+	padding-top: var(--space-3);
+}
+
+/* the profile form keeps a readable width inside a wide card */
+.account-card-body .auth-form {
+	max-width: 32rem;
+}
+
+/* a row keeps its action on the right while there is room */
+.account-card .item-row > .inline-form,
+.account-card .item-row > .btn {
+	flex: none;
+}

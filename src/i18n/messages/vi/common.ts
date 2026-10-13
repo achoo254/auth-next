@@ -12,6 +12,8 @@ export const viCommon: Translation<typeof enCommon> = {
 	"common.tooManyRequests": "Quá nhiều yêu cầu. Thử lại sau ít phút.",
 	"layout.brand": "Tài khoản",
 	"layout.language": "Ngôn ngữ",
+	"layout.nav": "Điều hướng",
+	"layout.home": "Trang chủ",
 	"client.external": "Ứng dụng bên ngoài",
 	"client.quoted": "“{name}”",
 	"client.externalNamed": "{name} (ứng dụng bên ngoài)",
