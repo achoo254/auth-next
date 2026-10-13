@@ -51,6 +51,8 @@ Bản đầu tiên có tenant deploy theo thứ tự này (lệnh trên server c
 
 Lùi trước khi có tenant thứ hai: deploy lại commit trước (code cũ tạo lại chỉ mục toàn cục, vẫn đúng khi chỉ có một tenant). Sau khi có tenant thứ hai chỉ sửa tiến hoặc tạm `suspended` tenant mới (ADR 0006 mục 4): code cũ không tạo lại được chỉ mục unique toàn cục và sẽ crash-loop.
 
+Đã chạy trên production 13/10/2026 (commit `7ae6161`, backup trước đó `auth-20261013-141933`): server gắn 126 document cũ, `backfill --dry-run` ra 0 chưa gắn ở mọi collection.
+
 ## Phục vụ tenant khác (ADR 0006)
 
 Mặc định IdP chỉ phục vụ tenant `hoandat.com`. Bật sổ tenant bằng cặp env (đặt cả hai hoặc không đặt):
@@ -72,6 +74,8 @@ Nhận domain (`/claim` trên issuer chính) mở khi có `SERVICE_IPV4`; thêm:
 | `CLAIM_MIN_AVAILABLE_MB` | không nhận domain mới khi `MemAvailable` dưới ngưỡng này, mặc định 300 |
 | `PROVISIONER_PUBLIC_KEY_PATH` | PEM public key RSA của provisioner (phase 04); thiếu thì owner chưa lưu được token Cloudflare |
 
+**Trạng thái production (13/10/2026):** đã đặt `TENANT_SECRETS_KEY` (`k1`), `APP_CLIENT_SECRET_KEY`, `INTERNAL_API_CREDENTIALS` (ba vai), `CLAIM_BLOCKED_DOMAINS=inetdev.io.vn,inet.vn,hoandat.io.vn`, `PROVISIONER_PUBLIC_KEY_PATH` (bản `.env` trước đó: `.env.bak-261013-142129`). **Chưa** đặt `SERVICE_IPV4`: `/claim` đóng tới khi nghiệm thu bằng một domain thử. Khoá của `localman-web`/`tunelo-web` đã chép vào `.env` của Localman và Tunelo. Backup khoá ra ngoài server **chưa làm**.
+
 **Backup khoá (bắt buộc trước khi có tenant thứ hai):** chép `TENANT_SECRETS_KEY` vào thư mục secret ngoài server (mục "Nơi lưu secret"). Mất khoá thì mọi tenant mất khoá ký, OAuth và bot; backup database không đủ để khôi phục.
 
 **Xoay `TENANT_SECRETS_KEY`:** thêm khoá mới **lên đầu** (`k2:<mới>,k1:<cũ>`), restart; khi khởi động IdP niêm phong lại mọi secret còn mang khoá cũ (log `Tenant secrets re-sealed` với số lượng). Restart thêm một lần: không còn log đó nghĩa là đã xong, lúc này mới bỏ `k1`.
@@ -89,6 +93,8 @@ Chứng chỉ của tenant do provisioner cấp (root, systemd timer 5 phút), k
 3. **Backup private key**: chép `/etc/hoandat-tenant-provisioner/key.pem` vào thư mục secret ngoài server (mục "Nơi lưu secret"). Mất khoá thì token DNS đã lưu không mở được nữa: owner phải nhập lại token.
 4. nginx (báo user trước, cấu hình dùng chung): kiểm trước `nginx -T | grep -nE 'server_name\s+[^;]*~|default_server'` (block regex hay default server có sẵn có thể bị block tenant cạnh tranh: giữa các regex, regex đầu tiên thắng), rồi chép `infra/nginx/tenants-http.conf` thành `/etc/nginx/conf.d/00-tenants-http.conf`, `tenants-acme.conf` và `tenant-auth.conf` vào `/etc/nginx/conf.d/`, `nginx -t`, rồi `systemctl reload nginx`. Kiểm mọi host đang phục vụ vẫn trả như trước (block cụ thể luôn thắng block regex). Block tenant của Localman và Tunelo nằm ở repo `localman-next`.
 5. Thử với một domain thử ở Let's Encrypt staging (`PROVISIONER_ACME=staging`, mặc định); chạy tay `systemctl start hoandat-tenant-provisioner.service`, xem `journalctl -u hoandat-tenant-provisioner`. Đạt thì đổi `PROVISIONER_ACME=production`, xoá **cả hai** chứng chỉ staging (với `C='--config-dir /etc/letsencrypt-tenants --work-dir /etc/letsencrypt-tenants/work --logs-dir /etc/letsencrypt-tenants/logs'`: `flock /etc/letsencrypt-tenants/.lock certbot delete $C --cert-name <d>` và `... --cert-name wildcard.<d>`; còn lineage staging thì `--keep-until-expiring` sẽ giữ nguyên nó), đặt lại trạng thái chứng chỉ của tenant về `pending` và kiểm `certbot renew --dry-run $C`.
+
+**Trạng thái production (13/10/2026):** đã cài (bước 1, 2, 4), `PROVISIONER_ACME=staging`, `PROVISIONER_BLOCKED_DOMAINS=hoandat.com,inetdev.io.vn,inet.vn,hoandat.io.vn`; ba file nginx tenant đã chép vào `conf.d`, mọi host đang phục vụ trả như trước. Bước 3 (backup private key) và 5 (thử domain ở staging) chưa làm.
 
 **Tạm dừng:** `systemctl stop hoandat-tenant-provisioner.timer` (hàng đợi vẫn giữ, chạy tiếp khi bật lại). **Gỡ tenant:** đặt `certificate.status` của tenant thành `removing` (qua `scripts/prod-mongosh.sh`, sau backup); lượt sau provisioner `certbot delete` hai chứng chỉ, xoá tệp credentials và báo `removed`. Provisioner tự từ chối domain không chuẩn, domain trong `PROVISIONER_BLOCKED_DOMAINS` và hostname mà `nginx -T` đã có block khác phục vụ.
 
