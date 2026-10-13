@@ -303,6 +303,7 @@ IdP phục vụ thêm tenant theo domain: tenant `<d>` có issuer `https://auth.
 | Endpoint | Trả |
 |---|---|
 | `GET /internal/tenants/lookup?host=<Host>` | `{ id, domain, displayName, issuer, status, resources, webApps, ownerSubs }` (`ownerSubs`: tài khoản trong tenant liên kết đúng danh tính owner, để app cho họ quyền quản trị; rỗng với tenant chính) cho mọi host của tenant (`auth.`, `localman.`, `<x>.localman.`, `tunnel.`, `<x>.tunnel.`); `404` khi không có tenant đang phục vụ (tenant bị đình chỉ cũng 404) |
+| `GET /internal/tenants/<id>` | cùng nội dung với lookup theo Host, cho việc nền của app chỉ có `tenantId` (job, hàng đợi); `404` khi tenant không còn phục vụ |
 | `GET /internal/tenants/<id>/jwks` | JWKS công khai của tenant |
 | `GET /internal/tenants/<id>/openid-configuration` | discovery của tenant, đúng như `https://auth.<d>/.well-known/openid-configuration` |
 

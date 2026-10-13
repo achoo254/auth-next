@@ -40,7 +40,7 @@ export interface InternalApiDependencies {
 
 /**
  * The internal API, on its own loopback listener (never behind nginx):
- * tenant lookup by Host, each tenant's JWKS and discovery for Localman and
+ * tenant lookup by Host or id, each tenant's JWKS and discovery for Localman and
  * Tunelo (so they never trust a tenant's public DNS for keys), and the
  * certificate queue for the provisioner. No route returns a secret.
  */
@@ -109,6 +109,21 @@ export function createInternalApi(deps: InternalApiDependencies): Express {
 					primaryTenantId: deps.primary.tenant.id,
 				}),
 			);
+		} catch (error) {
+			next(error);
+		}
+	});
+
+	// After `/lookup`, which this pattern would otherwise take.
+	app.get("/internal/tenants/:id", apps, async (req, res, next) => {
+		try {
+			const found = await servingTenant(routeParam(req, "id"));
+			if (!found) {
+				res.status(404).json({ error: "unknown_tenant" });
+				return;
+			}
+			const primaryTenantId = deps.primary.tenant.id;
+			res.json(await tenantSummary(found.tenant, { ...deps, primaryTenantId }));
 		} catch (error) {
 			next(error);
 		}

@@ -183,6 +183,27 @@ describe("internal API", () => {
 		).toBe(404);
 	});
 
+	it("finds a serving tenant by id, as background work needs", async () => {
+		const byId = (id: string) =>
+			fetch(`${server.internalOrigin}/internal/tenants/${id}`, {
+				headers: localman,
+			});
+		expect(await json(await byId(acme._id))).toMatchObject({
+			id: acme._id,
+			domain: "acme.example.org",
+			resources: { localman: "https://localman.acme.example.org" },
+		});
+		expect(await json(await byId("primary"))).toMatchObject({
+			id: "primary",
+			ownerSubs: [],
+		});
+		expect((await byId("ten_missing")).status).toBe(404);
+		expect(
+			(await fetch(`${server.internalOrigin}/internal/tenants/${acme._id}`))
+				.status,
+		).toBe(401);
+	});
+
 	it("serves a tenant's public keys and discovery", async () => {
 		const jwks = await json(
 			await fetch(
