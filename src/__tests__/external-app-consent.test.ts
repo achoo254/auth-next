@@ -19,6 +19,8 @@ import { createAccessTokenVerifier } from "./helpers/verify-access-token.js";
 
 /** Claude Code listens on a random localhost port for the callback. */
 const MCP_REDIRECT = "http://localhost:33422/callback";
+/** A web app's callback: the code leaves the user's machine. */
+const WEB_REDIRECT = "https://agent.example.test/callback";
 let idp: TestIdp;
 
 beforeAll(async () => {
@@ -29,11 +31,14 @@ afterAll(async () => {
 	await idp?.close();
 });
 
-async function registerMcpClient(name: string): Promise<client.Configuration> {
+async function registerMcpClient(
+	name: string,
+	redirect = MCP_REDIRECT,
+): Promise<client.Configuration> {
 	const registered = await client.dynamicClientRegistration(
 		new URL(idp.issuer),
 		{
-			redirect_uris: [MCP_REDIRECT],
+			redirect_uris: [redirect],
 			token_endpoint_auth_method: "none",
 			grant_types: ["authorization_code", "refresh_token"],
 			client_name: name,
@@ -49,11 +54,14 @@ async function registerMcpClient(name: string): Promise<client.Configuration> {
 	);
 }
 
-async function authorizationUrl(config: client.Configuration) {
+async function authorizationUrl(
+	config: client.Configuration,
+	redirect = MCP_REDIRECT,
+) {
 	const verifier = client.randomPKCECodeVerifier();
 	const state = client.randomState();
 	const url = client.buildAuthorizationUrl(config, {
-		redirect_uri: MCP_REDIRECT,
+		redirect_uri: redirect,
 		scope: "mock:read",
 		resource: RESOURCES.localmanMcp,
 		code_challenge: await client.calculatePKCECodeChallenge(verifier),
@@ -64,12 +72,12 @@ async function authorizationUrl(config: client.Configuration) {
 }
 
 /** Opens the consent page of `name` in a signed-in browser. */
-async function consentPageFor(name: string) {
+async function consentPageFor(name: string, redirect = MCP_REDIRECT) {
 	const account = await createTestAccount(repositoryOf(idp));
 	const browser = await signedInBrowser(idp, account);
-	const config = await registerMcpClient(name);
-	const { url, checks } = await authorizationUrl(config);
-	const { response } = await browser.navigate(url, {}, MCP_REDIRECT);
+	const config = await registerMcpClient(name, redirect);
+	const { url, checks } = await authorizationUrl(config, redirect);
+	const { response } = await browser.navigate(url, {}, redirect);
 	const page = await response.text();
 	const uid = /\/interaction\/([\w-]+)/.exec(response.url)?.[1];
 	if (!uid) throw new Error(`no consent page: ${response.status}`);
@@ -88,8 +96,8 @@ describe("consent for an app registered through DCR", () => {
 		expect(page).toContain(
 			'<code data-id="consent-redirect-host">localhost:33422</code>',
 		);
-		// "localman" in the name reads like ours: the strong warning says so.
-		expect(page).toContain('data-id="consent-lookalike-warning"');
+		// "localman" reads like ours, but the code only reaches this machine.
+		expect(page).not.toContain('data-id="consent-lookalike-warning"');
 
 		const back = await submitForm(
 			browser,
@@ -132,8 +140,17 @@ describe("consent for an app registered through DCR", () => {
 		);
 	});
 
+	it("warns hard on a lookalike name that returns to a website", async () => {
+		const { page } = await consentPageFor("Claude (localman)", WEB_REDIRECT);
+		expect(page).toContain(shown("consent.externalNotice"));
+		expect(page).toContain(shown("consent.lookalikeWarning"));
+		expect(page).toContain(
+			'<code data-id="consent-redirect-host">agent.example.test</code>',
+		);
+	});
+
 	it("registers a Cyrillic lookalike but warns hard on consent", async () => {
-		const { page } = await consentPageFor("Tun\u0435lo");
+		const { page } = await consentPageFor("Tun\u0435lo", WEB_REDIRECT);
 		expect(page).toContain(shown("consent.externalNotice"));
 		expect(page).toContain(shown("consent.lookalikeWarning"));
 		expect(page).toContain(

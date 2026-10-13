@@ -13,7 +13,7 @@ export const enConsent = {
 	"consent.externalNotice":
 		"External app, not published by {brandDomain}. The app chose its own name and {brand} doesn't check who is behind it. Only allow it if you just connected it yourself (for example a coding agent using MCP).",
 	"consent.lookalikeWarning":
-		"This app's name looks like a {brandDomain} product, but it isn't one. That's only expected when you just added Localman MCP to a coding agent on your own machine (then the name contains localman and you're sent back to localhost or 127.0.0.1). Otherwise, deny.",
+		"This app's name looks like a {brandDomain} product, but it isn't one, and it sends you back to a website rather than to your own machine. Only allow it if you recognize the address above as the app you just connected yourself; otherwise, deny.",
 	"consent.credentialsWarning":
 		"Lets the app create new access keys and secrets for you. Only allow apps you trust.",
 	"scope.openid": "Know who you are (your {brand} account ID)",

@@ -73,11 +73,16 @@ function stringList(value: unknown): string[] {
 		: [];
 }
 
+/** True for the hosts a native app listens on for its OAuth callback. */
+export function isLoopbackHostname(hostname: string): boolean {
+	return LOOPBACK_HOSTS.has(hostname);
+}
+
 function isAllowedRedirect(uri: string): boolean {
 	const parsed = URL.parse(uri);
 	if (!parsed) return false;
 	if (parsed.protocol === "https:") return true;
-	return parsed.protocol === "http:" && LOOPBACK_HOSTS.has(parsed.hostname);
+	return parsed.protocol === "http:" && isLoopbackHostname(parsed.hostname);
 }
 
 function rejectOutside(

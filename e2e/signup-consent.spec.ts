@@ -20,8 +20,10 @@ test("sign up with Google, consent and return to the client; then sign in again"
 	);
 	await signUp(page, user);
 
-	// 2. Consent: a DCR client is always labelled as external, its name is
-	// quoted, and a name that reads like ours gets the stronger warning.
+	// 2. Consent: a DCR client is always labelled as external and its name is
+	// quoted. Its name reads like ours, but it returns to loopback (only the
+	// user's own machine gets the code), so there is no red warning: that one
+	// is for such names sending the code to a website.
 	await expect(
 		page.getByRole("heading", {
 			name: "Cho phép một ứng dụng bên ngoài dùng tài khoản hoandat của bạn",
@@ -38,9 +40,7 @@ test("sign up with Google, consent and return to the client; then sign in again"
 	).toContainText("không do hoandat.com phát hành");
 	await expect(
 		page.locator('[data-id="consent-lookalike-warning"]'),
-	).toContainText(
-		"Tên ứng dụng giống sản phẩm của hoandat.com nhưng không phải",
-	);
+	).toHaveCount(0);
 	await expect(page.locator('[data-id="consent-redirect-host"]')).toHaveText(
 		"127.0.0.1:4591",
 	);

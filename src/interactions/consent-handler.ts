@@ -4,6 +4,7 @@ import { auditContext, auditLabel } from "../audit/audit-context.js";
 import { clientIp } from "../http/client-ip.js";
 import { isStaticClientId } from "../oidc/clients.js";
 import { imitatesFirstPartyName } from "../oidc/first-party-name.js";
+import { isLoopbackHostname } from "../oidc/registration-policy.js";
 import { GRANT_IDLE_SECONDS } from "../oidc/sliding-grants.js";
 import type { AppServices } from "../services.js";
 import { sendPage } from "../ui/send-page.js";
@@ -20,13 +21,13 @@ import {
 } from "./interaction-helpers.js";
 
 /**
- * Host of the redirect_uri this authorization request returns to; a client
- * with a single registered redirect URI may leave the parameter out.
+ * The redirect_uri this authorization request returns to; a client with a
+ * single registered redirect URI may leave the parameter out.
  */
-function redirectHostOf(
+function redirectUriOf(
 	interaction: Interaction,
 	registered: readonly string[] | undefined,
-): string | undefined {
+): URL | undefined {
 	const requested = interaction.params.redirect_uri;
 	const uri =
 		typeof requested === "string"
@@ -34,7 +35,7 @@ function redirectHostOf(
 			: registered?.length === 1
 				? registered[0]
 				: undefined;
-	return uri ? URL.parse(uri)?.host : undefined;
+	return uri ? (URL.parse(uri) ?? undefined) : undefined;
 }
 
 async function deviceCodeOf(services: AppServices, interaction: Interaction) {
@@ -158,6 +159,10 @@ export async function showConsent(
 	}
 	const clientName = client.clientName ?? clientId;
 	const external = !isStaticClientId(clientId);
+	const redirect = redirectUriOf(interaction, client.redirectUris);
+	// A loopback redirect hands the code only to the machine of whoever clicks
+	// Allow, so a lookalike name there cannot phish; elsewhere it can.
+	const loopback = redirect ? isLoopbackHostname(redirect.hostname) : false;
 	sendPage(
 		res,
 		renderConsent({
@@ -169,8 +174,9 @@ export async function showConsent(
 			external,
 			imitatesFirstParty:
 				external &&
+				!loopback &&
 				imitatesFirstPartyName(clientName, services.tenant.displayName),
-			redirectHost: redirectHostOf(interaction, client.redirectUris),
+			redirectHost: redirect?.host,
 			scopes: requestedScopes(interaction),
 			username: account.username,
 		}),

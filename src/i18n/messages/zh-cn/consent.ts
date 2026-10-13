@@ -14,7 +14,7 @@ export const zhConsent: Translation<typeof enConsent> = {
 	"consent.externalNotice":
 		"外部应用，并非由 {brandDomain} 发布。应用名称由其自行填写，{brand} 不核实其背后是谁；仅当你刚刚亲自连接它时才允许（例如使用 MCP 的 coding agent）。",
 	"consent.lookalikeWarning":
-		"该应用名称看起来像 {brandDomain} 的产品，但并不是。只有当你刚在自己电脑上的 coding agent 中添加 Localman MCP 时才属正常（此时名称包含 localman，且你会被带回 localhost 或 127.0.0.1）；否则请拒绝。",
+		"该应用名称看起来像 {brandDomain} 的产品，但并不是，而且它会把你带回一个网站，而不是你自己的电脑。仅当你认出上面的地址属于你刚刚亲自连接的应用时才允许；否则请拒绝。",
 	"consent.credentialsWarning":
 		"允许该应用代你创建新的访问密钥和 secret。只授权给你信任的应用。",
 	"scope.openid": "知道你是谁（你的 {brand} 账号 ID）",

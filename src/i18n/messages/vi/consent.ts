@@ -16,7 +16,7 @@ export const viConsent: Translation<typeof enConsent> = {
 	"consent.externalNotice":
 		"Ứng dụng bên ngoài, không do {brandDomain} phát hành. Tên ứng dụng do chính nó tự khai và {brand} không kiểm tra ai đứng sau nó; chỉ cho phép nếu chính bạn vừa kết nối nó (ví dụ một coding agent dùng MCP).",
 	"consent.lookalikeWarning":
-		"Tên ứng dụng giống sản phẩm của {brandDomain} nhưng không phải. Điều này chỉ bình thường khi chính bạn vừa thêm Localman MCP vào một coding agent trên máy mình (khi đó tên có chữ localman và bạn được chuyển về localhost hoặc 127.0.0.1); nếu không, hãy từ chối.",
+		"Tên ứng dụng giống sản phẩm của {brandDomain} nhưng không phải, và nó chuyển bạn về một website chứ không phải máy của bạn. Chỉ cho phép nếu bạn nhận ra địa chỉ ở trên là của ứng dụng chính bạn vừa kết nối; nếu không, hãy từ chối.",
 	"consent.credentialsWarning":
 		"Cho phép tạo khoá truy cập và secret mới thay bạn. Chỉ cấp cho ứng dụng bạn tin tưởng.",
 	"scope.openid": "Biết bạn là ai (mã định danh tài khoản {brand})",
