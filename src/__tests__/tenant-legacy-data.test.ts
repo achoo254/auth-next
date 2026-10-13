@@ -11,7 +11,10 @@ import {
 	TENANT_COLLECTIONS,
 	backfillTenantId,
 } from "../tenants/tenant-collections.js";
-import { migrateToTenants } from "../tenants/tenant-migration.js";
+import {
+	UntaggedDataError,
+	migrateToTenants,
+} from "../tenants/tenant-migration.js";
 import { openTestDb } from "./helpers/test-accounts.js";
 import {
 	OTHER_TEST_TENANT,
@@ -141,6 +144,27 @@ describe("startup migration of pre-tenant data", () => {
 				providers: { google: "g-untagged" },
 			}),
 		).resolves.toMatchObject({ tenantId: OTHER_TEST_TENANT.id });
+	});
+
+	it("never gives untagged documents to the primary tenant once other tenants exist", async () => {
+		await db.collection("tenants").insertOne({
+			_id: "ten_existing" as never,
+			domain: "existing.example.org",
+			status: "active",
+		});
+		await db.collection("accounts").insertOne({
+			_id: "acc_stray" as never,
+			username: "stray",
+			providers: {},
+		});
+		await expect(migrateToTenants(db, logger)).rejects.toThrow(
+			UntaggedDataError,
+		);
+		expect(
+			(await db.collection("accounts").findOne({ _id: "acc_stray" as never }))
+				?.tenantId,
+		).toBeUndefined();
+		await db.collection("accounts").deleteOne({ _id: "acc_stray" as never });
 	});
 
 	it("is idempotent", async () => {

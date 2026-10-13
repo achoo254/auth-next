@@ -308,9 +308,9 @@ IdP phục vụ thêm tenant theo domain: tenant `<d>` có issuer `https://auth.
 
 App lấy JWKS và discovery của tenant qua API này, **không** phân giải `auth.<d>` qua DNS công khai (domain của tenant do người khác giữ DNS). Cache theo tenant, dùng bản cũ khi IdP lỗi; chỉ cache âm khi IdP trả `404`.
 
-**Secret client của tenant mới** không được cấp qua API nào: app tự tính `base64url(HMAC-SHA256(APP_CLIENT_SECRET_KEY, "<tenantId>:<clientId>"))` (khoá chung với IdP, `clientId` là `localman-web` hoặc `tunelo-web`). Xoay khoá là xoay mọi secret suy ra cùng lúc.
+**Secret client của tenant mới** không được cấp qua API nào: app tự tính `base64url(HMAC-SHA256(<khoá của app>, "<tenantId>"))`. Khoá của app do IdP suy ra từ khoá gốc và giao một lần (`node --env-file=.env dist/app-client-key.mjs localman-web <file>`, tương tự `tunelo-web`); Localman chỉ giữ khoá của `localman-web`, Tunelo chỉ giữ khoá của `tunelo-web`. Xoay khoá gốc là xoay mọi secret suy ra cùng lúc.
 
-**Audit:** sự kiện của tenant `<d>` gửi tới `https://localman.<d>/internal/audit-events`, ký bằng khoá của tenant với `iss = https://auth.<d>` và `aud` là URL đó; cùng một bộ Basic credentials cho mọi tenant (`AUDIT_CLIENT_ID`/`AUDIT_CLIENT_SECRET`). Localman phân biệt tenant bằng `iss` và xác minh bằng JWKS lấy qua API nội bộ.
+**Audit:** sự kiện của mọi tenant gửi tới cùng một intake `AUDIT_EVENTS_URL` (mục 10), với cùng Basic credentials và `aud` là URL đó; mỗi SET ký bằng khoá của tenant với `iss = https://auth.<d>`. Localman phân biệt tenant bằng `iss` và xác minh bằng JWKS của tenant lấy qua API nội bộ (tenant chính: JWKS công khai như cũ).
 
 ## 12. Chưa làm ở IdP
 

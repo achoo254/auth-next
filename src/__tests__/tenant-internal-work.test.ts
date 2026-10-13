@@ -1,11 +1,12 @@
 import { generateKeyPairSync } from "node:crypto";
 import { decodeJwt, decodeProtectedHeader } from "jose";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import {
-	auditIntakeUrl,
-	createAuditDeliveryResolver,
-} from "../audit/audit-delivery.js";
+import { createAuditDeliveryResolver } from "../audit/audit-delivery.js";
+import { AuditDispatcher } from "../audit/audit-dispatcher.js";
 import type { AuditOutboxDocument } from "../audit/audit-outbox.js";
+import { AuditOutbox } from "../audit/audit-outbox.js";
+import { allTenantsAuditQueue } from "../audit/audit-queue.js";
+import { createLogger } from "../logger.js";
 import { generateSigningJwk } from "../oidc/jwks.js";
 import { certificateBackoffMs } from "../tenants/internal-certificates.js";
 import type { TenantDocument } from "../tenants/tenant-registry.js";
@@ -46,7 +47,7 @@ function event(tenantId: string): AuditOutboxDocument {
 }
 
 describe("audit delivery per tenant", () => {
-	it("signs each event as its own tenant and sends it to its own Localman", async () => {
+	it("signs each event as its own tenant, always to the one intake", async () => {
 		const primaryJwks = { keys: [await generateSigningJwk()] };
 		const acmeJwks = { keys: [await generateSigningJwk()] };
 		let suspended = false;
@@ -70,16 +71,97 @@ describe("audit delivery per tenant", () => {
 			"https://localman.hoandat.com/internal/audit-events",
 		);
 		const theirs = await resolve(event(acme._id));
-		expect(theirs?.config.url).toBe(auditIntakeUrl("acme.example.org"));
+		// Never a URL under the tenant's domain: its owner controls that DNS.
+		expect(theirs?.config.url).toBe(
+			"https://localman.hoandat.com/internal/audit-events",
+		);
 		expect(theirs?.config.clientId).toBe("hoandat-auth");
 		const token = (await theirs?.sign(event(acme._id))) ?? "";
 		expect(decodeJwt(token)).toMatchObject({
 			iss: "https://auth.acme.example.org",
-			aud: "https://localman.acme.example.org/internal/audit-events",
+			aud: "https://localman.hoandat.com/internal/audit-events",
 		});
 		expect(decodeProtectedHeader(token).kid).toBe(acmeJwks.keys[0]?.kid);
 		suspended = true;
 		expect(await resolve(event(acme._id))).toBeUndefined();
+	});
+});
+
+describe("audit dispatch across tenants", () => {
+	it("keeps delivering the primary tenant's events when another tenant's signer fails", async () => {
+		const queue = allTenantsAuditQueue(server.db);
+		for (let index = 0; index < 6; index += 1) {
+			await new AuditOutbox(
+				server.db,
+				{ id: "ten_broken" },
+				createLogger("silent"),
+			).record("login.succeeded", `acc_broken_${index}`, {
+				methods: ["google"],
+			});
+		}
+		await new AuditOutbox(
+			server.db,
+			{ id: "primary" },
+			createLogger("silent"),
+		).record("login.succeeded", "acc_primary", { methods: ["google"] });
+		const delivered: string[] = [];
+		const dispatcher = new AuditDispatcher({
+			outbox: queue,
+			logger: createLogger("silent"),
+			deliveryFor: async (item) => {
+				if (item.tenantId === "ten_broken")
+					throw new Error("secret no longer opens");
+				return {
+					config: {
+						url: "https://intake.test/audit",
+						clientId: "c",
+						clientSecret: "s".repeat(32),
+					},
+					sign: async () => "signed",
+				};
+			},
+			fetch: async (_url, init) => {
+				delivered.push(
+					String(new Headers(init?.headers).get("idempotency-key")),
+				);
+				return new Response(null, { status: 202 });
+			},
+		});
+		const counts = await dispatcher.dispatchDue();
+		expect(counts).toEqual({ delivered: 1, failed: 6 });
+		expect(delivered).toHaveLength(1);
+		const broken = await server.db
+			.collection("audit_outbox")
+			.find({ tenantId: "ten_broken" })
+			.toArray();
+		expect(
+			broken.every(
+				(item) =>
+					item.attempts === 1 && item.lastError === "signer unavailable",
+			),
+		).toBe(true);
+	});
+});
+
+describe("tenant secrets", () => {
+	it("re-seals secrets of an older key so the old key can be removed", async () => {
+		const { SecretKeyring } = await import("../tenants/secret-keyring.js");
+		const { TenantSecrets } = await import("../tenants/tenant-secrets.js");
+		const oldKey = { kid: "old", key: Buffer.alloc(32, 7) };
+		const newKey = { kid: "new", key: Buffer.alloc(32, 8) };
+		await new TenantSecrets(server.db, new SecretKeyring([oldKey])).put(
+			"ten_r",
+			"google",
+			"{}",
+		);
+		const rotated = new TenantSecrets(
+			server.db,
+			new SecretKeyring([newKey, oldKey]),
+		);
+		expect(await rotated.resealStale()).toBeGreaterThanOrEqual(1);
+		expect(await rotated.resealStale()).toBe(0);
+		const onlyNew = new TenantSecrets(server.db, new SecretKeyring([newKey]));
+		expect(await onlyNew.get("ten_r", "google")).toBe("{}");
 	});
 });
 

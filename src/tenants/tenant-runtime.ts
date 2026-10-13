@@ -5,7 +5,6 @@ import { createUpstreamsFrom } from "../accounts/upstream-client.js";
 import { createTenantApp } from "../app.js";
 import { AuditOutbox } from "../audit/audit-outbox.js";
 import type { Env } from "../config/env.js";
-import type { OAuthAppCredentials } from "../config/integrations-env.js";
 import type { Logger } from "../logger.js";
 import {
 	type SigningJwks,
@@ -17,6 +16,7 @@ import { type AppServices, createServices } from "../services.js";
 import { createTelegramBot } from "../telegram/bot-client.js";
 import { derivedClientSecrets } from "./app-client-secrets.js";
 import { envClientSecrets, envTenant } from "./env-tenant.js";
+import { parseOAuthApp, parseTelegramBot } from "./tenant-integrations.js";
 import type { TenantDocument } from "./tenant-registry.js";
 import { webAppsFor } from "./tenant-resources.js";
 import type { TenantSecrets } from "./tenant-secrets.js";
@@ -29,6 +29,8 @@ export interface TenantRuntime {
 	/** The tenant's own Express app (pages, provider); mounted per request. */
 	readonly app: Express;
 	readonly jwks: SigningJwks;
+	/** The registry `configVersion` it was built from (0 for the primary). */
+	readonly version: number;
 }
 
 /** The primary tenant (from the environment), built once and pinned. */
@@ -61,7 +63,13 @@ export function buildPrimaryRuntime(
 		logger,
 		accounts,
 	});
-	return { tenant, services, app: createTenantApp({ services, env }), jwks };
+	return {
+		tenant,
+		services,
+		app: createTenantApp({ services, env }),
+		jwks,
+		version: 0,
+	};
 }
 
 /** A registry tenant as the rest of the IdP sees it. */
@@ -83,19 +91,6 @@ export interface RuntimeFactoryDependencies {
 	readonly secrets: TenantSecrets;
 	/** `APP_CLIENT_SECRET_KEY`: derives the tenant's Localman/Tunelo secrets. */
 	readonly appClientSecretKey: string;
-}
-
-function parseCredentials(
-	value: string | undefined,
-): OAuthAppCredentials | undefined {
-	if (!value) return undefined;
-	const parsed: unknown = JSON.parse(value);
-	if (typeof parsed !== "object" || parsed === null) return undefined;
-	const clientId: unknown = Reflect.get(parsed, "clientId");
-	const clientSecret: unknown = Reflect.get(parsed, "clientSecret");
-	return typeof clientId === "string" && typeof clientSecret === "string"
-		? { clientId, clientSecret }
-		: undefined;
 }
 
 /**
@@ -146,7 +141,7 @@ export async function buildTenantRuntime(
 		accountStore: accounts,
 		logger,
 	});
-	const telegram = parseTelegram(await secrets.get(tenant.id, "telegram"));
+	const telegram = parseTelegramBot(await secrets.get(tenant.id, "telegram"));
 	const services = createServices({
 		env,
 		tenant,
@@ -156,8 +151,8 @@ export async function buildTenantRuntime(
 		accounts,
 		integrations: {
 			upstreams: createUpstreamsFrom(tenant.issuer, {
-				google: parseCredentials(await secrets.get(tenant.id, "google")),
-				github: parseCredentials(await secrets.get(tenant.id, "github")),
+				google: parseOAuthApp(await secrets.get(tenant.id, "google")),
+				github: parseOAuthApp(await secrets.get(tenant.id, "github")),
 			}),
 			telegram:
 				telegram &&
@@ -167,21 +162,11 @@ export async function buildTenantRuntime(
 				}),
 		},
 	});
-	return { tenant, services, app: createTenantApp({ services, env }), jwks };
-}
-
-function parseTelegram(
-	value: string | undefined,
-): { token: string; username: string; webhookSecret: string } | undefined {
-	if (!value) return undefined;
-	const parsed: unknown = JSON.parse(value);
-	if (typeof parsed !== "object" || parsed === null) return undefined;
-	const token: unknown = Reflect.get(parsed, "token");
-	const username: unknown = Reflect.get(parsed, "username");
-	const webhookSecret: unknown = Reflect.get(parsed, "webhookSecret");
-	return typeof token === "string" &&
-		typeof username === "string" &&
-		typeof webhookSecret === "string"
-		? { token, username, webhookSecret }
-		: undefined;
+	return {
+		tenant,
+		services,
+		app: createTenantApp({ services, env }),
+		jwks,
+		version: document.configVersion ?? 0,
+	};
 }

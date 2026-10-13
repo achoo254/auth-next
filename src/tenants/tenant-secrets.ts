@@ -1,4 +1,4 @@
-import type { Collection, Db } from "mongodb";
+import { type Collection, type Db, MongoServerError } from "mongodb";
 import {
 	type ProvisionerSealedValue,
 	type SealedValue,
@@ -74,13 +74,20 @@ export class TenantSecrets {
 		value: string,
 	): Promise<string> {
 		const sealed = this.keyring.seal(value, contextOf(tenantId, kind));
-		await this.secrets.updateOne(
-			{ _id: `${tenantId}:${kind}` },
-			{
-				$setOnInsert: { tenantId, kind, sealed, updatedAt: new Date() },
-			},
-			{ upsert: true },
-		);
+		try {
+			await this.secrets.updateOne(
+				{ _id: `${tenantId}:${kind}` },
+				{
+					$setOnInsert: { tenantId, kind, sealed, updatedAt: new Date() },
+				},
+				{ upsert: true },
+			);
+		} catch (error) {
+			// A concurrent first use inserted it; its value is the one to use.
+			if (!(error instanceof MongoServerError) || error.code !== 11000) {
+				throw error;
+			}
+		}
 		const stored = await this.get(tenantId, kind);
 		if (stored === undefined) throw new Error("Tenant secret vanished");
 		return stored;
@@ -96,6 +103,28 @@ export class TenantSecrets {
 		});
 		if (!document || document.forProvisioner) return undefined;
 		return this.keyring.open(document.sealed, contextOf(tenantId, kind));
+	}
+
+	/**
+	 * Re-seals every secret sealed with an older key of the ring (the IdP's
+	 * own; DNS tokens are the provisioner's). Run at startup, so after a new
+	 * key is put first and the IdP restarted once, the old key can go.
+	 * Returns how many were re-sealed.
+	 */
+	async resealStale(): Promise<number> {
+		let resealed = 0;
+		const cursor = this.secrets.find({ forProvisioner: { $ne: true } });
+		for await (const document of cursor) {
+			if (!this.keyring.isStale(document.sealed)) continue;
+			const context = contextOf(document.tenantId, document.kind);
+			const value = this.keyring.open(document.sealed, context);
+			const result = await this.secrets.updateOne(
+				{ _id: document._id, "sealed.kid": document.sealed.kid },
+				{ $set: { sealed: this.keyring.seal(value, context) } },
+			);
+			resealed += result.modifiedCount;
+		}
+		return resealed;
 	}
 
 	/** Seals the DNS API token for the provisioner; the IdP cannot read it back. */

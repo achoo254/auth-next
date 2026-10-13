@@ -38,6 +38,11 @@ export interface TenantDocument {
 	activatedAt?: Date;
 	suspendedAt?: Date;
 	suspendedReason?: string;
+	/**
+	 * Bumped by every change of settings or status; a runtime built for an
+	 * older version is rebuilt on the next request. Absent means 0.
+	 */
+	configVersion?: number;
 	/** Last periodic ownership check, and failures in a row since a success. */
 	ownershipCheckedAt?: Date;
 	ownershipFailures?: number;
@@ -71,18 +76,41 @@ export class TenantRegistry {
 		return (await this.tenants.findOne({ _id: id })) ?? undefined;
 	}
 
+	/** A tenant at, above or under `domain`: their hostnames would mix. */
+	async findOverlapping(domain: string): Promise<TenantDocument | undefined> {
+		const labels = domain.split(".");
+		const ancestors = labels.map((_, index) => labels.slice(index).join("."));
+		const escaped = domain.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+		return (
+			(await this.tenants.findOne({
+				$or: [
+					{ domain: { $in: ancestors } },
+					{ domain: { $regex: `\\.${escaped}$` } },
+				],
+			})) ?? undefined
+		);
+	}
+
+	/** Tenants owned by any of these identities (an account's linked ones). */
+	listByOwners(owners: readonly TenantOwner[]): Promise<TenantDocument[]> {
+		if (owners.length === 0) return Promise.resolve([]);
+		return this.tenants
+			.find({
+				$or: owners.map((owner) => ({
+					"owner.provider": owner.provider,
+					"owner.providerId": owner.providerId,
+				})),
+			})
+			.sort({ createdAt: -1 })
+			.limit(50)
+			.toArray();
+	}
+
 	/** Tenants holding a slot (claimed or active), primary excluded. */
 	countServing(): Promise<number> {
 		return this.tenants.countDocuments({
 			status: { $in: [...SERVING_STATUSES] },
 		});
-	}
-
-	/** Tenants whose domain ownership is re-checked periodically. */
-	listServing(): Promise<TenantDocument[]> {
-		return this.tenants
-			.find({ status: { $in: [...SERVING_STATUSES] } })
-			.toArray();
 	}
 
 	/** Tenants the provisioner should issue (or remove) a certificate for. */
@@ -103,11 +131,20 @@ export class TenantRegistry {
 		await this.tenants.insertOne(document);
 	}
 
+	/** Changes settings or status; the tenant's runtime is rebuilt. */
 	async update(
 		id: string,
-		set: Partial<Omit<TenantDocument, "_id" | "domain">>,
+		set: Partial<Omit<TenantDocument, "_id" | "domain" | "configVersion">>,
 	): Promise<void> {
-		await this.tenants.updateOne({ _id: id }, { $set: set });
+		await this.tenants.updateOne(
+			{ _id: id },
+			{ $set: set, $inc: { configVersion: 1 } },
+		);
+	}
+
+	/** Marks a change kept elsewhere (a sealed secret): rebuilds the runtime. */
+	async touch(id: string): Promise<void> {
+		await this.tenants.updateOne({ _id: id }, { $inc: { configVersion: 1 } });
 	}
 
 	/** Replaces the certificate state; undefined removes it (certificates gone). */
@@ -119,6 +156,20 @@ export class TenantRegistry {
 			{ _id: id },
 			certificate ? { $set: { certificate } } : { $unset: { certificate: "" } },
 		);
+	}
+
+	/** Serving tenants whose ownership was last checked before `before`. */
+	listDueForOwnershipCheck(before: Date): Promise<TenantDocument[]> {
+		return this.tenants
+			.find({
+				status: { $in: [...SERVING_STATUSES] },
+				$or: [
+					{ ownershipCheckedAt: { $exists: false } },
+					{ ownershipCheckedAt: { $lt: before } },
+				],
+			})
+			.limit(200)
+			.toArray();
 	}
 
 	/** Records an ownership check; returns the failures in a row after it. */

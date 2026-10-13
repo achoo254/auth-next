@@ -1,6 +1,6 @@
 import { constants, generateKeyPairSync, privateDecrypt } from "node:crypto";
 import { describe, expect, it } from "vitest";
-import { derivedClientSecrets } from "./app-client-secrets.js";
+import { appClientKey, derivedClientSecrets } from "./app-client-secrets.js";
 import {
 	SecretKeyring,
 	parseKeyring,
@@ -76,5 +76,20 @@ describe("derivedClientSecrets", () => {
 		);
 		expect(a.localmanWeb).not.toBe(a.tuneloWeb);
 		expect(a.localmanWeb).toMatch(/^[\w-]{43}$/);
+	});
+
+	it("lets each app compute only its own secrets from its own key", async () => {
+		const master = "m".repeat(32);
+		const { createHmac } = await import("node:crypto");
+		const asApp = (key: string, tenantId: string): string =>
+			createHmac("sha256", key).update(tenantId).digest("base64url");
+		const localmanKey = appClientKey(master, "localman-web");
+		expect(asApp(localmanKey, "ten_a")).toBe(
+			derivedClientSecrets(master, "ten_a").localmanWeb,
+		);
+		expect(asApp(localmanKey, "ten_a")).not.toBe(
+			derivedClientSecrets(master, "ten_a").tuneloWeb,
+		);
+		expect(localmanKey).not.toBe(appClientKey(master, "tunelo-web"));
 	});
 });

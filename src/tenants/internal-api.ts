@@ -1,4 +1,9 @@
-import express, { type Express, type Request } from "express";
+import express, {
+	type Express,
+	type NextFunction,
+	type Request,
+	type Response,
+} from "express";
 import { routeParam } from "../http/form.js";
 import type { Logger } from "../logger.js";
 import type { SigningJwks } from "../oidc/jwks.js";
@@ -85,6 +90,13 @@ export function createInternalApi(deps: InternalApiDependencies): Express {
 		if (primaryHosts.has(host.toLowerCase())) return primary;
 		for (const domain of tenantDomainCandidates(host)) {
 			if (domain === primary.domain) return primary;
+			// Nothing at, above or under the primary domain is a registry tenant.
+			if (
+				domain.endsWith(`.${primary.domain}`) ||
+				primary.domain.endsWith(`.${domain}`)
+			) {
+				continue;
+			}
 			const document: TenantDocument | undefined =
 				await deps.registry.findByDomain(domain);
 			if (document && SERVING_STATUSES.includes(document.status)) {
@@ -151,5 +163,26 @@ export function createInternalApi(deps: InternalApiDependencies): Express {
 	app.use((_req, res) => {
 		res.status(404).json({ error: "not_found" });
 	});
+	// JSON for every failure; logged without request data (bodies may hold
+	// provisioner reports, headers carry credentials).
+	app.use(
+		(error: unknown, _req: Request, res: Response, _next: NextFunction) => {
+			const status =
+				typeof error === "object" &&
+				error !== null &&
+				Reflect.get(error, "type") === "entity.parse.failed"
+					? 400
+					: 500;
+			if (status === 500) {
+				deps.logger.error(
+					{ error: error instanceof Error ? error.name : "error" },
+					"Internal API request failed",
+				);
+			}
+			res
+				.status(status)
+				.json({ error: status === 400 ? "invalid_request" : "server_error" });
+		},
+	);
 	return app;
 }

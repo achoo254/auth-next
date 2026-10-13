@@ -20,6 +20,8 @@ export interface RuntimeRegistryOptions {
 	/** The primary tenant, pinned: served for these Host values. */
 	readonly primary: TenantRuntime;
 	readonly primaryHosts: readonly string[];
+	/** The primary tenant's domain: no registry tenant may sit at, above or under it. */
+	readonly primaryDomain: string;
 	readonly registry: TenantRegistry;
 	readonly build: (document: TenantDocument) => Promise<TenantRuntime>;
 	/** TENANT_MAX_ACTIVE: registry tenants held in memory at most. */
@@ -40,7 +42,10 @@ export interface RuntimeRegistryOptions {
  */
 export class RuntimeRegistry {
 	private readonly runtimes = new Map<string, TenantRuntime>();
+	/** Builds in flight, by `<tenantId>:<configVersion>`. */
 	private readonly building = new Map<string, Promise<TenantRuntime>>();
+	/** Bumped by dispose, so a build that finishes afterwards is not kept. */
+	private readonly generations = new Map<string, number>();
 	private readonly unknownUntil = new Map<string, number>();
 	private readonly primaryHosts: ReadonlySet<string>;
 	private readonly now: () => number;
@@ -57,13 +62,17 @@ export class RuntimeRegistry {
 	}
 
 	async lookup(rawHost: string | undefined): Promise<RuntimeLookup> {
-		const host = rawHost?.toLowerCase();
+		const host = rawHost?.toLowerCase().replace(/\.$/, "");
 		if (!host) return { kind: "unknown" };
 		if (this.primaryHosts.has(host)) {
 			return { kind: "found", runtime: this.options.primary };
 		}
 		const domain = authDomainOf(host);
-		if (!domain || (this.unknownUntil.get(host) ?? 0) > this.now()) {
+		if (
+			!domain ||
+			overlaps(domain, this.options.primaryDomain) ||
+			(this.unknownUntil.get(host) ?? 0) > this.now()
+		) {
 			return { kind: "unknown" };
 		}
 		const document = await this.options.registry.findByDomain(domain);
@@ -71,12 +80,16 @@ export class RuntimeRegistry {
 			this.rememberUnknown(host);
 			return { kind: "unknown" };
 		}
+		const version = document.configVersion ?? 0;
 		const cached = this.runtimes.get(document._id);
-		if (cached) return { kind: "found", runtime: cached };
-		if (
-			!this.building.has(document._id) &&
-			this.runtimes.size + this.building.size >= this.options.maxActive
-		) {
+		if (cached && cached.version >= version) {
+			return { kind: "found", runtime: cached };
+		}
+		const buildingIds = new Set(
+			[...this.building.keys()].map((key) => key.split(":")[0]),
+		);
+		const slots = new Set([...this.runtimes.keys(), ...buildingIds]);
+		if (!slots.has(document._id) && slots.size >= this.options.maxActive) {
 			this.options.logger.warn(
 				{ tenantId: document._id, maxActive: this.options.maxActive },
 				"Tenant runtime refused: TENANT_MAX_ACTIVE reached",
@@ -86,23 +99,34 @@ export class RuntimeRegistry {
 		return { kind: "found", runtime: await this.buildOnce(document) };
 	}
 
-	/** Drops a suspended tenant's runtime; its next request finds no tenant. */
+	/**
+	 * Drops a tenant's runtime (suspended, or changed and to be rebuilt);
+	 * a build still running for it is not kept either.
+	 */
 	dispose(tenantId: string): void {
 		this.runtimes.delete(tenantId);
+		this.generations.set(tenantId, (this.generations.get(tenantId) ?? 0) + 1);
 		this.unknownUntil.clear();
 	}
 
 	private buildOnce(document: TenantDocument): Promise<TenantRuntime> {
-		const pending = this.building.get(document._id);
+		const key = `${document._id}:${document.configVersion ?? 0}`;
+		const pending = this.building.get(key);
 		if (pending) return pending;
+		const generation = this.generations.get(document._id) ?? 0;
 		const build = this.options
 			.build(document)
 			.then((runtime) => {
-				this.runtimes.set(document._id, runtime);
+				const current = this.runtimes.get(document._id);
+				const disposed =
+					(this.generations.get(document._id) ?? 0) !== generation;
+				if (!disposed && (!current || current.version < runtime.version)) {
+					this.runtimes.set(document._id, runtime);
+				}
 				return runtime;
 			})
-			.finally(() => this.building.delete(document._id));
-		this.building.set(document._id, build);
+			.finally(() => this.building.delete(key));
+		this.building.set(key, build);
 		return build;
 	}
 
@@ -112,6 +136,11 @@ export class RuntimeRegistry {
 		}
 		this.unknownUntil.set(host, this.now() + UNKNOWN_HOST_TTL_MS);
 	}
+}
+
+/** True when one domain is the other or lies under it. */
+function overlaps(a: string, b: string): boolean {
+	return a === b || a.endsWith(`.${b}`) || b.endsWith(`.${a}`);
 }
 
 /** `auth.<domain>` → the domain; any other shape is not a tenant IdP host. */

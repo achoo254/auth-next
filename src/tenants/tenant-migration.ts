@@ -1,11 +1,11 @@
 import type { Db } from "mongodb";
 import { ONE_TIME_TOKENS_COLLECTION } from "../accounts/one-time-tokens.js";
 import { ACCOUNTS_COLLECTION } from "../accounts/user-model.js";
-import { AUDIT_OUTBOX_COLLECTION } from "../audit/audit-outbox-model.js";
 import type { Logger } from "../logger.js";
 import { GRANTABLE_MODELS, collectionNameFor } from "../oidc/mongo-adapter.js";
 import { PRIMARY_TENANT_ID } from "./env-tenant.js";
 import { backfillTenantId } from "./tenant-collections.js";
+import { TENANTS_COLLECTION } from "./tenant-registry.js";
 
 /**
  * Indexes of the single-tenant era. The five unique ones on `accounts`
@@ -24,7 +24,6 @@ const LEGACY_INDEXES = new Map<string, readonly string[]>([
 		],
 	],
 	[ONE_TIME_TOKENS_COLLECTION, ["kind_1_data.accountId_1", "data.accountId_1"]],
-	[AUDIT_OUTBOX_COLLECTION, ["status_1_occurredAt_1"]],
 	...[...GRANTABLE_MODELS].map((model): [string, readonly string[]] => [
 		collectionNameFor(model),
 		["grantId_1"],
@@ -43,14 +42,19 @@ export class UntaggedDataError extends Error {
 
 /**
  * Runs at every startup, before serving: tags documents written before
- * tenants existed (they can only be the primary tenant's), then drops the
- * single-tenant indexes. Both steps are idempotent and cheap once done.
- * Tenant filters match `tenantId` exactly, so the server refuses to start
- * while any document is still untagged rather than hide it from its owner.
+ * tenants existed, then drops the single-tenant indexes. Both steps are
+ * idempotent and cheap once done. Untagged documents can only be the
+ * primary tenant's while no other tenant exists; once one does, an
+ * untagged document is a bug and is never silently given to the primary
+ * tenant. Tenant filters match `tenantId` exactly, so the server refuses
+ * to start while any document is untagged rather than hide it.
  */
 export async function migrateToTenants(db: Db, logger: Logger): Promise<void> {
+	const otherTenants = await db
+		.collection(TENANTS_COLLECTION)
+		.countDocuments({}, { limit: 1 });
 	const counts = await backfillTenantId(db, PRIMARY_TENANT_ID, {
-		dryRun: false,
+		dryRun: otherTenants > 0,
 	});
 	const tagged = counts.reduce((sum, count) => sum + count.tagged, 0);
 	if (tagged > 0) logger.info({ tagged }, "Tagged pre-tenant documents");

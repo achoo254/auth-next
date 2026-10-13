@@ -91,10 +91,7 @@ export class AuditDispatcher {
 			if (this.stopping.signal.aborted) break;
 			const event = await this.options.outbox.claimDue(this.now(), leaseMs);
 			if (!event) break;
-			const delivery = await deliveryFor(event);
-			const outcome = delivery
-				? await this.deliver(event, delivery)
-				: await this.postpone(event, "no delivery target");
+			const outcome = await this.dispatchOne(event, deliveryFor);
 			if (outcome === "delivered") counts.delivered += 1;
 			if (outcome === "failed") counts.failed += 1;
 		}
@@ -122,6 +119,31 @@ export class AuditDispatcher {
 		if (!this.stopping.signal.aborted) {
 			this.schedule(this.options.pollIntervalMs ?? 5_000);
 		}
+	}
+
+	/**
+	 * Resolves the event's target and signer, then sends it. A tenant whose
+	 * signer cannot be built (a secret that no longer opens, MongoDB down)
+	 * only postpones its own events: older events of a broken tenant must
+	 * never block everyone else's.
+	 */
+	private async dispatchOne(
+		event: LeasedEvent,
+		deliveryFor: AuditDeliveryResolver,
+	): Promise<Outcome> {
+		let delivery: AuditDelivery | undefined;
+		try {
+			delivery = await deliveryFor(event);
+		} catch (error) {
+			this.options.logger.warn(
+				{ eventId: event._id, error: errorCode(error) },
+				"Audit signer unavailable",
+			);
+			return this.postpone(event, "signer unavailable");
+		}
+		return delivery
+			? this.deliver(event, delivery)
+			: this.postpone(event, "no delivery target");
 	}
 
 	/** Keeps an event whose tenant has no target now; it is retried with backoff. */

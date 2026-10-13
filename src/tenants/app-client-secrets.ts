@@ -2,34 +2,50 @@ import { createHmac } from "node:crypto";
 import type { StaticClientSecrets } from "../oidc/clients.js";
 import { STATIC_CLIENT_IDS } from "../oidc/clients.js";
 
+function hmac(key: string, message: string): string {
+	return createHmac("sha256", key).update(message, "utf8").digest("base64url");
+}
+
 /**
- * Client secret of a confidential first-party app (Localman, Tunelo web)
- * in a tenant other than the primary one: HMAC-SHA256 of
- * `<tenantId>:<clientId>` under `APP_CLIENT_SECRET_KEY`, base64url. The app
- * holds the same key and computes the same value for each tenant it serves,
- * so no API ever hands a secret out and owners never see or rotate one.
- * Rotating the key rotates every derived secret at once.
+ * The key one app holds to compute its own client secret in every tenant:
+ * HMAC-SHA256 of `app-client-key\n<clientId>` under `APP_CLIENT_SECRET_KEY`
+ * (which only the IdP holds), base64url. Localman gets the key of
+ * `localman-web`, Tunelo the key of `tunelo-web`, so a leak at one app
+ * never yields the other's secrets.
+ */
+export function appClientKey(masterKey: string, clientId: string): string {
+	return hmac(masterKey, `app-client-key\n${clientId}`);
+}
+
+/**
+ * Client secret of a confidential first-party app in a tenant other than
+ * the primary one: HMAC-SHA256 of the tenant id under the app's key,
+ * base64url. The app computes the same value for each tenant it serves, so
+ * no API ever hands a secret out and owners never see or rotate one.
+ * Rotating APP_CLIENT_SECRET_KEY rotates every derived secret at once.
  */
 export function derivedClientSecret(
-	key: string,
+	masterKey: string,
 	tenantId: string,
 	clientId: string,
 ): string {
-	return createHmac("sha256", key)
-		.update(`${tenantId}:${clientId}`, "utf8")
-		.digest("base64url");
+	return hmac(appClientKey(masterKey, clientId), tenantId);
 }
 
 export function derivedClientSecrets(
-	key: string,
+	masterKey: string,
 	tenantId: string,
 ): StaticClientSecrets {
 	return {
 		localmanWeb: derivedClientSecret(
-			key,
+			masterKey,
 			tenantId,
 			STATIC_CLIENT_IDS.localmanWeb,
 		),
-		tuneloWeb: derivedClientSecret(key, tenantId, STATIC_CLIENT_IDS.tuneloWeb),
+		tuneloWeb: derivedClientSecret(
+			masterKey,
+			tenantId,
+			STATIC_CLIENT_IDS.tuneloWeb,
+		),
 	};
 }

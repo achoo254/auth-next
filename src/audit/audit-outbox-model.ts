@@ -52,6 +52,8 @@ export async function ensureAuditOutboxIndexes(db: Db): Promise<void> {
 	const outbox = auditOutboxCollection(db);
 	await Promise.all([
 		outbox.createIndex({ tenantId: 1, status: 1, occurredAt: 1 }),
+		// The process-wide dispatcher reads every tenant's due events.
+		outbox.createIndex({ status: 1, occurredAt: 1 }),
 		outbox.createIndex(
 			{ expiresAt: 1 },
 			{ expireAfterSeconds: 0, name: "expiresAt_ttl" },

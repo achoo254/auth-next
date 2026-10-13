@@ -58,15 +58,15 @@ Mặc định IdP chỉ phục vụ tenant `hoandat.com`. Bật sổ tenant bằ
 | Env | Ý nghĩa |
 |---|---|
 | `TENANT_SECRETS_KEY` | `kid:base64` của khoá 32 byte (`openssl rand -base64 32`), có thể nhiều khoá cách bằng dấu phẩy; khoá đầu niêm phong secret của tenant (OAuth, bot, khoá ký) bằng AES-256-GCM |
-| `APP_CLIENT_SECRET_KEY` | ≥ 32 ký tự; Localman và Tunelo giữ cùng giá trị để tự tính secret client của từng tenant |
+| `APP_CLIENT_SECRET_KEY` | ≥ 32 ký tự, chỉ IdP giữ; khoá riêng của Localman và Tunelo suy từ nó: `node --env-file=.env dist/app-client-key.mjs localman-web <file>` (và `tunelo-web`), file mode 600, chép vào secret của app tương ứng |
 | `TENANT_MAX_ACTIVE` | số tenant đang phục vụ tối đa, mặc định 20 (đo 2026-10-13: mỗi runtime rỗi thêm khoảng 0,4 MB RSS; 50 runtime thêm 21 MB) |
 | `INTERNAL_API_CREDENTIALS` | `localman:<secret>,tunelo:<secret>,provisioner:<secret>` (≥ 32 ký tự mỗi secret); thiếu thì API nội bộ tắt |
 | `INTERNAL_HOST`, `INTERNAL_PORT` | API nội bộ, mặc định `127.0.0.1:4501`, chỉ nhận địa chỉ loopback |
-| `SERVICE_IPV4` | IP công khai của máy; có thì cứ 6 giờ kiểm lại TXT `_auth-claim.<d>` và bản ghi A của mọi host tenant, sai 3 lần liền thì tenant `suspended` |
+| `SERVICE_IPV4` | IP công khai của máy; có thì mỗi tenant được kiểm lại 6 giờ một lần (TXT `_auth-claim.<d>`, bản ghi A của mọi host); 3 lần sai dứt khoát liền thì `suspended`; lỗi resolver hay một lượt mọi tenant cùng sai không đình chỉ ai |
 
 **Backup khoá (bắt buộc trước khi có tenant thứ hai):** chép `TENANT_SECRETS_KEY` vào thư mục secret ngoài server (mục "Nơi lưu secret"). Mất khoá thì mọi tenant mất khoá ký, OAuth và bot; backup database không đủ để khôi phục.
 
-**Xoay `TENANT_SECRETS_KEY`:** thêm khoá mới **lên đầu** (`k2:<mới>,k1:<cũ>`), restart; secret ghi sau đó dùng khoá mới, secret cũ vẫn mở bằng khoá cũ. Chỉ bỏ khoá cũ khi mọi secret đã được ghi lại.
+**Xoay `TENANT_SECRETS_KEY`:** thêm khoá mới **lên đầu** (`k2:<mới>,k1:<cũ>`), restart; khi khởi động IdP niêm phong lại mọi secret còn mang khoá cũ (log `Tenant secrets re-sealed` với số lượng). Restart thêm một lần: không còn log đó nghĩa là đã xong, lúc này mới bỏ `k1`.
 
 **nginx:** block của host nào cũng có `location /internal { return 404; }` (đã có trong `infra/nginx/auth.hoandat.com.conf`); API nội bộ không bao giờ được proxy.
 

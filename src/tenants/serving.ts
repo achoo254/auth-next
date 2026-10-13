@@ -27,7 +27,8 @@ import {
 } from "./tenant-runtime.js";
 import { TenantSecrets } from "./tenant-secrets.js";
 
-const OWNERSHIP_CHECK_INTERVAL_MS = 6 * 60 * 60 * 1000;
+/** Tick of the ownership job; each tenant is re-checked every 6 hours. */
+const OWNERSHIP_TICK_MS = 60 * 60 * 1000;
 
 /** Everything the server process runs, assembled from the environment. */
 export interface Serving {
@@ -68,6 +69,7 @@ export async function createServing(
 			? new RuntimeRegistry({
 					primary,
 					primaryHosts,
+					primaryDomain: primary.tenant.domain,
 					registry,
 					maxActive: env.TENANT_MAX_ACTIVE,
 					logger,
@@ -147,11 +149,19 @@ export async function createServing(
 		auditDispatcher,
 		start() {
 			auditDispatcher.start();
+			secrets
+				?.resealStale()
+				.then((count) => {
+					if (count > 0) logger.info({ count }, "Tenant secrets re-sealed");
+				})
+				.catch((error: unknown) => {
+					logger.error({ err: error }, "Re-sealing tenant secrets failed");
+				});
 			if (runtimes && serviceIp) {
-				ownershipTimer = setInterval(
-					checkOwnership,
-					OWNERSHIP_CHECK_INTERVAL_MS,
-				);
+				// First pass soon after start, then hourly; each pass only checks
+				// tenants not checked for 6 hours, so restarts never skip one.
+				setTimeout(checkOwnership, 60_000).unref();
+				ownershipTimer = setInterval(checkOwnership, OWNERSHIP_TICK_MS);
 				ownershipTimer.unref();
 			}
 		},
