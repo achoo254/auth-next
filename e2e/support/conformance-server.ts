@@ -36,7 +36,10 @@ import {
 	type AccountProfile,
 	createInMemoryAccountStore,
 } from "../../src/oidc/claims.js";
-import { STATIC_CLIENT_IDS } from "../../src/oidc/clients.js";
+import {
+	STATIC_CLIENT_IDS,
+	TOKEN_EXCHANGE_GRANT,
+} from "../../src/oidc/clients.js";
 import { generateSigningJwk } from "../../src/oidc/jwks.js";
 import { ensureOidcIndexes } from "../../src/oidc/oidc-indexes.js";
 import { buildProviderConfiguration } from "../../src/oidc/provider.js";
@@ -108,11 +111,21 @@ const suiteClients = new Set<string>([
 	STATIC_CLIENT_IDS.localmanWeb,
 	STATIC_CLIENT_IDS.tuneloWeb,
 ]);
-configuration.clients = (configuration.clients ?? []).map((client) =>
-	suiteClients.has(client.client_id)
-		? { ...client, redirect_uris: [suiteCallback] }
-		: client,
-);
+// Token exchange is not wired here (see above): a client declaring its
+// grant would be refused as invalid metadata, so it is left out.
+configuration.clients = (configuration.clients ?? []).map((client) => {
+	const grantTypes = client.grant_types?.filter(
+		(grant) => grant !== TOKEN_EXCHANGE_GRANT,
+	);
+	const base = grantTypes ? { ...client, grant_types: grantTypes } : client;
+	return suiteClients.has(client.client_id)
+		? { ...base, redirect_uris: [suiteCallback] }
+		: base;
+});
+// Production requires PKCE on every request, stricter than OpenID Connect
+// Core; the Basic OP plan's confidential clients never send it, so here it
+// is optional and the suite checks everything else. Production is unchanged.
+configuration.pkce = { ...configuration.pkce, required: () => false };
 const provider = new Provider(issuer, configuration);
 provider.proxy = true;
 
