@@ -1,0 +1,19 @@
+# Issues and removes tenants' certificates (ADR 0006): one pass of the
+# queue in the IdP's internal API. Root, because certbot writes under
+# /etc and the provisioner's private key opens DNS tokens.
+[Unit]
+Description=hoandat-auth tenant certificate provisioner
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+EnvironmentFile=/etc/hoandat-tenant-provisioner/env
+# Node comes from root's nvm on this host.
+ExecStart=/bin/bash -c 'source /root/.nvm/nvm.sh >/dev/null && exec node /var/www/hoandat-auth/dist/tenant-provisioner.mjs run'
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/etc/letsencrypt-tenants /var/lib/hoandat-tenant-acme
+TimeoutStartSec=15min

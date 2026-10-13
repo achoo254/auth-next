@@ -25,6 +25,7 @@ await build({
 		"create-tenant-indexes": resolve(root, "scripts/create-tenant-indexes.ts"),
 		"backfill-tenant-id": resolve(root, "scripts/backfill-tenant-id.ts"),
 		"app-client-key": resolve(root, "scripts/app-client-key.ts"),
+		"tenant-provisioner": resolve(root, "scripts/tenant-provisioner.ts"),
 	},
 	outdir: distDir,
 	outExtension: { ".js": ".mjs" },

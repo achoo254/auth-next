@@ -78,6 +78,20 @@ Nhận domain (`/claim` trên issuer chính) mở khi có `SERVICE_IPV4`; thêm:
 
 **nginx:** block của host nào cũng có `location /internal { return 404; }` (đã có trong `infra/nginx/auth.hoandat.com.conf`); API nội bộ không bao giờ được proxy.
 
+## Provisioner chứng chỉ của tenant (ADR 0006)
+
+Chứng chỉ của tenant do provisioner cấp (root, systemd timer 5 phút), không phải IdP. Mỗi tenant hai chứng chỉ trong config-dir riêng `/etc/letsencrypt-tenants` (tài khoản ACME riêng, không đụng chứng chỉ của hoandat): `<d>` (HTTP-01 qua webroot `/var/lib/hoandat-tenant-acme`: `auth.`, `localman.`, `tunnel.`) và `wildcard.<d>` (DNS-01 bằng token Cloudflare của owner: `*.localman.`, `*.tunnel.`). Token chỉ nằm trong `/etc/letsencrypt-tenants/credentials/<d>.ini` (600), không bao giờ trong argv hay log. Gia hạn: `hoandat-tenant-certbot-renew.timer` (máy chỉ có `certbot-renew.timer` cho `/etc/letsencrypt`). nginx đọc chứng chỉ theo SNI lúc bắt tay (`ssl_certificate` có biến), nên chứng chỉ mới hay gia hạn không cần reload.
+
+**Cài lần đầu** (khi user cho phép; máy .65 dùng chung):
+
+1. Deploy bản có `dist/tenant-provisioner.mjs`, rồi trên server: `bash infra/provisioner/setup-provisioner.sh`. Lần đầu nó sinh cặp khoá `/etc/hoandat-tenant-provisioner/key.pem` (600) và tệp env, rồi dừng: điền `PROVISIONER_INTERNAL_SECRET` (đúng giá trị mục `provisioner` trong `INTERNAL_API_CREDENTIALS` của `.env` IdP), chạy lại để bật hai timer.
+2. `.env` IdP: `PROVISIONER_PUBLIC_KEY_PATH=/var/www/hoandat-auth/secrets/provisioner.pub.pem` (script đã chép public key vào đó), restart IdP.
+3. **Backup private key**: chép `/etc/hoandat-tenant-provisioner/key.pem` vào thư mục secret ngoài server (mục "Nơi lưu secret"). Mất khoá thì token DNS đã lưu không mở được nữa: owner phải nhập lại token.
+4. nginx (báo user trước, cấu hình dùng chung): chép `infra/nginx/tenants-http.conf` thành `/etc/nginx/conf.d/00-tenants-http.conf`, `tenants-acme.conf` và `tenant-auth.conf` vào `/etc/nginx/conf.d/`, `nginx -t`, rồi `systemctl reload nginx`. Kiểm mọi host đang phục vụ vẫn trả như trước (block cụ thể luôn thắng block regex). Block tenant của Localman và Tunelo nằm ở repo `localman-next`.
+5. Thử với một domain thử ở Let's Encrypt staging (`PROVISIONER_ACME=staging`, mặc định); chạy tay `systemctl start hoandat-tenant-provisioner.service`, xem `journalctl -u hoandat-tenant-provisioner`. Đạt thì đổi `PROVISIONER_ACME=production`, xoá chứng chỉ staging (`certbot delete --config-dir /etc/letsencrypt-tenants --cert-name <d>`), đặt lại trạng thái chứng chỉ của tenant về `pending` và kiểm `certbot renew --dry-run --config-dir /etc/letsencrypt-tenants`.
+
+**Tạm dừng:** `systemctl stop hoandat-tenant-provisioner.timer` (hàng đợi vẫn giữ, chạy tiếp khi bật lại). **Gỡ tenant:** đặt `certificate.status` của tenant thành `removing` (qua `scripts/prod-mongosh.sh`, sau backup); lượt sau provisioner `certbot delete` hai chứng chỉ, xoá tệp credentials và báo `removed`. Provisioner tự từ chối domain không chuẩn, domain trong `PROVISIONER_BLOCKED_DOMAINS` và hostname mà `nginx -T` đã có block khác phục vụ.
+
 ## Tuỳ chọn bật sau
 
 - Google/GitHub (đã bật 2026-10-09): GitHub OAuth App "hoandat · Tài khoản" (owner `achoo254`, app id 3916221); Google Cloud project `hoandat-auth`, Google Auth Platform ở trạng thái "In production" (External), web client `auth.hoandat.com`. Callback lần lượt `https://auth.hoandat.com/oauth/github/callback` và `/oauth/google/callback`. Google bắt buộc link chính sách quyền riêng tư `https://auth.hoandat.com/privacy` trước khi publish.

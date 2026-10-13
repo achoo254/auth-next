@@ -25,6 +25,8 @@ export type ClaimResult<T> =
 	| { readonly ok: true; readonly value: T }
 	| { readonly ok: false; readonly error: ClaimError };
 
+const APP_LABELS: ReadonlySet<string> = new Set(["auth", "localman", "tunnel"]);
+
 /** How the audit trail names an owner: the upstream identity, not an account. */
 export function ownerSubject(owner: TenantOwner): string {
 	return `${owner.provider}:${owner.providerId}`;
@@ -52,7 +54,11 @@ export async function startClaim(
 ): Promise<ClaimResult<ClaimDocument>> {
 	if (!tenancy.serviceIp) return { ok: false, error: "unavailable" };
 	const domain = normalizeTenantDomain(input.domain, tenancy.blockedDomains);
-	if (!domain) return { ok: false, error: "invalid-domain" };
+	// auth.x, localman.x, tunnel.x would read as hosts of tenant x (nginx
+	// maps hosts to certificates by those labels).
+	if (!domain || APP_LABELS.has(domain.split(".")[0] ?? "")) {
+		return { ok: false, error: "invalid-domain" };
+	}
 	if (await tenancy.registry.findOverlapping(domain)) {
 		return { ok: false, error: "taken" };
 	}

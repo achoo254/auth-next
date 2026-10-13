@@ -59,6 +59,12 @@ IdP gắn cứng với `hoandat.com`: một issuer, một bộ audience (`https:
 - **Kích hoạt:** tenant chuyển `active` khi có owner và ít nhất một provider; trước đó domain chỉ phục vụ `/admin` và tài nguyên tĩnh (mọi trang khác `404`, không có trang đăng nhập hay endpoint OIDC). `claimed` quá 7 ngày không kích hoạt thì `suspended` (`not-activated`), chứng chỉ vào hàng gỡ; khi provisioner báo đã gỡ, tenant bị xoá và domain được nhận lại.
 - **Báo owner khi đình chỉ:** trạng thái hiện ở `/claim` của owner và audit `tenant.suspended`; không có kênh gửi tin riêng (không email theo ADR 0004).
 
+### 7. Chứng chỉ và nginx (phase 04)
+
+- **Không sinh conf nginx theo tenant.** Mỗi app ship block regex của mình (`tenant-auth.conf` ở repo này; block `localman.`/`tunnel.` ở `localman-next`), cùng một tệp cấp `http` (`tenants-http.conf`: map `$ssl_server_name` → tên chứng chỉ, log redact link `/admin/handoff`) và một block port 80 cho mọi host tenant (`tenants-acme.conf`: HTTP-01, còn lại 301). Block cụ thể của các host hiện có luôn thắng block regex.
+- **Provisioner** (Node, root, systemd timer, `src/provisioner/`): đọc hàng đợi qua API nội bộ, kiểm lại domain bằng `normalizeTenantDomain` + danh sách cấm của chính nó (chỉ nhận giá trị đã chuẩn y nguyên), từ chối hostname đã có block khác (`nginx -T`), chạy certbot bằng `execFile` không shell; không reload nginx (chứng chỉ đọc theo SNI). Mặc định Let's Encrypt **staging** tới khi đổi tường minh. Gia hạn là timer riêng cho config-dir của tenant.
+- Domain có nhãn đầu `auth`/`localman`/`tunnel` không nhận được (map chứng chỉ sẽ hiểu sai host).
+
 ## Hệ quả
 
 - Snapshot `primary-tenant-snapshot` chứng minh tenant chính không đổi: chuỗi ba ngôn ngữ, discovery, client tĩnh, tên và thuộc tính cookie (không `Domain`, giữ tiền tố `__Host-`/`__Secure-`), trang `/apps`, `/privacy`. Issuer, `kid`, client id không đổi.

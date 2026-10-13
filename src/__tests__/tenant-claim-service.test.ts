@@ -109,6 +109,7 @@ describe("starting a claim", () => {
 		["under the primary domain", "x.hoandat.com"],
 		["a blocked domain", "tunnel.inetdev.io.vn"],
 		["a reserved name", "corp.internal"],
+		["an app hostname of another domain", "localman.example.org"],
 	])("refuses %s", async (_label, domain) => {
 		const result = await startClaim(tenancy(), {
 			domain,
