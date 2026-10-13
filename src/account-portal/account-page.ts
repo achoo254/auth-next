@@ -85,6 +85,6 @@ ${accountNav(view)}
 		host: view.host,
 		page: view.page,
 		layout: "portal",
-		stylesheets: ["/assets/css/account.css"],
+		stylesheets: ["account.css"],
 	});
 }

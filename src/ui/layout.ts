@@ -1,3 +1,4 @@
+import { stylesheetHref } from "../assets.js";
 import { LOCALES, LOCALE_NAMES } from "../i18n/locales.js";
 import { type HtmlValue, type SafeHtml, html } from "./html.js";
 import type { PageContext } from "./page-context.js";
@@ -13,7 +14,7 @@ export interface PageOptions {
 	 * reading; `portal` drops the outer card for pages made of cards.
 	 */
 	readonly layout?: "card" | "wide" | "portal";
-	/** Extra stylesheets under /assets/css, after app.css (one page's own styles). */
+	/** Extra stylesheets of static/css by file name, after app.css (one page's own styles). */
 	readonly stylesheets?: readonly string[];
 	/**
 	 * Home and Account links in the topbar (default true). Off on /admin,
@@ -95,9 +96,9 @@ export function renderPage(options: PageOptions): string {
 <meta name="robots" content="noindex">
 <title>${options.title} · ${i18n.brand.name}</title>
 ${FONT_STYLESHEETS.map((href) => html`<link rel="stylesheet" href="${href}">`)}
-<link rel="stylesheet" href="/assets/css/tokens.css">
-<link rel="stylesheet" href="/assets/css/app.css">
-${(options.stylesheets ?? []).map((href) => html`<link rel="stylesheet" href="${href}">`)}
+${["tokens.css", "app.css", ...(options.stylesheets ?? [])].map(
+	(name) => html`<link rel="stylesheet" href="${stylesheetHref(name)}">`,
+)}
 </head>
 <body>
 <header class="topbar"><div class="topbar-inner container">

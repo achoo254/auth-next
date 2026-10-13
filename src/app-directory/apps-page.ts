@@ -90,7 +90,7 @@ export function renderAppsPage(
 		host: new URL(tenant.issuer).host,
 		page,
 		layout: "portal",
-		stylesheets: ["/assets/css/apps.css"],
+		stylesheets: ["apps.css"],
 		body: html`${hero(tenant, i18n, apps)}
 <section class="apps-section" aria-labelledby="apps-list-title">
 <h2 class="apps-section-title" id="apps-list-title">${i18n.t("apps.list.title")}</h2>

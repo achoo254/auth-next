@@ -44,6 +44,28 @@ describe("Privacy policy", () => {
 	});
 });
 
+describe("Stylesheets", () => {
+	it("links each stylesheet by its content hash and caches only that URL for long", async () => {
+		const page = await (await fetch(`${idp.issuer}/apps`)).text();
+		const href = page.match(
+			/href="(\/assets\/css\/app\.css\?v=[0-9a-f]{12})"/,
+		)?.[1];
+		expect(href).toBeDefined();
+		const current = await fetch(`${idp.issuer}${href}`);
+		expect(current.status).toBe(200);
+		expect(current.headers.get("cache-control")).toBe(
+			"public, max-age=31536000, immutable",
+		);
+		for (const other of ["/assets/css/app.css", "/assets/css/app.css?v=old"]) {
+			const response = await fetch(`${idp.issuer}${other}`);
+			expect(response.status, other).toBe(200);
+			expect(response.headers.get("cache-control"), other).toBe(
+				"public, max-age=3600",
+			);
+		}
+	});
+});
+
 describe("App list", () => {
 	it("serves the public app list without a session", async () => {
 		const response = await fetch(`${idp.issuer}/apps`);
@@ -51,7 +73,7 @@ describe("App list", () => {
 		expect(response.headers.get("cache-control")).toBe("private, no-cache");
 		const body = await response.text();
 		expect(body).toContain("One account for every hoandat app");
-		expect(body).toContain('href="/assets/css/apps.css"');
+		expect(body).toMatch(/href="\/assets\/css\/apps\.css\?v=[0-9a-f]{12}"/);
 		for (const name of ["Localman", "Localman MCP", "Tunelo CLI", "Tunelo"]) {
 			expect(body).toContain(`class="app-card-name">${name}</h3>`);
 		}

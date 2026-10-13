@@ -27,9 +27,7 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <meta name="robots" content="noindex">
 <title>One account for every hoandat app · hoandat</title>
 <link rel="stylesheet" href="/assets/fonts/inter/400.css"><link rel="stylesheet" href="/assets/fonts/inter/500.css"><link rel="stylesheet" href="/assets/fonts/inter/600.css"><link rel="stylesheet" href="/assets/fonts/jetbrains-mono/400.css"><link rel="stylesheet" href="/assets/fonts/jetbrains-mono/600.css"><link rel="stylesheet" href="/assets/fonts/jetbrains-mono/700.css">
-<link rel="stylesheet" href="/assets/css/tokens.css">
-<link rel="stylesheet" href="/assets/css/app.css">
-<link rel="stylesheet" href="/assets/css/apps.css">
+<link rel="stylesheet" href="/assets/css/tokens.css?v=HASH"><link rel="stylesheet" href="/assets/css/app.css?v=HASH"><link rel="stylesheet" href="/assets/css/apps.css?v=HASH">
 </head>
 <body>
 <header class="topbar"><div class="topbar-inner container">
@@ -146,9 +144,7 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <meta name="robots" content="noindex">
 <title>Một tài khoản cho mọi ứng dụng hoandat · hoandat</title>
 <link rel="stylesheet" href="/assets/fonts/inter/400.css"><link rel="stylesheet" href="/assets/fonts/inter/500.css"><link rel="stylesheet" href="/assets/fonts/inter/600.css"><link rel="stylesheet" href="/assets/fonts/jetbrains-mono/400.css"><link rel="stylesheet" href="/assets/fonts/jetbrains-mono/600.css"><link rel="stylesheet" href="/assets/fonts/jetbrains-mono/700.css">
-<link rel="stylesheet" href="/assets/css/tokens.css">
-<link rel="stylesheet" href="/assets/css/app.css">
-<link rel="stylesheet" href="/assets/css/apps.css">
+<link rel="stylesheet" href="/assets/css/tokens.css?v=HASH"><link rel="stylesheet" href="/assets/css/app.css?v=HASH"><link rel="stylesheet" href="/assets/css/apps.css?v=HASH">
 </head>
 <body>
 <header class="topbar"><div class="topbar-inner container">
@@ -265,9 +261,7 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <meta name="robots" content="noindex">
 <title>一个账号，通用所有 hoandat 应用 · hoandat</title>
 <link rel="stylesheet" href="/assets/fonts/inter/400.css"><link rel="stylesheet" href="/assets/fonts/inter/500.css"><link rel="stylesheet" href="/assets/fonts/inter/600.css"><link rel="stylesheet" href="/assets/fonts/jetbrains-mono/400.css"><link rel="stylesheet" href="/assets/fonts/jetbrains-mono/600.css"><link rel="stylesheet" href="/assets/fonts/jetbrains-mono/700.css">
-<link rel="stylesheet" href="/assets/css/tokens.css">
-<link rel="stylesheet" href="/assets/css/app.css">
-<link rel="stylesheet" href="/assets/css/apps.css">
+<link rel="stylesheet" href="/assets/css/tokens.css?v=HASH"><link rel="stylesheet" href="/assets/css/app.css?v=HASH"><link rel="stylesheet" href="/assets/css/apps.css?v=HASH">
 </head>
 <body>
 <header class="topbar"><div class="topbar-inner container">
@@ -384,9 +378,7 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /privacy the same w
 <meta name="robots" content="noindex">
 <title>Privacy policy · hoandat</title>
 <link rel="stylesheet" href="/assets/fonts/inter/400.css"><link rel="stylesheet" href="/assets/fonts/inter/500.css"><link rel="stylesheet" href="/assets/fonts/inter/600.css"><link rel="stylesheet" href="/assets/fonts/jetbrains-mono/400.css"><link rel="stylesheet" href="/assets/fonts/jetbrains-mono/600.css"><link rel="stylesheet" href="/assets/fonts/jetbrains-mono/700.css">
-<link rel="stylesheet" href="/assets/css/tokens.css">
-<link rel="stylesheet" href="/assets/css/app.css">
-
+<link rel="stylesheet" href="/assets/css/tokens.css?v=HASH"><link rel="stylesheet" href="/assets/css/app.css?v=HASH">
 </head>
 <body>
 <header class="topbar"><div class="topbar-inner container">
@@ -425,9 +417,7 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /privacy the same w
 <meta name="robots" content="noindex">
 <title>Chính sách quyền riêng tư · hoandat</title>
 <link rel="stylesheet" href="/assets/fonts/inter/400.css"><link rel="stylesheet" href="/assets/fonts/inter/500.css"><link rel="stylesheet" href="/assets/fonts/inter/600.css"><link rel="stylesheet" href="/assets/fonts/jetbrains-mono/400.css"><link rel="stylesheet" href="/assets/fonts/jetbrains-mono/600.css"><link rel="stylesheet" href="/assets/fonts/jetbrains-mono/700.css">
-<link rel="stylesheet" href="/assets/css/tokens.css">
-<link rel="stylesheet" href="/assets/css/app.css">
-
+<link rel="stylesheet" href="/assets/css/tokens.css?v=HASH"><link rel="stylesheet" href="/assets/css/app.css?v=HASH">
 </head>
 <body>
 <header class="topbar"><div class="topbar-inner container">
@@ -466,9 +456,7 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /privacy the same w
 <meta name="robots" content="noindex">
 <title>隐私政策 · hoandat</title>
 <link rel="stylesheet" href="/assets/fonts/inter/400.css"><link rel="stylesheet" href="/assets/fonts/inter/500.css"><link rel="stylesheet" href="/assets/fonts/inter/600.css"><link rel="stylesheet" href="/assets/fonts/jetbrains-mono/400.css"><link rel="stylesheet" href="/assets/fonts/jetbrains-mono/600.css"><link rel="stylesheet" href="/assets/fonts/jetbrains-mono/700.css">
-<link rel="stylesheet" href="/assets/css/tokens.css">
-<link rel="stylesheet" href="/assets/css/app.css">
-
+<link rel="stylesheet" href="/assets/css/tokens.css?v=HASH"><link rel="stylesheet" href="/assets/css/app.css?v=HASH">
 </head>
 <body>
 <header class="topbar"><div class="topbar-inner container">

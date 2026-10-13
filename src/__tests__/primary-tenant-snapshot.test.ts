@@ -21,13 +21,17 @@ afterAll(async () => {
 	await idp?.close();
 });
 
-/** The test issuer listens on a random port; snapshots name it ISSUER. */
+/**
+ * The test issuer listens on a random port; snapshots name it ISSUER. A
+ * stylesheet's version is its content hash, which every CSS edit changes.
+ */
 function withoutIssuer(text: string): string {
 	return text
 		.split(idp.issuer)
 		.join("ISSUER")
 		.split(new URL(idp.issuer).host)
-		.join("ISSUER_HOST");
+		.join("ISSUER_HOST")
+		.replace(/\.css\?v=[0-9a-f]{12}/g, ".css?v=HASH");
 }
 
 describe("primary tenant (hoandat.com) is unchanged", () => {
