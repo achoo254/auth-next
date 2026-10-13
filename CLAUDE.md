@@ -42,7 +42,7 @@ Commands: `pnpm dev`, `pnpm build`, `pnpm lint`, `pnpm typecheck`, `pnpm test`, 
 - Chỉ mục unique luôn dẫn đầu bằng `tenantId`. Collection mới thì thêm vào `TENANT_COLLECTIONS`, có `tenantId` và test cô lập.
 - Resource/audience, client tĩnh, token exchange lấy từ tenant (`resourcesFor`, `tenantResourcePolicy`, `buildStaticClients(tenant, …)`); không thêm URL hay tên cố định của `hoandat.com` vào code chạy. Chuỗi hiển thị dùng `{brand}`/`{brandDomain}`; trang lấy tenant qua `requestTenant(req)`.
 - Domain đi vào DNS, certbot, nginx luôn qua `normalizeTenantDomain`.
-- Đọc tương thích (`ownsUntaggedData` của tenant chính) chỉ tồn tại tới cổng cuối phase 02; sau khi có tenant thứ hai chỉ sửa tiến.
+- Không có đọc tương thích: `inTenant` khớp `tenantId` tuyệt đối; khởi động chạy `migrateToTenants` (gắn document cũ cho tenant chính, gỡ chỉ mục toàn cục) và không phục vụ nếu còn document chưa gắn. Sau khi có tenant thứ hai chỉ sửa tiến.
 - Tenant sổ (`tenants`) chạy trong `TenantRuntime` dựng lười (`src/tenants/tenant-runtime.ts`), chọn theo Host ở `src/http/tenant-dispatcher.ts`; không bao giờ lấy Google/GitHub/bot của env cho tenant sổ (`integrations` của `createServices`).
 - Secret của tenant chỉ qua `TenantSecrets` (niêm phong, AAD theo tenant và loại); token DNS chỉ `putForProvisioner`. Không API nào trả secret; API nội bộ chỉ trên loopback, mỗi app một Basic credentials.
 

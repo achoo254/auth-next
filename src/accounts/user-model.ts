@@ -30,10 +30,9 @@ export interface AccountDocument {
 	_id: string;
 	/**
 	 * The tenant the account belongs to; usernames, emails and linked
-	 * provider accounts are unique per tenant only. Absent only on accounts
-	 * created before tenants existed (until the backfill tags them).
+	 * provider accounts are unique per tenant only.
 	 */
-	tenantId?: string | null;
+	tenantId: string;
 	/** Lowercase, `^[a-z0-9_]{3,30}$`, unique. */
 	username: string;
 	/**
@@ -166,10 +165,8 @@ const TENANT_UNIQUE_KEYS = [
 
 /**
  * Creates the per-tenant unique indexes. The global unique indexes of the
- * single-tenant era (`username_1`, `email_unique_when_set`,
- * `providers.google_1`, `providers.github_1`, `telegram.chatId_1`) are left
- * alone here: with one tenant they enforce the same rules, and they are
- * dropped once every account carries a `tenantId`.
+ * single-tenant era are dropped by the startup migration
+ * (tenant-migration.ts), once every account carries a `tenantId`.
  */
 export async function ensureAccountIndexes(db: Db): Promise<void> {
 	const accounts = accountsCollection(db);

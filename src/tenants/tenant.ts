@@ -24,12 +24,6 @@ export interface Tenant {
 	readonly status: TenantStatus;
 	/** Where the tenant's web apps live (redirect and logout URIs). */
 	readonly webApps: { readonly localman: string; readonly tunelo: string };
-	/**
-	 * Documents written before tenants existed carry no `tenantId`; they
-	 * belong to the primary tenant until the backfill tags them. Only that
-	 * tenant has this flag, and only while untagged documents may remain.
-	 */
-	readonly ownsUntaggedData: boolean;
 }
 
 /** The hostnames of a tenant, fixed by convention under its domain. */

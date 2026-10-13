@@ -101,10 +101,13 @@ describe("seed-clients", () => {
 	});
 
 	it("flags a stored record that shadows a static client", async () => {
-		const stored = idp.db.collection<{ _id: string }>(
+		const stored = idp.db.collection<{ _id: string; tenantId: string }>(
 			collectionNameFor("Client"),
 		);
-		await stored.insertOne({ _id: STATIC_CLIENT_IDS.tuneloWeb });
+		await stored.insertOne({
+			_id: STATIC_CLIENT_IDS.tuneloWeb,
+			tenantId: idp.tenant.id,
+		});
 		const report = await inspectStaticClients({
 			env: idp.env,
 			db: idp.db,

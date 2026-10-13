@@ -12,8 +12,8 @@ export const PRIMARY_TENANT_ID = "primary";
  * The primary tenant, from the environment: its issuer is `ISSUER` as
  * before (any shape, so the conformance harness keeps working), its domain
  * `TENANT_DOMAIN` (resources and audiences follow from it), its web apps
- * `LOCALMAN_WEB_URL` and `TUNELO_WEB_URL`. It is always active and owns the
- * documents written before tenants existed.
+ * `LOCALMAN_WEB_URL` and `TUNELO_WEB_URL`. It is always active; documents
+ * written before tenants existed are tagged as its own at startup.
  */
 export function envTenant(
 	env: Pick<
@@ -32,7 +32,6 @@ export function envTenant(
 		issuer: env.ISSUER,
 		status: "active",
 		webApps: { localman: env.LOCALMAN_WEB_URL, tunelo: env.TUNELO_WEB_URL },
-		ownsUntaggedData: true,
 	};
 }
 

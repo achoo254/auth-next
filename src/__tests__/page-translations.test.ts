@@ -35,6 +35,7 @@ function accountView(locale: Locale): AccountView {
 		csrf: "csrf-token",
 		account: {
 			_id: "acc_1",
+			tenantId: "primary",
 			username: "minh_anh",
 			email: "minh.anh@example.com",
 			emailVerifiedBy: "google",

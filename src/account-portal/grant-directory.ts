@@ -18,8 +18,8 @@ const storedGrant = z.object({
 
 interface DeviceMetaDocument {
 	_id: string;
-	/** Absent only on metadata stored before tenants existed. */
-	tenantId?: string | null;
+	/** The tenant the document belongs to. */
+	tenantId: string;
 	accountId: string;
 	/** Missing when the CLI sent neither a machine name nor a User-Agent. */
 	deviceName?: string;

@@ -7,22 +7,18 @@ export interface TenantDb {
 	readonly tenant: TenantScope;
 }
 
-export type TenantScope = Pick<Tenant, "id" | "ownsUntaggedData">;
+export type TenantScope = Pick<Tenant, "id">;
 
 /** The `tenantId` filter clause: matches only documents of `tenant`. */
-export type TenantFilter = {
-	tenantId: string | { $in: [string, null] };
-};
+export type TenantFilter = { tenantId: string };
 
 /**
- * Filter clause every query on tenant-owned data carries. While untagged
- * documents may remain (before the backfill), the primary tenant also
- * matches documents without `tenantId` (`null` matches a missing field).
+ * Filter clause every query on tenant-owned data carries. Every document
+ * has a `tenantId` (startup tags pre-tenant ones, tenant-migration.ts), so
+ * the match is exact for every tenant, the primary one included.
  */
 export function inTenant(tenant: TenantScope): TenantFilter {
-	return {
-		tenantId: tenant.ownsUntaggedData ? { $in: [tenant.id, null] } : tenant.id,
-	};
+	return { tenantId: tenant.id };
 }
 
 /** Field stamped on every document a tenant writes. */

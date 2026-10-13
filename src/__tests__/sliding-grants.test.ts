@@ -87,8 +87,14 @@ describe("sliding Tunelo CLI sessions", () => {
 		const grantId = await grantOf(refreshToken);
 		// The device name row that consent writes for a real approval.
 		await idp.db
-			.collection<{ _id: string; expiresAt: Date }>(GRANT_META_COLLECTION)
-			.insertOne({ _id: grantId, expiresAt: new Date(start + 30 * DAY_MS) });
+			.collection<{ _id: string; tenantId: string; expiresAt: Date }>(
+				GRANT_META_COLLECTION,
+			)
+			.insertOne({
+				_id: grantId,
+				tenantId: idp.tenant.id,
+				expiresAt: new Date(start + 30 * DAY_MS),
+			});
 
 		const day29 = await refreshAt(config, refreshToken, start + 29 * DAY_MS);
 		const day58 = await refreshAt(config, day29, start + 58 * DAY_MS);

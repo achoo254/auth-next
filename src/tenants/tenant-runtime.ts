@@ -73,7 +73,6 @@ export function tenantFromDocument(document: TenantDocument): Tenant {
 		issuer: `https://auth.${document.domain}`,
 		status: document.status,
 		webApps: webAppsFor(document.domain),
-		ownsUntaggedData: false,
 	};
 }
 

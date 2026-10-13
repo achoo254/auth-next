@@ -25,8 +25,8 @@ export type TokenData = Record<string, string>;
 interface OneTimeTokenDocument {
 	/** SHA-256 of kind and token: the token itself is never stored. */
 	_id: string;
-	/** Absent only on tokens stored before tenants existed. */
-	tenantId?: string | null;
+	/** The tenant the document belongs to. */
+	tenantId: string;
 	kind: OneTimeTokenKind;
 	data: TokenData;
 	expiresAt: Date;

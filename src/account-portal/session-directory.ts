@@ -13,8 +13,8 @@ import { revokeGrant } from "./grant-directory.js";
 interface SessionMetaDocument {
 	/** The provider session's `uid` (stable across id rotation). */
 	_id: string;
-	/** Absent only on metadata stored before tenants existed. */
-	tenantId?: string | null;
+	/** The tenant the document belongs to. */
+	tenantId: string;
 	accountId: string;
 	userAgent?: string;
 	ip?: string;

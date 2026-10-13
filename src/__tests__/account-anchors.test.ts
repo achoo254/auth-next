@@ -19,6 +19,7 @@ function page(
 		csrf: "csrf-token",
 		account: {
 			_id: "acc_anchor",
+			tenantId: "primary",
 			username: "minh_anh",
 			email: "minh.anh@example.com",
 			emailVerifiedBy: null,

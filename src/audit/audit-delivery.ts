@@ -47,7 +47,7 @@ export function createAuditDeliveryResolver(
 		}),
 	};
 	return async (event) => {
-		const tenantId = event.tenantId ?? PRIMARY_TENANT_ID;
+		const { tenantId } = event;
 		if (tenantId === PRIMARY_TENANT_ID) return primaryDelivery;
 		const found = await options.tenantKeys(tenantId);
 		if (!found) return undefined;

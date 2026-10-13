@@ -17,8 +17,8 @@ export const CONTEXT_RETENTION_MS = 30 * DAY_MS;
 export interface AuditOutboxDocument {
 	/** Event id: the SET `jti` and the Idempotency-Key of every attempt. */
 	_id: string;
-	/** Whose account it is about; absent only on pre-tenant events. */
-	tenantId?: string | null;
+	/** The tenant the document belongs to. */
+	tenantId: string;
 	type: AuditEventType;
 	/** The account the event is about (OIDC `sub`). */
 	sub: string;

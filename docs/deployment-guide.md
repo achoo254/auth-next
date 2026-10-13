@@ -44,12 +44,12 @@ Bản đầu tiên có tenant deploy theo thứ tự này (lệnh trên server c
 
 1. Backup: `infra/backup-auth-db.sh`.
 2. Deploy như thường (`infra/deploy.sh`). Sau khi cài dependency (bản này thêm `tldts`) và **trước** `pm2 startOrReload`, script chạy `node --env-file=.env dist/create-tenant-indexes.mjs`: tạo chỉ mục ghép theo tenant, in thời gian, lần sau không đổi gì. Script lỗi thì deploy dừng trước khi reload, process cũ chạy tiếp.
-3. `node --env-file=.env dist/backfill-tenant-id.mjs --dry-run` (chỉ đếm), rồi `node --env-file=.env dist/backfill-tenant-id.mjs`; kết quả phải là `Untagged documents left: 0` (khác 0 thì chạy lại).
+3. Khi khởi động, server tự gắn `tenantId` cho document cũ, gỡ chỉ mục unique toàn cục cũ và chỉ phục vụ khi không còn document nào chưa gắn (log `Tagged pre-tenant documents`, `Dropped single-tenant indexes`). Kiểm lại bằng `node --env-file=.env dist/backfill-tenant-id.mjs --dry-run`: mọi dòng phải `0 untagged`.
 4. Kiểm: Localman và Tunelo đăng nhập, refresh, token exchange; `node --env-file=.env dist/seed-clients.mjs`; số restart pm2 trước và 15 phút sau.
 
 `.env` production không cần thêm gì: `TENANT_DOMAIN` mặc định `hoandat.com`, `TENANT_DISPLAY_NAME` mặc định `hoandat`. Nếu `.env` đã đặt `TENANT_DOMAIN` khác thì audience đổi ngay khi deploy: kiểm trước bằng `grep -c '^TENANT_' .env` (phải ra 0).
 
-Lùi trước khi có tenant thứ hai: deploy lại commit trước, rồi chạy lại bước 3 trước khi tiến tiếp. Sau khi có tenant thứ hai chỉ sửa tiến (ADR 0006 mục 4).
+Lùi trước khi có tenant thứ hai: deploy lại commit trước (code cũ tạo lại chỉ mục toàn cục, vẫn đúng khi chỉ có một tenant). Sau khi có tenant thứ hai chỉ sửa tiến hoặc tạm `suspended` tenant mới (ADR 0006 mục 4): code cũ không tạo lại được chỉ mục unique toàn cục và sẽ crash-loop.
 
 ## Phục vụ tenant khác (ADR 0006)
 

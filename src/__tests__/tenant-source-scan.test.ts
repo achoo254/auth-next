@@ -21,6 +21,7 @@ const DATA_ACCESS_MODULES = new Set([
 	"src/account-portal/session-directory.ts",
 	"src/account-portal/revoke-access.ts",
 	"src/tenants/tenant-collections.ts",
+	"src/tenants/tenant-migration.ts",
 	// The registry and sealed secrets are keyed by tenant id themselves;
 	// the audit queue is the one deliberate all-tenants reader (dispatcher).
 	"src/tenants/tenant-registry.ts",

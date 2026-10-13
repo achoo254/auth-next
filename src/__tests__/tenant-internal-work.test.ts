@@ -31,7 +31,7 @@ afterAll(async () => {
 	await server?.close();
 });
 
-function event(tenantId: string | undefined): AuditOutboxDocument {
+function event(tenantId: string): AuditOutboxDocument {
 	return {
 		_id: "evt-1",
 		tenantId,
@@ -65,7 +65,7 @@ describe("audit delivery per tenant", () => {
 					? { tenant: tenantFromDocument(acme), jwks: acmeJwks }
 					: undefined,
 		});
-		const primary = await resolve(event(undefined));
+		const primary = await resolve(event("primary"));
 		expect(primary?.config.url).toBe(
 			"https://localman.hoandat.com/internal/audit-events",
 		);

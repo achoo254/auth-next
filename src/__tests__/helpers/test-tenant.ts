@@ -18,7 +18,6 @@ export const PRIMARY_TEST_TENANT: Tenant = {
 		localman: "https://localman.hoandat.com",
 		tunelo: "https://tunnel.hoandat.com",
 	},
-	ownsUntaggedData: true,
 };
 
 /** Brand of the primary tenant: what every existing page and message shows. */
@@ -38,7 +37,6 @@ export const OTHER_TEST_TENANT: Tenant = {
 		localman: "https://localman.example.org",
 		tunelo: "https://tunnel.example.org",
 	},
-	ownsUntaggedData: false,
 };
 
 /** The primary tenant's account repository on `db` (audit to a silent log). */
@@ -52,8 +50,7 @@ export function primaryAccounts(db: Db): AccountRepository {
 
 /**
  * `primary` (the env tenant of a test IdP), or another tenant served at the
- * same issuer: its own id, domain (resources, web apps) and brand, owning
- * no pre-tenant data.
+ * same issuer: its own id, domain (resources, web apps) and brand.
  */
 export function withTenant(
 	primary: Tenant,
@@ -66,6 +63,5 @@ export function withTenant(
 		domain: other.domain,
 		displayName: other.displayName,
 		webApps: webAppsFor(other.domain),
-		ownsUntaggedData: false,
 	};
 }

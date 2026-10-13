@@ -7,13 +7,9 @@ function duplicateKey(): MongoServerError {
 }
 
 describe("inTenant", () => {
-	it("matches untagged documents only for the tenant that owns them", () => {
-		expect(inTenant({ id: "primary", ownsUntaggedData: true })).toEqual({
-			tenantId: { $in: ["primary", null] },
-		});
-		expect(inTenant({ id: "ten_x", ownsUntaggedData: false })).toEqual({
-			tenantId: "ten_x",
-		});
+	it("matches exactly the tenant's documents", () => {
+		expect(inTenant({ id: "primary" })).toEqual({ tenantId: "primary" });
+		expect(inTenant({ id: "ten_x" })).toEqual({ tenantId: "ten_x" });
 	});
 });
 

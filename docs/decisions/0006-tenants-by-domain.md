@@ -30,10 +30,10 @@ IdP gắn cứng với `hoandat.com`: một issuer, một bộ audience (`https:
 
 ### 4. Chuyển đổi không gián đoạn và giới hạn của nó
 
-- **Đọc tương thích có thời hạn:** tenant chính khớp `tenantId: { $in: ["primary", null] }` (`ownsUntaggedData`), nên phiên, refresh token, grant, tài khoản tạo trước khi deploy vẫn dùng được trước và trong lúc backfill. Tenant khác không bao giờ thấy document chưa gắn.
+- **Đọc tương thích có thời hạn (bản đầu, commit `59dd1df`):** tenant chính khớp `tenantId: { $in: ["primary", null] }`, nên phiên, refresh token, grant, tài khoản tạo trước khi deploy vẫn dùng được trước và trong lúc backfill. Tenant khác không bao giờ thấy document chưa gắn. Đã gỡ ở cổng cuối phase 02 (dưới).
 - **Thứ tự rollout:** backup → deploy (`infra/deploy.sh` chạy `create-tenant-indexes` sau khi cài dependency, trước khi reload, nên khởi động chỉ còn no-op) → `node dist/backfill-tenant-id.mjs --dry-run` → `node dist/backfill-tenant-id.mjs` (báo 0 document còn thiếu) → kiểm Localman/Tunelo đăng nhập, refresh, token exchange, Config OP.
 - 5 chỉ mục unique toàn cục cũ **giữ nguyên** trên production tới cổng cuối phase 02 (với một tenant chúng vẫn đúng); database mới chỉ có chỉ mục ghép.
-- **Cổng trước tenant thứ hai (cuối phase 02):** backfill lần cuối báo 0 ở mọi collection, gỡ đọc tương thích (`ownsUntaggedData`) và 5 chỉ mục unique cũ. Chỉ sau đó mới được tạo tenant thứ hai.
+- **Cổng trước tenant thứ hai (cuối phase 02), tự động lúc khởi động:** mỗi lần khởi động, trước khi phục vụ, `migrateToTenants` gắn `tenantId` của tenant chính cho mọi document còn thiếu (chỉ tenant chính có thể đã ghi chúng), gỡ 5 chỉ mục unique toàn cục cũ cùng các chỉ mục tra cứu cũ không có `tenantId`, rồi đếm lại; còn document chưa gắn thì **không khởi động** thay vì giấu dữ liệu của chủ nó. Bộ lọc tenant khớp `tenantId` đúng tuyệt đối cho mọi tenant. Thứ tự deploy vì vậy không thể sai: bản này deploy thẳng lên dữ liệu chưa gắn vẫn đúng. Tenant thứ hai chỉ có thể tồn tại trên code đã qua cổng này.
 - **Chỉ sửa tiến sau tenant thứ hai:** không deploy lại code chưa có tenant (nó tạo lại chỉ mục unique toàn cục, crash-loop hoặc gửi audit sai tenant). Sự cố thì sửa tiến hoặc tạm `suspended` tenant mới. Trước cổng đó, lùi bằng deploy lại commit trước là an toàn (trường `tenantId` và chỉ mục ghép vô hại với code cũ); lùi xong phải chạy lại backfill trước khi tiến tiếp.
 
 ### 5. Runtime đa tenant (phase 02)

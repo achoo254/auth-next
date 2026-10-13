@@ -20,8 +20,8 @@ import {
  */
 interface StoredArtifact {
 	_id: string;
-	/** The tenant whose provider stored it; absent only on pre-tenant data. */
-	tenantId?: string | null;
+	/** The tenant the document belongs to. */
+	tenantId: string;
 	payload: AdapterPayload;
 	expiresAt?: Date;
 	grantId?: string;
