@@ -51,6 +51,25 @@ Bản đầu tiên có tenant deploy theo thứ tự này (lệnh trên server c
 
 Lùi trước khi có tenant thứ hai: deploy lại commit trước, rồi chạy lại bước 3 trước khi tiến tiếp. Sau khi có tenant thứ hai chỉ sửa tiến (ADR 0006 mục 4).
 
+## Phục vụ tenant khác (ADR 0006)
+
+Mặc định IdP chỉ phục vụ tenant `hoandat.com`. Bật sổ tenant bằng cặp env (đặt cả hai hoặc không đặt):
+
+| Env | Ý nghĩa |
+|---|---|
+| `TENANT_SECRETS_KEY` | `kid:base64` của khoá 32 byte (`openssl rand -base64 32`), có thể nhiều khoá cách bằng dấu phẩy; khoá đầu niêm phong secret của tenant (OAuth, bot, khoá ký) bằng AES-256-GCM |
+| `APP_CLIENT_SECRET_KEY` | ≥ 32 ký tự; Localman và Tunelo giữ cùng giá trị để tự tính secret client của từng tenant |
+| `TENANT_MAX_ACTIVE` | số tenant đang phục vụ tối đa, mặc định 20 (đo 2026-10-13: mỗi runtime rỗi thêm khoảng 0,4 MB RSS; 50 runtime thêm 21 MB) |
+| `INTERNAL_API_CREDENTIALS` | `localman:<secret>,tunelo:<secret>,provisioner:<secret>` (≥ 32 ký tự mỗi secret); thiếu thì API nội bộ tắt |
+| `INTERNAL_HOST`, `INTERNAL_PORT` | API nội bộ, mặc định `127.0.0.1:4501`, chỉ nhận địa chỉ loopback |
+| `SERVICE_IPV4` | IP công khai của máy; có thì cứ 6 giờ kiểm lại TXT `_auth-claim.<d>` và bản ghi A của mọi host tenant, sai 3 lần liền thì tenant `suspended` |
+
+**Backup khoá (bắt buộc trước khi có tenant thứ hai):** chép `TENANT_SECRETS_KEY` vào thư mục secret ngoài server (mục "Nơi lưu secret"). Mất khoá thì mọi tenant mất khoá ký, OAuth và bot; backup database không đủ để khôi phục.
+
+**Xoay `TENANT_SECRETS_KEY`:** thêm khoá mới **lên đầu** (`k2:<mới>,k1:<cũ>`), restart; secret ghi sau đó dùng khoá mới, secret cũ vẫn mở bằng khoá cũ. Chỉ bỏ khoá cũ khi mọi secret đã được ghi lại.
+
+**nginx:** block của host nào cũng có `location /internal { return 404; }` (đã có trong `infra/nginx/auth.hoandat.com.conf`); API nội bộ không bao giờ được proxy.
+
 ## Tuỳ chọn bật sau
 
 - Google/GitHub (đã bật 2026-10-09): GitHub OAuth App "hoandat · Tài khoản" (owner `achoo254`, app id 3916221); Google Cloud project `hoandat-auth`, Google Auth Platform ở trạng thái "In production" (External), web client `auth.hoandat.com`. Callback lần lượt `https://auth.hoandat.com/oauth/github/callback` và `/oauth/google/callback`. Google bắt buộc link chính sách quyền riêng tư `https://auth.hoandat.com/privacy` trước khi publish.

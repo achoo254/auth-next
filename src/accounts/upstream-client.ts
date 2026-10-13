@@ -44,20 +44,38 @@ export function upstreamCallbackPath(provider: UpstreamProvider): string {
 }
 
 /**
- * Only providers with credentials in the environment are enabled; their
- * callbacks are on `issuer`, the tenant's own host.
+ * Only providers with credentials are enabled; their callbacks are on
+ * `issuer`, the tenant's own host (each tenant registers its own OAuth apps).
  */
-export function createUpstreams(env: Env, issuer: string): Upstreams {
+export function createUpstreamsFrom(
+	issuer: string,
+	credentials: {
+		readonly google?: OAuthAppCredentials;
+		readonly github?: OAuthAppCredentials;
+	},
+): Upstreams {
 	const upstreams = new Map<UpstreamProvider, UpstreamClient>();
 	const callback = (provider: UpstreamProvider): string =>
 		`${issuer}${upstreamCallbackPath(provider)}`;
-	const google: OAuthAppCredentials | undefined = googleCredentials(env);
-	if (google) {
-		upstreams.set("google", createGoogleUpstream(google, callback("google")));
+	if (credentials.google) {
+		upstreams.set(
+			"google",
+			createGoogleUpstream(credentials.google, callback("google")),
+		);
 	}
-	const github = githubCredentials(env);
-	if (github) {
-		upstreams.set("github", createGithubUpstream(github, callback("github")));
+	if (credentials.github) {
+		upstreams.set(
+			"github",
+			createGithubUpstream(credentials.github, callback("github")),
+		);
 	}
 	return upstreams;
+}
+
+/** The primary tenant's providers, from the environment. */
+export function createUpstreams(env: Env, issuer: string): Upstreams {
+	return createUpstreamsFrom(issuer, {
+		google: googleCredentials(env),
+		github: githubCredentials(env),
+	});
 }

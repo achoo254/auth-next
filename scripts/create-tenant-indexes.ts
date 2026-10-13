@@ -14,6 +14,7 @@ import { connectMongo } from "../src/db/connect-mongo.js";
 import { createLogger } from "../src/logger.js";
 import { ensureOidcIndexes } from "../src/oidc/oidc-indexes.js";
 import { ensureAccountLayerIndexes } from "../src/services.js";
+import { ensureTenantRegistryIndexes } from "../src/tenants/tenant-registry.js";
 
 async function timed(label: string, run: () => Promise<void>): Promise<void> {
 	const started = performance.now();
@@ -29,6 +30,9 @@ async function main(): Promise<void> {
 		await timed("oidc_* indexes", () => ensureOidcIndexes(connection.db));
 		await timed("account layer indexes", () =>
 			ensureAccountLayerIndexes(connection.db),
+		);
+		await timed("tenant registry indexes", () =>
+			ensureTenantRegistryIndexes(connection.db),
 		);
 	} finally {
 		await connection.client.close();

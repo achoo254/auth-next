@@ -4,6 +4,7 @@ import {
 	checkIntegrationGroups,
 	integrationEnvShape,
 } from "./integrations-env.js";
+import { checkTenantsGroup, tenantsEnvShape } from "./tenants-env.js";
 import { type TrustProxy, parseTrustProxy } from "./trust-proxy.js";
 
 const port = z.coerce.number().int().min(1).max(65_535);
@@ -116,9 +117,11 @@ const envSchema = z
 			.enum(["fatal", "error", "warn", "info", "debug", "trace", "silent"])
 			.default("info"),
 		...integrationEnvShape,
+		...tenantsEnvShape,
 	})
 	.superRefine((env, ctx) => {
 		checkIntegrationGroups(env, ctx);
+		checkTenantsGroup(env, ctx);
 		if (env.NODE_ENV !== "production") return;
 		for (const key of PRODUCTION_URLS) {
 			if (!isPublicHttpsUrl(env[key])) {

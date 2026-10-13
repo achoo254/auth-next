@@ -17,6 +17,16 @@ export function bindRequestTenant(tenant: Tenant): RequestHandler {
 	};
 }
 
+/** The tenant of a request, if one was selected for it yet. */
+export function findRequestTenant(req: IncomingMessage): Tenant | undefined {
+	return tenants.get(req);
+}
+
+/** Marks one request as served by `tenant`. */
+export function setRequestTenant(req: IncomingMessage, tenant: Tenant): void {
+	tenants.set(req, tenant);
+}
+
 /**
  * The tenant of a request. Every route that renders a page sits behind
  * `bindRequestTenant`, so a missing tenant is a wiring bug, not a fallback

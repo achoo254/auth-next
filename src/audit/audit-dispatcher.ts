@@ -1,6 +1,7 @@
 import type { AuditDeliveryConfig } from "../config/integrations-env.js";
 import type { Logger } from "../logger.js";
-import type { AuditOutbox, LeasedEvent } from "./audit-outbox.js";
+import type { AuditOutboxDocument, LeasedEvent } from "./audit-outbox.js";
+import type { AuditQueue } from "./audit-queue.js";
 import { SET_TYPE, type SecurityEventSigner } from "./security-event-token.js";
 
 const FIRST_RETRY_MS = 5_000;
@@ -22,9 +23,16 @@ export interface AuditDelivery {
 	readonly sign: SecurityEventSigner;
 }
 
+/** The target and signer for one event (its tenant's), or none yet. */
+export type AuditDeliveryResolver = (
+	event: AuditOutboxDocument,
+) => Promise<AuditDelivery | undefined>;
+
 export interface AuditDispatcherOptions {
-	readonly outbox: AuditOutbox;
-	readonly delivery?: AuditDelivery;
+	/** One tenant's outbox, or every tenant's (allTenantsAuditQueue). */
+	readonly outbox: AuditQueue;
+	/** Absent: delivery is off and the dispatcher only scrubs old events. */
+	readonly deliveryFor?: AuditDeliveryResolver;
 	readonly logger: Logger;
 	readonly pollIntervalMs?: number;
 	readonly requestTimeoutMs?: number;
@@ -75,15 +83,18 @@ export class AuditDispatcher {
 	/** One poll: sends due events until none is left or the batch is used up. */
 	async dispatchDue(): Promise<{ delivered: number; failed: number }> {
 		const counts = { delivered: 0, failed: 0 };
-		const { delivery } = this.options;
-		if (!delivery) return counts;
+		const { deliveryFor } = this.options;
+		if (!deliveryFor) return counts;
 		const batch = this.options.batchSize ?? 20;
 		const leaseMs = 3 * (this.options.requestTimeoutMs ?? 10_000);
 		for (let index = 0; index < batch; index += 1) {
 			if (this.stopping.signal.aborted) break;
 			const event = await this.options.outbox.claimDue(this.now(), leaseMs);
 			if (!event) break;
-			const outcome = await this.deliver(event, delivery);
+			const delivery = await deliveryFor(event);
+			const outcome = delivery
+				? await this.deliver(event, delivery)
+				: await this.postpone(event, "no delivery target");
 			if (outcome === "delivered") counts.delivered += 1;
 			if (outcome === "failed") counts.failed += 1;
 		}
@@ -111,6 +122,14 @@ export class AuditDispatcher {
 		if (!this.stopping.signal.aborted) {
 			this.schedule(this.options.pollIntervalMs ?? 5_000);
 		}
+	}
+
+	/** Keeps an event whose tenant has no target now; it is retried with backoff. */
+	private async postpone(event: LeasedEvent, error: string): Promise<Outcome> {
+		const attempts = event.attempts + 1;
+		const next = new Date(this.now().getTime() + retryDelayMs(attempts));
+		await this.options.outbox.markFailed(event, next, error);
+		return "failed";
 	}
 
 	private async deliver(

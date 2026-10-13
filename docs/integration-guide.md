@@ -294,7 +294,25 @@ Body là Security Event Token (RFC 8417), header `{alg: "ES256", kid, typ: "sece
 3. Bỏ trùng theo `jti` (bằng `Idempotency-Key`): IdP có thể gửi lại một sự kiện đã nhận nếu phản hồi lần trước bị mất; lần trùng vẫn trả 2xx.
 4. Trả `202` (hoặc 2xx bất kỳ) khi đã lưu. Mọi phản hồi khác làm IdP thử lại sau 5 giây, nhân đôi mỗi lần, trần 1 giờ, **không bao giờ bỏ** sự kiện; IdP không đọc body phản hồi.
 
-## 11. Chưa làm ở IdP
+## 11. Tenant khác `hoandat.com` (ADR 0006)
+
+IdP phục vụ thêm tenant theo domain: tenant `<d>` có issuer `https://auth.<d>`, audience `https://localman.<d>`, `https://localman.<d>/mcp`, `https://tunnel.<d>`, cùng client id (`localman-web`, `tunelo-cli`, `tunelo-web`). Tenant `hoandat.com` không đổi gì ở mục 1–10; app giữ cấu hình tĩnh cho nó và không cần IdP lúc chạy.
+
+**API nội bộ** (chỉ trên loopback của máy chạy IdP, `INTERNAL_HOST:INTERNAL_PORT`, mặc định `127.0.0.1:4501`; không bao giờ qua nginx). Mỗi app có Basic credentials riêng (`localman:<secret>`, `tunelo:<secret>` trong `INTERNAL_API_CREDENTIALS` của IdP). Không endpoint nào trả secret.
+
+| Endpoint | Trả |
+|---|---|
+| `GET /internal/tenants/lookup?host=<Host>` | `{ id, domain, displayName, issuer, status, resources, webApps }` cho mọi host của tenant (`auth.`, `localman.`, `<x>.localman.`, `tunnel.`, `<x>.tunnel.`); `404` khi không có tenant đang phục vụ (tenant bị đình chỉ cũng 404) |
+| `GET /internal/tenants/<id>/jwks` | JWKS công khai của tenant |
+| `GET /internal/tenants/<id>/openid-configuration` | discovery của tenant, đúng như `https://auth.<d>/.well-known/openid-configuration` |
+
+App lấy JWKS và discovery của tenant qua API này, **không** phân giải `auth.<d>` qua DNS công khai (domain của tenant do người khác giữ DNS). Cache theo tenant, dùng bản cũ khi IdP lỗi; chỉ cache âm khi IdP trả `404`.
+
+**Secret client của tenant mới** không được cấp qua API nào: app tự tính `base64url(HMAC-SHA256(APP_CLIENT_SECRET_KEY, "<tenantId>:<clientId>"))` (khoá chung với IdP, `clientId` là `localman-web` hoặc `tunelo-web`). Xoay khoá là xoay mọi secret suy ra cùng lúc.
+
+**Audit:** sự kiện của tenant `<d>` gửi tới `https://localman.<d>/internal/audit-events`, ký bằng khoá của tenant với `iss = https://auth.<d>` và `aud` là URL đó; cùng một bộ Basic credentials cho mọi tenant (`AUDIT_CLIENT_ID`/`AUDIT_CLIENT_SECRET`). Localman phân biệt tenant bằng `iss` và xác minh bằng JWKS lấy qua API nội bộ.
+
+## 12. Chưa làm ở IdP
 
 - **Lookup workspace** (`GET {LOCALMAN}/internal/users/:sub/workspaces`, client credentials, cache 60 giây): IdP chưa có tính năng nào cần nó (trang service account thuộc plan devops phase 01), nên chưa gọi. Khi làm, IdP coi Localman là nguồn duy nhất và không lưu danh sách workspace.
 - Service account và grant `client_credentials` (plan devops phase 01): khi có, Tunelo dùng nó để gọi API nội bộ của Localman.

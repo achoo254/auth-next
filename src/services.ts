@@ -59,6 +59,14 @@ export interface ServiceDependencies {
 	readonly telegram?: TelegramBot;
 	/** Replaces the env-derived Google/GitHub clients (tests). */
 	readonly upstreams?: Upstreams;
+	/**
+	 * A registry tenant's own sign-in providers and bot. When given, nothing
+	 * falls back to the environment, which configures the primary tenant.
+	 */
+	readonly integrations?: {
+		readonly upstreams: Upstreams;
+		readonly telegram?: TelegramBot;
+	};
 	readonly formPostsPerMinute?: number;
 }
 
@@ -87,11 +95,15 @@ export function createServices(deps: ServiceDependencies): AppServices {
 		tokens: new OneTimeTokenStore(db, tenant),
 		accountTokens: new AccountTokens(db, deps.accounts),
 		csrf: createCsrf(env.COOKIE_KEYS, secureCookies),
-		upstreams: deps.upstreams ?? createUpstreams(env, tenant.issuer),
+		upstreams:
+			deps.integrations?.upstreams ??
+			deps.upstreams ??
+			createUpstreams(env, tenant.issuer),
 		formPostsPerMinute: deps.formPostsPerMinute ?? 30,
-		telegram:
-			deps.telegram ??
-			(telegramConfig ? createTelegramBot(telegramConfig) : undefined),
+		telegram: deps.integrations
+			? deps.integrations.telegram
+			: (deps.telegram ??
+				(telegramConfig ? createTelegramBot(telegramConfig) : undefined)),
 	};
 }
 

@@ -2,11 +2,6 @@ import type { Server } from "node:http";
 import { setDefaultAutoSelectFamilyAttemptTimeout } from "node:net";
 import type { Express } from "express";
 import type { MongoClient } from "mongodb";
-import { AccountRepository } from "./accounts/account-repository.js";
-import { createApp } from "./app.js";
-import { AuditDispatcher } from "./audit/audit-dispatcher.js";
-import { AuditOutbox } from "./audit/audit-outbox.js";
-import { createSecurityEventSigner } from "./audit/security-event-token.js";
 import { type Env, parseEnv } from "./config/env.js";
 import { auditDeliveryConfig } from "./config/integrations-env.js";
 import { connectMongo } from "./db/connect-mongo.js";
@@ -17,9 +12,9 @@ import {
 	rsaSigningKey,
 } from "./oidc/jwks.js";
 import { ensureOidcIndexes } from "./oidc/oidc-indexes.js";
-import { createProvider } from "./oidc/provider.js";
-import { createServices, ensureAccountLayerIndexes } from "./services.js";
-import { envClientSecrets, envTenant } from "./tenants/env-tenant.js";
+import { ensureAccountLayerIndexes } from "./services.js";
+import { type Serving, createServing } from "./tenants/serving.js";
+import { ensureTenantRegistryIndexes } from "./tenants/tenant-registry.js";
 
 const SHUTDOWN_TIMEOUT_MS = 10_000;
 /**
@@ -61,11 +56,11 @@ function closeServer(server: Server): Promise<void> {
 }
 
 const env = loadEnvOrExit();
-const tenant = envTenant(env);
 const logger: Logger = createLogger(env.LOG_LEVEL);
 let server: Server | undefined;
+let internalServer: Server | undefined;
 let mongo: MongoClient | undefined;
-let auditDispatcher: AuditDispatcher | undefined;
+let serving: Serving | undefined;
 let shuttingDown = false;
 
 async function shutdown(reason: string, exitCode: number): Promise<void> {
@@ -79,8 +74,9 @@ async function shutdown(reason: string, exitCode: number): Promise<void> {
 	forceExit.unref();
 	try {
 		if (server) await closeServer(server);
+		if (internalServer) await closeServer(internalServer);
 		// Stops before MongoDB closes; an attempt in flight is handed back.
-		if (auditDispatcher) await auditDispatcher.stop();
+		if (serving) await serving.stop();
 		if (mongo) await mongo.close();
 		logger.info("Shutdown complete");
 		process.exit(exitCode);
@@ -117,28 +113,9 @@ try {
 	mongo = connection.client;
 	await ensureOidcIndexes(connection.db);
 	await ensureAccountLayerIndexes(connection.db);
-	const accounts = new AccountRepository(
-		connection.db,
-		tenant,
-		new AuditOutbox(connection.db, tenant, logger),
-	);
-	const provider = createProvider({
-		tenant,
-		db: connection.db,
-		jwks,
-		cookieKeys: env.COOKIE_KEYS,
-		clientSecrets: envClientSecrets(env),
-		accountStore: accounts,
-		logger,
-	});
-	const services = createServices({
-		env,
-		tenant,
-		db: connection.db,
-		provider,
-		logger,
-		accounts,
-	});
+	await ensureTenantRegistryIndexes(connection.db);
+	serving = await createServing(env, connection.db, jwks, logger);
+	const { services } = serving.primary;
 	logger.info(
 		{
 			upstreams: [...services.upstreams.keys()],
@@ -146,28 +123,30 @@ try {
 		},
 		"Sign-in integrations",
 	);
-	// Without a target the dispatcher only scrubs old events' IP/User-Agent.
 	const delivery = auditDeliveryConfig(env);
-	auditDispatcher = new AuditDispatcher({
-		outbox: services.audit,
-		delivery: delivery && {
-			config: delivery,
-			sign: createSecurityEventSigner({
-				issuer: tenant.issuer,
-				audience: delivery.url,
-				jwks,
-			}),
-		},
-		logger,
-	});
 	logger.info(
 		{ auditDelivery: delivery ? new URL(delivery.url).origin : "outbox only" },
 		"Audit events",
 	);
-	server = await listen(createApp({ services, env }), env.HOST, env.PORT);
-	auditDispatcher?.start();
+	server = await listen(serving.app, env.HOST, env.PORT);
+	if (serving.internalApp) {
+		internalServer = await listen(
+			serving.internalApp,
+			env.INTERNAL_HOST,
+			env.INTERNAL_PORT,
+		);
+	}
+	serving.start();
 	logger.info(
-		{ host: env.HOST, port: env.PORT, issuer: tenant.issuer },
+		{
+			host: env.HOST,
+			port: env.PORT,
+			issuer: serving.primary.tenant.issuer,
+			internalApi: serving.internalApp
+				? `${env.INTERNAL_HOST}:${env.INTERNAL_PORT}`
+				: "off",
+			tenants: env.TENANT_SECRETS_KEY ? "registry" : "primary only",
+		},
 		"hoandat-auth listening",
 	);
 } catch (error) {

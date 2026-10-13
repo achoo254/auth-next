@@ -1,8 +1,9 @@
 import type { Express, RequestHandler } from "express";
-import { rateLimit } from "express-rate-limit";
+import { ipKeyGenerator, rateLimit } from "express-rate-limit";
 import helmet from "helmet";
 import type { TrustProxy } from "../config/trust-proxy.js";
 import { OIDC_ROUTES } from "../oidc/provider.js";
+import { findRequestTenant } from "../tenants/request-tenant.js";
 import { normalizeRoutePath } from "./route-path.js";
 
 export interface RateLimitRule {
@@ -89,12 +90,19 @@ function contentSecurityPolicy(issuer: string): Parameters<typeof helmet>[0] {
 	};
 }
 
-function rateLimiter(rules: readonly RateLimitRule[]): RequestHandler {
+/**
+ * One store per rule for the whole process, keyed by (tenant, client IP):
+ * each tenant has its own budget, and touching other tenants never resets
+ * or shares one. Requests before tenant selection count under no tenant.
+ */
+export function rateLimiter(rules: readonly RateLimitRule[]): RequestHandler {
 	const limiters = new Map<string, RequestHandler>();
 	for (const rule of rules) {
 		const limiter = rateLimit({
 			windowMs: rule.windowMs,
 			limit: rule.limit,
+			keyGenerator: (req) =>
+				`${findRequestTenant(req)?.id ?? ""}|${ipKeyGenerator(req.ip ?? "")}`,
 			standardHeaders: "draft-8",
 			legacyHeaders: false,
 			message: {
@@ -126,8 +134,13 @@ export function applySecurity(app: Express, options: SecurityOptions): void {
 		"trust proxy",
 		options.trustProxy === false ? false : [...options.trustProxy],
 	);
-	app.use(helmet(contentSecurityPolicy(options.issuer)));
+	app.use(securityHeaders(options.issuer));
 	app.use(rateLimiter(options.rateLimits ?? RATE_LIMIT_RULES));
+}
+
+/** Security headers (CSP, framing, HSTS...) of the pages served at `issuer`. */
+export function securityHeaders(issuer: string): RequestHandler {
+	return helmet(contentSecurityPolicy(issuer));
 }
 
 /**

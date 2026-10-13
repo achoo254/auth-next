@@ -76,7 +76,7 @@ export function testDispatcher(
 ): AuditDispatcher {
 	return new AuditDispatcher({
 		outbox: idp.services.audit,
-		delivery: {
+		deliveryFor: async () => ({
 			config: {
 				url,
 				clientId: AUDIT_CLIENT_ID,
@@ -87,7 +87,7 @@ export function testDispatcher(
 				audience: url,
 				jwks: idp.jwks,
 			}),
-		},
+		}),
 		logger: createLogger("silent"),
 		requestTimeoutMs: options.timeoutMs ?? 2_000,
 		pollIntervalMs: 20,

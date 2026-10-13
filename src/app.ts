@@ -6,10 +6,10 @@ import type { Env } from "./config/env.js";
 import { createErrorHandler } from "./http/error-handler.js";
 import {
 	type RateLimitRule,
-	applySecurity,
 	forwardTrustedClientInfo,
-	requireKnownHost,
+	securityHeaders,
 } from "./http/security.js";
+import { createDispatcher } from "./http/tenant-dispatcher.js";
 import { createLanguageRouter } from "./i18n/language-route.js";
 import { createInteractionRouter } from "./interactions/interaction-router.js";
 import { createUpstreamCallbackRouter } from "./interactions/upstream-start.js";
@@ -20,50 +20,41 @@ import { createTelegramLinkRouter } from "./telegram/link-routes.js";
 import { createTelegramWebhookRouter } from "./telegram/webhook-routes.js";
 import { bindRequestTenant } from "./tenants/request-tenant.js";
 
-export interface AppOptions {
+export interface TenantAppOptions {
 	readonly services: AppServices;
-	readonly env: Pick<Env, "TRUST_PROXY" | "ALLOWED_HOSTS">;
+	readonly env: Pick<Env, "TRUST_PROXY">;
 	/**
 	 * Replaces the interaction pages under /interaction. Tests only: the
 	 * automatic sign-in helper never ships in production wiring.
 	 */
 	readonly interactions?: RequestHandler;
-	readonly rateLimits?: readonly RateLimitRule[];
 }
 
 /**
- * Express shell: security layer, /healthz, static assets, the
- * server-rendered pages (the app list at /apps, interactions, /account, Google/GitHub callbacks,
- * Telegram webhook), then the provider for everything else.
+ * One tenant's pages behind the dispatcher: security headers, static
+ * assets, the server-rendered pages (the app list at /apps, interactions,
+ * /account, Google/GitHub callbacks, Telegram webhook), then the tenant's
+ * provider for everything else.
  */
-export function createApp(options: AppOptions): Express {
+export function createTenantApp(options: TenantAppOptions): Express {
 	const { services, env } = options;
 	const { tenant } = services;
-	const issuerHost = new URL(tenant.issuer).host;
 	const app = express();
 	app.disable("x-powered-by");
-	applySecurity(app, {
-		trustProxy: env.TRUST_PROXY,
-		issuer: tenant.issuer,
-		rateLimits: options.rateLimits,
-	});
-
-	// Liveness only; MongoDB outages surface as provider errors, and the
-	// process exits at startup when MongoDB is unreachable.
-	app.get("/healthz", (_req, res) => {
-		res.status(200).json({ status: "ok" });
-	});
-
-	// Everything below serves issuer URLs; /healthz stays reachable on any
-	// Host for container healthchecks.
-	app.use(requireKnownHost([issuerHost, ...env.ALLOWED_HOSTS]));
+	// Mounted per request rather than with app.use, so it sets its own proxy
+	// trust (req.ip, req.protocol) the same way the dispatcher does.
+	app.set(
+		"trust proxy",
+		env.TRUST_PROXY === false ? false : [...env.TRUST_PROXY],
+	);
+	app.use(securityHeaders(tenant.issuer));
 	app.use(bindRequestTenant(tenant));
 	// Interaction handlers call provider.interactionDetails/Finished, which
 	// read the same forwarded headers as the provider itself.
 	app.use(forwardTrustedClientInfo);
 	app.use("/assets", createAssetsRouter());
 	app.use(createAppsRouter(tenant));
-	app.use(createPrivacyRouter(issuerHost));
+	app.use(createPrivacyRouter(new URL(tenant.issuer).host));
 	app.use(createLanguageRouter(services));
 	app.use(
 		INTERACTION_PATH,
@@ -81,4 +72,34 @@ export function createApp(options: AppOptions): Express {
 
 	app.use(createErrorHandler(services.logger));
 	return app;
+}
+
+export interface AppOptions extends TenantAppOptions {
+	readonly env: Pick<Env, "TRUST_PROXY" | "ALLOWED_HOSTS">;
+	readonly rateLimits?: readonly RateLimitRule[];
+}
+
+/**
+ * A server for one tenant only: the dispatcher serves it at its issuer's
+ * host and ALLOWED_HOSTS. Tests and the conformance harness use this; the
+ * server process dispatches across every tenant (server.ts).
+ */
+export function createApp(options: AppOptions): Express {
+	const { services, env } = options;
+	const runtime = { tenant: services.tenant, app: createTenantApp(options) };
+	const hosts = new Set(
+		[new URL(services.tenant.issuer).host, ...env.ALLOWED_HOSTS].map((host) =>
+			host.toLowerCase(),
+		),
+	);
+	return createDispatcher({
+		trustProxy: env.TRUST_PROXY,
+		rateLimits: options.rateLimits,
+		logger: services.logger,
+		headers: securityHeaders(services.tenant.issuer),
+		lookup: async (host) =>
+			host && hosts.has(host.toLowerCase())
+				? { kind: "found", runtime }
+				: { kind: "unknown" },
+	});
 }
