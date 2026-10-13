@@ -7,7 +7,7 @@ import { auditContext } from "../audit/audit-context.js";
 import { routeParam } from "../http/form.js";
 import { startUpstream } from "../interactions/upstream-start.js";
 import type { AppServices } from "../services.js";
-import { GRANT_META_COLLECTION, revokeGrant } from "./grant-directory.js";
+import { forgetDeviceGrants, revokeGrant } from "./grant-directory.js";
 import type { PortalHandler } from "./portal-session.js";
 import { revokeSession } from "./session-directory.js";
 
@@ -72,7 +72,7 @@ export function registerAccessRoutes(
 		write(async (req, res, { account }) => {
 			const done = await revokeSession(
 				services.provider,
-				services.db,
+				services,
 				services.logger,
 				account._id,
 				routeParam(req, "uid"),
@@ -98,9 +98,7 @@ export function registerAccessRoutes(
 			const grantId = routeParam(req, "grantId");
 			const done = await revokeGrant(services.provider, account._id, grantId);
 			if (done) {
-				await services.db
-					.collection<{ _id: string }>(GRANT_META_COLLECTION)
-					.deleteOne({ _id: grantId });
+				await forgetDeviceGrants(services, [grantId]);
 				await services.audit.record(
 					"grant.revoked",
 					account._id,

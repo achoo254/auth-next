@@ -1,26 +1,18 @@
 import type { Db } from "mongodb";
 import Provider, { type Configuration } from "oidc-provider";
-import type { Env } from "../config/env.js";
 import { LOCALES } from "../i18n/locales.js";
 import { DEVICE_NAME_EXTRA_PARAM } from "../interactions/device-info.js";
-import {
-	deviceSuccessSource,
-	userCodeConfirmSource,
-	userCodeInputSource,
-} from "../interactions/device-verify-page.js";
 import { renderProviderError } from "../interactions/error-page.js";
-import {
-	logoutSource,
-	postLogoutSuccessSource,
-} from "../interactions/logout-page.js";
 import type { Logger } from "../logger.js";
+import { resourcesFor } from "../tenants/tenant-resources.js";
+import type { Tenant } from "../tenants/tenant.js";
 import {
 	type AccountStore,
 	CLAIMS_BY_SCOPE,
 	createFindAccount,
 } from "./claims.js";
 import {
-	TRUSTED_INTROSPECTION_CLIENT_IDS,
+	type StaticClientSecrets,
 	buildStaticClients,
 	refreshesWithSession,
 } from "./clients.js";
@@ -32,13 +24,14 @@ import {
 } from "./interaction-policy.js";
 import { SIGNING_ALG, type SigningJwks, idTokenSigningAlgs } from "./jwks.js";
 import { createMongoAdapterFactory } from "./mongo-adapter.js";
+import { buildProviderFeatures } from "./provider-features.js";
 import { logProviderEvents } from "./provider-logging.js";
-import { validateClientMetadata } from "./registration-policy.js";
+import { createClientMetadataValidator } from "./registration-policy.js";
 import {
 	ALLOWED_RESOURCES_PROPERTY,
+	type ResourcePolicy,
 	SUPPORTED_SCOPES,
-	defaultResource,
-	getResourceServerInfo,
+	createResourcePolicy,
 } from "./resources.js";
 import {
 	GRANT_IDLE_SECONDS,
@@ -82,22 +75,38 @@ export const TTL_SECONDS = {
 	Session: 30 * DAY,
 } as const;
 
+/** Everything one tenant's provider is built from. */
 export interface ProviderDependencies {
-	readonly env: Env;
+	readonly tenant: Tenant;
 	readonly db: Db;
 	readonly jwks: SigningJwks;
+	/** Keys signing the provider's cookies (shared by every tenant). */
+	readonly cookieKeys: readonly string[];
+	readonly clientSecrets: StaticClientSecrets;
 	readonly accountStore: AccountStore;
 	readonly logger: Logger;
+}
+
+/** The tenant's resources (audiences) and how tokens for them are issued. */
+export function tenantResourcePolicy(
+	tenant: Pick<Tenant, "domain">,
+): ResourcePolicy {
+	return createResourcePolicy(resourcesFor(tenant.domain));
 }
 
 export function buildProviderConfiguration(
 	deps: Omit<ProviderDependencies, "logger">,
 ): Configuration {
-	const { env, db, jwks, accountStore } = deps;
+	const { tenant, db, jwks, accountStore } = deps;
+	const resources = tenantResourcePolicy(tenant);
 	const policy = buildInteractionPolicy();
 	return {
-		adapter: createMongoAdapterFactory(db),
-		clients: buildStaticClients(env),
+		adapter: createMongoAdapterFactory(db, tenant),
+		clients: buildStaticClients(
+			tenant,
+			resources.resources,
+			deps.clientSecrets,
+		),
 		findAccount: createFindAccount(accountStore),
 		jwks: { keys: jwks.keys.map((key) => ({ ...key })) },
 		claims: CLAIMS_BY_SCOPE,
@@ -113,7 +122,7 @@ export function buildProviderConfiguration(
 		enabledJWA: { idTokenSigningAlgValues: idTokenSigningAlgs(jwks) },
 		extraClientMetadata: {
 			properties: [ALLOWED_RESOURCES_PROPERTY],
-			validator: validateClientMetadata,
+			validator: createClientMetadataValidator(resources),
 		},
 		pkce: { required: () => true },
 		routes: OIDC_ROUTES,
@@ -130,11 +139,11 @@ export function buildProviderConfiguration(
 		extraParams: DEVICE_NAME_EXTRA_PARAM,
 		renderError: renderProviderError,
 		formats: { customizers: { jwt: addActorClaims } },
-		cookies: cookieConfig(env.ISSUER, env.COOKIE_KEYS),
+		cookies: cookieConfig(tenant.issuer, deps.cookieKeys),
 		ttl: { ...TTL_SECONDS, RefreshToken: refreshTokenTtl },
 		// Every refresh rotates (presenting a consumed one revokes the grant)
 		// and slides the grant: 30 days idle, 90 days at most.
-		rotateRefreshToken: createRotateAndSlideGrant(db),
+		rotateRefreshToken: createRotateAndSlideGrant({ db, tenant }),
 		// MCP clients and Localman web hold no offline_access, yet need refresh
 		// tokens to outlive the 15-minute access token; theirs die with the
 		// IdP session (and logout revokes their grant).
@@ -142,43 +151,7 @@ export function buildProviderConfiguration(
 			client.grantTypeAllowed("refresh_token") &&
 			(code.scopes.has("offline_access") ||
 				refreshesWithSession(client.clientId)),
-		features: {
-			devInteractions: { enabled: false },
-			deviceFlow: {
-				enabled: true,
-				userCodeInputSource,
-				userCodeConfirmSource,
-				successSource: deviceSuccessSource,
-			},
-			// A client may only revoke its own tokens.
-			revocation: {
-				enabled: true,
-				allowedPolicy: async (_ctx, client, token) =>
-					token.clientId === client.clientId,
-			},
-			introspection: {
-				enabled: true,
-				// A client sees only its own tokens, except the first-party
-				// confidential apps; others get the plain `active: false`.
-				allowedPolicy: async (_ctx, client, token) =>
-					token.clientId === client.clientId ||
-					TRUSTED_INTROSPECTION_CLIENT_IDS.has(client.clientId),
-			},
-			rpInitiatedLogout: {
-				enabled: true,
-				logoutSource,
-				postLogoutSuccessSource,
-			},
-			backchannelLogout: { enabled: true },
-			userinfo: { enabled: true },
-			registration: { enabled: true, initialAccessToken: false },
-			resourceIndicators: {
-				enabled: true,
-				defaultResource,
-				getResourceServerInfo,
-				useGrantedResource: async () => true,
-			},
-		},
+		features: buildProviderFeatures(resources),
 	};
 }
 
@@ -189,11 +162,15 @@ export function buildProviderConfiguration(
  */
 export function createProvider(deps: ProviderDependencies): Provider {
 	const provider = new Provider(
-		deps.env.ISSUER,
+		deps.tenant.issuer,
 		buildProviderConfiguration(deps),
 	);
 	provider.proxy = true;
-	enableTokenExchange(provider, deps.accountStore);
+	enableTokenExchange(
+		provider,
+		deps.accountStore,
+		tenantResourcePolicy(deps.tenant),
+	);
 	ignoreOfflineAccessOfDynamicClients(provider, OIDC_ROUTES.authorization);
 	logProviderEvents(provider, deps.logger);
 	return provider;

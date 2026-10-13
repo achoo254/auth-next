@@ -28,7 +28,7 @@ afterAll(async () => {
 
 describe("smaller hardening", () => {
 	it("never re-creates a grant revoked while a refresh was in flight", async () => {
-		const slide = createRotateAndSlideGrant(idp.db);
+		const slide = createRotateAndSlideGrant(idp.services);
 		const now = Math.floor(Date.now() / 1000);
 		const grant = {
 			iat: now - 60,

@@ -1,6 +1,6 @@
 import * as client from "openid-client";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { CREDENTIALS_SCOPE, RESOURCES } from "../oidc/resources.js";
+import { CREDENTIALS_SCOPE } from "../oidc/resources.js";
 import { authorizationRedirect } from "./helpers/flows.js";
 import { signedInBrowser } from "./helpers/session-flows.js";
 import {
@@ -11,6 +11,7 @@ import {
 import { formField } from "./helpers/test-browser.js";
 import { type TestIdp, startTestIdp } from "./helpers/test-idp.js";
 import { shown } from "./helpers/test-page.js";
+import { RESOURCES } from "./helpers/test-tenant.js";
 import { createAccessTokenVerifier } from "./helpers/verify-access-token.js";
 
 const MCP_REDIRECT = "http://127.0.0.1:33420/callback";

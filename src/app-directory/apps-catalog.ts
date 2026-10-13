@@ -1,16 +1,13 @@
-import type { Env } from "../config/env.js";
 import type { MessageKey } from "../i18n/dictionaries.js";
 import type { Translator } from "../i18n/translator.js";
 import { STATIC_CLIENT_IDS } from "../oidc/clients.js";
 import { OIDC_ROUTES } from "../oidc/provider.js";
-import { RESOURCES } from "../oidc/resources.js";
+import { resourcesFor } from "../tenants/tenant-resources.js";
+import type { Tenant } from "../tenants/tenant.js";
 import { type SafeHtml, html } from "../ui/html.js";
 
-/** Where the apps that sign in through this IdP live, per environment. */
-export type AppDirectoryEnv = Pick<
-	Env,
-	"ISSUER" | "LOCALMAN_WEB_URL" | "TUNELO_WEB_URL"
->;
+/** Where the apps that sign in through this IdP live: the tenant's. */
+export type AppDirectoryTenant = Pick<Tenant, "issuer" | "domain" | "webApps">;
 
 /** One palette hue per app, from the data-viz tokens (apps.css). */
 export type AppTone = "violet" | "cyan" | "green" | "amber";
@@ -68,10 +65,10 @@ function code(value: string): SafeHtml {
  * register themselves for Localman's MCP resource.
  */
 export function listedApps(
-	env: AppDirectoryEnv,
+	tenant: AppDirectoryTenant,
 	i18n: Translator,
 ): ListedApp[] {
-	const deviceUrl = new URL(OIDC_ROUTES.code_verification, env.ISSUER).href;
+	const deviceUrl = new URL(OIDC_ROUTES.code_verification, tenant.issuer).href;
 	return [
 		{
 			id: STATIC_CLIENT_IDS.localmanWeb,
@@ -81,7 +78,7 @@ export function listedApps(
 			kind: "apps.kind.web",
 			description: "apps.localmanWeb.description",
 			signIn: html`${i18n.t("apps.localmanWeb.signIn")}`,
-			href: env.LOCALMAN_WEB_URL,
+			href: tenant.webApps.localman,
 		},
 		{
 			id: "localman-mcp",
@@ -91,7 +88,7 @@ export function listedApps(
 			kind: "apps.kind.mcp",
 			description: "apps.localmanMcp.description",
 			signIn: i18n.rich("apps.localmanMcp.signIn", {
-				address: code(RESOURCES.localmanMcp),
+				address: code(resourcesFor(tenant.domain).localmanMcp),
 			}),
 		},
 		{
@@ -114,7 +111,7 @@ export function listedApps(
 			kind: "apps.kind.web",
 			description: "apps.tuneloWeb.description",
 			signIn: html`${i18n.t("apps.tuneloWeb.signIn")}`,
-			href: env.TUNELO_WEB_URL,
+			href: tenant.webApps.tunelo,
 		},
 	];
 }

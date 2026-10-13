@@ -101,7 +101,7 @@ describe("Telegram link codes cannot outlive the session that made them", () => 
 		const uid = await sessionUidOf(idp, account._id);
 		await revokeSession(
 			idp.provider,
-			idp.db,
+			idp.services,
 			idp.services.logger,
 			account._id,
 			uid,

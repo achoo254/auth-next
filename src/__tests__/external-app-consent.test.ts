@@ -2,7 +2,6 @@ import * as client from "openid-client";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { renderConsent } from "../interactions/consent-page.js";
 import { STATIC_CLIENT_IDS } from "../oidc/clients.js";
-import { RESOURCES } from "../oidc/resources.js";
 import { escapeHtml } from "../ui/html.js";
 import { discoverClient } from "./helpers/flows.js";
 import { signedInBrowser } from "./helpers/session-flows.js";
@@ -15,6 +14,7 @@ import {
 import { TestBrowser, formField } from "./helpers/test-browser.js";
 import { type TestIdp, startTestIdp } from "./helpers/test-idp.js";
 import { shown, testPage } from "./helpers/test-page.js";
+import { RESOURCES } from "./helpers/test-tenant.js";
 import { createAccessTokenVerifier } from "./helpers/verify-access-token.js";
 
 /** Claude Code listens on a random localhost port for the callback. */

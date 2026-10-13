@@ -9,13 +9,12 @@ import type Provider from "oidc-provider";
 import { errors } from "oidc-provider";
 import type { AccountStore } from "./claims.js";
 import { STATIC_CLIENT_IDS, TOKEN_EXCHANGE_GRANT } from "./clients.js";
-import { resourceServerInfo } from "./resources.js";
+import type { ResourcePolicy } from "./resources.js";
 import {
 	ACCESS_TOKEN_TYPE,
 	EXCHANGE_PARAMETERS,
 	EXCHANGE_REPEATABLE_PARAMETERS,
 	EXCHANGE_SCOPE,
-	EXCHANGE_TARGET,
 	parseExchangeRequest,
 } from "./token-exchange-request.js";
 
@@ -68,6 +67,7 @@ async function loadSubject(
 async function exchangeToken(
 	ctx: TokenEndpointGrantContext,
 	accounts: AccountStore,
+	resources: ResourcePolicy,
 ): Promise<void> {
 	const { client, provider, params } = ctx.oidc;
 	// Only localman-web lists the grant, so oidc-provider already refused the
@@ -75,7 +75,8 @@ async function exchangeToken(
 	if (client.clientId !== EXCHANGE_CLIENT_ID) {
 		throw new errors.UnauthorizedClient("client may not exchange tokens");
 	}
-	const request = parseExchangeRequest(params);
+	const target = resources.resources.tunnel;
+	const request = parseExchangeRequest(params, target);
 	const subject = await loadSubject(
 		provider,
 		accounts,
@@ -89,8 +90,8 @@ async function exchangeToken(
 		gty: "token_exchange",
 		scope: EXCHANGE_SCOPE,
 		resourceServer: new provider.ResourceServer(
-			EXCHANGE_TARGET,
-			resourceServerInfo(EXCHANGE_TARGET),
+			target,
+			resources.resourceServerInfo(target),
 		),
 	});
 	const value = await token.save();
@@ -154,14 +155,15 @@ async function reportUnauthorizedClient(
 	}
 }
 
-/** Registers the RFC 8693 grant on the token endpoint. */
+/** Registers the RFC 8693 grant on the token endpoint of one tenant. */
 export function enableTokenExchange(
 	provider: Provider,
 	accounts: AccountStore,
+	resources: ResourcePolicy,
 ): void {
 	provider.registerGrantType(
 		TOKEN_EXCHANGE_GRANT,
-		(ctx) => exchangeToken(ctx, accounts),
+		(ctx) => exchangeToken(ctx, accounts, resources),
 		EXCHANGE_PARAMETERS,
 		EXCHANGE_REPEATABLE_PARAMETERS,
 	);

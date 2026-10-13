@@ -18,17 +18,11 @@ import { INTERACTION_PATH } from "./oidc/provider.js";
 import type { AppServices } from "./services.js";
 import { createTelegramLinkRouter } from "./telegram/link-routes.js";
 import { createTelegramWebhookRouter } from "./telegram/webhook-routes.js";
+import { bindRequestTenant } from "./tenants/request-tenant.js";
 
 export interface AppOptions {
 	readonly services: AppServices;
-	readonly env: Pick<
-		Env,
-		| "ISSUER"
-		| "TRUST_PROXY"
-		| "ALLOWED_HOSTS"
-		| "LOCALMAN_WEB_URL"
-		| "TUNELO_WEB_URL"
-	>;
+	readonly env: Pick<Env, "TRUST_PROXY" | "ALLOWED_HOSTS">;
 	/**
 	 * Replaces the interaction pages under /interaction. Tests only: the
 	 * automatic sign-in helper never ships in production wiring.
@@ -44,11 +38,13 @@ export interface AppOptions {
  */
 export function createApp(options: AppOptions): Express {
 	const { services, env } = options;
+	const { tenant } = services;
+	const issuerHost = new URL(tenant.issuer).host;
 	const app = express();
 	app.disable("x-powered-by");
 	applySecurity(app, {
 		trustProxy: env.TRUST_PROXY,
-		issuer: env.ISSUER,
+		issuer: tenant.issuer,
 		rateLimits: options.rateLimits,
 	});
 
@@ -60,13 +56,14 @@ export function createApp(options: AppOptions): Express {
 
 	// Everything below serves issuer URLs; /healthz stays reachable on any
 	// Host for container healthchecks.
-	app.use(requireKnownHost([new URL(env.ISSUER).host, ...env.ALLOWED_HOSTS]));
+	app.use(requireKnownHost([issuerHost, ...env.ALLOWED_HOSTS]));
+	app.use(bindRequestTenant(tenant));
 	// Interaction handlers call provider.interactionDetails/Finished, which
 	// read the same forwarded headers as the provider itself.
 	app.use(forwardTrustedClientInfo);
 	app.use("/assets", createAssetsRouter());
-	app.use(createAppsRouter(env));
-	app.use(createPrivacyRouter(new URL(env.ISSUER).host));
+	app.use(createAppsRouter(tenant));
+	app.use(createPrivacyRouter(issuerHost));
 	app.use(createLanguageRouter(services));
 	app.use(
 		INTERACTION_PATH,

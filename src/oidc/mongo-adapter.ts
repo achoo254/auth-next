@@ -5,6 +5,13 @@ import {
 	type AdapterPayload,
 	errors,
 } from "oidc-provider";
+import {
+	type TenantFilter,
+	type TenantScope,
+	inTenant,
+	tenantTag,
+	upsertInTenant,
+} from "../tenants/tenant-data.js";
 
 /**
  * One stored oidc-provider artifact. `grantId`, `userCode` and `uid` are
@@ -13,6 +20,8 @@ import {
  */
 interface StoredArtifact {
 	_id: string;
+	/** The tenant whose provider stored it; absent only on pre-tenant data. */
+	tenantId?: string | null;
 	payload: AdapterPayload;
 	expiresAt?: Date;
 	grantId?: string;
@@ -40,7 +49,7 @@ export const OIDC_MODEL_NAMES = [
 ] as const;
 
 /** Models whose artifacts belong to a grant and die with it. */
-const GRANTABLE = new Set([
+export const GRANTABLE_MODELS: ReadonlySet<string> = new Set([
 	"AccessToken",
 	"AuthorizationCode",
 	"RefreshToken",
@@ -67,14 +76,23 @@ function notExpired(): object {
 	};
 }
 
+/**
+ * Stores one model's artifacts for one tenant. Every read, consume and
+ * delete is limited to the tenant's documents, so a token, code, session or
+ * DCR client of another tenant reads as missing. Static clients are never
+ * stored: they come from the provider's `clients` configuration.
+ */
 export class MongoAdapter implements Adapter {
 	private readonly collection: Collection<StoredArtifact>;
+	private readonly scope: TenantFilter;
 
 	constructor(
 		db: Db,
 		private readonly model: string,
+		private readonly tenant: TenantScope,
 	) {
 		this.collection = db.collection<StoredArtifact>(collectionNameFor(model));
+		this.scope = inTenant(tenant);
 	}
 
 	async upsert(
@@ -82,17 +100,28 @@ export class MongoAdapter implements Adapter {
 		payload: AdapterPayload,
 		expiresIn?: number,
 	): Promise<void> {
-		const document: StoredArtifact = { _id: id, payload };
+		const document: StoredArtifact = {
+			_id: id,
+			...tenantTag(this.tenant),
+			payload,
+		};
 		if (typeof expiresIn === "number") {
 			document.expiresAt = new Date(Date.now() + expiresIn * 1000);
 		}
-		if (GRANTABLE.has(this.model) && payload.grantId) {
+		if (GRANTABLE_MODELS.has(this.model) && payload.grantId) {
 			document.grantId = payload.grantId;
 		}
 		if (payload.userCode) document.userCode = payload.userCode;
 		if (this.model === "Session" && payload.uid) document.uid = payload.uid;
 		// replaceOne (not $set) stores payload keys containing dots verbatim.
-		await this.collection.replaceOne({ _id: id }, document, { upsert: true });
+		// Matching the tenant too (untagged pre-tenant documents included for
+		// the primary tenant) means an id held by another tenant fails on the
+		// unique _id instead of being overwritten.
+		const filter = { _id: id, ...this.scope };
+		await upsertInTenant(
+			() => this.collection.replaceOne(filter, document, { upsert: true }),
+			() => this.collection.replaceOne(filter, document),
+		);
 	}
 
 	async find(id: string): Promise<AdapterPayload | undefined> {
@@ -116,7 +145,7 @@ export class MongoAdapter implements Adapter {
 	 */
 	async consume(id: string): Promise<void> {
 		const result = await this.collection.updateOne(
-			{ _id: id, "payload.consumed": { $exists: false } },
+			{ _id: id, ...this.scope, "payload.consumed": { $exists: false } },
 			{ $set: { "payload.consumed": epochSeconds() } },
 		);
 		if (result.matchedCount === 0) {
@@ -129,11 +158,11 @@ export class MongoAdapter implements Adapter {
 	}
 
 	async destroy(id: string): Promise<void> {
-		await this.collection.deleteOne({ _id: id });
+		await this.collection.deleteOne({ _id: id, ...this.scope });
 	}
 
 	async revokeByGrantId(grantId: string): Promise<void> {
-		await this.collection.deleteMany({ grantId });
+		await this.collection.deleteMany({ grantId, ...this.scope });
 	}
 
 	private async findOne(
@@ -141,48 +170,16 @@ export class MongoAdapter implements Adapter {
 		sort?: { expiresAt: -1 },
 	): Promise<AdapterPayload | undefined> {
 		const document = await this.collection.findOne(
-			{ ...filter, ...notExpired() },
+			{ ...filter, ...this.scope, ...notExpired() },
 			{ projection: { payload: 1 }, sort },
 		);
 		return document?.payload;
 	}
 }
 
-export function createMongoAdapterFactory(db: Db): AdapterFactory {
-	return (model) => new MongoAdapter(db, model);
-}
-
-/**
- * Creates the TTL index (MongoDB deletes a document once `expiresAt` passes)
- * and the lookup indexes. Idempotent; run at startup before serving.
- */
-export async function ensureOidcIndexes(db: Db): Promise<void> {
-	await Promise.all(
-		OIDC_MODEL_NAMES.map(async (model) => {
-			const collection = db.collection(collectionNameFor(model));
-			await collection.createIndex(
-				{ expiresAt: 1 },
-				{ expireAfterSeconds: 0, name: "expiresAt_ttl" },
-			);
-			if (GRANTABLE.has(model)) {
-				await collection.createIndex({ grantId: 1 }, { sparse: true });
-			}
-			if (model === "DeviceCode") {
-				// Not unique: an expired code may linger until the TTL monitor runs.
-				await collection.createIndex({ userCode: 1 }, { sparse: true });
-			}
-			if (model === "Session") {
-				// Not unique: two concurrent logins on one session may each store
-				// a regenerated id before the other's destroy runs.
-				await collection.createIndex({ uid: 1 }, { sparse: true });
-			}
-			if (model === "Session" || model === "Grant") {
-				// The account page lists a user's sessions and grants.
-				await collection.createIndex(
-					{ "payload.accountId": 1 },
-					{ sparse: true },
-				);
-			}
-		}),
-	);
+export function createMongoAdapterFactory(
+	db: Db,
+	tenant: TenantScope,
+): AdapterFactory {
+	return (model) => new MongoAdapter(db, model, tenant);
 }

@@ -9,26 +9,31 @@ import { AccountRepository } from "../../accounts/account-repository.js";
 import { createApp } from "../../app.js";
 import { AuditOutbox } from "../../audit/audit-outbox.js";
 import { type Env, parseEnv } from "../../config/env.js";
-import type { RateLimitRule } from "../../http/security.js";
 import { createLogger } from "../../logger.js";
 import {
 	type AccountProfile,
 	createInMemoryAccountStore,
 } from "../../oidc/claims.js";
 import { type SigningJwks, generateSigningJwk } from "../../oidc/jwks.js";
-import { ensureOidcIndexes } from "../../oidc/mongo-adapter.js";
+import { ensureOidcIndexes } from "../../oidc/oidc-indexes.js";
 import { createProvider } from "../../oidc/provider.js";
 import {
 	type AppServices,
 	createServices,
 	ensureAccountLayerIndexes,
 } from "../../services.js";
+import { envClientSecrets, envTenant } from "../../tenants/env-tenant.js";
+import type { Tenant } from "../../tenants/tenant.js";
 import { createAutoInteractions } from "./auto-interactions.js";
 import {
 	FAKE_OAUTH_ENV,
 	type FakeUpstreams,
 	sharedFakeUpstreams,
 } from "./fake-upstreams.js";
+import type { TestIdpOptions } from "./test-idp-options.js";
+import { withTenant } from "./test-tenant.js";
+
+export type { TestIdpOptions };
 
 export const TEST_ACCOUNT: AccountProfile = {
 	sub: "acc_test_1",
@@ -44,8 +49,14 @@ export const LOCALMAN_WEB_SECRET = randomBytes(32).toString("base64url");
 export const TUNELO_WEB_SECRET = randomBytes(32).toString("base64url");
 export const LOCALMAN_CALLBACK = "https://localman.hoandat.com/auth/callback";
 
+/** localman-web's redirect URI at `idp` (LOCALMAN_CALLBACK for the primary tenant). */
+export function localmanCallbackOf(idp: { readonly tenant: Tenant }): string {
+	return new URL("/auth/callback", idp.tenant.webApps.localman).href;
+}
+
 export interface TestIdp {
 	readonly issuer: string;
+	readonly tenant: Tenant;
 	readonly env: Env;
 	readonly provider: Provider;
 	readonly db: Db;
@@ -54,24 +65,6 @@ export interface TestIdp {
 	/** Google, GitHub and Telegram for this process (see sharedFakeUpstreams). */
 	readonly fake: FakeUpstreams;
 	close(): Promise<void>;
-}
-
-export interface TestIdpOptions {
-	/**
-	 * "auto" signs TEST_ACCOUNT in without pages; "real" serves the real
-	 * login and consent pages against MongoDB accounts; a handler replaces
-	 * the interaction pages.
-	 */
-	readonly interactions: "auto" | "real" | RequestHandler;
-	readonly rateLimits?: readonly RateLimitRule[];
-	/**
-	 * Extra environment, e.g. Telegram credentials. Google and GitHub (the
-	 * only sign-in) are always configured against the fakes, unless
-	 * `withoutUpstreams` is set.
-	 */
-	readonly env?: Readonly<Record<string, string>>;
-	readonly withoutUpstreams?: boolean;
-	readonly formPostsPerMinute?: number;
 }
 
 function resolveInteractions(
@@ -97,8 +90,14 @@ function listenOnRandomPort(server: Server): Promise<number> {
  * port against a fresh database of the shared in-memory mongod.
  */
 export async function startTestIdp(options: TestIdpOptions): Promise<TestIdp> {
-	const mongoUrl = `${inject("mongoUri").replace(/\/$/, "")}/auth_${randomUUID().slice(0, 8)}`;
-	const mongo = new MongoClient(mongoUrl);
+	const mongoUrl =
+		options.mongoUrl ??
+		`${inject("mongoUri").replace(/\/$/, "")}/auth_${randomUUID().slice(0, 8)}`;
+	const mongo = new MongoClient(mongoUrl, {
+		monitorCommands: options.onMongoCommand !== undefined,
+	});
+	if (options.onMongoCommand)
+		mongo.on("commandStarted", options.onMongoCommand);
 	await mongo.connect();
 	const db = mongo.db();
 	await ensureOidcIndexes(db);
@@ -129,11 +128,18 @@ export async function startTestIdp(options: TestIdpOptions): Promise<TestIdp> {
 		],
 	};
 	const logger = createLogger(env.LOG_LEVEL);
-	const accounts = new AccountRepository(db, new AuditOutbox(db, logger));
+	const tenant = withTenant(envTenant(env), options.tenant);
+	const accounts = new AccountRepository(
+		db,
+		tenant,
+		new AuditOutbox(db, tenant, logger),
+	);
 	const provider = createProvider({
-		env,
+		tenant,
 		db,
 		jwks,
+		cookieKeys: env.COOKIE_KEYS,
+		clientSecrets: envClientSecrets(env),
 		accountStore:
 			options.interactions === "real"
 				? accounts
@@ -142,6 +148,7 @@ export async function startTestIdp(options: TestIdpOptions): Promise<TestIdp> {
 	});
 	const services = createServices({
 		env,
+		tenant,
 		db,
 		provider,
 		logger,
@@ -158,6 +165,7 @@ export async function startTestIdp(options: TestIdpOptions): Promise<TestIdp> {
 
 	return {
 		issuer,
+		tenant,
 		env,
 		provider,
 		db,
@@ -167,7 +175,8 @@ export async function startTestIdp(options: TestIdpOptions): Promise<TestIdp> {
 		close: async () => {
 			server.closeAllConnections();
 			await new Promise<void>((resolve) => server.close(() => resolve()));
-			await db.dropDatabase();
+			// A shared database belongs to whoever created it.
+			if (!options.mongoUrl) await db.dropDatabase();
 			await mongo.close();
 		},
 	};

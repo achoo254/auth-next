@@ -2,8 +2,8 @@ import type { enApps } from "../en/apps.js";
 import type { Translation } from "../translation.js";
 
 export const viApps: Translation<typeof enApps> = {
-	"apps.eyebrow": "Đăng nhập hoandat",
-	"apps.title": "Một tài khoản cho mọi ứng dụng hoandat",
+	"apps.eyebrow": "Đăng nhập {brand}",
+	"apps.title": "Một tài khoản cho mọi ứng dụng {brand}",
 	"apps.subtitle":
 		"Đăng nhập một lần bằng Google hoặc GitHub, rồi dùng cùng tài khoản đó trong Localman, MCP server của nó và Tunelo.",
 	"apps.trust.providers": "Đăng nhập bằng Google hoặc GitHub",
@@ -12,7 +12,7 @@ export const viApps: Translation<typeof enApps> = {
 	"apps.cta.account": "Quản lý tài khoản",
 	"apps.cta.how": "Đăng nhập diễn ra thế nào",
 	"apps.diagram.label":
-		"Tài khoản hoandat, vào bằng Google hoặc GitHub, đăng nhập cho bạn vào Localman, Localman MCP, Tunelo CLI và Tunelo.",
+		"Tài khoản {brand}, vào bằng Google hoặc GitHub, đăng nhập cho bạn vào Localman, Localman MCP, Tunelo CLI và Tunelo.",
 	"apps.list.title": "Ứng dụng bạn dùng được",
 	"apps.kind.web": "Ứng dụng web",
 	"apps.kind.mcp": "MCP server",
@@ -40,7 +40,7 @@ export const viApps: Translation<typeof enApps> = {
 		"Tài khoản bạn đã liên kết sẽ đăng nhập cho bạn. Lần đầu, bạn chọn một tên đăng nhập.",
 	"apps.steps.back.title": "Quay lại ứng dụng",
 	"apps.steps.back.body":
-		"Ứng dụng bên ngoài hoandat, như công cụ AI, sẽ hỏi bạn đồng ý trước.",
+		"Ứng dụng bên ngoài {brand}, như công cụ AI, sẽ hỏi bạn đồng ý trước.",
 	"apps.manage":
 		"Để xem hoặc gỡ các ứng dụng đang có quyền vào tài khoản, mở trang {account}.",
 };

@@ -3,7 +3,8 @@ import type { Translation } from "../translation.js";
 
 export const zhPrivacy: Translation<typeof enPrivacy> = {
 	"privacy.title": "隐私政策",
-	"privacy.subtitle": "适用于登录服务 auth.hoandat.com。更新于 2026年10月9日。",
+	"privacy.subtitle":
+		"适用于登录服务 auth.{brandDomain}。更新于 2026年10月9日。",
 	"privacy.stored.title": "我们存储的数据",
 	"privacy.stored.profile": "用户名、邮箱地址、显示名称和头像。",
 	"privacy.stored.noPassword":

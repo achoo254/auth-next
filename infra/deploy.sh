@@ -22,11 +22,13 @@ rsync -rlptz --delete -e "$SSH" \
 	dist static infra package.json pnpm-lock.yaml pnpm-workspace.yaml \
 	"$SSH_TARGET:$REMOTE_DIR/"
 
-echo "== install runtime dependencies and restart"
+echo "== install runtime dependencies, create indexes, restart"
 $SSH "$SSH_TARGET" "set -euo pipefail
 	source /root/.nvm/nvm.sh >/dev/null
 	cd $REMOTE_DIR
 	MONGOMS_DISABLE_POSTINSTALL=1 $PNPM install --prod --frozen-lockfile --reporter=silent
+	# Indexes first (idempotent), so the new release starts without building them.
+	node --env-file=.env dist/create-tenant-indexes.mjs
 	pm2 startOrReload infra/ecosystem.config.cjs --update-env
 	pm2 save >/dev/null
 	for i in \$(seq 1 20); do

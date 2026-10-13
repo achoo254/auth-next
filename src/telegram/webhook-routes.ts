@@ -2,7 +2,7 @@ import { createHash, timingSafeEqual } from "node:crypto";
 import express, { type Request, Router } from "express";
 import { z } from "zod";
 import type { Locale } from "../i18n/locales.js";
-import { translator } from "../i18n/translator.js";
+import { brandOf, translator } from "../i18n/translator.js";
 import type { AppServices } from "../services.js";
 import type { TelegramBot } from "./bot-client.js";
 import { localeFromTelegram } from "./bot-locale.js";
@@ -67,14 +67,17 @@ async function askToConfirm(
 ): Promise<void> {
 	const target = code ? await describeLinkCode(services, code) : undefined;
 	if (!code || !target) {
-		const { t } = translator(chatLocale);
+		const { t } = translator(chatLocale, brandOf(services.tenant));
 		await bot.sendMessage(
 			chatId,
 			t("bot.start.howTo", { button: t("account.telegram.link") }),
 		);
 		return;
 	}
-	const { t } = translator(target.locale ?? chatLocale);
+	const { t } = translator(
+		target.locale ?? chatLocale,
+		brandOf(services.tenant),
+	);
 	await bot.sendMessage(
 		chatId,
 		t("bot.link.ask", { username: target.username }),

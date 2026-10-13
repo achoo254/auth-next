@@ -29,6 +29,7 @@ import { createAutoInteractions } from "../../src/__tests__/helpers/auto-interac
 import { FAKE_OAUTH_ENV } from "../../src/__tests__/helpers/fake-upstreams.js";
 import { AccountRepository } from "../../src/accounts/account-repository.js";
 import { createApp } from "../../src/app.js";
+import { AuditOutbox } from "../../src/audit/audit-outbox.js";
 import { parseEnv } from "../../src/config/env.js";
 import { createLogger } from "../../src/logger.js";
 import {
@@ -37,12 +38,13 @@ import {
 } from "../../src/oidc/claims.js";
 import { STATIC_CLIENT_IDS } from "../../src/oidc/clients.js";
 import { generateSigningJwk } from "../../src/oidc/jwks.js";
-import { ensureOidcIndexes } from "../../src/oidc/mongo-adapter.js";
+import { ensureOidcIndexes } from "../../src/oidc/oidc-indexes.js";
 import { buildProviderConfiguration } from "../../src/oidc/provider.js";
 import {
 	createServices,
 	ensureAccountLayerIndexes,
 } from "../../src/services.js";
+import { envClientSecrets, envTenant } from "../../src/tenants/env-tenant.js";
 
 const issuer = process.env.CONFORMANCE_ISSUER;
 if (!issuer?.startsWith("https://")) {
@@ -91,8 +93,11 @@ const env = parseEnv({
 	...FAKE_OAUTH_ENV,
 });
 const logger = createLogger(env.LOG_LEVEL);
+const tenant = envTenant(env);
 const configuration = buildProviderConfiguration({
-	env,
+	tenant,
+	cookieKeys: env.COOKIE_KEYS,
+	clientSecrets: envClientSecrets(env),
 	db,
 	jwks: {
 		keys: [await generateSigningJwk(), await generateSigningJwk("RS256")],
@@ -113,10 +118,15 @@ provider.proxy = true;
 
 const services = createServices({
 	env,
+	tenant,
 	db,
 	provider,
 	logger,
-	accounts: new AccountRepository(db),
+	accounts: new AccountRepository(
+		db,
+		tenant,
+		new AuditOutbox(db, tenant, logger),
+	),
 	formPostsPerMinute: 1_000,
 });
 const app = createApp({

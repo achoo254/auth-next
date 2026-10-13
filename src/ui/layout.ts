@@ -58,7 +58,8 @@ ${options.body}
 
 /**
  * Shared shell of every IdP page: self-hosted fonts and token CSS, the
- * "hoandat · Account" wordmark, the language switcher, no script at all.
+ * "<brand> · Account" wordmark (the tenant's brand), the language switcher,
+ * no script at all.
  */
 export function renderPage(options: PageOptions): string {
 	const { i18n } = options.page;
@@ -69,7 +70,7 @@ export function renderPage(options: PageOptions): string {
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="referrer" content="no-referrer">
 <meta name="robots" content="noindex">
-<title>${options.title} · hoandat</title>
+<title>${options.title} · ${i18n.brand.name}</title>
 ${FONT_STYLESHEETS.map((href) => html`<link rel="stylesheet" href="${href}">`)}
 <link rel="stylesheet" href="/assets/css/tokens.css">
 <link rel="stylesheet" href="/assets/css/app.css">
@@ -77,7 +78,7 @@ ${(options.stylesheets ?? []).map((href) => html`<link rel="stylesheet" href="${
 </head>
 <body>
 <header class="topbar"><div class="topbar-inner container">
-<a class="idp-brand" href="/account" data-id="idp-brand"><b>hoandat</b> · ${i18n.t("layout.brand")}${
+<a class="idp-brand" href="/account" data-id="idp-brand"><b>${i18n.brand.name}</b> · ${i18n.t("layout.brand")}${
 		options.host
 			? html` <span class="badge badge-neutral hide-sm">${options.host}</span>`
 			: ""

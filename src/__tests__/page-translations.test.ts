@@ -20,9 +20,12 @@ import { testPage } from "./helpers/test-page.js";
 const HOST = "auth.example.test";
 const NOW = new Date("2026-10-10T01:00:00Z");
 const APP_URLS = {
-	ISSUER: `https://${HOST}`,
-	LOCALMAN_WEB_URL: "https://localman.example.test",
-	TUNELO_WEB_URL: "https://tunnel.example.test",
+	issuer: `https://${HOST}`,
+	domain: "hoandat.com",
+	webApps: {
+		localman: "https://localman.example.test",
+		tunelo: "https://tunnel.example.test",
+	},
 };
 
 function accountView(locale: Locale): AccountView {

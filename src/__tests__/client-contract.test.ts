@@ -7,7 +7,8 @@ import {
 	TOKEN_EXCHANGE_GRANT,
 	buildStaticClients,
 } from "../oidc/clients.js";
-import { RESOURCES } from "../oidc/resources.js";
+import { envClientSecrets, envTenant } from "../tenants/env-tenant.js";
+import { resourcesFor } from "../tenants/tenant-resources.js";
 import { discoverClient, runCodeFlow } from "./helpers/flows.js";
 import {
 	LOCALMAN_CALLBACK,
@@ -16,6 +17,7 @@ import {
 	type TestIdp,
 	startTestIdp,
 } from "./helpers/test-idp.js";
+import { RESOURCES } from "./helpers/test-tenant.js";
 
 let idp: TestIdp;
 
@@ -48,7 +50,11 @@ describe("static clients match the integration contract", () => {
 			TUNELO_WEB_CLIENT_SECRET: "t".repeat(32),
 		});
 		const byId = new Map(
-			buildStaticClients(env).map((entry) => [entry.client_id, entry]),
+			buildStaticClients(
+				envTenant(env),
+				resourcesFor(env.TENANT_DOMAIN),
+				envClientSecrets(env),
+			).map((entry) => [entry.client_id, entry]),
 		);
 		expect(byId.get(STATIC_CLIENT_IDS.localmanWeb)).toMatchObject({
 			redirect_uris: ["https://localman.hoandat.com/auth/callback"],

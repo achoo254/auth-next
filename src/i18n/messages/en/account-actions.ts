@@ -17,18 +17,18 @@ export const enAccountActions = {
 	"notice.notFound": "Couldn't find what you wanted to remove.",
 	"confirm.app.title": "Remove app access?",
 	"confirm.app.lead":
-		"{app} will no longer be able to use your hoandat account.",
+		"{app} will no longer be able to use your {brand} account.",
 	"confirm.app.canNow": "It can currently:",
 	"confirm.app.effect":
 		"Its sign-ins and tokens stop working, and it must ask you again to get access. Access tokens it already holds expire within 15 minutes.",
 	"confirm.sessions.title": "Sign out every other session?",
 	"confirm.sessions.lead":
-		"Every browser below is signed out of your hoandat account. This browser stays signed in.",
+		"Every browser below is signed out of your {brand} account. This browser stays signed in.",
 	"confirm.sessions.effect":
 		"Apps signed in through those browsers, such as Localman and Tunelo on the web, are signed out too. Tunelo devices stay signed in.",
 	"telegram.title": "Link Telegram",
 	"telegram.subtitle":
-		"Open the hoandat bot in Telegram, press Start, then press “{button}” within 10 minutes.",
+		"Open the {brand} bot in Telegram, press Start, then press “{button}” within 10 minutes.",
 	"telegram.open": "Open Telegram",
 	"telegram.orSend": "Or send this command to the bot {bot}:",
 	"telegram.commandLabel": "Link command",

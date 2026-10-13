@@ -6,14 +6,14 @@ import { type SafeHtml, html } from "../ui/html.js";
 import { renderPage } from "../ui/layout.js";
 import { type PageContext, pageContext } from "../ui/page-context.js";
 import {
-	type AppDirectoryEnv,
+	type AppDirectoryTenant,
 	type ListedApp,
 	appIcon,
 	listedApps,
 } from "./apps-catalog.js";
 import { hubDiagram } from "./apps-illustration.js";
 
-export type { AppDirectoryEnv } from "./apps-catalog.js";
+export type { AppDirectoryTenant } from "./apps-catalog.js";
 
 export const APPS_PATH = "/apps";
 const STEPS_ANCHOR = "how-sign-in-works";
@@ -27,7 +27,7 @@ const TRUST: readonly MessageKey[] = [
 const CHECK = html`<svg class="icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12l4 4 10-10"/></svg>`;
 
 function hero(
-	env: AppDirectoryEnv,
+	tenant: AppDirectoryTenant,
 	i18n: Translator,
 	apps: readonly ListedApp[],
 ): SafeHtml {
@@ -42,7 +42,7 @@ function hero(
 <a class="btn btn-secondary" href="#${STEPS_ANCHOR}" data-id="apps-how">${i18n.t("apps.cta.how")}</a>
 </div>
 </div>
-<div class="apps-hero-art">${hubDiagram(i18n, apps, new URL(env.ISSUER).host)}</div>
+<div class="apps-hero-art">${hubDiagram(i18n, apps, new URL(tenant.issuer).host)}</div>
 </section>`;
 }
 
@@ -80,18 +80,18 @@ function steps(i18n: Translator): SafeHtml {
 }
 
 export function renderAppsPage(
-	env: AppDirectoryEnv,
+	tenant: AppDirectoryTenant,
 	page: PageContext,
 ): string {
 	const { i18n } = page;
-	const apps = listedApps(env, i18n);
+	const apps = listedApps(tenant, i18n);
 	return renderPage({
 		title: i18n.t("apps.title"),
-		host: new URL(env.ISSUER).host,
+		host: new URL(tenant.issuer).host,
 		page,
 		layout: "portal",
 		stylesheets: ["/assets/css/apps.css"],
-		body: html`${hero(env, i18n, apps)}
+		body: html`${hero(tenant, i18n, apps)}
 <section class="apps-section" aria-labelledby="apps-list-title">
 <h2 class="apps-section-title" id="apps-list-title">${i18n.t("apps.list.title")}</h2>
 <ul class="apps-grid" data-id="app-list">${apps.map((app) => appCard(app, i18n))}</ul>
@@ -106,7 +106,7 @@ ${steps(i18n)}
  * Like /privacy, the page follows the visitor's language, so caches must
  * revalidate rather than serve one language to everyone.
  */
-export function createAppsRouter(env: AppDirectoryEnv): Router {
+export function createAppsRouter(tenant: AppDirectoryTenant): Router {
 	const router = Router();
 	router.get("/", (_req, res) => {
 		res.redirect(302, APPS_PATH);
@@ -118,7 +118,7 @@ export function createAppsRouter(env: AppDirectoryEnv): Router {
 			.vary("Cookie")
 			.vary("Accept-Language")
 			.type("html")
-			.send(renderAppsPage(env, pageContext(req)));
+			.send(renderAppsPage(tenant, pageContext(req)));
 	});
 	return router;
 }

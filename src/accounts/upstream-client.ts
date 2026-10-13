@@ -43,11 +43,14 @@ export function upstreamCallbackPath(provider: UpstreamProvider): string {
 	return `/oauth/${provider}/callback`;
 }
 
-/** Only providers with credentials in the environment are enabled. */
-export function createUpstreams(env: Env): Upstreams {
+/**
+ * Only providers with credentials in the environment are enabled; their
+ * callbacks are on `issuer`, the tenant's own host.
+ */
+export function createUpstreams(env: Env, issuer: string): Upstreams {
 	const upstreams = new Map<UpstreamProvider, UpstreamClient>();
 	const callback = (provider: UpstreamProvider): string =>
-		`${env.ISSUER}${upstreamCallbackPath(provider)}`;
+		`${issuer}${upstreamCallbackPath(provider)}`;
 	const google: OAuthAppCredentials | undefined = googleCredentials(env);
 	if (google) {
 		upstreams.set("google", createGoogleUpstream(google, callback("google")));

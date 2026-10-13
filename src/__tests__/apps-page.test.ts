@@ -3,9 +3,12 @@ import { renderAppsPage } from "../app-directory/apps-page.js";
 import { testPage } from "./helpers/test-page.js";
 
 const STAGING = {
-	ISSUER: "https://auth.staging.example",
-	LOCALMAN_WEB_URL: "https://localman.staging.example",
-	TUNELO_WEB_URL: "https://tunnel.staging.example",
+	issuer: "https://auth.staging.example",
+	domain: "hoandat.com",
+	webApps: {
+		localman: "https://localman.staging.example",
+		tunelo: "https://tunnel.staging.example",
+	},
 };
 
 describe("app list page", () => {

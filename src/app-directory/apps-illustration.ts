@@ -5,7 +5,7 @@ import { providerPath } from "../ui/provider-logos.js";
 import { type ListedApp, appIcon } from "./apps-catalog.js";
 
 /*
- * The hero diagram: Google and GitHub lead into one hoandat account, which
+ * The hero diagram: Google and GitHub lead into one account of the tenant, which
  * fans out to every app. Pure SVG in currentColor and token classes
  * (apps.css); the moving dashes are CSS and stop under reduced motion.
  */
@@ -82,7 +82,7 @@ ${inbound}${outbound}
 ${KEYS.map(keyNode)}
 <g class="hub-node hub-core">
 <rect x="${HUB.x}" y="${HUB.y}" width="${HUB.width}" height="${HUB.height}" rx="16"/>
-<text class="hub-text hub-brand" x="${HUB.x + HUB.width / 2}" y="${hubCy - 2}" text-anchor="middle">hoandat</text>
+<text class="hub-text hub-brand" x="${HUB.x + HUB.width / 2}" y="${hubCy - 2}" text-anchor="middle">${i18n.brand.name}</text>
 <text class="hub-text hub-sub" x="${HUB.x + HUB.width / 2}" y="${hubCy + 18}" text-anchor="middle">${host}</text>
 </g>
 ${apps.map((app, i) => appNode(app, centres[i] ?? hubCy))}

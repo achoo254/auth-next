@@ -1,7 +1,7 @@
 /** /account: header, groups and the six cards. */
 export const enAccount = {
 	"account.pageTitle": "Account",
-	"account.title": "hoandat account",
+	"account.title": "{brand} account",
 	"account.signOut": "Sign out",
 	"account.noEmail": "No email yet",
 	"account.emailVerified": "verified by {provider}",
@@ -31,7 +31,7 @@ export const enAccount = {
 	"account.signIn.link": "Link {provider}",
 	"account.signIn.unlink": "Unlink {provider}",
 	"account.sessions.title": "Open sessions",
-	"account.sessions.description": "Browsers signed in to your hoandat account.",
+	"account.sessions.description": "Browsers signed in to your {brand} account.",
 	"account.sessions.empty": "No open sessions.",
 	"account.sessions.thisBrowser": "This browser",
 	"account.sessions.signedInAt": "Signed in {date}",

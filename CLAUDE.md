@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-`hoandat-auth`: IdP OpenID Connect tại `auth.hoandat.com` (oidc-provider v9 + Express 5 + MongoDB, database `auth`). Plan nằm ở repo `localman-next`: `plans/dattqh/261008-1325-central-auth-idp/`. Quyết định kiến trúc: `docs/decisions/0001-own-oidc-idp.md`, `docs/decisions/0002-accounts-and-login-pages.md`, `docs/decisions/0003-token-exchange-and-audit-outbox.md`, `docs/decisions/0004-upstream-only-sign-in.md` (chỉ Google/GitHub, không mật khẩu). Hợp đồng với app tích hợp: `docs/integration-guide.md`.
+`hoandat-auth`: IdP OpenID Connect tại `auth.hoandat.com` (oidc-provider v9 + Express 5 + MongoDB, database `auth`). Plan nằm ở repo `localman-next`: `plans/dattqh/261008-1325-central-auth-idp/`. Quyết định kiến trúc: `docs/decisions/0001-own-oidc-idp.md`, `docs/decisions/0002-accounts-and-login-pages.md`, `docs/decisions/0003-token-exchange-and-audit-outbox.md`, `docs/decisions/0004-upstream-only-sign-in.md` (chỉ Google/GitHub, không mật khẩu), `docs/decisions/0006-tenants-by-domain.md` (tenant theo domain, `tenantId`). Hợp đồng với app tích hợp: `docs/integration-guide.md`.
 
 Commands: `pnpm dev`, `pnpm build`, `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm test:e2e`, `pnpm check:tokens`, `pnpm generate-key`, `pnpm seed:clients` (chỉ đọc; kiểm client tĩnh và discovery). Trước khi báo xong phải sạch `pnpm lint && pnpm typecheck && pnpm test && pnpm test:e2e && pnpm check:tokens`. Máy dùng chung: vitest đã giới hạn 2 worker trong `vitest.config.ts`, Playwright 1 worker; không chạy hai bộ test cùng lúc. `pnpm test -- <args>` không chuyển tham số, viết `pnpm test <args>`.
 
@@ -36,6 +36,13 @@ Commands: `pnpm dev`, `pnpm build`, `pnpm lint`, `pnpm typecheck`, `pnpm test`, 
 - Mọi form POST có CSRF qua `services.csrf` với đúng phạm vi: `csrfScope(uid)` cho interaction, `portalCsrfScope` cho `/account`. Body form chỉ parse trong router của trang (`parseForm`), không bao giờ trước `oidc-provider`.
 - Route của interaction phải nằm dưới `/interaction/:uid/...` vì cookie interaction gắn với path đó; luôn đọc interaction qua `loadInteraction` (kiểm cookie và uid).
 - Google/GitHub chỉ đi qua interface `UpstreamClient` (`src/accounts/upstream-client.ts`), cài bằng `openid-client` trong `upstream-google.ts`, `upstream-github.ts`; luôn PKCE + state, Google thêm nonce. Test thay Google/GitHub bằng fetch giả, không gọi mạng thật.
+
+## Tenant (ADR 0006)
+- Mọi document của IdP mang `tenantId`; danh sách collection ở `TENANT_COLLECTIONS` (`src/tenants/tenant-collections.ts`). Chỉ module tầng dữ liệu được gọi `db.collection(...)` (test `tenant-source-scan` giữ danh sách); mọi truy vấn thêm `inTenant(tenant)`, mọi ghi thêm `tenantTag(tenant)`. Repository, token store, outbox, adapter nhận tenant bắt buộc khi dựng.
+- Chỉ mục unique luôn dẫn đầu bằng `tenantId`. Collection mới thì thêm vào `TENANT_COLLECTIONS`, có `tenantId` và test cô lập.
+- Resource/audience, client tĩnh, token exchange lấy từ tenant (`resourcesFor`, `tenantResourcePolicy`, `buildStaticClients(tenant, …)`); không thêm URL hay tên cố định của `hoandat.com` vào code chạy. Chuỗi hiển thị dùng `{brand}`/`{brandDomain}`; trang lấy tenant qua `requestTenant(req)`.
+- Domain đi vào DNS, certbot, nginx luôn qua `normalizeTenantDomain`.
+- Đọc tương thích (`ownsUntaggedData` của tenant chính) chỉ tồn tại tới cổng cuối phase 02; sau khi có tenant thứ hai chỉ sửa tiến.
 
 ## Quy ước code
 - TypeScript strict, ESM (NodeNext, import tương đối có đuôi `.js`), không `any` (dùng `unknown` + type guard), không non-null assertion `!`, named exports, file kebab-case, ≤ 200 dòng.

@@ -15,13 +15,21 @@ describe("imitatesFirstPartyName", () => {
 		"h\u043eandat", // Cyrillic о
 		"\u04bb\u03bfandat", // Cyrillic һ, Greek ο
 	])("flags %s", (name) => {
-		expect(imitatesFirstPartyName(name)).toBe(true);
+		expect(imitatesFirstPartyName(name, "hoandat")).toBe(true);
 	});
 
 	it.each(["Claude Code", "Cursor", "Agent", "Postman", "Tunnel"])(
 		"leaves %s alone",
 		(name) => {
-			expect(imitatesFirstPartyName(name)).toBe(false);
+			expect(imitatesFirstPartyName(name, "hoandat")).toBe(false);
 		},
 	);
+});
+
+describe("imitatesFirstPartyName with another tenant's brand", () => {
+	it("flags that brand, not hoandat", () => {
+		expect(imitatesFirstPartyName("Acme account", "Acme")).toBe(true);
+		expect(imitatesFirstPartyName("hoandat account", "Acme")).toBe(false);
+		expect(imitatesFirstPartyName("Localman", "Acme")).toBe(true);
+	});
 });

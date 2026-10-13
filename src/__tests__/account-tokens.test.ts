@@ -1,6 +1,6 @@
 import type { Db } from "mongodb";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { AccountRepository } from "../accounts/account-repository.js";
+import type { AccountRepository } from "../accounts/account-repository.js";
 import {
 	AccountTokens,
 	type TokenChannel,
@@ -13,6 +13,7 @@ import {
 	createTestAccount,
 	openTestDb,
 } from "./helpers/test-accounts.js";
+import { primaryAccounts } from "./helpers/test-tenant.js";
 
 let db: Db;
 let close: () => Promise<void>;
@@ -21,7 +22,7 @@ let tokens: AccountTokens;
 
 beforeAll(async () => {
 	({ db, close } = await openTestDb());
-	accounts = new AccountRepository(db);
+	accounts = primaryAccounts(db);
 	tokens = new AccountTokens(db, accounts);
 });
 

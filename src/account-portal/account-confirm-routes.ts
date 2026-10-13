@@ -48,7 +48,7 @@ export function registerConfirmRoutes(
 		"/apps/:clientId/revoke",
 		page(async (req, res, portal) => {
 			const clientId = routeParam(req, "clientId");
-			const grants = (await listGrants(services.db, portal.account._id)).filter(
+			const grants = (await listGrants(services, portal.account._id)).filter(
 				(grant) => grant.clientId === clientId,
 			);
 			const [app] = await listAuthorizedApps(services.provider, grants);
@@ -74,7 +74,7 @@ export function registerConfirmRoutes(
 		sensitive(async (req, res, { account }) => {
 			const clientId = routeParam(req, "clientId");
 			// Every grant of the client, not just those shown on the page.
-			const grants = await grantIdsOf(services.db, account._id, clientId);
+			const grants = await grantIdsOf(services, account._id, clientId);
 			const revoked = await revokeGrants(services, account._id, grants);
 			if (revoked > 0) {
 				await services.audit.record(
@@ -99,9 +99,9 @@ export function registerConfirmRoutes(
 	router.get(
 		othersPath,
 		page(async (req, res, portal) => {
-			const others = (
-				await listSessions(services.db, portal.account._id)
-			).filter((session) => session.uid !== portal.sessionUid);
+			const others = (await listSessions(services, portal.account._id)).filter(
+				(session) => session.uid !== portal.sessionUid,
+			);
 			if (others.length === 0) {
 				res.redirect(303, "/account?notice=not-found");
 				return;
@@ -122,13 +122,13 @@ export function registerConfirmRoutes(
 	router.post(
 		othersPath,
 		sensitive(async (req, res, { account, sessionUid }) => {
-			const uids = await otherSessionUids(services.db, account._id, sessionUid);
+			const uids = await otherSessionUids(services, account._id, sessionUid);
 			let count = 0;
 			// The same sign-out as one session's button, for each of them.
 			for (const uid of uids) {
 				const done = await revokeSession(
 					services.provider,
-					services.db,
+					services,
 					services.logger,
 					account._id,
 					uid,

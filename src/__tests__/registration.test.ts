@@ -1,12 +1,12 @@
 import * as client from "openid-client";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { RESOURCES } from "../oidc/resources.js";
 import {
 	authorizationRedirect,
 	discoverClient,
 	runCodeFlow,
 } from "./helpers/flows.js";
 import { type TestIdp, startTestIdp } from "./helpers/test-idp.js";
+import { RESOURCES } from "./helpers/test-tenant.js";
 import { createAccessTokenVerifier } from "./helpers/verify-access-token.js";
 
 const MCP_REDIRECT = "http://127.0.0.1:33418/callback";

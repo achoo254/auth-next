@@ -1,16 +1,11 @@
-import {
-	type ClientMetadata,
-	type KoaContextWithOIDC,
-	errors,
-} from "oidc-provider";
+import { type ClientMetadata, type Configuration, errors } from "oidc-provider";
 import { STATIC_CLIENT_IDS, isStaticClientId } from "./clients.js";
 import { withoutOfflineAccess } from "./dynamic-client-scopes.js";
 import {
 	ALLOWED_RESOURCES_PROPERTY,
 	LOCALMAN_MCP_SCOPES,
 	LOCALMAN_SCOPES,
-	RESOURCES,
-	isResourceIndicator,
+	type ResourcePolicy,
 } from "./resources.js";
 
 /** Scopes a dynamically registered (MCP) client may hold. */
@@ -98,18 +93,24 @@ function rejectOutside(
 	}
 }
 
-/** MCP clients: Localman MCP scopes only, loopback or https redirects, /mcp only. */
-function enforceDynamicClientPolicy(metadata: ClientMetadata): void {
+/**
+ * MCP clients: Localman MCP scopes only, loopback or https redirects, the
+ * tenant's /mcp resource only.
+ */
+function enforceDynamicClientPolicy(
+	metadata: ClientMetadata,
+	mcpResource: string,
+): void {
 	const resources = stringList(metadata[ALLOWED_RESOURCES_PROPERTY]);
 	if (
 		metadata[ALLOWED_RESOURCES_PROPERTY] !== undefined &&
-		(resources.length !== 1 || resources[0] !== RESOURCES.localmanMcp)
+		(resources.length !== 1 || resources[0] !== mcpResource)
 	) {
 		throw new errors.InvalidClientMetadata(
 			`${ALLOWED_RESOURCES_PROPERTY} is assigned by the authorization server`,
 		);
 	}
-	metadata[ALLOWED_RESOURCES_PROPERTY] = [RESOURCES.localmanMcp];
+	metadata[ALLOWED_RESOURCES_PROPERTY] = [mcpResource];
 
 	for (const property of DCR_FORBIDDEN_METADATA) {
 		if (metadata[property] !== undefined) {
@@ -155,21 +156,33 @@ function enforceDynamicClientPolicy(metadata: ClientMetadata): void {
 	}
 }
 
+type ClientMetadataValidator = NonNullable<
+	NonNullable<Configuration["extraClientMetadata"]>["validator"]
+>;
+
 /**
- * `extraClientMetadata.validator`: runs for every client construction, static
- * or dynamic, including when a registered client is loaded back from Mongo.
- * Static clients must list known resources; every other client is a DCR
- * (MCP) client and gets the restrictive policy above.
+ * `extraClientMetadata.validator` of one tenant: runs for every client
+ * construction, static or dynamic, including when a registered client is
+ * loaded back from Mongo. Static clients must list the tenant's resources;
+ * every other client is a DCR (MCP) client and gets the restrictive policy
+ * above.
  */
-export function validateClientMetadata(
-	_ctx: KoaContextWithOIDC | undefined,
-	key: string,
-	_value: unknown,
+export function createClientMetadataValidator(
+	policy: ResourcePolicy,
+): ClientMetadataValidator {
+	return (_ctx, key, _value, metadata) => {
+		if (key === ALLOWED_RESOURCES_PROPERTY) {
+			validateResources(policy, metadata);
+		}
+	};
+}
+
+function validateResources(
+	policy: ResourcePolicy,
 	metadata: ClientMetadata,
 ): void {
-	if (key !== ALLOWED_RESOURCES_PROPERTY) return;
 	if (!isStaticClientId(metadata.client_id)) {
-		enforceDynamicClientPolicy(metadata);
+		enforceDynamicClientPolicy(metadata, policy.resources.localmanMcp);
 		return;
 	}
 	// Static clients list known resources; only the account portal, which
@@ -178,7 +191,7 @@ export function validateClientMetadata(
 	const mayBeEmpty = metadata.client_id === STATIC_CLIENT_IDS.accountPortal;
 	if (
 		(resources.length === 0 && !mayBeEmpty) ||
-		!resources.every(isResourceIndicator)
+		!resources.every(policy.isResourceIndicator)
 	) {
 		throw new errors.InvalidClientMetadata(
 			`${ALLOWED_RESOURCES_PROPERTY} must list known resource indicators`,

@@ -1,6 +1,6 @@
-import type { Db } from "mongodb";
 import type { KoaContextWithOIDC, RefreshToken } from "oidc-provider";
 import { GRANT_META_COLLECTION } from "../account-portal/grant-directory.js";
+import { type TenantDb, inTenant } from "../tenants/tenant-data.js";
 import { STATIC_CLIENT_IDS } from "./clients.js";
 import { collectionNameFor } from "./mongo-adapter.js";
 
@@ -61,11 +61,13 @@ export function refreshTokenTtl(
  * expiry is stored before the response. The update only touches a grant
  * that still exists (no upsert), so a grant revoked meanwhile stays gone.
  */
-export function createRotateAndSlideGrant(
-	db: Db,
-): (ctx: KoaContextWithOIDC) => Promise<boolean> {
+export function createRotateAndSlideGrant({
+	db,
+	tenant,
+}: TenantDb): (ctx: KoaContextWithOIDC) => Promise<boolean> {
 	const grants = db.collection<{ _id: string }>(collectionNameFor("Grant"));
 	const metas = db.collection<{ _id: string }>(GRANT_META_COLLECTION);
+	const scope = inTenant(tenant);
 	return async (ctx) => {
 		const grant = ctx.oidc.entities.Grant;
 		if (grant?.iat && grant.jti) {
@@ -74,7 +76,7 @@ export function createRotateAndSlideGrant(
 			const exp = now + slidingLifetime(grant.iat, now, capped);
 			if (exp > (grant.exp ?? 0)) {
 				const result = await grants.updateOne(
-					{ _id: grant.jti },
+					{ _id: grant.jti, ...scope },
 					{ $set: { "payload.exp": exp, expiresAt: new Date(exp * 1000) } },
 				);
 				if (result.matchedCount === 1) {
@@ -82,7 +84,7 @@ export function createRotateAndSlideGrant(
 					// The device name shown at /account lives as long as its grant.
 					if (!capped) {
 						await metas.updateOne(
-							{ _id: grant.jti },
+							{ _id: grant.jti, ...scope },
 							{ $set: { expiresAt: new Date(exp * 1000) } },
 						);
 					}

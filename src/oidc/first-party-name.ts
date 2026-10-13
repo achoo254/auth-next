@@ -1,5 +1,5 @@
 /** Names of first-party apps, matched on a lookalike skeleton. */
-const FIRST_PARTY_NAME_PATTERN = /localman|tunelo|hoandat/;
+const FIRST_PARTY_APP_NAMES = ["localman", "tunelo"] as const;
 
 // Cyrillic and Greek letters that render like the Latin letters of the
 // first-party names; NFKC alone keeps them distinct.
@@ -31,10 +31,14 @@ function nameSkeleton(name: string): string {
 
 /**
  * True when a self-declared (DCR) client name reads like Localman, Tunelo
- * or hoandat. Such names are allowed, because MCP clients put the server
- * name the user chose into theirs ("Claude Code (localman)"), but the
- * consent page then warns that the app is not ours.
+ * or the tenant's `brand`. Such names are allowed, because MCP clients put
+ * the server name the user chose into theirs ("Claude Code (localman)"),
+ * but the consent page then warns that the app is not ours.
  */
-export function imitatesFirstPartyName(name: string): boolean {
-	return FIRST_PARTY_NAME_PATTERN.test(nameSkeleton(name));
+export function imitatesFirstPartyName(name: string, brand: string): boolean {
+	const skeleton = nameSkeleton(name);
+	const brandSkeleton = nameSkeleton(brand);
+	return [...FIRST_PARTY_APP_NAMES, brandSkeleton].some(
+		(firstParty) => firstParty.length > 0 && skeleton.includes(firstParty),
+	);
 }

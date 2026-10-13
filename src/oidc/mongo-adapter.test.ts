@@ -2,12 +2,13 @@ import { randomUUID } from "node:crypto";
 import { type Db, MongoClient } from "mongodb";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { inject } from "vitest";
+import { PRIMARY_TEST_TENANT } from "../__tests__/helpers/test-tenant.js";
 import {
 	MongoAdapter,
 	OIDC_MODEL_NAMES,
 	collectionNameFor,
-	ensureOidcIndexes,
 } from "./mongo-adapter.js";
+import { ensureOidcIndexes } from "./oidc-indexes.js";
 
 let mongo: MongoClient;
 let db: Db;
@@ -38,7 +39,11 @@ describe("MongoAdapter", () => {
 	});
 
 	it("stores, finds, consumes and destroys an artifact", async () => {
-		const adapter = new MongoAdapter(db, "AuthorizationCode");
+		const adapter = new MongoAdapter(
+			db,
+			"AuthorizationCode",
+			PRIMARY_TEST_TENANT,
+		);
 		await adapter.upsert("code-1", { jti: "code-1", grantId: "g1" }, 60);
 		expect(await adapter.find("code-1")).toEqual({
 			jti: "code-1",
@@ -62,14 +67,14 @@ describe("MongoAdapter", () => {
 	});
 
 	it("keeps payload keys containing dots (resource indicators)", async () => {
-		const adapter = new MongoAdapter(db, "Grant");
+		const adapter = new MongoAdapter(db, "Grant", PRIMARY_TEST_TENANT);
 		const resources = { "https://tunnel.hoandat.com": "tunnels:read" };
 		await adapter.upsert("grant-1", { jti: "grant-1", resources }, 60);
 		expect(await adapter.find("grant-1")).toMatchObject({ resources });
 	});
 
 	it("hides artifacts whose expiry passed before the TTL monitor runs", async () => {
-		const adapter = new MongoAdapter(db, "AccessToken");
+		const adapter = new MongoAdapter(db, "AccessToken", PRIMARY_TEST_TENANT);
 		await adapter.upsert("expired", { jti: "expired" }, 60);
 		await db
 			.collection(collectionNameFor("AccessToken"))
@@ -81,13 +86,13 @@ describe("MongoAdapter", () => {
 	});
 
 	it("finds device codes by user code and sessions by uid", async () => {
-		const devices = new MongoAdapter(db, "DeviceCode");
+		const devices = new MongoAdapter(db, "DeviceCode", PRIMARY_TEST_TENANT);
 		await devices.upsert("dc-1", { jti: "dc-1", userCode: "BCDFGHJK" }, 600);
 		expect(await devices.findByUserCode("BCDFGHJK")).toMatchObject({
 			jti: "dc-1",
 		});
 
-		const sessions = new MongoAdapter(db, "Session");
+		const sessions = new MongoAdapter(db, "Session", PRIMARY_TEST_TENANT);
 		await sessions.upsert("sess-1", { jti: "sess-1", uid: "uid-1" }, 600);
 		expect(await sessions.findByUid("uid-1")).toMatchObject({ jti: "sess-1" });
 		// A regenerated id stored before the old one is destroyed must not fail.
@@ -96,7 +101,7 @@ describe("MongoAdapter", () => {
 	});
 
 	it("revokes every artifact of a grant, and only that grant", async () => {
-		const tokens = new MongoAdapter(db, "RefreshToken");
+		const tokens = new MongoAdapter(db, "RefreshToken", PRIMARY_TEST_TENANT);
 		await tokens.upsert("rt-1", { jti: "rt-1", grantId: "g-revoke" }, 600);
 		await tokens.upsert("rt-2", { jti: "rt-2", grantId: "g-revoke" }, 600);
 		await tokens.upsert("rt-3", { jti: "rt-3", grantId: "g-keep" }, 600);
@@ -108,7 +113,7 @@ describe("MongoAdapter", () => {
 	});
 
 	it("stores clients without expiry", async () => {
-		const clients = new MongoAdapter(db, "Client");
+		const clients = new MongoAdapter(db, "Client", PRIMARY_TEST_TENANT);
 		await clients.upsert("client-1", { client_id: "client-1" });
 		const stored = await db
 			.collection(collectionNameFor("Client"))

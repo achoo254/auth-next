@@ -3,7 +3,7 @@ import type { Translation } from "../translation.js";
 
 export const zhAccount: Translation<typeof enAccount> = {
 	"account.pageTitle": "账号",
-	"account.title": "hoandat 账号",
+	"account.title": "{brand} 账号",
 	"account.signOut": "退出登录",
 	"account.noEmail": "尚无邮箱",
 	"account.emailVerified": "已通过 {provider} 验证",
@@ -31,7 +31,7 @@ export const zhAccount: Translation<typeof enAccount> = {
 	"account.signIn.link": "关联 {provider}",
 	"account.signIn.unlink": "取消关联 {provider}",
 	"account.sessions.title": "已打开的会话",
-	"account.sessions.description": "已登录你 hoandat 账号的浏览器。",
+	"account.sessions.description": "已登录你 {brand} 账号的浏览器。",
 	"account.sessions.empty": "没有已打开的会话。",
 	"account.sessions.thisBrowser": "此浏览器",
 	"account.sessions.signedInAt": "登录于 {date}",

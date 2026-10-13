@@ -2,6 +2,8 @@ import { createHash } from "node:crypto";
 import type { Db } from "mongodb";
 import type { Env } from "../config/env.js";
 import { createLogger } from "../logger.js";
+import { envClientSecrets, envTenant } from "../tenants/env-tenant.js";
+import { inTenant } from "../tenants/tenant-data.js";
 import { createInMemoryAccountStore } from "./claims.js";
 import { STATIC_CLIENT_IDS, TOKEN_EXCHANGE_GRANT } from "./clients.js";
 import { RSA_ID_TOKEN_ALG, SIGNING_ALG, type SigningJwks } from "./jwks.js";
@@ -54,8 +56,13 @@ export async function inspectStaticClients(deps: {
 	readonly db: Db;
 	readonly jwks: SigningJwks;
 }): Promise<ClientSeedReport> {
+	const tenant = envTenant(deps.env);
 	const provider = createProvider({
-		...deps,
+		tenant,
+		db: deps.db,
+		jwks: deps.jwks,
+		cookieKeys: deps.env.COOKIE_KEYS,
+		clientSecrets: envClientSecrets(deps.env),
 		accountStore: createInMemoryAccountStore([]),
 		logger: createLogger("silent"),
 	});
@@ -82,16 +89,20 @@ export async function inspectStaticClients(deps: {
 	);
 	const staticIds: string[] = Object.values(STATIC_CLIENT_IDS);
 	const shadowed = await stored
-		.find({ _id: { $in: staticIds } }, { projection: { _id: 1 } })
+		.find(
+			{ _id: { $in: staticIds }, ...inTenant(tenant) },
+			{ projection: { _id: 1 } },
+		)
 		.toArray();
 	return {
-		issuer: deps.env.ISSUER,
+		issuer: tenant.issuer,
 		clients,
 		fingerprint: createHash("sha256")
 			.update(JSON.stringify(clients))
 			.digest("hex"),
 		dynamicClients: await stored.countDocuments({
 			_id: { $nin: staticIds },
+			...inTenant(tenant),
 		}),
 		shadowedIds: shadowed.map((document) => document._id).sort(),
 	};

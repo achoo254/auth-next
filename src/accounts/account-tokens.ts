@@ -89,11 +89,12 @@ export function isTokenCurrent(
 export class AccountTokens {
 	private readonly collection: TokenCollection;
 
+	/** Tokens live in the tenant of `accounts`, like the accounts they act on. */
 	constructor(
 		db: Db,
 		private readonly accounts: AccountRepository,
 	) {
-		this.collection = new TokenCollection(db);
+		this.collection = new TokenCollection(db, accounts.tenant);
 	}
 
 	/** Issues `token`; false (nothing stored) when the account is gone. */

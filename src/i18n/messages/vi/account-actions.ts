@@ -18,18 +18,18 @@ export const viAccountActions: Translation<typeof enAccountActions> = {
 	"notice.appRevoked": "Đã gỡ quyền của ứng dụng.",
 	"notice.notFound": "Không tìm thấy mục cần gỡ.",
 	"confirm.app.title": "Gỡ quyền của ứng dụng?",
-	"confirm.app.lead": "{app} sẽ không dùng được tài khoản hoandat của bạn nữa.",
+	"confirm.app.lead": "{app} sẽ không dùng được tài khoản {brand} của bạn nữa.",
 	"confirm.app.canNow": "Hiện ứng dụng được:",
 	"confirm.app.effect":
 		"Phiên đăng nhập và token của ứng dụng ngừng hoạt động, và nó phải xin lại quyền. Access token nó đang giữ hết hạn trong vòng 15 phút.",
 	"confirm.sessions.title": "Đăng xuất mọi phiên khác?",
 	"confirm.sessions.lead":
-		"Mọi trình duyệt bên dưới sẽ bị đăng xuất khỏi tài khoản hoandat. Trình duyệt này vẫn giữ đăng nhập.",
+		"Mọi trình duyệt bên dưới sẽ bị đăng xuất khỏi tài khoản {brand}. Trình duyệt này vẫn giữ đăng nhập.",
 	"confirm.sessions.effect":
 		"Ứng dụng đăng nhập qua các trình duyệt đó, như Localman và Tunelo bản web, cũng bị đăng xuất. Thiết bị Tunelo vẫn giữ đăng nhập.",
 	"telegram.title": "Liên kết Telegram",
 	"telegram.subtitle":
-		"Mở bot hoandat trên Telegram, bấm Start rồi bấm “{button}” trong 10 phút.",
+		"Mở bot {brand} trên Telegram, bấm Start rồi bấm “{button}” trong 10 phút.",
 	"telegram.open": "Mở Telegram",
 	"telegram.orSend": "Hoặc gửi lệnh sau cho bot {bot}:",
 	"telegram.commandLabel": "Lệnh liên kết",

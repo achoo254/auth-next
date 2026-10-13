@@ -1,7 +1,7 @@
 /** The public list of apps that sign in through the IdP, at /apps. */
 export const enApps = {
-	"apps.eyebrow": "hoandat sign-in",
-	"apps.title": "One account for every hoandat app",
+	"apps.eyebrow": "{brand} sign-in",
+	"apps.title": "One account for every {brand} app",
 	"apps.subtitle":
 		"Sign in once with Google or GitHub and use the same account in Localman, its MCP server and Tunelo.",
 	"apps.trust.providers": "Sign in with Google or GitHub",
@@ -10,7 +10,7 @@ export const enApps = {
 	"apps.cta.account": "Manage your account",
 	"apps.cta.how": "How sign-in works",
 	"apps.diagram.label":
-		"Your hoandat account, reached with Google or GitHub, signs you in to Localman, Localman MCP, Tunelo CLI and Tunelo.",
+		"Your {brand} account, reached with Google or GitHub, signs you in to Localman, Localman MCP, Tunelo CLI and Tunelo.",
 	"apps.list.title": "Apps you can open",
 	"apps.kind.web": "Web app",
 	"apps.kind.mcp": "MCP server",
@@ -39,7 +39,7 @@ export const enApps = {
 		"The account you linked signs you in. The first time, you pick a username.",
 	"apps.steps.back.title": "You are back in the app",
 	"apps.steps.back.body":
-		"Apps from outside hoandat, such as AI tools, ask for your approval first.",
+		"Apps from outside {brand}, such as AI tools, ask for your approval first.",
 	"apps.manage":
 		"To see or remove the apps that can access your account, open {account}.",
 };

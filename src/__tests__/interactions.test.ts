@@ -1,6 +1,5 @@
 import * as client from "openid-client";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { RESOURCES } from "../oidc/resources.js";
 import { discoverClient } from "./helpers/flows.js";
 import { signedInBrowser } from "./helpers/session-flows.js";
 import {
@@ -11,6 +10,7 @@ import {
 import { TestBrowser, formField } from "./helpers/test-browser.js";
 import { type TestIdp, startTestIdp } from "./helpers/test-idp.js";
 import { shown } from "./helpers/test-page.js";
+import { RESOURCES } from "./helpers/test-tenant.js";
 
 const MCP_REDIRECT = "http://127.0.0.1:33419/callback";
 let idp: TestIdp;

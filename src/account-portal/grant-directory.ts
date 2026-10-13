@@ -1,8 +1,8 @@
-import type { Db } from "mongodb";
 import type Provider from "oidc-provider";
 import { z } from "zod";
 import { STATIC_CLIENT_IDS, isStaticClientId } from "../oidc/clients.js";
 import { collectionNameFor } from "../oidc/mongo-adapter.js";
+import { type TenantDb, inTenant, tenantTag } from "../tenants/tenant-data.js";
 
 const storedGrant = z.object({
 	_id: z.string(),
@@ -18,6 +18,8 @@ const storedGrant = z.object({
 
 interface DeviceMetaDocument {
 	_id: string;
+	/** Absent only on metadata stored before tenants existed. */
+	tenantId?: string | null;
 	accountId: string;
 	/** Missing when the CLI sent neither a machine name nor a User-Agent. */
 	deviceName?: string;
@@ -46,13 +48,14 @@ export interface DeviceGrant extends GrantSummary {
  * own. Revocation never relies on this list (see revoke-access.ts).
  */
 export async function listGrants(
-	db: Db,
+	{ db, tenant }: TenantDb,
 	accountId: string,
 ): Promise<GrantSummary[]> {
 	const documents = await db
 		.collection(collectionNameFor("Grant"))
 		.find({
 			"payload.accountId": accountId,
+			...inTenant(tenant),
 			$or: [
 				{ expiresAt: { $exists: false } },
 				{ expiresAt: { $gt: new Date() } },
@@ -84,15 +87,16 @@ export async function listGrants(
 
 /** Remembers which machine a Tunelo CLI grant belongs to. */
 export async function recordDeviceGrant(
-	db: Db,
-	meta: Omit<DeviceMetaDocument, "createdAt" | "expiresAt">,
+	{ db, tenant }: TenantDb,
+	meta: Omit<DeviceMetaDocument, "createdAt" | "expiresAt" | "tenantId">,
 	ttlSeconds: number,
 ): Promise<void> {
 	const now = new Date();
 	await db.collection<DeviceMetaDocument>(GRANT_META_COLLECTION).replaceOne(
-		{ _id: meta._id },
+		{ _id: meta._id, ...inTenant(tenant) },
 		{
 			...meta,
+			...tenantTag(tenant),
 			createdAt: now,
 			expiresAt: new Date(now.getTime() + ttlSeconds * 1000),
 		},
@@ -102,21 +106,31 @@ export async function recordDeviceGrant(
 
 /** Tunelo CLI grants with the device name captured at approval. */
 export async function listDeviceGrants(
-	db: Db,
+	{ db, tenant }: TenantDb,
 	grants: readonly GrantSummary[],
 ): Promise<DeviceGrant[]> {
 	const devices = grants.filter(
 		(grant) => grant.clientId === STATIC_CLIENT_IDS.tuneloCli,
 	);
+	const ids = devices.map((grant) => grant.grantId);
 	const metas = await db
 		.collection<DeviceMetaDocument>(GRANT_META_COLLECTION)
-		.find({ _id: { $in: devices.map((grant) => grant.grantId) } })
+		.find({ _id: { $in: ids }, ...inTenant(tenant) })
 		.toArray();
 	const names = new Map(metas.map((meta) => [meta._id, meta.deviceName]));
 	return devices.map((grant) => ({
 		...grant,
 		deviceName: names.get(grant.grantId) ?? undefined,
 	}));
+}
+
+/** Drops the device names of revoked grants. */
+export async function forgetDeviceGrants(
+	{ db, tenant }: TenantDb,
+	grantIds: readonly string[],
+): Promise<void> {
+	const metas = db.collection<DeviceMetaDocument>(GRANT_META_COLLECTION);
+	await metas.deleteMany({ _id: { $in: [...grantIds] }, ...inTenant(tenant) });
 }
 
 export interface AuthorizedApp {

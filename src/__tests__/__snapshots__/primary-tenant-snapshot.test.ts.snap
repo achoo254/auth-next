@@ -1,0 +1,1520 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`primary tenant (hoandat.com) is unchanged > keeps cookie names and attributes (no Domain, same prefixes) 1`] = `
+{
+  "interaction": "__Secure-interaction",
+  "resume": "__Secure-interaction_resume",
+  "session": "__Host-session",
+}
+`;
+
+exports[`primary tenant (hoandat.com) is unchanged > keeps cookie names and attributes (no Domain, same prefixes) 2`] = `
+[
+  "_interaction=VALUE; path=/interaction/UID; expires=DATE; samesite=lax; httponly",
+  "_interaction.sig=VALUE; path=/interaction/UID; expires=DATE; samesite=lax; httponly",
+  "_interaction_resume=VALUE; path=/auth/UID; expires=DATE; samesite=lax; httponly",
+  "_interaction_resume.sig=VALUE; path=/auth/UID; expires=DATE; samesite=lax; httponly",
+]
+`;
+
+exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way > en 1`] = `
+"<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex">
+<title>One account for every hoandat app · hoandat</title>
+<link rel="stylesheet" href="/assets/fonts/inter/400.css"><link rel="stylesheet" href="/assets/fonts/inter/500.css"><link rel="stylesheet" href="/assets/fonts/inter/600.css"><link rel="stylesheet" href="/assets/fonts/jetbrains-mono/400.css"><link rel="stylesheet" href="/assets/fonts/jetbrains-mono/600.css"><link rel="stylesheet" href="/assets/fonts/jetbrains-mono/700.css">
+<link rel="stylesheet" href="/assets/css/tokens.css">
+<link rel="stylesheet" href="/assets/css/app.css">
+<link rel="stylesheet" href="/assets/css/apps.css">
+</head>
+<body>
+<header class="topbar"><div class="topbar-inner container">
+<a class="idp-brand" href="/account" data-id="idp-brand"><b>hoandat</b> · Account <span class="badge badge-neutral hide-sm">ISSUER_HOST</span></a>
+</div></header>
+<main class="page container portal"><section class="apps-hero" data-id="apps-hero">
+<div class="apps-hero-text">
+<p class="apps-eyebrow">hoandat sign-in</p>
+<h1 class="apps-title">One account for every hoandat app</h1>
+<p class="apps-lead">Sign in once with Google or GitHub and use the same account in Localman, its MCP server and Tunelo.</p>
+<ul class="apps-trust"><li><svg class="icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12l4 4 10-10"/></svg><span>Sign in with Google or GitHub</span></li><li><svg class="icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12l4 4 10-10"/></svg><span>No password to create or remember</span></li><li><svg class="icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12l4 4 10-10"/></svg><span>You choose which apps get access</span></li></ul>
+<div class="apps-actions">
+<a class="btn btn-primary" href="/account" data-id="apps-manage-account">Manage your account</a>
+<a class="btn btn-secondary" href="#how-sign-in-works" data-id="apps-how">How sign-in works</a>
+</div>
+</div>
+<div class="apps-hero-art"><svg class="hub" viewBox="0 0 544 300" role="img" aria-label="Your hoandat account, reached with Google or GitHub, signs you in to Localman, Localman MCP, Tunelo CLI and Tunelo." data-id="apps-hub">
+<path class="hub-line" d="M132 110 C164 110 164 150 196 150"/><path class="hub-flow tone-primary" d="M132 110 C164 110 164 150 196 150"/><path class="hub-line" d="M132 190 C164 190 164 150 196 150"/><path class="hub-flow tone-primary" d="M132 190 C164 190 164 150 196 150"/><path class="hub-line" d="M324 150 C358 150 358 38 392 38"/><path class="hub-flow tone-violet" d="M324 150 C358 150 358 38 392 38"/><path class="hub-line" d="M324 150 C358 150 358 113 392 113"/><path class="hub-flow tone-cyan" d="M324 150 C358 150 358 113 392 113"/><path class="hub-line" d="M324 150 C358 150 358 188 392 188"/><path class="hub-flow tone-green" d="M324 150 C358 150 358 188 392 188"/><path class="hub-line" d="M324 150 C358 150 358 263 392 263"/><path class="hub-flow tone-amber" d="M324 150 C358 150 358 263 392 263"/>
+<g class="hub-node">
+<rect x="8" y="90" width="124" height="40" rx="10"/>
+<svg x="20" y="102" width="16" height="16" viewBox="0 0 24 24"><path class="hub-mark" d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"/></svg>
+<text class="hub-text" x="46" y="115">Google</text>
+</g><g class="hub-node">
+<rect x="8" y="170" width="124" height="40" rx="10"/>
+<svg x="20" y="182" width="16" height="16" viewBox="0 0 24 24"><path class="hub-mark" d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+<text class="hub-text" x="46" y="195">GitHub</text>
+</g>
+<g class="hub-node hub-core">
+<rect x="196" y="110" width="128" height="80" rx="16"/>
+<text class="hub-text hub-brand" x="260" y="148" text-anchor="middle">hoandat</text>
+<text class="hub-text hub-sub" x="260" y="168" text-anchor="middle">ISSUER_HOST</text>
+</g>
+<g class="hub-node tone-violet">
+<rect x="392" y="18" width="148" height="40" rx="10"/>
+<rect class="hub-chip" x="398" y="24" width="28" height="28" rx="7"/>
+<svg class="icon" x="404" y="30" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M8 4H7a2 2 0 0 0-2 2v4l-2 2 2 2v4a2 2 0 0 0 2 2h1M16 4h1a2 2 0 0 1 2 2v4l2 2-2 2v4a2 2 0 0 1-2 2h-1"/><circle cx="12" cy="12" r="1.5"/></svg>
+<text class="hub-text hub-app" x="434" y="43">Localman</text>
+</g><g class="hub-node tone-cyan">
+<rect x="392" y="93" width="148" height="40" rx="10"/>
+<rect class="hub-chip" x="398" y="99" width="28" height="28" rx="7"/>
+<svg class="icon" x="404" y="105" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M9 3v4M15 3v4M7 7h10v4a5 5 0 0 1-10 0V7zM12 16v5"/></svg>
+<text class="hub-text hub-app" x="434" y="118">Localman MCP</text>
+</g><g class="hub-node tone-green">
+<rect x="392" y="168" width="148" height="40" rx="10"/>
+<rect class="hub-chip" x="398" y="174" width="28" height="28" rx="7"/>
+<svg class="icon" x="404" y="180" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9l3 3-3 3M13 15h4"/></svg>
+<text class="hub-text hub-app" x="434" y="193">Tunelo CLI</text>
+</g><g class="hub-node tone-amber">
+<rect x="392" y="243" width="148" height="40" rx="10"/>
+<rect class="hub-chip" x="398" y="249" width="28" height="28" rx="7"/>
+<svg class="icon" x="404" y="255" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 20V12a9 9 0 0 1 18 0v8M7 20v-8a5 5 0 0 1 10 0v8M3 20h18"/></svg>
+<text class="hub-text hub-app" x="434" y="268">Tunelo</text>
+</g>
+</svg></div>
+</section>
+<section class="apps-section" aria-labelledby="apps-list-title">
+<h2 class="apps-section-title" id="apps-list-title">Apps you can open</h2>
+<ul class="apps-grid" data-id="app-list"><li class="app-card tone-violet" data-id="app-localman-web">
+<div class="app-card-head">
+<span class="app-card-icon"><svg class="icon" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M8 4H7a2 2 0 0 0-2 2v4l-2 2 2 2v4a2 2 0 0 0 2 2h1M16 4h1a2 2 0 0 1 2 2v4l2 2-2 2v4a2 2 0 0 1-2 2h-1"/><circle cx="12" cy="12" r="1.5"/></svg></span>
+<div class="app-card-heading"><h3 class="app-card-name">Localman</h3>
+<p class="app-card-meta"><span class="badge badge-neutral">Web app</span><span class="mono">localman.hoandat.com</span></p></div>
+</div>
+<p class="app-card-desc">Mock APIs and an API client in your browser.</p>
+<div class="app-card-how"><p class="app-card-how-label">How to sign in</p><p>Choose Sign in on the site.</p></div>
+<div class="app-card-foot"><a class="btn btn-secondary" href="https://localman.hoandat.com" data-id="app-open-localman-web">Open</a></div>
+</li><li class="app-card tone-cyan" data-id="app-localman-mcp">
+<div class="app-card-head">
+<span class="app-card-icon"><svg class="icon" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M9 3v4M15 3v4M7 7h10v4a5 5 0 0 1-10 0V7zM12 16v5"/></svg></span>
+<div class="app-card-heading"><h3 class="app-card-name">Localman MCP</h3>
+<p class="app-card-meta"><span class="badge badge-neutral">MCP server</span></p></div>
+</div>
+<p class="app-card-desc">Lets AI tools such as Claude Code work with your Localman projects.</p>
+<div class="app-card-how"><p class="app-card-how-label">How to sign in</p><p>Add <code class="mono">https://localman.hoandat.com/mcp</code> to your AI tool as an MCP server, then approve what it may do on the consent page.</p></div>
+
+</li><li class="app-card tone-green" data-id="app-tunelo-cli">
+<div class="app-card-head">
+<span class="app-card-icon"><svg class="icon" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9l3 3-3 3M13 15h4"/></svg></span>
+<div class="app-card-heading"><h3 class="app-card-name">Tunelo CLI</h3>
+<p class="app-card-meta"><span class="badge badge-neutral">Command line</span></p></div>
+</div>
+<p class="app-card-desc">Opens tunnels from your computer to the internet.</p>
+<div class="app-card-how"><p class="app-card-how-label">How to sign in</p><p>Run <code class="mono">tunelo login</code> in a terminal, then enter the code it shows at <a class="link" href="ISSUER/device">ISSUER/device</a>.</p></div>
+
+</li><li class="app-card tone-amber" data-id="app-tunelo-web">
+<div class="app-card-head">
+<span class="app-card-icon"><svg class="icon" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 20V12a9 9 0 0 1 18 0v8M7 20v-8a5 5 0 0 1 10 0v8M3 20h18"/></svg></span>
+<div class="app-card-heading"><h3 class="app-card-name">Tunelo</h3>
+<p class="app-card-meta"><span class="badge badge-neutral">Web app</span><span class="mono">tunnel.hoandat.com</span></p></div>
+</div>
+<p class="app-card-desc">Your tunnels in the browser.</p>
+<div class="app-card-how"><p class="app-card-how-label">How to sign in</p><p>Choose Sign in on the site.</p></div>
+<div class="app-card-foot"><a class="btn btn-secondary" href="https://tunnel.hoandat.com" data-id="app-open-tunelo-web">Open</a></div>
+</li></ul>
+</section>
+<section class="apps-section" id="how-sign-in-works" aria-labelledby="apps-steps-title" data-id="apps-steps">
+<h2 class="apps-section-title" id="apps-steps-title">How sign-in works</h2>
+<ol class="apps-steps"><li class="apps-step"><span class="apps-step-number" aria-hidden="true">1</span><div><h3 class="apps-step-title">Pick an app</h3><p class="apps-step-body">Choose Sign in on its site, or run <code class="mono">tunelo login</code> in a terminal.</p></div></li><li class="apps-step"><span class="apps-step-number" aria-hidden="true">2</span><div><h3 class="apps-step-title">Continue with Google or GitHub</h3><p class="apps-step-body">The account you linked signs you in. The first time, you pick a username.</p></div></li><li class="apps-step"><span class="apps-step-number" aria-hidden="true">3</span><div><h3 class="apps-step-title">You are back in the app</h3><p class="apps-step-body">Apps from outside hoandat, such as AI tools, ask for your approval first.</p></div></li></ol>
+</section>
+<p class="apps-manage" data-id="apps-manage">To see or remove the apps that can access your account, open <a class="link" href="/account">Account</a>.</p></main>
+<footer class="page-foot container"><nav class="lang-switch" aria-label="Language" data-id="lang-switch"><a class="lang-option" href="/lang?set=en&amp;return=%2Fapps" lang="en" hreflang="en" aria-current="true" data-id="lang-en">English</a><a class="lang-option" href="/lang?set=zh-CN&amp;return=%2Fapps" lang="zh-CN" hreflang="zh-CN" data-id="lang-zh-CN">中文</a><a class="lang-option" href="/lang?set=vi&amp;return=%2Fapps" lang="vi" hreflang="vi" data-id="lang-vi">Tiếng Việt</a></nav></footer>
+</body>
+</html>"
+`;
+
+exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way > vi 1`] = `
+"<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex">
+<title>Một tài khoản cho mọi ứng dụng hoandat · hoandat</title>
+<link rel="stylesheet" href="/assets/fonts/inter/400.css"><link rel="stylesheet" href="/assets/fonts/inter/500.css"><link rel="stylesheet" href="/assets/fonts/inter/600.css"><link rel="stylesheet" href="/assets/fonts/jetbrains-mono/400.css"><link rel="stylesheet" href="/assets/fonts/jetbrains-mono/600.css"><link rel="stylesheet" href="/assets/fonts/jetbrains-mono/700.css">
+<link rel="stylesheet" href="/assets/css/tokens.css">
+<link rel="stylesheet" href="/assets/css/app.css">
+<link rel="stylesheet" href="/assets/css/apps.css">
+</head>
+<body>
+<header class="topbar"><div class="topbar-inner container">
+<a class="idp-brand" href="/account" data-id="idp-brand"><b>hoandat</b> · Tài khoản <span class="badge badge-neutral hide-sm">ISSUER_HOST</span></a>
+</div></header>
+<main class="page container portal"><section class="apps-hero" data-id="apps-hero">
+<div class="apps-hero-text">
+<p class="apps-eyebrow">Đăng nhập hoandat</p>
+<h1 class="apps-title">Một tài khoản cho mọi ứng dụng hoandat</h1>
+<p class="apps-lead">Đăng nhập một lần bằng Google hoặc GitHub, rồi dùng cùng tài khoản đó trong Localman, MCP server của nó và Tunelo.</p>
+<ul class="apps-trust"><li><svg class="icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12l4 4 10-10"/></svg><span>Đăng nhập bằng Google hoặc GitHub</span></li><li><svg class="icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12l4 4 10-10"/></svg><span>Không phải tạo hay nhớ mật khẩu</span></li><li><svg class="icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12l4 4 10-10"/></svg><span>Bạn chọn ứng dụng nào được quyền truy cập</span></li></ul>
+<div class="apps-actions">
+<a class="btn btn-primary" href="/account" data-id="apps-manage-account">Quản lý tài khoản</a>
+<a class="btn btn-secondary" href="#how-sign-in-works" data-id="apps-how">Đăng nhập diễn ra thế nào</a>
+</div>
+</div>
+<div class="apps-hero-art"><svg class="hub" viewBox="0 0 544 300" role="img" aria-label="Tài khoản hoandat, vào bằng Google hoặc GitHub, đăng nhập cho bạn vào Localman, Localman MCP, Tunelo CLI và Tunelo." data-id="apps-hub">
+<path class="hub-line" d="M132 110 C164 110 164 150 196 150"/><path class="hub-flow tone-primary" d="M132 110 C164 110 164 150 196 150"/><path class="hub-line" d="M132 190 C164 190 164 150 196 150"/><path class="hub-flow tone-primary" d="M132 190 C164 190 164 150 196 150"/><path class="hub-line" d="M324 150 C358 150 358 38 392 38"/><path class="hub-flow tone-violet" d="M324 150 C358 150 358 38 392 38"/><path class="hub-line" d="M324 150 C358 150 358 113 392 113"/><path class="hub-flow tone-cyan" d="M324 150 C358 150 358 113 392 113"/><path class="hub-line" d="M324 150 C358 150 358 188 392 188"/><path class="hub-flow tone-green" d="M324 150 C358 150 358 188 392 188"/><path class="hub-line" d="M324 150 C358 150 358 263 392 263"/><path class="hub-flow tone-amber" d="M324 150 C358 150 358 263 392 263"/>
+<g class="hub-node">
+<rect x="8" y="90" width="124" height="40" rx="10"/>
+<svg x="20" y="102" width="16" height="16" viewBox="0 0 24 24"><path class="hub-mark" d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"/></svg>
+<text class="hub-text" x="46" y="115">Google</text>
+</g><g class="hub-node">
+<rect x="8" y="170" width="124" height="40" rx="10"/>
+<svg x="20" y="182" width="16" height="16" viewBox="0 0 24 24"><path class="hub-mark" d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+<text class="hub-text" x="46" y="195">GitHub</text>
+</g>
+<g class="hub-node hub-core">
+<rect x="196" y="110" width="128" height="80" rx="16"/>
+<text class="hub-text hub-brand" x="260" y="148" text-anchor="middle">hoandat</text>
+<text class="hub-text hub-sub" x="260" y="168" text-anchor="middle">ISSUER_HOST</text>
+</g>
+<g class="hub-node tone-violet">
+<rect x="392" y="18" width="148" height="40" rx="10"/>
+<rect class="hub-chip" x="398" y="24" width="28" height="28" rx="7"/>
+<svg class="icon" x="404" y="30" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M8 4H7a2 2 0 0 0-2 2v4l-2 2 2 2v4a2 2 0 0 0 2 2h1M16 4h1a2 2 0 0 1 2 2v4l2 2-2 2v4a2 2 0 0 1-2 2h-1"/><circle cx="12" cy="12" r="1.5"/></svg>
+<text class="hub-text hub-app" x="434" y="43">Localman</text>
+</g><g class="hub-node tone-cyan">
+<rect x="392" y="93" width="148" height="40" rx="10"/>
+<rect class="hub-chip" x="398" y="99" width="28" height="28" rx="7"/>
+<svg class="icon" x="404" y="105" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M9 3v4M15 3v4M7 7h10v4a5 5 0 0 1-10 0V7zM12 16v5"/></svg>
+<text class="hub-text hub-app" x="434" y="118">Localman MCP</text>
+</g><g class="hub-node tone-green">
+<rect x="392" y="168" width="148" height="40" rx="10"/>
+<rect class="hub-chip" x="398" y="174" width="28" height="28" rx="7"/>
+<svg class="icon" x="404" y="180" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9l3 3-3 3M13 15h4"/></svg>
+<text class="hub-text hub-app" x="434" y="193">Tunelo CLI</text>
+</g><g class="hub-node tone-amber">
+<rect x="392" y="243" width="148" height="40" rx="10"/>
+<rect class="hub-chip" x="398" y="249" width="28" height="28" rx="7"/>
+<svg class="icon" x="404" y="255" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 20V12a9 9 0 0 1 18 0v8M7 20v-8a5 5 0 0 1 10 0v8M3 20h18"/></svg>
+<text class="hub-text hub-app" x="434" y="268">Tunelo</text>
+</g>
+</svg></div>
+</section>
+<section class="apps-section" aria-labelledby="apps-list-title">
+<h2 class="apps-section-title" id="apps-list-title">Ứng dụng bạn dùng được</h2>
+<ul class="apps-grid" data-id="app-list"><li class="app-card tone-violet" data-id="app-localman-web">
+<div class="app-card-head">
+<span class="app-card-icon"><svg class="icon" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M8 4H7a2 2 0 0 0-2 2v4l-2 2 2 2v4a2 2 0 0 0 2 2h1M16 4h1a2 2 0 0 1 2 2v4l2 2-2 2v4a2 2 0 0 1-2 2h-1"/><circle cx="12" cy="12" r="1.5"/></svg></span>
+<div class="app-card-heading"><h3 class="app-card-name">Localman</h3>
+<p class="app-card-meta"><span class="badge badge-neutral">Ứng dụng web</span><span class="mono">localman.hoandat.com</span></p></div>
+</div>
+<p class="app-card-desc">Mock API và API client ngay trên trình duyệt.</p>
+<div class="app-card-how"><p class="app-card-how-label">Cách đăng nhập</p><p>Chọn Đăng nhập trên trang.</p></div>
+<div class="app-card-foot"><a class="btn btn-secondary" href="https://localman.hoandat.com" data-id="app-open-localman-web">Mở</a></div>
+</li><li class="app-card tone-cyan" data-id="app-localman-mcp">
+<div class="app-card-head">
+<span class="app-card-icon"><svg class="icon" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M9 3v4M15 3v4M7 7h10v4a5 5 0 0 1-10 0V7zM12 16v5"/></svg></span>
+<div class="app-card-heading"><h3 class="app-card-name">Localman MCP</h3>
+<p class="app-card-meta"><span class="badge badge-neutral">MCP server</span></p></div>
+</div>
+<p class="app-card-desc">Cho công cụ AI như Claude Code làm việc với project Localman của bạn.</p>
+<div class="app-card-how"><p class="app-card-how-label">Cách đăng nhập</p><p>Thêm <code class="mono">https://localman.hoandat.com/mcp</code> vào công cụ AI làm MCP server, rồi duyệt những gì nó được làm ở trang cấp quyền.</p></div>
+
+</li><li class="app-card tone-green" data-id="app-tunelo-cli">
+<div class="app-card-head">
+<span class="app-card-icon"><svg class="icon" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9l3 3-3 3M13 15h4"/></svg></span>
+<div class="app-card-heading"><h3 class="app-card-name">Tunelo CLI</h3>
+<p class="app-card-meta"><span class="badge badge-neutral">Dòng lệnh</span></p></div>
+</div>
+<p class="app-card-desc">Mở tunnel từ máy của bạn ra internet.</p>
+<div class="app-card-how"><p class="app-card-how-label">Cách đăng nhập</p><p>Chạy <code class="mono">tunelo login</code> trong terminal, rồi nhập mã nó hiện ở <a class="link" href="ISSUER/device">ISSUER/device</a>.</p></div>
+
+</li><li class="app-card tone-amber" data-id="app-tunelo-web">
+<div class="app-card-head">
+<span class="app-card-icon"><svg class="icon" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 20V12a9 9 0 0 1 18 0v8M7 20v-8a5 5 0 0 1 10 0v8M3 20h18"/></svg></span>
+<div class="app-card-heading"><h3 class="app-card-name">Tunelo</h3>
+<p class="app-card-meta"><span class="badge badge-neutral">Ứng dụng web</span><span class="mono">tunnel.hoandat.com</span></p></div>
+</div>
+<p class="app-card-desc">Tunnel của bạn trên trình duyệt.</p>
+<div class="app-card-how"><p class="app-card-how-label">Cách đăng nhập</p><p>Chọn Đăng nhập trên trang.</p></div>
+<div class="app-card-foot"><a class="btn btn-secondary" href="https://tunnel.hoandat.com" data-id="app-open-tunelo-web">Mở</a></div>
+</li></ul>
+</section>
+<section class="apps-section" id="how-sign-in-works" aria-labelledby="apps-steps-title" data-id="apps-steps">
+<h2 class="apps-section-title" id="apps-steps-title">Đăng nhập diễn ra thế nào</h2>
+<ol class="apps-steps"><li class="apps-step"><span class="apps-step-number" aria-hidden="true">1</span><div><h3 class="apps-step-title">Chọn một ứng dụng</h3><p class="apps-step-body">Chọn Đăng nhập trên trang của nó, hoặc chạy <code class="mono">tunelo login</code> trong terminal.</p></div></li><li class="apps-step"><span class="apps-step-number" aria-hidden="true">2</span><div><h3 class="apps-step-title">Tiếp tục với Google hoặc GitHub</h3><p class="apps-step-body">Tài khoản bạn đã liên kết sẽ đăng nhập cho bạn. Lần đầu, bạn chọn một tên đăng nhập.</p></div></li><li class="apps-step"><span class="apps-step-number" aria-hidden="true">3</span><div><h3 class="apps-step-title">Quay lại ứng dụng</h3><p class="apps-step-body">Ứng dụng bên ngoài hoandat, như công cụ AI, sẽ hỏi bạn đồng ý trước.</p></div></li></ol>
+</section>
+<p class="apps-manage" data-id="apps-manage">Để xem hoặc gỡ các ứng dụng đang có quyền vào tài khoản, mở trang <a class="link" href="/account">Tài khoản</a>.</p></main>
+<footer class="page-foot container"><nav class="lang-switch" aria-label="Ngôn ngữ" data-id="lang-switch"><a class="lang-option" href="/lang?set=en&amp;return=%2Fapps" lang="en" hreflang="en" data-id="lang-en">English</a><a class="lang-option" href="/lang?set=zh-CN&amp;return=%2Fapps" lang="zh-CN" hreflang="zh-CN" data-id="lang-zh-CN">中文</a><a class="lang-option" href="/lang?set=vi&amp;return=%2Fapps" lang="vi" hreflang="vi" aria-current="true" data-id="lang-vi">Tiếng Việt</a></nav></footer>
+</body>
+</html>"
+`;
+
+exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way > zh-CN 1`] = `
+"<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex">
+<title>一个账号，通用所有 hoandat 应用 · hoandat</title>
+<link rel="stylesheet" href="/assets/fonts/inter/400.css"><link rel="stylesheet" href="/assets/fonts/inter/500.css"><link rel="stylesheet" href="/assets/fonts/inter/600.css"><link rel="stylesheet" href="/assets/fonts/jetbrains-mono/400.css"><link rel="stylesheet" href="/assets/fonts/jetbrains-mono/600.css"><link rel="stylesheet" href="/assets/fonts/jetbrains-mono/700.css">
+<link rel="stylesheet" href="/assets/css/tokens.css">
+<link rel="stylesheet" href="/assets/css/app.css">
+<link rel="stylesheet" href="/assets/css/apps.css">
+</head>
+<body>
+<header class="topbar"><div class="topbar-inner container">
+<a class="idp-brand" href="/account" data-id="idp-brand"><b>hoandat</b> · 账号 <span class="badge badge-neutral hide-sm">ISSUER_HOST</span></a>
+</div></header>
+<main class="page container portal"><section class="apps-hero" data-id="apps-hero">
+<div class="apps-hero-text">
+<p class="apps-eyebrow">hoandat 登录</p>
+<h1 class="apps-title">一个账号，通用所有 hoandat 应用</h1>
+<p class="apps-lead">用 Google 或 GitHub 登录一次，即可在 Localman、它的 MCP 服务器和 Tunelo 中使用同一个账号。</p>
+<ul class="apps-trust"><li><svg class="icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12l4 4 10-10"/></svg><span>使用 Google 或 GitHub 登录</span></li><li><svg class="icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12l4 4 10-10"/></svg><span>无需创建或记住密码</span></li><li><svg class="icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12l4 4 10-10"/></svg><span>由你决定哪些应用可以访问</span></li></ul>
+<div class="apps-actions">
+<a class="btn btn-primary" href="/account" data-id="apps-manage-account">管理你的账号</a>
+<a class="btn btn-secondary" href="#how-sign-in-works" data-id="apps-how">登录如何进行</a>
+</div>
+</div>
+<div class="apps-hero-art"><svg class="hub" viewBox="0 0 544 300" role="img" aria-label="通过 Google 或 GitHub 进入你的 hoandat 账号，即可登录 Localman、Localman MCP、Tunelo CLI 和 Tunelo。" data-id="apps-hub">
+<path class="hub-line" d="M132 110 C164 110 164 150 196 150"/><path class="hub-flow tone-primary" d="M132 110 C164 110 164 150 196 150"/><path class="hub-line" d="M132 190 C164 190 164 150 196 150"/><path class="hub-flow tone-primary" d="M132 190 C164 190 164 150 196 150"/><path class="hub-line" d="M324 150 C358 150 358 38 392 38"/><path class="hub-flow tone-violet" d="M324 150 C358 150 358 38 392 38"/><path class="hub-line" d="M324 150 C358 150 358 113 392 113"/><path class="hub-flow tone-cyan" d="M324 150 C358 150 358 113 392 113"/><path class="hub-line" d="M324 150 C358 150 358 188 392 188"/><path class="hub-flow tone-green" d="M324 150 C358 150 358 188 392 188"/><path class="hub-line" d="M324 150 C358 150 358 263 392 263"/><path class="hub-flow tone-amber" d="M324 150 C358 150 358 263 392 263"/>
+<g class="hub-node">
+<rect x="8" y="90" width="124" height="40" rx="10"/>
+<svg x="20" y="102" width="16" height="16" viewBox="0 0 24 24"><path class="hub-mark" d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"/></svg>
+<text class="hub-text" x="46" y="115">Google</text>
+</g><g class="hub-node">
+<rect x="8" y="170" width="124" height="40" rx="10"/>
+<svg x="20" y="182" width="16" height="16" viewBox="0 0 24 24"><path class="hub-mark" d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+<text class="hub-text" x="46" y="195">GitHub</text>
+</g>
+<g class="hub-node hub-core">
+<rect x="196" y="110" width="128" height="80" rx="16"/>
+<text class="hub-text hub-brand" x="260" y="148" text-anchor="middle">hoandat</text>
+<text class="hub-text hub-sub" x="260" y="168" text-anchor="middle">ISSUER_HOST</text>
+</g>
+<g class="hub-node tone-violet">
+<rect x="392" y="18" width="148" height="40" rx="10"/>
+<rect class="hub-chip" x="398" y="24" width="28" height="28" rx="7"/>
+<svg class="icon" x="404" y="30" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M8 4H7a2 2 0 0 0-2 2v4l-2 2 2 2v4a2 2 0 0 0 2 2h1M16 4h1a2 2 0 0 1 2 2v4l2 2-2 2v4a2 2 0 0 1-2 2h-1"/><circle cx="12" cy="12" r="1.5"/></svg>
+<text class="hub-text hub-app" x="434" y="43">Localman</text>
+</g><g class="hub-node tone-cyan">
+<rect x="392" y="93" width="148" height="40" rx="10"/>
+<rect class="hub-chip" x="398" y="99" width="28" height="28" rx="7"/>
+<svg class="icon" x="404" y="105" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M9 3v4M15 3v4M7 7h10v4a5 5 0 0 1-10 0V7zM12 16v5"/></svg>
+<text class="hub-text hub-app" x="434" y="118">Localman MCP</text>
+</g><g class="hub-node tone-green">
+<rect x="392" y="168" width="148" height="40" rx="10"/>
+<rect class="hub-chip" x="398" y="174" width="28" height="28" rx="7"/>
+<svg class="icon" x="404" y="180" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9l3 3-3 3M13 15h4"/></svg>
+<text class="hub-text hub-app" x="434" y="193">Tunelo CLI</text>
+</g><g class="hub-node tone-amber">
+<rect x="392" y="243" width="148" height="40" rx="10"/>
+<rect class="hub-chip" x="398" y="249" width="28" height="28" rx="7"/>
+<svg class="icon" x="404" y="255" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 20V12a9 9 0 0 1 18 0v8M7 20v-8a5 5 0 0 1 10 0v8M3 20h18"/></svg>
+<text class="hub-text hub-app" x="434" y="268">Tunelo</text>
+</g>
+</svg></div>
+</section>
+<section class="apps-section" aria-labelledby="apps-list-title">
+<h2 class="apps-section-title" id="apps-list-title">可使用的应用</h2>
+<ul class="apps-grid" data-id="app-list"><li class="app-card tone-violet" data-id="app-localman-web">
+<div class="app-card-head">
+<span class="app-card-icon"><svg class="icon" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M8 4H7a2 2 0 0 0-2 2v4l-2 2 2 2v4a2 2 0 0 0 2 2h1M16 4h1a2 2 0 0 1 2 2v4l2 2-2 2v4a2 2 0 0 1-2 2h-1"/><circle cx="12" cy="12" r="1.5"/></svg></span>
+<div class="app-card-heading"><h3 class="app-card-name">Localman</h3>
+<p class="app-card-meta"><span class="badge badge-neutral">网页应用</span><span class="mono">localman.hoandat.com</span></p></div>
+</div>
+<p class="app-card-desc">在浏览器中使用 Mock API 和 API 客户端。</p>
+<div class="app-card-how"><p class="app-card-how-label">登录方式</p><p>在网站上选择登录。</p></div>
+<div class="app-card-foot"><a class="btn btn-secondary" href="https://localman.hoandat.com" data-id="app-open-localman-web">打开</a></div>
+</li><li class="app-card tone-cyan" data-id="app-localman-mcp">
+<div class="app-card-head">
+<span class="app-card-icon"><svg class="icon" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M9 3v4M15 3v4M7 7h10v4a5 5 0 0 1-10 0V7zM12 16v5"/></svg></span>
+<div class="app-card-heading"><h3 class="app-card-name">Localman MCP</h3>
+<p class="app-card-meta"><span class="badge badge-neutral">MCP 服务器</span></p></div>
+</div>
+<p class="app-card-desc">让 Claude Code 等 AI 工具操作你的 Localman 项目。</p>
+<div class="app-card-how"><p class="app-card-how-label">登录方式</p><p>在 AI 工具中把 <code class="mono">https://localman.hoandat.com/mcp</code> 添加为 MCP 服务器，然后在授权页面批准它可以执行的操作。</p></div>
+
+</li><li class="app-card tone-green" data-id="app-tunelo-cli">
+<div class="app-card-head">
+<span class="app-card-icon"><svg class="icon" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9l3 3-3 3M13 15h4"/></svg></span>
+<div class="app-card-heading"><h3 class="app-card-name">Tunelo CLI</h3>
+<p class="app-card-meta"><span class="badge badge-neutral">命令行</span></p></div>
+</div>
+<p class="app-card-desc">从你的电脑向互联网打开隧道。</p>
+<div class="app-card-how"><p class="app-card-how-label">登录方式</p><p>在终端运行 <code class="mono">tunelo login</code>，然后在 <a class="link" href="ISSUER/device">ISSUER/device</a> 输入它显示的代码。</p></div>
+
+</li><li class="app-card tone-amber" data-id="app-tunelo-web">
+<div class="app-card-head">
+<span class="app-card-icon"><svg class="icon" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 20V12a9 9 0 0 1 18 0v8M7 20v-8a5 5 0 0 1 10 0v8M3 20h18"/></svg></span>
+<div class="app-card-heading"><h3 class="app-card-name">Tunelo</h3>
+<p class="app-card-meta"><span class="badge badge-neutral">网页应用</span><span class="mono">tunnel.hoandat.com</span></p></div>
+</div>
+<p class="app-card-desc">在浏览器中查看你的隧道。</p>
+<div class="app-card-how"><p class="app-card-how-label">登录方式</p><p>在网站上选择登录。</p></div>
+<div class="app-card-foot"><a class="btn btn-secondary" href="https://tunnel.hoandat.com" data-id="app-open-tunelo-web">打开</a></div>
+</li></ul>
+</section>
+<section class="apps-section" id="how-sign-in-works" aria-labelledby="apps-steps-title" data-id="apps-steps">
+<h2 class="apps-section-title" id="apps-steps-title">登录流程</h2>
+<ol class="apps-steps"><li class="apps-step"><span class="apps-step-number" aria-hidden="true">1</span><div><h3 class="apps-step-title">选择一个应用</h3><p class="apps-step-body">在它的网站上选择登录，或在终端运行 <code class="mono">tunelo login</code>。</p></div></li><li class="apps-step"><span class="apps-step-number" aria-hidden="true">2</span><div><h3 class="apps-step-title">使用 Google 或 GitHub 继续</h3><p class="apps-step-body">你关联的账号会为你登录。第一次登录时需选择用户名。</p></div></li><li class="apps-step"><span class="apps-step-number" aria-hidden="true">3</span><div><h3 class="apps-step-title">回到应用</h3><p class="apps-step-body">来自 hoandat 以外的应用（例如 AI 工具）会先请求你的同意。</p></div></li></ol>
+</section>
+<p class="apps-manage" data-id="apps-manage">如需查看或移除可以访问你账号的应用，请打开<a class="link" href="/account">账号</a>页面。</p></main>
+<footer class="page-foot container"><nav class="lang-switch" aria-label="语言" data-id="lang-switch"><a class="lang-option" href="/lang?set=en&amp;return=%2Fapps" lang="en" hreflang="en" data-id="lang-en">English</a><a class="lang-option" href="/lang?set=zh-CN&amp;return=%2Fapps" lang="zh-CN" hreflang="zh-CN" aria-current="true" data-id="lang-zh-CN">中文</a><a class="lang-option" href="/lang?set=vi&amp;return=%2Fapps" lang="vi" hreflang="vi" data-id="lang-vi">Tiếng Việt</a></nav></footer>
+</body>
+</html>"
+`;
+
+exports[`primary tenant (hoandat.com) is unchanged > renders /privacy the same way > en 1`] = `
+"<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex">
+<title>Privacy policy · hoandat</title>
+<link rel="stylesheet" href="/assets/fonts/inter/400.css"><link rel="stylesheet" href="/assets/fonts/inter/500.css"><link rel="stylesheet" href="/assets/fonts/inter/600.css"><link rel="stylesheet" href="/assets/fonts/jetbrains-mono/400.css"><link rel="stylesheet" href="/assets/fonts/jetbrains-mono/600.css"><link rel="stylesheet" href="/assets/fonts/jetbrains-mono/700.css">
+<link rel="stylesheet" href="/assets/css/tokens.css">
+<link rel="stylesheet" href="/assets/css/app.css">
+
+</head>
+<body>
+<header class="topbar"><div class="topbar-inner container">
+<a class="idp-brand" href="/account" data-id="idp-brand"><b>hoandat</b> · Account <span class="badge badge-neutral hide-sm">ISSUER_HOST</span></a>
+</div></header>
+<main class="page container auth">
+<div class="card auth-card auth-card-wide">
+<h1 class="auth-title">Privacy policy</h1><p class="auth-sub">Applies to the sign-in service auth.hoandat.com. Updated 9 October 2026.</p>
+<div class="prose" data-id="privacy-policy">
+<h2>Data we store</h2>
+<ul><li>Username, email address, display name and profile picture.</li><li>The service uses no passwords. Accounts created before passwords were removed may still hold an argon2id hash of the old password and old recovery codes; they are no longer used to sign in.</li><li>When you sign in with Google or GitHub: your account ID at the provider, and the verified email, name and profile picture the provider returns.</li><li>When you link Telegram: the chat ID and Telegram username.</li><li>Sign-in sessions, devices and apps you allowed, with when they were used.</li><li>A security log (sign-ins, linking or removing sign-in methods, revoked sessions and access) with IP address and browser; the IP address and browser of events not yet delivered are deleted after 30 days.</li></ul>
+<h2>How we use it</h2>
+<p>Data is used only to authenticate you, keep you signed in, recover your account and detect unusual access. The service sends no email, shows no ads and sells no data.</p>
+<h2>Sharing</h2>
+<p>Profile information goes only to apps run by the same owner (Localman, Tunelo) or to apps you allowed, within what you allowed. It is not shared with anyone else.</p>
+<h2>Your rights</h2>
+<p>On your <a href="/account">Account</a> page you can see and edit your profile, unlink Google, GitHub or Telegram, and sign out sessions and apps you allowed. To delete your account, contact quocdat254@gmail.com.</p>
+<h2>Storage</h2>
+<p>Data is stored on servers in Vietnam managed by the service owner, with daily backups kept for 14 days.</p>
+</div>
+</div>
+</main>
+<footer class="page-foot container"><nav class="lang-switch" aria-label="Language" data-id="lang-switch"><a class="lang-option" href="/lang?set=en&amp;return=%2Fprivacy" lang="en" hreflang="en" aria-current="true" data-id="lang-en">English</a><a class="lang-option" href="/lang?set=zh-CN&amp;return=%2Fprivacy" lang="zh-CN" hreflang="zh-CN" data-id="lang-zh-CN">中文</a><a class="lang-option" href="/lang?set=vi&amp;return=%2Fprivacy" lang="vi" hreflang="vi" data-id="lang-vi">Tiếng Việt</a></nav></footer>
+</body>
+</html>"
+`;
+
+exports[`primary tenant (hoandat.com) is unchanged > renders /privacy the same way > vi 1`] = `
+"<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex">
+<title>Chính sách quyền riêng tư · hoandat</title>
+<link rel="stylesheet" href="/assets/fonts/inter/400.css"><link rel="stylesheet" href="/assets/fonts/inter/500.css"><link rel="stylesheet" href="/assets/fonts/inter/600.css"><link rel="stylesheet" href="/assets/fonts/jetbrains-mono/400.css"><link rel="stylesheet" href="/assets/fonts/jetbrains-mono/600.css"><link rel="stylesheet" href="/assets/fonts/jetbrains-mono/700.css">
+<link rel="stylesheet" href="/assets/css/tokens.css">
+<link rel="stylesheet" href="/assets/css/app.css">
+
+</head>
+<body>
+<header class="topbar"><div class="topbar-inner container">
+<a class="idp-brand" href="/account" data-id="idp-brand"><b>hoandat</b> · Tài khoản <span class="badge badge-neutral hide-sm">ISSUER_HOST</span></a>
+</div></header>
+<main class="page container auth">
+<div class="card auth-card auth-card-wide">
+<h1 class="auth-title">Chính sách quyền riêng tư</h1><p class="auth-sub">Áp dụng cho dịch vụ đăng nhập auth.hoandat.com. Cập nhật ngày 09/10/2026.</p>
+<div class="prose" data-id="privacy-policy">
+<h2>Dữ liệu được lưu</h2>
+<ul><li>Tên đăng nhập, địa chỉ email, tên hiển thị và ảnh đại diện.</li><li>Dịch vụ không dùng mật khẩu. Tài khoản tạo trước khi bỏ mật khẩu có thể vẫn còn bản băm argon2id của mật khẩu và mã khôi phục cũ; chúng không còn được dùng để đăng nhập.</li><li>Khi bạn đăng nhập bằng Google hoặc GitHub: mã định danh tài khoản ở nhà cung cấp, email đã xác minh, tên và ảnh đại diện mà nhà cung cấp trả về.</li><li>Khi bạn liên kết Telegram: mã chat và tên người dùng Telegram.</li><li>Phiên đăng nhập, thiết bị và ứng dụng bạn đã cấp quyền, kèm thời điểm sử dụng.</li><li>Nhật ký bảo mật (đăng nhập, liên kết hoặc gỡ phương thức đăng nhập, thu hồi phiên và quyền) gồm địa chỉ IP và trình duyệt; IP và trình duyệt của sự kiện chưa gửi đi bị xoá sau 30 ngày.</li></ul>
+<h2>Mục đích sử dụng</h2>
+<p>Dữ liệu chỉ dùng để xác thực bạn, giữ phiên đăng nhập, khôi phục tài khoản và phát hiện truy cập bất thường. Dịch vụ không gửi email, không hiển thị quảng cáo và không bán dữ liệu.</p>
+<h2>Chia sẻ</h2>
+<p>Thông tin hồ sơ chỉ được cấp cho các ứng dụng do cùng chủ sở hữu vận hành (Localman, Tunelo) hoặc ứng dụng bạn đã đồng ý cấp quyền, trong phạm vi bạn đồng ý. Không chia sẻ cho bên thứ ba nào khác.</p>
+<h2>Quyền của bạn</h2>
+<p>Tại trang <a href="/account">Tài khoản</a>, bạn xem và sửa hồ sơ, gỡ liên kết Google, GitHub hoặc Telegram, thu hồi phiên và ứng dụng đã cấp quyền. Để xoá tài khoản, liên hệ quocdat254@gmail.com.</p>
+<h2>Lưu trữ</h2>
+<p>Dữ liệu nằm trên máy chủ tại Việt Nam do chủ sở hữu dịch vụ quản lý, có sao lưu hằng ngày giữ 14 ngày.</p>
+</div>
+</div>
+</main>
+<footer class="page-foot container"><nav class="lang-switch" aria-label="Ngôn ngữ" data-id="lang-switch"><a class="lang-option" href="/lang?set=en&amp;return=%2Fprivacy" lang="en" hreflang="en" data-id="lang-en">English</a><a class="lang-option" href="/lang?set=zh-CN&amp;return=%2Fprivacy" lang="zh-CN" hreflang="zh-CN" data-id="lang-zh-CN">中文</a><a class="lang-option" href="/lang?set=vi&amp;return=%2Fprivacy" lang="vi" hreflang="vi" aria-current="true" data-id="lang-vi">Tiếng Việt</a></nav></footer>
+</body>
+</html>"
+`;
+
+exports[`primary tenant (hoandat.com) is unchanged > renders /privacy the same way > zh-CN 1`] = `
+"<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex">
+<title>隐私政策 · hoandat</title>
+<link rel="stylesheet" href="/assets/fonts/inter/400.css"><link rel="stylesheet" href="/assets/fonts/inter/500.css"><link rel="stylesheet" href="/assets/fonts/inter/600.css"><link rel="stylesheet" href="/assets/fonts/jetbrains-mono/400.css"><link rel="stylesheet" href="/assets/fonts/jetbrains-mono/600.css"><link rel="stylesheet" href="/assets/fonts/jetbrains-mono/700.css">
+<link rel="stylesheet" href="/assets/css/tokens.css">
+<link rel="stylesheet" href="/assets/css/app.css">
+
+</head>
+<body>
+<header class="topbar"><div class="topbar-inner container">
+<a class="idp-brand" href="/account" data-id="idp-brand"><b>hoandat</b> · 账号 <span class="badge badge-neutral hide-sm">ISSUER_HOST</span></a>
+</div></header>
+<main class="page container auth">
+<div class="card auth-card auth-card-wide">
+<h1 class="auth-title">隐私政策</h1><p class="auth-sub">适用于登录服务 auth.hoandat.com。更新于 2026年10月9日。</p>
+<div class="prose" data-id="privacy-policy">
+<h2>我们存储的数据</h2>
+<ul><li>用户名、邮箱地址、显示名称和头像。</li><li>本服务不使用密码。取消密码之前创建的账号可能仍保留旧密码的 argon2id 哈希和旧恢复码；它们已不再用于登录。</li><li>当你使用 Google 或 GitHub 登录时：你在该提供商处的账号 ID，以及提供商返回的已验证邮箱、姓名和头像。</li><li>当你关联 Telegram 时：聊天 ID 和 Telegram 用户名。</li><li>登录会话、设备和你已授权的应用，以及使用时间。</li><li>安全日志（登录、关联或移除登录方式、撤销会话和权限），包含 IP 地址和浏览器；尚未发送的事件的 IP 地址和浏览器信息会在 30 天后删除。</li></ul>
+<h2>使用目的</h2>
+<p>数据仅用于验证你的身份、保持登录、恢复账号和发现异常访问。本服务不发送邮件、不展示广告，也不出售数据。</p>
+<h2>共享</h2>
+<p>个人资料只提供给同一所有者运营的应用（Localman、Tunelo）或你已授权的应用，且仅限你同意的范围。不与任何其他第三方共享。</p>
+<h2>你的权利</h2>
+<p>在<a href="/account">账号</a>页面，你可以查看和编辑个人资料，取消关联 Google、GitHub 或 Telegram，退出会话并撤销已授权的应用。如需删除账号，请联系 quocdat254@gmail.com。</p>
+<h2>存储</h2>
+<p>数据存放在越南的服务器上，由服务所有者管理，每日备份并保留 14 天。</p>
+</div>
+</div>
+</main>
+<footer class="page-foot container"><nav class="lang-switch" aria-label="语言" data-id="lang-switch"><a class="lang-option" href="/lang?set=en&amp;return=%2Fprivacy" lang="en" hreflang="en" data-id="lang-en">English</a><a class="lang-option" href="/lang?set=zh-CN&amp;return=%2Fprivacy" lang="zh-CN" hreflang="zh-CN" aria-current="true" data-id="lang-zh-CN">中文</a><a class="lang-option" href="/lang?set=vi&amp;return=%2Fprivacy" lang="vi" hreflang="vi" data-id="lang-vi">Tiếng Việt</a></nav></footer>
+</body>
+</html>"
+`;
+
+exports[`primary tenant (hoandat.com) is unchanged > serves the same discovery document 1`] = `
+{
+  "authorization_endpoint": "ISSUER/auth",
+  "authorization_response_iss_parameter_supported": true,
+  "backchannel_logout_session_supported": true,
+  "backchannel_logout_supported": true,
+  "claim_types_supported": [
+    "normal",
+  ],
+  "claims_parameter_supported": false,
+  "claims_supported": [
+    "sub",
+    "preferred_username",
+    "name",
+    "picture",
+    "telegram_linked",
+    "email",
+    "email_verified",
+    "telegram_chat_id",
+    "telegram_username",
+    "sid",
+    "auth_time",
+    "iss",
+  ],
+  "code_challenge_methods_supported": [
+    "S256",
+  ],
+  "device_authorization_endpoint": "ISSUER/device/auth",
+  "dpop_signing_alg_values_supported": [
+    "ES256",
+    "Ed25519",
+    "EdDSA",
+  ],
+  "end_session_endpoint": "ISSUER/session/end",
+  "grant_types_supported": [
+    "authorization_code",
+    "refresh_token",
+    "urn:ietf:params:oauth:grant-type:device_code",
+    "urn:ietf:params:oauth:grant-type:token-exchange",
+  ],
+  "id_token_signing_alg_values_supported": [
+    "ES256",
+    "RS256",
+  ],
+  "introspection_endpoint": "ISSUER/token/introspection",
+  "issuer": "ISSUER",
+  "jwks_uri": "ISSUER/jwks",
+  "prompt_values_supported": [
+    "none",
+    "create",
+    "login",
+    "consent",
+  ],
+  "pushed_authorization_request_endpoint": "ISSUER/request",
+  "registration_endpoint": "ISSUER/reg",
+  "request_uri_parameter_supported": false,
+  "response_modes_supported": [
+    "form_post",
+    "fragment",
+    "query",
+  ],
+  "response_types_supported": [
+    "code",
+  ],
+  "revocation_endpoint": "ISSUER/token/revocation",
+  "scopes_supported": [
+    "openid",
+    "offline_access",
+    "profile",
+    "email",
+    "telegram",
+    "mock:read",
+    "mock:write",
+    "client:read",
+    "client:write",
+    "client:send",
+    "credentials:write",
+    "tunnels:open",
+    "tunnels:read",
+  ],
+  "subject_types_supported": [
+    "public",
+  ],
+  "token_endpoint": "ISSUER/token",
+  "token_endpoint_auth_methods_supported": [
+    "client_secret_basic",
+    "client_secret_jwt",
+    "client_secret_post",
+    "private_key_jwt",
+    "none",
+  ],
+  "token_endpoint_auth_signing_alg_values_supported": [
+    "HS256",
+    "RS256",
+    "PS256",
+    "ES256",
+    "Ed25519",
+    "EdDSA",
+  ],
+  "ui_locales_supported": [
+    "en",
+    "zh-CN",
+    "vi",
+  ],
+  "userinfo_endpoint": "ISSUER/me",
+}
+`;
+
+exports[`primary tenant (hoandat.com) is unchanged > serves the same static clients 1`] = `
+[
+  {
+    "allowed_resources": [
+      "https://localman.hoandat.com",
+    ],
+    "application_type": "web",
+    "backchannel_logout_session_required": true,
+    "backchannel_logout_uri": "https://localman.hoandat.com/auth/backchannel-logout",
+    "client_id": "localman-web",
+    "client_name": "Localman",
+    "dpop_bound_access_tokens": false,
+    "grant_types": [
+      "authorization_code",
+      "refresh_token",
+      "urn:ietf:params:oauth:grant-type:token-exchange",
+    ],
+    "id_token_signed_response_alg": "ES256",
+    "post_logout_redirect_uris": [
+      "https://localman.hoandat.com/",
+    ],
+    "redirect_uris": [
+      "https://localman.hoandat.com/auth/callback",
+    ],
+    "require_auth_time": false,
+    "require_pushed_authorization_requests": false,
+    "response_types": [
+      "code",
+    ],
+    "scope": "openid profile email telegram mock:read mock:write client:read client:write client:send",
+    "subject_type": "public",
+    "token_endpoint_auth_method": "client_secret_basic",
+  },
+  {
+    "allowed_resources": [
+      "https://tunnel.hoandat.com",
+    ],
+    "application_type": "native",
+    "backchannel_logout_session_required": false,
+    "client_id": "tunelo-cli",
+    "client_name": "Tunelo CLI",
+    "dpop_bound_access_tokens": false,
+    "grant_types": [
+      "urn:ietf:params:oauth:grant-type:device_code",
+      "refresh_token",
+    ],
+    "id_token_signed_response_alg": "ES256",
+    "post_logout_redirect_uris": [],
+    "redirect_uris": [],
+    "require_auth_time": false,
+    "require_pushed_authorization_requests": false,
+    "response_types": [],
+    "scope": "openid offline_access tunnels:open tunnels:read",
+    "subject_type": "public",
+    "token_endpoint_auth_method": "none",
+  },
+  {
+    "allowed_resources": [
+      "https://tunnel.hoandat.com",
+    ],
+    "application_type": "web",
+    "backchannel_logout_session_required": true,
+    "backchannel_logout_uri": "https://tunnel.hoandat.com/auth/backchannel-logout",
+    "client_id": "tunelo-web",
+    "client_name": "Tunelo",
+    "dpop_bound_access_tokens": false,
+    "grant_types": [
+      "authorization_code",
+      "refresh_token",
+    ],
+    "id_token_signed_response_alg": "ES256",
+    "post_logout_redirect_uris": [
+      "https://tunnel.hoandat.com/",
+    ],
+    "redirect_uris": [
+      "https://tunnel.hoandat.com/auth/callback",
+    ],
+    "require_auth_time": false,
+    "require_pushed_authorization_requests": false,
+    "response_types": [
+      "code",
+    ],
+    "scope": "openid profile email tunnels:open tunnels:read",
+    "subject_type": "public",
+    "token_endpoint_auth_method": "client_secret_basic",
+  },
+  {
+    "allowed_resources": [],
+    "application_type": "web",
+    "backchannel_logout_session_required": false,
+    "client_id": "hoandat-account",
+    "client_name": "Tài khoản hoandat",
+    "dpop_bound_access_tokens": false,
+    "grant_types": [
+      "authorization_code",
+    ],
+    "id_token_signed_response_alg": "ES256",
+    "post_logout_redirect_uris": [],
+    "redirect_uris": [
+      "ISSUER/account/callback",
+    ],
+    "require_auth_time": false,
+    "require_pushed_authorization_requests": false,
+    "response_types": [
+      "code",
+    ],
+    "scope": "openid",
+    "subject_type": "public",
+    "token_endpoint_auth_method": "none",
+  },
+]
+`;
+
+exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in en 1`] = `
+{
+  "account.apps.description": "Apps you allowed to use your account, such as coding agents using MCP.",
+  "account.apps.empty": "You haven't given any app access yet.",
+  "account.apps.redirects": "Returns to: {hosts}",
+  "account.apps.remove": "Remove app access",
+  "account.apps.title": "Authorized apps",
+  "account.callbackFailed": "Couldn't sign in to your account page.",
+  "account.devices.dates": "Allowed {granted} · expires {expires}",
+  "account.devices.description": "Machines signed in with the Tunelo CLI.",
+  "account.devices.empty": "No machine has signed in with {command} yet.",
+  "account.devices.signOut": "Sign out device",
+  "account.devices.title": "Tunelo devices",
+  "account.emailReclaimed": "The email {email} was removed from this account on {date}, because its owner verified it with Google or GitHub.",
+  "account.emailUnverified": "email not verified",
+  "account.emailVerified": "verified by {provider}",
+  "account.group.account": "Account",
+  "account.group.connections": "Connections",
+  "account.group.security": "Security",
+  "account.noEmail": "No email yet",
+  "account.pageTitle": "Account",
+  "account.profile.description": "The name Localman and Tunelo show for you.",
+  "account.profile.empty": "No display name yet, so apps show @{username}.",
+  "account.profile.nameLabel": "Display name",
+  "account.profile.save": "Save",
+  "account.profile.title": "Profile",
+  "account.sessions.browser": "Browser",
+  "account.sessions.browserOn": "{browser} on {system}",
+  "account.sessions.description": "Browsers signed in to your hoandat account.",
+  "account.sessions.empty": "No open sessions.",
+  "account.sessions.signOut": "Sign out session",
+  "account.sessions.signOutOthers": "Sign out every other session",
+  "account.sessions.signOutThis": "Sign out this browser",
+  "account.sessions.signedInAt": "Signed in {date}",
+  "account.sessions.thisBrowser": "This browser",
+  "account.sessions.title": "Open sessions",
+  "account.sessions.unknownBrowser": "Unknown browser",
+  "account.sessions.unknownSystem": "unknown system",
+  "account.signIn.description": "No password: you sign in with Google or GitHub. Link both to keep a way in if you lose one.",
+  "account.signIn.empty": "Sign-in with Google and GitHub is turned off for now.",
+  "account.signIn.link": "Link {provider}",
+  "account.signIn.linked": "Linked ({identity})",
+  "account.signIn.linkedOff": "Linked ({identity}) · signing in this way is turned off for now",
+  "account.signIn.linkedOnly": "Linked ({identity}) · your only way to sign in, so it can't be unlinked",
+  "account.signIn.notLinked": "Not linked",
+  "account.signIn.title": "Sign-in methods",
+  "account.signIn.unlink": "Unlink {provider}",
+  "account.signOut": "Sign out",
+  "account.telegram.description": "Security notices for your account, sent to your Telegram chat.",
+  "account.telegram.empty": "Link a chat to get security notices for your account. Telegram isn't used to sign in.",
+  "account.telegram.link": "Link Telegram",
+  "account.telegram.linked": "Linked to {chat} on {date}. Used for your account's security notices.",
+  "account.telegram.off": "Telegram notices aren't available on this server.",
+  "account.telegram.statusLinked": "linked",
+  "account.telegram.statusNone": "not linked",
+  "account.telegram.statusOff": "off",
+  "account.telegram.unlink": "Unlink Telegram",
+  "account.title": "hoandat account",
+  "apps.cta.account": "Manage your account",
+  "apps.cta.how": "How sign-in works",
+  "apps.diagram.label": "Your hoandat account, reached with Google or GitHub, signs you in to Localman, Localman MCP, Tunelo CLI and Tunelo.",
+  "apps.eyebrow": "hoandat sign-in",
+  "apps.kind.cli": "Command line",
+  "apps.kind.mcp": "MCP server",
+  "apps.kind.web": "Web app",
+  "apps.list.title": "Apps you can open",
+  "apps.localmanMcp.description": "Lets AI tools such as Claude Code work with your Localman projects.",
+  "apps.localmanMcp.signIn": "Add {address} to your AI tool as an MCP server, then approve what it may do on the consent page.",
+  "apps.localmanWeb.description": "Mock APIs and an API client in your browser.",
+  "apps.localmanWeb.signIn": "Choose Sign in on the site.",
+  "apps.manage": "To see or remove the apps that can access your account, open {account}.",
+  "apps.open": "Open",
+  "apps.signInLabel": "How to sign in",
+  "apps.steps.back.body": "Apps from outside hoandat, such as AI tools, ask for your approval first.",
+  "apps.steps.back.title": "You are back in the app",
+  "apps.steps.choose.body": "Choose Sign in on its site, or run {command} in a terminal.",
+  "apps.steps.choose.title": "Pick an app",
+  "apps.steps.provider.body": "The account you linked signs you in. The first time, you pick a username.",
+  "apps.steps.provider.title": "Continue with Google or GitHub",
+  "apps.steps.title": "How sign-in works",
+  "apps.subtitle": "Sign in once with Google or GitHub and use the same account in Localman, its MCP server and Tunelo.",
+  "apps.title": "One account for every hoandat app",
+  "apps.trust.control": "You choose which apps get access",
+  "apps.trust.noPassword": "No password to create or remember",
+  "apps.trust.providers": "Sign in with Google or GitHub",
+  "apps.tuneloCli.description": "Opens tunnels from your computer to the internet.",
+  "apps.tuneloCli.signIn": "Run {command} in a terminal, then enter the code it shows at {device}.",
+  "apps.tuneloWeb.description": "Your tunnels in the browser.",
+  "apps.tuneloWeb.signIn": "Choose Sign in on the site.",
+  "bot.link.ask": "Link this Telegram chat to hoandat account @{username}? Only confirm if you just opened the link from your account page yourself.",
+  "bot.link.confirm": "Confirm link",
+  "bot.link.done": "Linked Telegram to hoandat account @{username}. You'll get your account's security notices here.",
+  "bot.link.doneShort": "Linked",
+  "bot.link.expired": "This link has expired or was already used. Create a new one on your hoandat account page.",
+  "bot.link.expiredShort": "Link expired",
+  "bot.link.moved": "hoandat account @{username} moved its link to another Telegram chat. This chat won't get notices anymore.",
+  "bot.link.otherAccount": "This Telegram chat is already linked to another hoandat account. Unlink it there first.",
+  "bot.link.otherAccountShort": "Chat linked to another account",
+  "bot.notice.emailReclaimed": "Email {email} was removed from hoandat account @{username} because its owner verified it with {provider}. You can still sign in with the Google or GitHub account linked to that account.",
+  "bot.notice.providerLinked": "hoandat account @{username} was just linked to {provider}. If this wasn't you, unlink it on your account page.",
+  "bot.start.howTo": "To link this chat, open your hoandat account page and press “{button}”. A link expires after 10 minutes and works only once.",
+  "client.external": "External app",
+  "client.externalNamed": "{name} (external app)",
+  "client.quoted": "“{name}”",
+  "common.back": "Back",
+  "common.backToAccount": "Back to your account",
+  "common.cancel": "Cancel",
+  "common.continue": "Continue",
+  "common.signedInAs": "Signed in as {username}.",
+  "common.tooManyRequests": "Too many requests. Try again in a few minutes.",
+  "common.tryAgain": "Try again",
+  "common.unknown": "unknown",
+  "confirm.app.canNow": "It can currently:",
+  "confirm.app.effect": "Its sign-ins and tokens stop working, and it must ask you again to get access. Access tokens it already holds expire within 15 minutes.",
+  "confirm.app.lead": "{app} will no longer be able to use your hoandat account.",
+  "confirm.app.title": "Remove app access?",
+  "confirm.sessions.effect": "Apps signed in through those browsers, such as Localman and Tunelo on the web, are signed out too. Tunelo devices stay signed in.",
+  "confirm.sessions.lead": "Every browser below is signed out of your hoandat account. This browser stays signed in.",
+  "confirm.sessions.title": "Sign out every other session?",
+  "consent.allow": "Allow",
+  "consent.credentialsWarning": "Lets the app create new access keys and secrets for you. Only allow apps you trust.",
+  "consent.deny": "Deny",
+  "consent.externalNotice": "External app, not published by hoandat.com. The app chose its own name and hoandat doesn't check who is behind it. Only allow it if you just connected it yourself (for example a coding agent using MCP).",
+  "consent.lookalikeWarning": "This app's name looks like a hoandat.com product, but it isn't one. That's only expected when you just added Localman MCP to a coding agent on your own machine (then the name contains localman and you're sent back to localhost or 127.0.0.1). Otherwise, deny.",
+  "consent.pageTitle": "Allow access",
+  "consent.redirect": "After you allow it, you go back to {host} with a code the app exchanges for tokens.",
+  "consent.revokeHint": "You can remove this access any time on your account page.",
+  "consent.titleExternal": "Allow an external app to use your hoandat account",
+  "consent.titleForApp": "Allow {app} to use your hoandat account",
+  "consent.willBeAbleTo": "The app will be able to:",
+  "device.approve.code": "Code: {code}",
+  "device.approve.ip": "requested from IP {ip}",
+  "device.approve.question": "Allow {device}?",
+  "device.approve.title": "Approve device",
+  "device.confirm.help": "Only continue if this code matches the one shown on your machine.",
+  "device.confirm.match": "Code matches, continue",
+  "device.confirm.subtitle": "Request from {device}.",
+  "device.confirm.title": "Check the device code",
+  "device.error.aborted": "Denied. The other machine won't get access.",
+  "device.error.expired": "The code has expired. Run the sign-in command on your machine again for a new code.",
+  "device.error.noCode": "Enter the code shown on your machine.",
+  "device.error.notFound": "That code isn't right. Check the code on your machine.",
+  "device.error.other": "The request couldn't be processed. Try again in a few minutes.",
+  "device.error.used": "This code was already used. Run the sign-in command on your machine again.",
+  "device.genericLabel": "device",
+  "device.input.label": "Device code",
+  "device.input.subtitle": "Enter the code shown on your machine (for example in the tunelo terminal window).",
+  "device.input.title": "Device sign-in",
+  "device.onMachine": "{app} on {machine}",
+  "device.success.alert": "Go back to the terminal; the machine continues by itself. You can close this page.",
+  "device.success.manage": "Manage devices on your account page",
+  "device.success.pageTitle": "Device allowed",
+  "device.success.subtitle": "{device} is now signed in to your account.",
+  "device.success.title": "Allowed",
+  "device.unknownName": "unknown machine",
+  "error.code": "Error code: {code}",
+  "error.consentMissing": "The account or app of this sign-in wasn't found. Go back to the app and sign in again.",
+  "error.formExpired": "This form has expired. Reload the page and try again.",
+  "error.interactionExpired": "This sign-in has expired or is no longer valid. Go back to the app and sign in again.",
+  "error.otherInteraction": "This page belongs to a different sign-in. Go back to the app and sign in again.",
+  "error.title": "Can't continue",
+  "error.unsupportedStep": "This sign-in step isn't supported yet.",
+  "layout.brand": "Account",
+  "layout.language": "Language",
+  "login.cancel": "Cancel sign-in",
+  "login.continueTo": "To continue to {app}.",
+  "login.firstTime": "Signing in with Google or GitHub for the first time creates a new hoandat account.",
+  "login.forDevice": "Sign in to approve a device.",
+  "login.noProvider": "Sign-in with Google and GitHub is turned off for now, so you can't sign in or sign up. Try again later.",
+  "login.tagline": "One hoandat account for Localman and Tunelo.",
+  "login.title": "Sign in",
+  "login.titleForApp": "Sign in to continue to {app}",
+  "login.with": "Sign in with {provider}",
+  "logout.byApp": "{app} wants to sign you out of your hoandat account.",
+  "logout.confirm": "Sign out",
+  "logout.done": "You signed out of your hoandat account in this browser.",
+  "logout.doneTitle": "Signed out",
+  "logout.help": "Signing out here also signs you out of Localman and Tunelo on the web in this browser.",
+  "logout.keep": "No, stay signed in",
+  "logout.question": "Sign out of your hoandat account in this browser?",
+  "logout.signInAgain": "Sign in again",
+  "logout.title": "Sign out",
+  "notice.appRevoked": "Removed the app's access.",
+  "notice.deviceRevoked": "Signed out the device.",
+  "notice.expired": "The form expired. Try again.",
+  "notice.lastMethod": "Couldn't unlink: it's your account's last way to sign in. Link the other of Google or GitHub first.",
+  "notice.linkedGithub": "Linked GitHub.",
+  "notice.linkedGoogle": "Linked Google.",
+  "notice.notFound": "Couldn't find what you wanted to remove.",
+  "notice.otherSessionsRevoked": "Signed out every other session.",
+  "notice.profile": "Profile saved.",
+  "notice.reauthed": "Identity confirmed. Repeat what you were doing within the next 10 minutes.",
+  "notice.sessionRevoked": "Signed out the session.",
+  "notice.telegramUnlinked": "Unlinked Telegram.",
+  "notice.unlinked": "Unlinked.",
+  "privacy.purpose.body": "Data is used only to authenticate you, keep you signed in, recover your account and detect unusual access. The service sends no email, shows no ads and sells no data.",
+  "privacy.purpose.title": "How we use it",
+  "privacy.rights.body": "On your {account} page you can see and edit your profile, unlink Google, GitHub or Telegram, and sign out sessions and apps you allowed. To delete your account, contact {email}.",
+  "privacy.rights.title": "Your rights",
+  "privacy.sharing.body": "Profile information goes only to apps run by the same owner (Localman, Tunelo) or to apps you allowed, within what you allowed. It is not shared with anyone else.",
+  "privacy.sharing.title": "Sharing",
+  "privacy.storage.body": "Data is stored on servers in Vietnam managed by the service owner, with daily backups kept for 14 days.",
+  "privacy.storage.title": "Storage",
+  "privacy.stored.noPassword": "The service uses no passwords. Accounts created before passwords were removed may still hold an argon2id hash of the old password and old recovery codes; they are no longer used to sign in.",
+  "privacy.stored.profile": "Username, email address, display name and profile picture.",
+  "privacy.stored.providers": "When you sign in with Google or GitHub: your account ID at the provider, and the verified email, name and profile picture the provider returns.",
+  "privacy.stored.securityLog": "A security log (sign-ins, linking or removing sign-in methods, revoked sessions and access) with IP address and browser; the IP address and browser of events not yet delivered are deleted after 30 days.",
+  "privacy.stored.sessions": "Sign-in sessions, devices and apps you allowed, with when they were used.",
+  "privacy.stored.telegram": "When you link Telegram: the chat ID and Telegram username.",
+  "privacy.stored.title": "Data we store",
+  "privacy.subtitle": "Applies to the sign-in service auth.hoandat.com. Updated 9 October 2026.",
+  "privacy.title": "Privacy policy",
+  "providerError.accessDenied": "The request was denied.",
+  "providerError.invalidClient": "The app asking you to sign in isn't valid.",
+  "providerError.invalidRedirectUri": "The app's return address isn't valid.",
+  "providerError.invalidRequest": "The sign-in request is invalid or has expired. Go back to the app and try again.",
+  "providerError.invalidScope": "The app asked for a permission that isn't supported.",
+  "providerError.invalidTarget": "The app asked for access to a service it isn't allowed to use.",
+  "providerError.loginRequired": "You need to sign in to continue.",
+  "providerError.serverError": "Something went wrong on the server. Try again in a few minutes.",
+  "providerError.unauthorizedClient": "The app isn't allowed to use this way of signing in.",
+  "providerError.unknown": "The request couldn't be processed. Try again in a few minutes.",
+  "scope.clientRead": "See workspaces, collections, requests and environments in the Localman API client you can access (secret variables stay masked)",
+  "scope.clientSend": "Send requests for you through the Localman proxy, including to localhost through Tunelo (counts toward your proxy quota)",
+  "scope.clientWrite": "Create, edit, delete and import collections and requests, and set environment variables in the Localman API client",
+  "scope.credentialsWrite": "Create personal access tokens, service account secrets and access keys on Localman",
+  "scope.email": "See your email address",
+  "scope.mockRead": "See the Localman mock projects you can access, with their resources, schemas and data",
+  "scope.mockWrite": "Create, edit and delete mock projects and resources on Localman, generate or reset data",
+  "scope.offlineAccess": "Stay signed in while you're not using the app (up to 30 days)",
+  "scope.openid": "Know who you are (your hoandat account ID)",
+  "scope.profile": "See your name, username and profile picture",
+  "scope.telegram": "Send notices to the Telegram chat you linked",
+  "scope.tunnelsOpen": "Open new tunnels with your account",
+  "scope.tunnelsRead": "See your list of tunnels",
+  "scope.unknown": "Permission “{scope}”",
+  "signup.haveAccount": "Already have an account? {link}",
+  "signup.pageTitle": "Sign up",
+  "signup.subtitle": "One account for Localman and Tunelo. Sign up with Google or GitHub: hoandat uses no passwords and sends no email.",
+  "signup.title": "Create a hoandat account",
+  "signup.with": "Sign up with {provider}",
+  "telegram.commandLabel": "Link command",
+  "telegram.once": "The link works once. After the bot says the chat is linked, reload your account page.",
+  "telegram.open": "Open Telegram",
+  "telegram.orSend": "Or send this command to the bot {bot}:",
+  "telegram.subtitle": "Open the hoandat bot in Telegram, press Start, then press “{button}” within 10 minutes.",
+  "telegram.title": "Link Telegram",
+  "upstream.expired": "The {provider} sign-in has expired. Start again.",
+  "upstream.failed": "Couldn't sign in with {provider}. Try again in a few minutes.",
+  "upstream.link.alreadyLinked": "Your account is already linked to a different {provider} account. Unlink that one first.",
+  "upstream.link.ownedByOther": "This {provider} account is already linked to another hoandat account.",
+  "upstream.rejected.disabled": "This hoandat account is locked.",
+  "upstream.rejected.noVerifiedEmail": "This account has no verified email, so it can't be used to sign in to hoandat.",
+  "upstream.rejected.other": "Couldn't sign in.",
+  "upstream.rejected.otherProviderAccount": "This email belongs to a hoandat account linked to a different account at the same provider. Sign in with that linked account.",
+  "username.back": "Back to sign-in",
+  "username.emailTaken": "This email was just used for another account. Sign in with that account instead.",
+  "username.help": "3–30 characters: lowercase letters, digits and underscores. Others invite you by this username.",
+  "username.invalid": "A username needs 3–30 characters: lowercase letters, digits or underscores.",
+  "username.label": "Username",
+  "username.reclaimLink": "sign in that way",
+  "username.reclaimWarning": "This email belongs to another hoandat account that nobody has verified. If that account is yours and it is linked to another Google or GitHub account, {link} and link {provider} on your account page. If you continue, the email moves to the new account; the other account keeps its other ways to sign in.",
+  "username.submit": "Create account",
+  "username.subtitle": "Create a hoandat account with {provider} for {email} (verified).",
+  "username.taken": "This username is taken. Choose another one.",
+  "username.title": "Choose a username",
+}
+`;
+
+exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in vi 1`] = `
+{
+  "account.apps.description": "Ứng dụng bạn cho phép dùng tài khoản, ví dụ coding agent dùng MCP.",
+  "account.apps.empty": "Chưa cấp quyền cho ứng dụng nào.",
+  "account.apps.redirects": "Chuyển về: {hosts}",
+  "account.apps.remove": "Gỡ quyền của ứng dụng",
+  "account.apps.title": "Ứng dụng đã cấp quyền",
+  "account.callbackFailed": "Chưa đăng nhập được vào trang tài khoản.",
+  "account.devices.dates": "Cho phép lúc {granted} · hết hạn {expires}",
+  "account.devices.description": "Các máy đăng nhập bằng Tunelo CLI.",
+  "account.devices.empty": "Chưa có máy nào đăng nhập bằng {command}.",
+  "account.devices.signOut": "Đăng xuất thiết bị",
+  "account.devices.title": "Thiết bị Tunelo",
+  "account.emailReclaimed": "Email {email} đã được gỡ khỏi tài khoản này lúc {date}, vì người sở hữu email đã xác minh nó qua Google/GitHub.",
+  "account.emailUnverified": "email chưa xác minh",
+  "account.emailVerified": "đã xác minh qua {provider}",
+  "account.group.account": "Tài khoản",
+  "account.group.connections": "Kết nối",
+  "account.group.security": "Bảo mật",
+  "account.noEmail": "Chưa có email",
+  "account.pageTitle": "Tài khoản",
+  "account.profile.description": "Tên Localman và Tunelo hiển thị cho bạn.",
+  "account.profile.empty": "Chưa có tên hiển thị, nên ứng dụng hiện @{username}.",
+  "account.profile.nameLabel": "Tên hiển thị",
+  "account.profile.save": "Lưu",
+  "account.profile.title": "Hồ sơ",
+  "account.sessions.browser": "Trình duyệt",
+  "account.sessions.browserOn": "{browser} trên {system}",
+  "account.sessions.description": "Các trình duyệt đang đăng nhập tài khoản hoandat của bạn.",
+  "account.sessions.empty": "Không có phiên nào.",
+  "account.sessions.signOut": "Đăng xuất phiên",
+  "account.sessions.signOutOthers": "Đăng xuất mọi phiên khác",
+  "account.sessions.signOutThis": "Đăng xuất trình duyệt này",
+  "account.sessions.signedInAt": "Đăng nhập {date}",
+  "account.sessions.thisBrowser": "Trình duyệt này",
+  "account.sessions.title": "Phiên đang mở",
+  "account.sessions.unknownBrowser": "Trình duyệt không rõ",
+  "account.sessions.unknownSystem": "hệ điều hành không rõ",
+  "account.signIn.description": "hoandat không dùng mật khẩu: bạn đăng nhập bằng Google hoặc GitHub. Liên kết cả hai để vẫn vào được tài khoản khi mất một cách.",
+  "account.signIn.empty": "Đăng nhập bằng Google và GitHub đang tạm tắt.",
+  "account.signIn.link": "Liên kết {provider}",
+  "account.signIn.linked": "Đã liên kết ({identity})",
+  "account.signIn.linkedOff": "Đã liên kết ({identity}) · đăng nhập bằng cách này đang tạm tắt",
+  "account.signIn.linkedOnly": "Đã liên kết ({identity}) · đây là cách đăng nhập duy nhất, không huỷ được",
+  "account.signIn.notLinked": "Chưa liên kết",
+  "account.signIn.title": "Cách đăng nhập",
+  "account.signIn.unlink": "Huỷ liên kết {provider}",
+  "account.signOut": "Đăng xuất",
+  "account.telegram.description": "Thông báo bảo mật của tài khoản, gửi tới chat Telegram của bạn.",
+  "account.telegram.empty": "Liên kết để nhận thông báo bảo mật của tài khoản. Telegram không dùng để đăng nhập.",
+  "account.telegram.link": "Liên kết Telegram",
+  "account.telegram.linked": "Đã liên kết với {chat} lúc {date}. Dùng để nhận thông báo bảo mật của tài khoản.",
+  "account.telegram.off": "Máy chủ này chưa bật thông báo qua Telegram.",
+  "account.telegram.statusLinked": "đã liên kết",
+  "account.telegram.statusNone": "chưa liên kết",
+  "account.telegram.statusOff": "đang tắt",
+  "account.telegram.unlink": "Huỷ liên kết Telegram",
+  "account.title": "Tài khoản hoandat",
+  "apps.cta.account": "Quản lý tài khoản",
+  "apps.cta.how": "Đăng nhập diễn ra thế nào",
+  "apps.diagram.label": "Tài khoản hoandat, vào bằng Google hoặc GitHub, đăng nhập cho bạn vào Localman, Localman MCP, Tunelo CLI và Tunelo.",
+  "apps.eyebrow": "Đăng nhập hoandat",
+  "apps.kind.cli": "Dòng lệnh",
+  "apps.kind.mcp": "MCP server",
+  "apps.kind.web": "Ứng dụng web",
+  "apps.list.title": "Ứng dụng bạn dùng được",
+  "apps.localmanMcp.description": "Cho công cụ AI như Claude Code làm việc với project Localman của bạn.",
+  "apps.localmanMcp.signIn": "Thêm {address} vào công cụ AI làm MCP server, rồi duyệt những gì nó được làm ở trang cấp quyền.",
+  "apps.localmanWeb.description": "Mock API và API client ngay trên trình duyệt.",
+  "apps.localmanWeb.signIn": "Chọn Đăng nhập trên trang.",
+  "apps.manage": "Để xem hoặc gỡ các ứng dụng đang có quyền vào tài khoản, mở trang {account}.",
+  "apps.open": "Mở",
+  "apps.signInLabel": "Cách đăng nhập",
+  "apps.steps.back.body": "Ứng dụng bên ngoài hoandat, như công cụ AI, sẽ hỏi bạn đồng ý trước.",
+  "apps.steps.back.title": "Quay lại ứng dụng",
+  "apps.steps.choose.body": "Chọn Đăng nhập trên trang của nó, hoặc chạy {command} trong terminal.",
+  "apps.steps.choose.title": "Chọn một ứng dụng",
+  "apps.steps.provider.body": "Tài khoản bạn đã liên kết sẽ đăng nhập cho bạn. Lần đầu, bạn chọn một tên đăng nhập.",
+  "apps.steps.provider.title": "Tiếp tục với Google hoặc GitHub",
+  "apps.steps.title": "Đăng nhập diễn ra thế nào",
+  "apps.subtitle": "Đăng nhập một lần bằng Google hoặc GitHub, rồi dùng cùng tài khoản đó trong Localman, MCP server của nó và Tunelo.",
+  "apps.title": "Một tài khoản cho mọi ứng dụng hoandat",
+  "apps.trust.control": "Bạn chọn ứng dụng nào được quyền truy cập",
+  "apps.trust.noPassword": "Không phải tạo hay nhớ mật khẩu",
+  "apps.trust.providers": "Đăng nhập bằng Google hoặc GitHub",
+  "apps.tuneloCli.description": "Mở tunnel từ máy của bạn ra internet.",
+  "apps.tuneloCli.signIn": "Chạy {command} trong terminal, rồi nhập mã nó hiện ở {device}.",
+  "apps.tuneloWeb.description": "Tunnel của bạn trên trình duyệt.",
+  "apps.tuneloWeb.signIn": "Chọn Đăng nhập trên trang.",
+  "bot.link.ask": "Liên kết chat Telegram này với tài khoản hoandat @{username}? Chỉ bấm xác nhận nếu chính bạn vừa mở link từ trang tài khoản.",
+  "bot.link.confirm": "Xác nhận liên kết",
+  "bot.link.done": "Đã liên kết Telegram với tài khoản hoandat @{username}. Bạn sẽ nhận thông báo bảo mật của tài khoản ở đây.",
+  "bot.link.doneShort": "Đã liên kết",
+  "bot.link.expired": "Link liên kết đã hết hạn hoặc đã được dùng. Tạo link mới ở trang tài khoản hoandat.",
+  "bot.link.expiredShort": "Link đã hết hạn",
+  "bot.link.moved": "Tài khoản hoandat @{username} đã chuyển liên kết sang một chat Telegram khác. Chat này sẽ không nhận thông báo nữa.",
+  "bot.link.otherAccount": "Chat Telegram này đã liên kết với một tài khoản hoandat khác. Huỷ liên kết ở tài khoản đó trước.",
+  "bot.link.otherAccountShort": "Chat đã liên kết tài khoản khác",
+  "bot.notice.emailReclaimed": "Email {email} đã được gỡ khỏi tài khoản hoandat @{username} vì người sở hữu email đã xác minh nó qua {provider}. Bạn vẫn đăng nhập được bằng Google/GitHub đã liên kết với tài khoản đó.",
+  "bot.notice.providerLinked": "Tài khoản hoandat @{username} vừa được liên kết với {provider}. Nếu không phải bạn, hãy huỷ liên kết ở trang tài khoản.",
+  "bot.start.howTo": "Để liên kết, mở trang tài khoản hoandat và bấm “{button}”. Link cũ hết hạn sau 10 phút và chỉ dùng được một lần.",
+  "client.external": "Ứng dụng bên ngoài",
+  "client.externalNamed": "{name} (ứng dụng bên ngoài)",
+  "client.quoted": "“{name}”",
+  "common.back": "Quay lại",
+  "common.backToAccount": "Về trang tài khoản",
+  "common.cancel": "Huỷ",
+  "common.continue": "Tiếp tục",
+  "common.signedInAs": "Đang đăng nhập là {username}.",
+  "common.tooManyRequests": "Quá nhiều yêu cầu. Thử lại sau ít phút.",
+  "common.tryAgain": "Thử lại",
+  "common.unknown": "không rõ",
+  "confirm.app.canNow": "Hiện ứng dụng được:",
+  "confirm.app.effect": "Phiên đăng nhập và token của ứng dụng ngừng hoạt động, và nó phải xin lại quyền. Access token nó đang giữ hết hạn trong vòng 15 phút.",
+  "confirm.app.lead": "{app} sẽ không dùng được tài khoản hoandat của bạn nữa.",
+  "confirm.app.title": "Gỡ quyền của ứng dụng?",
+  "confirm.sessions.effect": "Ứng dụng đăng nhập qua các trình duyệt đó, như Localman và Tunelo bản web, cũng bị đăng xuất. Thiết bị Tunelo vẫn giữ đăng nhập.",
+  "confirm.sessions.lead": "Mọi trình duyệt bên dưới sẽ bị đăng xuất khỏi tài khoản hoandat. Trình duyệt này vẫn giữ đăng nhập.",
+  "confirm.sessions.title": "Đăng xuất mọi phiên khác?",
+  "consent.allow": "Cho phép",
+  "consent.credentialsWarning": "Cho phép tạo khoá truy cập và secret mới thay bạn. Chỉ cấp cho ứng dụng bạn tin tưởng.",
+  "consent.deny": "Từ chối",
+  "consent.externalNotice": "Ứng dụng bên ngoài, không do hoandat.com phát hành. Tên ứng dụng do chính nó tự khai và hoandat không kiểm tra ai đứng sau nó; chỉ cho phép nếu chính bạn vừa kết nối nó (ví dụ một coding agent dùng MCP).",
+  "consent.lookalikeWarning": "Tên ứng dụng giống sản phẩm của hoandat.com nhưng không phải. Điều này chỉ bình thường khi chính bạn vừa thêm Localman MCP vào một coding agent trên máy mình (khi đó tên có chữ localman và bạn được chuyển về localhost hoặc 127.0.0.1); nếu không, hãy từ chối.",
+  "consent.pageTitle": "Cấp quyền",
+  "consent.redirect": "Sau khi cho phép, bạn được chuyển về {host} kèm mã để ứng dụng nhận token.",
+  "consent.revokeHint": "Bạn có thể thu hồi quyền này bất cứ lúc nào ở trang tài khoản.",
+  "consent.titleExternal": "Cho phép một ứng dụng bên ngoài dùng tài khoản hoandat của bạn",
+  "consent.titleForApp": "Cho phép {app} dùng tài khoản hoandat của bạn",
+  "consent.willBeAbleTo": "Ứng dụng sẽ được:",
+  "device.approve.code": "Mã: {code}",
+  "device.approve.ip": "yêu cầu từ IP {ip}",
+  "device.approve.question": "Cho phép {device}?",
+  "device.approve.title": "Duyệt thiết bị",
+  "device.confirm.help": "Chỉ tiếp tục nếu mã trên khớp với mã đang hiện trên máy của bạn.",
+  "device.confirm.match": "Mã khớp, tiếp tục",
+  "device.confirm.subtitle": "Yêu cầu từ {device}.",
+  "device.confirm.title": "Kiểm tra mã thiết bị",
+  "device.error.aborted": "Đã từ chối. Máy kia sẽ không được cấp quyền.",
+  "device.error.expired": "Mã đã hết hạn. Chạy lại lệnh đăng nhập trên máy để lấy mã mới.",
+  "device.error.noCode": "Hãy nhập mã đang hiện trên máy của bạn.",
+  "device.error.notFound": "Mã không đúng. Kiểm tra lại mã trên máy của bạn.",
+  "device.error.other": "Không xử lý được yêu cầu. Thử lại sau ít phút.",
+  "device.error.used": "Mã này đã được dùng. Chạy lại lệnh đăng nhập trên máy.",
+  "device.genericLabel": "thiết bị",
+  "device.input.label": "Mã thiết bị",
+  "device.input.subtitle": "Nhập mã đang hiện trên máy (ví dụ trong cửa sổ dòng lệnh của tunelo).",
+  "device.input.title": "Đăng nhập thiết bị",
+  "device.onMachine": "{app} trên máy {machine}",
+  "device.success.alert": "Quay lại cửa sổ dòng lệnh, máy sẽ tự tiếp tục. Bạn có thể đóng trang này.",
+  "device.success.manage": "Quản lý thiết bị ở trang tài khoản",
+  "device.success.pageTitle": "Đã cho phép thiết bị",
+  "device.success.subtitle": "{device} đã đăng nhập vào tài khoản của bạn.",
+  "device.success.title": "Đã cho phép",
+  "device.unknownName": "không rõ tên",
+  "error.code": "Mã lỗi: {code}",
+  "error.consentMissing": "Không tìm thấy tài khoản hoặc ứng dụng của phiên này. Quay lại ứng dụng và đăng nhập lại.",
+  "error.formExpired": "Biểu mẫu đã hết hạn. Tải lại trang rồi thử lại.",
+  "error.interactionExpired": "Phiên đăng nhập đã hết hạn hoặc không còn hợp lệ. Quay lại ứng dụng và đăng nhập lại.",
+  "error.otherInteraction": "Trang này thuộc về một phiên đăng nhập khác. Quay lại ứng dụng và đăng nhập lại.",
+  "error.title": "Không thể tiếp tục",
+  "error.unsupportedStep": "Bước đăng nhập này chưa được hỗ trợ.",
+  "layout.brand": "Tài khoản",
+  "layout.language": "Ngôn ngữ",
+  "login.cancel": "Huỷ đăng nhập",
+  "login.continueTo": "Để tiếp tục tới {app}.",
+  "login.firstTime": "Lần đầu đăng nhập bằng Google hoặc GitHub sẽ tạo tài khoản hoandat mới.",
+  "login.forDevice": "Đăng nhập để duyệt thiết bị.",
+  "login.noProvider": "Đăng nhập bằng Google và GitHub đang tạm tắt, nên chưa đăng nhập hay đăng ký được. Thử lại sau.",
+  "login.tagline": "Một tài khoản hoandat cho Localman và Tunelo.",
+  "login.title": "Đăng nhập",
+  "login.titleForApp": "Đăng nhập để tiếp tục tới {app}",
+  "login.with": "Đăng nhập với {provider}",
+  "logout.byApp": "{app} muốn đăng xuất bạn khỏi tài khoản hoandat.",
+  "logout.confirm": "Đăng xuất",
+  "logout.done": "Bạn đã đăng xuất khỏi tài khoản hoandat trên trình duyệt này.",
+  "logout.doneTitle": "Đã đăng xuất",
+  "logout.help": "Đăng xuất ở đây cũng đăng xuất Localman và Tunelo web trên trình duyệt này.",
+  "logout.keep": "Không, giữ đăng nhập",
+  "logout.question": "Đăng xuất khỏi tài khoản hoandat trên trình duyệt này?",
+  "logout.signInAgain": "Đăng nhập lại",
+  "logout.title": "Đăng xuất",
+  "notice.appRevoked": "Đã gỡ quyền của ứng dụng.",
+  "notice.deviceRevoked": "Đã đăng xuất thiết bị.",
+  "notice.expired": "Biểu mẫu đã hết hạn. Thử lại.",
+  "notice.lastMethod": "Không huỷ được: đây là cách đăng nhập cuối cùng của tài khoản. Liên kết Google hoặc GitHub còn lại trước.",
+  "notice.linkedGithub": "Đã liên kết GitHub.",
+  "notice.linkedGoogle": "Đã liên kết Google.",
+  "notice.notFound": "Không tìm thấy mục cần gỡ.",
+  "notice.otherSessionsRevoked": "Đã đăng xuất mọi phiên khác.",
+  "notice.profile": "Đã lưu hồ sơ.",
+  "notice.reauthed": "Đã xác nhận lại danh tính. Thực hiện lại thao tác vừa rồi trong 10 phút tới.",
+  "notice.sessionRevoked": "Đã đăng xuất phiên.",
+  "notice.telegramUnlinked": "Đã huỷ liên kết Telegram.",
+  "notice.unlinked": "Đã huỷ liên kết.",
+  "privacy.purpose.body": "Dữ liệu chỉ dùng để xác thực bạn, giữ phiên đăng nhập, khôi phục tài khoản và phát hiện truy cập bất thường. Dịch vụ không gửi email, không hiển thị quảng cáo và không bán dữ liệu.",
+  "privacy.purpose.title": "Mục đích sử dụng",
+  "privacy.rights.body": "Tại trang {account}, bạn xem và sửa hồ sơ, gỡ liên kết Google, GitHub hoặc Telegram, thu hồi phiên và ứng dụng đã cấp quyền. Để xoá tài khoản, liên hệ {email}.",
+  "privacy.rights.title": "Quyền của bạn",
+  "privacy.sharing.body": "Thông tin hồ sơ chỉ được cấp cho các ứng dụng do cùng chủ sở hữu vận hành (Localman, Tunelo) hoặc ứng dụng bạn đã đồng ý cấp quyền, trong phạm vi bạn đồng ý. Không chia sẻ cho bên thứ ba nào khác.",
+  "privacy.sharing.title": "Chia sẻ",
+  "privacy.storage.body": "Dữ liệu nằm trên máy chủ tại Việt Nam do chủ sở hữu dịch vụ quản lý, có sao lưu hằng ngày giữ 14 ngày.",
+  "privacy.storage.title": "Lưu trữ",
+  "privacy.stored.noPassword": "Dịch vụ không dùng mật khẩu. Tài khoản tạo trước khi bỏ mật khẩu có thể vẫn còn bản băm argon2id của mật khẩu và mã khôi phục cũ; chúng không còn được dùng để đăng nhập.",
+  "privacy.stored.profile": "Tên đăng nhập, địa chỉ email, tên hiển thị và ảnh đại diện.",
+  "privacy.stored.providers": "Khi bạn đăng nhập bằng Google hoặc GitHub: mã định danh tài khoản ở nhà cung cấp, email đã xác minh, tên và ảnh đại diện mà nhà cung cấp trả về.",
+  "privacy.stored.securityLog": "Nhật ký bảo mật (đăng nhập, liên kết hoặc gỡ phương thức đăng nhập, thu hồi phiên và quyền) gồm địa chỉ IP và trình duyệt; IP và trình duyệt của sự kiện chưa gửi đi bị xoá sau 30 ngày.",
+  "privacy.stored.sessions": "Phiên đăng nhập, thiết bị và ứng dụng bạn đã cấp quyền, kèm thời điểm sử dụng.",
+  "privacy.stored.telegram": "Khi bạn liên kết Telegram: mã chat và tên người dùng Telegram.",
+  "privacy.stored.title": "Dữ liệu được lưu",
+  "privacy.subtitle": "Áp dụng cho dịch vụ đăng nhập auth.hoandat.com. Cập nhật ngày 09/10/2026.",
+  "privacy.title": "Chính sách quyền riêng tư",
+  "providerError.accessDenied": "Yêu cầu đã bị từ chối.",
+  "providerError.invalidClient": "Ứng dụng yêu cầu đăng nhập không hợp lệ.",
+  "providerError.invalidRedirectUri": "Địa chỉ quay về của ứng dụng không hợp lệ.",
+  "providerError.invalidRequest": "Yêu cầu đăng nhập không hợp lệ hoặc đã hết hạn. Quay lại ứng dụng và thử lại.",
+  "providerError.invalidScope": "Ứng dụng xin quyền không được hỗ trợ.",
+  "providerError.invalidTarget": "Ứng dụng xin quyền cho một dịch vụ không được phép.",
+  "providerError.loginRequired": "Bạn cần đăng nhập để tiếp tục.",
+  "providerError.serverError": "Có lỗi phía máy chủ. Thử lại sau ít phút.",
+  "providerError.unauthorizedClient": "Ứng dụng không được phép dùng cách đăng nhập này.",
+  "providerError.unknown": "Không xử lý được yêu cầu. Thử lại sau ít phút.",
+  "scope.clientRead": "Xem workspace, collection, request và environment trong API client của Localman mà bạn có quyền truy cập (biến secret luôn bị che)",
+  "scope.clientSend": "Gửi request thay bạn qua proxy của Localman, kể cả tới localhost qua Tunelo (tính vào hạn mức proxy)",
+  "scope.clientWrite": "Tạo, sửa, xoá, import collection và request, đặt biến environment trong API client của Localman",
+  "scope.credentialsWrite": "Tạo token truy cập cá nhân, secret của service account và access key trên Localman",
+  "scope.email": "Xem địa chỉ email",
+  "scope.mockRead": "Xem project mock trên Localman mà bạn có quyền truy cập, gồm resource, schema và dữ liệu",
+  "scope.mockWrite": "Tạo, sửa, xoá project và resource mock trên Localman, sinh hoặc reset dữ liệu",
+  "scope.offlineAccess": "Giữ đăng nhập khi bạn không mở ứng dụng (tối đa 30 ngày)",
+  "scope.openid": "Biết bạn là ai (mã định danh tài khoản hoandat)",
+  "scope.profile": "Xem tên, username và ảnh đại diện",
+  "scope.telegram": "Gửi thông báo tới chat Telegram bạn đã liên kết",
+  "scope.tunnelsOpen": "Mở tunnel mới bằng tài khoản của bạn",
+  "scope.tunnelsRead": "Xem danh sách tunnel của bạn",
+  "scope.unknown": "Quyền “{scope}”",
+  "signup.haveAccount": "Đã có tài khoản? {link}",
+  "signup.pageTitle": "Đăng ký",
+  "signup.subtitle": "Dùng chung cho Localman và Tunelo. Đăng ký bằng Google hoặc GitHub; hoandat không dùng mật khẩu và không gửi email.",
+  "signup.title": "Tạo tài khoản hoandat",
+  "signup.with": "Đăng ký với {provider}",
+  "telegram.commandLabel": "Lệnh liên kết",
+  "telegram.once": "Link chỉ dùng được một lần. Sau khi bot báo đã liên kết, tải lại trang tài khoản.",
+  "telegram.open": "Mở Telegram",
+  "telegram.orSend": "Hoặc gửi lệnh sau cho bot {bot}:",
+  "telegram.subtitle": "Mở bot hoandat trên Telegram, bấm Start rồi bấm “{button}” trong 10 phút.",
+  "telegram.title": "Liên kết Telegram",
+  "upstream.expired": "Phiên đăng nhập bằng {provider} đã hết hạn. Thử lại từ đầu.",
+  "upstream.failed": "Không đăng nhập được bằng {provider}. Thử lại sau ít phút.",
+  "upstream.link.alreadyLinked": "Tài khoản đã liên kết một tài khoản {provider} khác. Huỷ liên kết đó trước.",
+  "upstream.link.ownedByOther": "Tài khoản {provider} này đã liên kết với một tài khoản hoandat khác.",
+  "upstream.rejected.disabled": "Tài khoản hoandat này đã bị khoá.",
+  "upstream.rejected.noVerifiedEmail": "Tài khoản này chưa có email đã xác minh, nên không dùng để đăng nhập hoandat được.",
+  "upstream.rejected.other": "Không đăng nhập được.",
+  "upstream.rejected.otherProviderAccount": "Email này thuộc một tài khoản hoandat đã liên kết với tài khoản khác của cùng nhà cung cấp. Đăng nhập bằng tài khoản đã liên kết đó.",
+  "username.back": "Quay lại đăng nhập",
+  "username.emailTaken": "Email này vừa được dùng cho một tài khoản khác. Hãy đăng nhập bằng tài khoản đó.",
+  "username.help": "3–30 ký tự: chữ thường, số và dấu gạch dưới. Người khác mời bạn bằng username này.",
+  "username.invalid": "Username cần 3–30 ký tự gồm chữ thường, số hoặc dấu gạch dưới.",
+  "username.label": "Username",
+  "username.reclaimLink": "đăng nhập bằng cách đó",
+  "username.reclaimWarning": "Email này đang gắn với một tài khoản hoandat khác nhưng chưa ai xác minh. Nếu đó là tài khoản của bạn và nó đã liên kết Google hoặc GitHub khác, hãy {link} rồi liên kết {provider} ở trang tài khoản. Nếu tiếp tục, email chuyển sang tài khoản mới; tài khoản kia giữ các cách đăng nhập khác của nó.",
+  "username.submit": "Tạo tài khoản",
+  "username.subtitle": "Tạo tài khoản hoandat bằng {provider} cho {email} (đã xác minh).",
+  "username.taken": "Username này đã có người dùng. Chọn username khác.",
+  "username.title": "Chọn username",
+}
+`;
+
+exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in zh-CN 1`] = `
+{
+  "account.apps.description": "你允许使用你账号的应用，例如使用 MCP 的 coding agent。",
+  "account.apps.empty": "你还没有授权任何应用。",
+  "account.apps.redirects": "返回到：{hosts}",
+  "account.apps.remove": "移除应用访问权限",
+  "account.apps.title": "已授权的应用",
+  "account.callbackFailed": "无法登录账号页面。",
+  "account.devices.dates": "允许于 {granted} · {expires} 过期",
+  "account.devices.description": "通过 Tunelo CLI 登录的机器。",
+  "account.devices.empty": "还没有机器通过 {command} 登录。",
+  "account.devices.signOut": "退出此设备",
+  "account.devices.title": "Tunelo 设备",
+  "account.emailReclaimed": "邮箱 {email} 已于 {date} 从此账号移除，因为该邮箱的所有者已通过 Google 或 GitHub 验证了它。",
+  "account.emailUnverified": "邮箱未验证",
+  "account.emailVerified": "已通过 {provider} 验证",
+  "account.group.account": "账号",
+  "account.group.connections": "关联",
+  "account.group.security": "安全",
+  "account.noEmail": "尚无邮箱",
+  "account.pageTitle": "账号",
+  "account.profile.description": "Localman 和 Tunelo 中显示的你的名字。",
+  "account.profile.empty": "尚未设置显示名称，应用会显示 @{username}。",
+  "account.profile.nameLabel": "显示名称",
+  "account.profile.save": "保存",
+  "account.profile.title": "个人资料",
+  "account.sessions.browser": "浏览器",
+  "account.sessions.browserOn": "{system} 上的 {browser}",
+  "account.sessions.description": "已登录你 hoandat 账号的浏览器。",
+  "account.sessions.empty": "没有已打开的会话。",
+  "account.sessions.signOut": "退出此会话",
+  "account.sessions.signOutOthers": "退出其他所有会话",
+  "account.sessions.signOutThis": "退出此浏览器",
+  "account.sessions.signedInAt": "登录于 {date}",
+  "account.sessions.thisBrowser": "此浏览器",
+  "account.sessions.title": "已打开的会话",
+  "account.sessions.unknownBrowser": "未知浏览器",
+  "account.sessions.unknownSystem": "未知系统",
+  "account.signIn.description": "无需密码：使用 Google 或 GitHub 登录。两个都关联，丢失其中一个时仍能登录。",
+  "account.signIn.empty": "Google 和 GitHub 登录暂时关闭。",
+  "account.signIn.link": "关联 {provider}",
+  "account.signIn.linked": "已关联（{identity}）",
+  "account.signIn.linkedOff": "已关联（{identity}）· 此登录方式暂时关闭",
+  "account.signIn.linkedOnly": "已关联（{identity}）· 这是唯一的登录方式，无法取消关联",
+  "account.signIn.notLinked": "未关联",
+  "account.signIn.title": "登录方式",
+  "account.signIn.unlink": "取消关联 {provider}",
+  "account.signOut": "退出登录",
+  "account.telegram.description": "账号的安全通知，发送到你的 Telegram 聊天。",
+  "account.telegram.empty": "关联一个聊天以接收账号的安全通知。Telegram 不用于登录。",
+  "account.telegram.link": "关联 Telegram",
+  "account.telegram.linked": "已于 {date} 关联到 {chat}。用于接收账号的安全通知。",
+  "account.telegram.off": "此服务器未开启 Telegram 通知。",
+  "account.telegram.statusLinked": "已关联",
+  "account.telegram.statusNone": "未关联",
+  "account.telegram.statusOff": "已关闭",
+  "account.telegram.unlink": "取消关联 Telegram",
+  "account.title": "hoandat 账号",
+  "apps.cta.account": "管理你的账号",
+  "apps.cta.how": "登录如何进行",
+  "apps.diagram.label": "通过 Google 或 GitHub 进入你的 hoandat 账号，即可登录 Localman、Localman MCP、Tunelo CLI 和 Tunelo。",
+  "apps.eyebrow": "hoandat 登录",
+  "apps.kind.cli": "命令行",
+  "apps.kind.mcp": "MCP 服务器",
+  "apps.kind.web": "网页应用",
+  "apps.list.title": "可使用的应用",
+  "apps.localmanMcp.description": "让 Claude Code 等 AI 工具操作你的 Localman 项目。",
+  "apps.localmanMcp.signIn": "在 AI 工具中把 {address} 添加为 MCP 服务器，然后在授权页面批准它可以执行的操作。",
+  "apps.localmanWeb.description": "在浏览器中使用 Mock API 和 API 客户端。",
+  "apps.localmanWeb.signIn": "在网站上选择登录。",
+  "apps.manage": "如需查看或移除可以访问你账号的应用，请打开{account}页面。",
+  "apps.open": "打开",
+  "apps.signInLabel": "登录方式",
+  "apps.steps.back.body": "来自 hoandat 以外的应用（例如 AI 工具）会先请求你的同意。",
+  "apps.steps.back.title": "回到应用",
+  "apps.steps.choose.body": "在它的网站上选择登录，或在终端运行 {command}。",
+  "apps.steps.choose.title": "选择一个应用",
+  "apps.steps.provider.body": "你关联的账号会为你登录。第一次登录时需选择用户名。",
+  "apps.steps.provider.title": "使用 Google 或 GitHub 继续",
+  "apps.steps.title": "登录流程",
+  "apps.subtitle": "用 Google 或 GitHub 登录一次，即可在 Localman、它的 MCP 服务器和 Tunelo 中使用同一个账号。",
+  "apps.title": "一个账号，通用所有 hoandat 应用",
+  "apps.trust.control": "由你决定哪些应用可以访问",
+  "apps.trust.noPassword": "无需创建或记住密码",
+  "apps.trust.providers": "使用 Google 或 GitHub 登录",
+  "apps.tuneloCli.description": "从你的电脑向互联网打开隧道。",
+  "apps.tuneloCli.signIn": "在终端运行 {command}，然后在 {device} 输入它显示的代码。",
+  "apps.tuneloWeb.description": "在浏览器中查看你的隧道。",
+  "apps.tuneloWeb.signIn": "在网站上选择登录。",
+  "bot.link.ask": "将此 Telegram 聊天关联到 hoandat 账号 @{username}？只有在你本人刚从账号页面打开该链接时才确认。",
+  "bot.link.confirm": "确认关联",
+  "bot.link.done": "已将 Telegram 关联到 hoandat 账号 @{username}。你将在这里收到账号的安全通知。",
+  "bot.link.doneShort": "已关联",
+  "bot.link.expired": "该链接已过期或已被使用。请在 hoandat 账号页面创建新链接。",
+  "bot.link.expiredShort": "链接已过期",
+  "bot.link.moved": "hoandat 账号 @{username} 已将关联转移到另一个 Telegram 聊天。此聊天将不再收到通知。",
+  "bot.link.otherAccount": "此 Telegram 聊天已关联到另一个 hoandat 账号。请先在该账号中取消关联。",
+  "bot.link.otherAccountShort": "聊天已关联其他账号",
+  "bot.notice.emailReclaimed": "邮箱 {email} 已从 hoandat 账号 @{username} 中移除，因为该邮箱的所有者已通过 {provider} 验证了它。你仍可使用该账号已关联的 Google 或 GitHub 登录。",
+  "bot.notice.providerLinked": "hoandat 账号 @{username} 刚刚关联了 {provider}。如果不是你本人操作，请在账号页面取消关联。",
+  "bot.start.howTo": "要关联此聊天，请打开你的 hoandat 账号页面并点击“{button}”。链接 10 分钟后过期，且只能使用一次。",
+  "client.external": "外部应用",
+  "client.externalNamed": "{name}（外部应用）",
+  "client.quoted": "“{name}”",
+  "common.back": "返回",
+  "common.backToAccount": "返回账号页面",
+  "common.cancel": "取消",
+  "common.continue": "继续",
+  "common.signedInAs": "当前登录：{username}。",
+  "common.tooManyRequests": "请求过多，请几分钟后重试。",
+  "common.tryAgain": "重试",
+  "common.unknown": "未知",
+  "confirm.app.canNow": "它目前可以：",
+  "confirm.app.effect": "它的登录和 token 将失效，需再次征得你同意才能访问。它已持有的 access token 将在 15 分钟内过期。",
+  "confirm.app.lead": "{app} 将无法再使用你的 hoandat 账号。",
+  "confirm.app.title": "移除应用访问权限？",
+  "confirm.sessions.effect": "通过这些浏览器登录的应用（例如网页版 Localman 和 Tunelo）也会退出。Tunelo 设备保持登录。",
+  "confirm.sessions.lead": "下面的每个浏览器都会退出你的 hoandat 账号。此浏览器保持登录。",
+  "confirm.sessions.title": "退出其他所有会话？",
+  "consent.allow": "允许",
+  "consent.credentialsWarning": "允许该应用代你创建新的访问密钥和 secret。只授权给你信任的应用。",
+  "consent.deny": "拒绝",
+  "consent.externalNotice": "外部应用，并非由 hoandat.com 发布。应用名称由其自行填写，hoandat 不核实其背后是谁；仅当你刚刚亲自连接它时才允许（例如使用 MCP 的 coding agent）。",
+  "consent.lookalikeWarning": "该应用名称看起来像 hoandat.com 的产品，但并不是。只有当你刚在自己电脑上的 coding agent 中添加 Localman MCP 时才属正常（此时名称包含 localman，且你会被带回 localhost 或 127.0.0.1）；否则请拒绝。",
+  "consent.pageTitle": "授予访问权限",
+  "consent.redirect": "允许后，你将返回 {host}，并附带一个代码，应用用它换取 token。",
+  "consent.revokeHint": "你可以随时在账号页面撤销此权限。",
+  "consent.titleExternal": "允许外部应用使用你的 hoandat 账号",
+  "consent.titleForApp": "允许 {app} 使用你的 hoandat 账号",
+  "consent.willBeAbleTo": "该应用将能够：",
+  "device.approve.code": "代码：{code}",
+  "device.approve.ip": "请求来自 IP {ip}",
+  "device.approve.question": "允许 {device}？",
+  "device.approve.title": "批准设备",
+  "device.confirm.help": "仅当上面的代码与你机器上显示的代码一致时才继续。",
+  "device.confirm.match": "代码一致，继续",
+  "device.confirm.subtitle": "来自 {device} 的请求。",
+  "device.confirm.title": "核对设备代码",
+  "device.error.aborted": "已拒绝。另一台机器不会获得访问权限。",
+  "device.error.expired": "代码已过期。请在机器上重新运行登录命令以获取新代码。",
+  "device.error.noCode": "请输入你机器上显示的代码。",
+  "device.error.notFound": "代码不正确。请核对你机器上的代码。",
+  "device.error.other": "无法处理该请求。请几分钟后重试。",
+  "device.error.used": "此代码已被使用。请在机器上重新运行登录命令。",
+  "device.genericLabel": "设备",
+  "device.input.label": "设备代码",
+  "device.input.subtitle": "输入你机器上显示的代码（例如 tunelo 的终端窗口中）。",
+  "device.input.title": "设备登录",
+  "device.onMachine": "机器 {machine} 上的 {app}",
+  "device.success.alert": "回到终端，机器会自动继续。你可以关闭此页面。",
+  "device.success.manage": "在账号页面管理设备",
+  "device.success.pageTitle": "已允许设备",
+  "device.success.subtitle": "{device} 已登录你的账号。",
+  "device.success.title": "已允许",
+  "device.unknownName": "未知机器",
+  "error.code": "错误代码：{code}",
+  "error.consentMissing": "找不到此次登录的账号或应用。请返回应用重新登录。",
+  "error.formExpired": "表单已过期。请刷新页面后重试。",
+  "error.interactionExpired": "此次登录已过期或已失效。请返回应用重新登录。",
+  "error.otherInteraction": "此页面属于另一次登录。请返回应用重新登录。",
+  "error.title": "无法继续",
+  "error.unsupportedStep": "暂不支持此登录步骤。",
+  "layout.brand": "账号",
+  "layout.language": "语言",
+  "login.cancel": "取消登录",
+  "login.continueTo": "以继续使用 {app}。",
+  "login.firstTime": "首次使用 Google 或 GitHub 登录将创建新的 hoandat 账号。",
+  "login.forDevice": "登录以批准设备。",
+  "login.noProvider": "Google 和 GitHub 登录暂时关闭，因此目前无法登录或注册。请稍后重试。",
+  "login.tagline": "一个 hoandat 账号，通用于 Localman 和 Tunelo。",
+  "login.title": "登录",
+  "login.titleForApp": "登录以继续使用 {app}",
+  "login.with": "使用 {provider} 登录",
+  "logout.byApp": "{app} 想让你退出 hoandat 账号。",
+  "logout.confirm": "退出登录",
+  "logout.done": "你已在此浏览器上退出 hoandat 账号。",
+  "logout.doneTitle": "已退出登录",
+  "logout.help": "在这里退出登录，也会在此浏览器上退出网页版 Localman 和 Tunelo。",
+  "logout.keep": "不，保持登录",
+  "logout.question": "要在此浏览器上退出 hoandat 账号吗？",
+  "logout.signInAgain": "重新登录",
+  "logout.title": "退出登录",
+  "notice.appRevoked": "已移除该应用的访问权限。",
+  "notice.deviceRevoked": "已退出该设备。",
+  "notice.expired": "表单已过期，请重试。",
+  "notice.lastMethod": "无法取消关联：这是账号最后一种登录方式。请先关联 Google 或 GitHub 中的另一个。",
+  "notice.linkedGithub": "已关联 GitHub。",
+  "notice.linkedGoogle": "已关联 Google。",
+  "notice.notFound": "找不到要移除的项目。",
+  "notice.otherSessionsRevoked": "已退出其他所有会话。",
+  "notice.profile": "已保存个人资料。",
+  "notice.reauthed": "已重新确认身份。请在 10 分钟内重新执行刚才的操作。",
+  "notice.sessionRevoked": "已退出该会话。",
+  "notice.telegramUnlinked": "已取消关联 Telegram。",
+  "notice.unlinked": "已取消关联。",
+  "privacy.purpose.body": "数据仅用于验证你的身份、保持登录、恢复账号和发现异常访问。本服务不发送邮件、不展示广告，也不出售数据。",
+  "privacy.purpose.title": "使用目的",
+  "privacy.rights.body": "在{account}页面，你可以查看和编辑个人资料，取消关联 Google、GitHub 或 Telegram，退出会话并撤销已授权的应用。如需删除账号，请联系 {email}。",
+  "privacy.rights.title": "你的权利",
+  "privacy.sharing.body": "个人资料只提供给同一所有者运营的应用（Localman、Tunelo）或你已授权的应用，且仅限你同意的范围。不与任何其他第三方共享。",
+  "privacy.sharing.title": "共享",
+  "privacy.storage.body": "数据存放在越南的服务器上，由服务所有者管理，每日备份并保留 14 天。",
+  "privacy.storage.title": "存储",
+  "privacy.stored.noPassword": "本服务不使用密码。取消密码之前创建的账号可能仍保留旧密码的 argon2id 哈希和旧恢复码；它们已不再用于登录。",
+  "privacy.stored.profile": "用户名、邮箱地址、显示名称和头像。",
+  "privacy.stored.providers": "当你使用 Google 或 GitHub 登录时：你在该提供商处的账号 ID，以及提供商返回的已验证邮箱、姓名和头像。",
+  "privacy.stored.securityLog": "安全日志（登录、关联或移除登录方式、撤销会话和权限），包含 IP 地址和浏览器；尚未发送的事件的 IP 地址和浏览器信息会在 30 天后删除。",
+  "privacy.stored.sessions": "登录会话、设备和你已授权的应用，以及使用时间。",
+  "privacy.stored.telegram": "当你关联 Telegram 时：聊天 ID 和 Telegram 用户名。",
+  "privacy.stored.title": "我们存储的数据",
+  "privacy.subtitle": "适用于登录服务 auth.hoandat.com。更新于 2026年10月9日。",
+  "privacy.title": "隐私政策",
+  "providerError.accessDenied": "请求已被拒绝。",
+  "providerError.invalidClient": "请求登录的应用无效。",
+  "providerError.invalidRedirectUri": "应用的返回地址无效。",
+  "providerError.invalidRequest": "登录请求无效或已过期。请返回应用重试。",
+  "providerError.invalidScope": "应用请求了不支持的权限。",
+  "providerError.invalidTarget": "应用请求访问一个不允许的服务。",
+  "providerError.loginRequired": "你需要登录才能继续。",
+  "providerError.serverError": "服务器出错。请几分钟后重试。",
+  "providerError.unauthorizedClient": "该应用无权使用此登录方式。",
+  "providerError.unknown": "无法处理该请求。请几分钟后重试。",
+  "scope.clientRead": "查看你可访问的 Localman API client 中的 workspace、collection、request 和 environment（secret 变量始终隐藏）",
+  "scope.clientSend": "通过 Localman proxy 代你发送 request，包括经 Tunelo 发往 localhost（计入 proxy 额度）",
+  "scope.clientWrite": "在 Localman API client 中创建、编辑、删除、导入 collection 和 request，设置 environment 变量",
+  "scope.credentialsWrite": "在 Localman 上创建个人访问 token、service account secret 和访问密钥",
+  "scope.email": "查看你的邮箱地址",
+  "scope.mockRead": "查看你可访问的 Localman mock project，包括 resource、schema 和数据",
+  "scope.mockWrite": "在 Localman 上创建、编辑、删除 mock project 和 resource，生成或重置数据",
+  "scope.offlineAccess": "在你未打开应用时保持登录（最长 30 天）",
+  "scope.openid": "知道你是谁（你的 hoandat 账号 ID）",
+  "scope.profile": "查看你的姓名、用户名和头像",
+  "scope.telegram": "向你关联的 Telegram 聊天发送通知",
+  "scope.tunnelsOpen": "使用你的账号打开新的 tunnel",
+  "scope.tunnelsRead": "查看你的 tunnel 列表",
+  "scope.unknown": "权限“{scope}”",
+  "signup.haveAccount": "已有账号？{link}",
+  "signup.pageTitle": "注册",
+  "signup.subtitle": "一个账号通用于 Localman 和 Tunelo。使用 Google 或 GitHub 注册：hoandat 不使用密码，也不发送邮件。",
+  "signup.title": "创建 hoandat 账号",
+  "signup.with": "使用 {provider} 注册",
+  "telegram.commandLabel": "关联命令",
+  "telegram.once": "该链接只能使用一次。bot 提示已关联后，请刷新账号页面。",
+  "telegram.open": "打开 Telegram",
+  "telegram.orSend": "或者向 bot {bot} 发送以下命令：",
+  "telegram.subtitle": "在 Telegram 中打开 hoandat bot，点击 Start，然后在 10 分钟内点击“{button}”。",
+  "telegram.title": "关联 Telegram",
+  "upstream.expired": "{provider} 登录已过期，请重新开始。",
+  "upstream.failed": "无法使用 {provider} 登录。请几分钟后重试。",
+  "upstream.link.alreadyLinked": "你的账号已关联另一个 {provider} 账号。请先取消那个关联。",
+  "upstream.link.ownedByOther": "此 {provider} 账号已关联到另一个 hoandat 账号。",
+  "upstream.rejected.disabled": "此 hoandat 账号已被锁定。",
+  "upstream.rejected.noVerifiedEmail": "此账号没有已验证的邮箱，无法用于登录 hoandat。",
+  "upstream.rejected.other": "无法登录。",
+  "upstream.rejected.otherProviderAccount": "该邮箱所属的 hoandat 账号已关联同一提供商的另一个账号。请使用已关联的账号登录。",
+  "username.back": "返回登录",
+  "username.emailTaken": "该邮箱刚被另一个账号使用。请改用那个账号登录。",
+  "username.help": "3–30 个字符：小写字母、数字和下划线。其他人通过此用户名邀请你。",
+  "username.invalid": "用户名需为 3–30 个字符，只能包含小写字母、数字或下划线。",
+  "username.label": "用户名",
+  "username.reclaimLink": "用那种方式登录",
+  "username.reclaimWarning": "此邮箱属于另一个尚未验证邮箱的 hoandat 账号。如果那是你的账号，并且已关联另一个 Google 或 GitHub 账号，请{link}，然后在账号页面关联 {provider}。如果继续，该邮箱将转移到新账号；原账号保留其他登录方式。",
+  "username.submit": "创建账号",
+  "username.subtitle": "使用 {provider} 为 {email}（已验证）创建 hoandat 账号。",
+  "username.taken": "该用户名已被使用，请换一个。",
+  "username.title": "选择用户名",
+}
+`;

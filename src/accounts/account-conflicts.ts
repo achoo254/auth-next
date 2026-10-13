@@ -12,9 +12,11 @@ function conflictField(error: unknown): string | undefined {
 	if (!(error instanceof MongoServerError) || error.code !== 11000) {
 		return undefined;
 	}
+	// Unique keys lead with tenantId (unique per tenant); the field that
+	// clashed is the one after it.
 	const keys: unknown = error.keyPattern;
 	if (typeof keys === "object" && keys !== null) {
-		return Object.keys(keys)[0] ?? "unknown";
+		return Object.keys(keys).find((key) => key !== "tenantId") ?? "unknown";
 	}
 	return "unknown";
 }

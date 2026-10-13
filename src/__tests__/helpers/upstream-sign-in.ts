@@ -6,7 +6,7 @@ import {
 	openLoginPage,
 } from "./test-accounts.js";
 import type { TestBrowser } from "./test-browser.js";
-import { LOCALMAN_CALLBACK, type TestIdp } from "./test-idp.js";
+import { type TestIdp, localmanCallbackOf } from "./test-idp.js";
 
 /** Login page → "Sign in with <provider>" (fake) → back on the IdP. */
 export async function signInWith(
@@ -21,7 +21,7 @@ export async function signInWith(
 	const result = await page.browser.navigate(
 		`${idp.issuer}/interaction/${page.uid}/upstream/${provider}`,
 		{},
-		LOCALMAN_CALLBACK,
+		localmanCallbackOf(idp),
 	);
 	return { page, ...result };
 }

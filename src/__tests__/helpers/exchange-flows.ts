@@ -1,6 +1,5 @@
 import * as client from "openid-client";
 import { STATIC_CLIENT_IDS, TOKEN_EXCHANGE_GRANT } from "../../oidc/clients.js";
-import { RESOURCES } from "../../oidc/resources.js";
 import { ACCESS_TOKEN_TYPE } from "../../oidc/token-exchange-request.js";
 import { discoverClient } from "./flows.js";
 import { signedInBrowser } from "./session-flows.js";
@@ -16,6 +15,7 @@ import {
 	TUNELO_WEB_SECRET,
 	type TestIdp,
 } from "./test-idp.js";
+import { RESOURCES } from "./test-tenant.js";
 
 export const TUNELO_CALLBACK = "https://tunnel.hoandat.com/auth/callback";
 

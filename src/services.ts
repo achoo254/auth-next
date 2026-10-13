@@ -21,9 +21,14 @@ import { telegramBotConfig } from "./config/integrations-env.js";
 import { type Csrf, createCsrf } from "./http/csrf.js";
 import type { Logger } from "./logger.js";
 import { type TelegramBot, createTelegramBot } from "./telegram/bot-client.js";
+import type { Tenant } from "./tenants/tenant.js";
 
-/** Everything the server-rendered pages need, built once per process. */
+/**
+ * Everything the server-rendered pages of one tenant need, built once per
+ * tenant. Every store in it is bound to `tenant`.
+ */
 export interface AppServices {
+	readonly tenant: Tenant;
 	readonly issuer: string;
 	readonly host: string;
 	readonly db: Db;
@@ -45,6 +50,7 @@ export interface AppServices {
 
 export interface ServiceDependencies {
 	readonly env: Env;
+	readonly tenant: Tenant;
 	readonly db: Db;
 	readonly provider: Provider;
 	readonly logger: Logger;
@@ -57,23 +63,31 @@ export interface ServiceDependencies {
 }
 
 export function createServices(deps: ServiceDependencies): AppServices {
-	const { env, db } = deps;
+	const { env, tenant, db } = deps;
+	// A store wired to another tenant would read, write or sign as that one.
+	if (
+		deps.accounts.tenant.id !== tenant.id ||
+		deps.accounts.audit.tenant.id !== tenant.id
+	) {
+		throw new Error("Account stores belong to another tenant");
+	}
 	const telegramConfig = telegramBotConfig(env);
-	const secureCookies = new URL(env.ISSUER).protocol === "https:";
-	trackSessions(deps.provider, db, deps.logger);
+	const secureCookies = new URL(tenant.issuer).protocol === "https:";
+	trackSessions(deps.provider, { db, tenant }, deps.logger);
 	auditProviderEvents(deps.provider, deps.accounts.audit);
 	return {
-		issuer: env.ISSUER,
-		host: new URL(env.ISSUER).host,
+		tenant,
+		issuer: tenant.issuer,
+		host: new URL(tenant.issuer).host,
 		db,
 		provider: deps.provider,
 		logger: deps.logger,
 		accounts: deps.accounts,
 		audit: deps.accounts.audit,
-		tokens: new OneTimeTokenStore(db),
+		tokens: new OneTimeTokenStore(db, tenant),
 		accountTokens: new AccountTokens(db, deps.accounts),
 		csrf: createCsrf(env.COOKIE_KEYS, secureCookies),
-		upstreams: deps.upstreams ?? createUpstreams(env),
+		upstreams: deps.upstreams ?? createUpstreams(env, tenant.issuer),
 		formPostsPerMinute: deps.formPostsPerMinute ?? 30,
 		telegram:
 			deps.telegram ??

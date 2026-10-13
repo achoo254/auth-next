@@ -2,30 +2,14 @@ import type { Collection } from "mongodb";
 import type { LinkedMethod } from "../audit/audit-events.js";
 import type { AuditOutbox } from "../audit/audit-outbox.js";
 import type { Locale } from "../i18n/locales.js";
+import type { TenantFilter } from "../tenants/tenant-data.js";
+import { type ProviderLink, providerDetail } from "./provider-link.js";
 import {
 	type AccountDocument,
-	type ProviderDetail,
 	type UpstreamProvider,
 	normalizeEmail,
 } from "./user-model.js";
 import { type GuardedWrite, writeWithVersion } from "./versioned-write.js";
-
-/** A provider account being linked, as the provider described it. */
-export interface ProviderLink {
-	readonly provider: UpstreamProvider;
-	readonly providerId: string;
-	readonly verifiedEmail?: string;
-	/** GitHub login. */
-	readonly login?: string;
-}
-
-/** What is stored about a link, shown on /account. */
-export function providerDetail(link: ProviderLink): ProviderDetail {
-	const detail: ProviderDetail = { linkedAt: new Date() };
-	if (link.verifiedEmail) detail.email = normalizeEmail(link.verifiedEmail);
-	if (link.login) detail.login = link.login;
-	return detail;
-}
 
 /**
  * Changes to who vouches for an account and how to reach it: Google/GitHub
@@ -33,8 +17,10 @@ export function providerDetail(link: ProviderLink): ProviderDetail {
  * owner. Reached as `AccountRepository.links`.
  */
 export class AccountLinks {
+	/** `scope` limits every read and write to the repository's tenant. */
 	constructor(
 		private readonly accounts: Collection<AccountDocument>,
+		private readonly scope: TenantFilter,
 		private readonly audit: AuditOutbox,
 	) {}
 
@@ -70,6 +56,7 @@ export class AccountLinks {
 			email === account.email;
 		const write = writeWithVersion(
 			this.accounts,
+			this.scope,
 			account._id,
 			expectedVersion,
 			{},
@@ -98,7 +85,7 @@ export class AccountLinks {
 		provider: UpstreamProvider,
 		expectedVersion?: number,
 	): Promise<GuardedWrite> {
-		const current = await this.accounts.findOne({ _id: id });
+		const current = await this.accounts.findOne({ _id: id, ...this.scope });
 		if (!current) return { applied: false, stale: false };
 		const readVersion = current.securityVersion ?? 0;
 		if (expectedVersion !== undefined && readVersion !== expectedVersion) {
@@ -117,6 +104,7 @@ export class AccountLinks {
 				: current.emailVerifiedBy;
 		const write = writeWithVersion(
 			this.accounts,
+			this.scope,
 			id,
 			readVersion,
 			{
@@ -143,7 +131,7 @@ export class AccountLinks {
 	async reclaimEmail(email: string): Promise<AccountDocument | undefined> {
 		const address = normalizeEmail(email);
 		const previous = await this.accounts.findOneAndUpdate(
-			{ email: address, emailVerifiedBy: null },
+			{ email: address, emailVerifiedBy: null, ...this.scope },
 			{
 				$unset: { email: "" },
 				$set: { reclaimedEmail: { email: address, at: new Date() } },
@@ -169,6 +157,7 @@ export class AccountLinks {
 		const { locale, ...chat } = link;
 		const write = writeWithVersion(
 			this.accounts,
+			this.scope,
 			id,
 			expectedVersion,
 			{},
@@ -187,6 +176,7 @@ export class AccountLinks {
 	unsetTelegram(id: string, expectedVersion?: number): Promise<GuardedWrite> {
 		const write = writeWithVersion(
 			this.accounts,
+			this.scope,
 			id,
 			expectedVersion,
 			{},

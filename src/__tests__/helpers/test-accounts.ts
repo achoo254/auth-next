@@ -12,9 +12,9 @@ import { ensureAccountLayerIndexes } from "../../services.js";
 import { discoverClient } from "./flows.js";
 import { TestBrowser, formField } from "./test-browser.js";
 import {
-	LOCALMAN_CALLBACK,
 	LOCALMAN_WEB_SECRET,
 	type TestIdp,
+	localmanCallbackOf,
 } from "./test-idp.js";
 
 /** A fresh database on the shared mongod, with the account indexes. */
@@ -94,8 +94,9 @@ export async function openLoginPage(
 		STATIC_CLIENT_IDS.localmanWeb,
 		client.ClientSecretBasic(LOCALMAN_WEB_SECRET),
 	);
+	const callback = localmanCallbackOf(idp);
 	const url = client.buildAuthorizationUrl(config, {
-		redirect_uri: LOCALMAN_CALLBACK,
+		redirect_uri: callback,
 		scope: "openid profile email",
 		code_challenge: await client.calculatePKCECodeChallenge(
 			client.randomPKCECodeVerifier(),
@@ -103,7 +104,7 @@ export async function openLoginPage(
 		code_challenge_method: "S256",
 		...extra,
 	});
-	const { response } = await browser.navigate(url, {}, LOCALMAN_CALLBACK);
+	const { response } = await browser.navigate(url, {}, callback);
 	const html = await response.text();
 	const uid = /\/interaction\/([\w-]+)/.exec(response.url)?.[1];
 	if (!uid) throw new Error(`Not on an interaction page: ${response.url}`);

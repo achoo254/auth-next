@@ -2,8 +2,8 @@ import type { enApps } from "../en/apps.js";
 import type { Translation } from "../translation.js";
 
 export const zhApps: Translation<typeof enApps> = {
-	"apps.eyebrow": "hoandat 登录",
-	"apps.title": "一个账号，通用所有 hoandat 应用",
+	"apps.eyebrow": "{brand} 登录",
+	"apps.title": "一个账号，通用所有 {brand} 应用",
 	"apps.subtitle":
 		"用 Google 或 GitHub 登录一次，即可在 Localman、它的 MCP 服务器和 Tunelo 中使用同一个账号。",
 	"apps.trust.providers": "使用 Google 或 GitHub 登录",
@@ -12,7 +12,7 @@ export const zhApps: Translation<typeof enApps> = {
 	"apps.cta.account": "管理你的账号",
 	"apps.cta.how": "登录如何进行",
 	"apps.diagram.label":
-		"通过 Google 或 GitHub 进入你的 hoandat 账号，即可登录 Localman、Localman MCP、Tunelo CLI 和 Tunelo。",
+		"通过 Google 或 GitHub 进入你的 {brand} 账号，即可登录 Localman、Localman MCP、Tunelo CLI 和 Tunelo。",
 	"apps.list.title": "可使用的应用",
 	"apps.kind.web": "网页应用",
 	"apps.kind.mcp": "MCP 服务器",
@@ -38,6 +38,6 @@ export const zhApps: Translation<typeof enApps> = {
 		"你关联的账号会为你登录。第一次登录时需选择用户名。",
 	"apps.steps.back.title": "回到应用",
 	"apps.steps.back.body":
-		"来自 hoandat 以外的应用（例如 AI 工具）会先请求你的同意。",
+		"来自 {brand} 以外的应用（例如 AI 工具）会先请求你的同意。",
 	"apps.manage": "如需查看或移除可以访问你账号的应用，请打开{account}页面。",
 };

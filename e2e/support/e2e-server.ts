@@ -15,15 +15,17 @@ import {
 } from "../../src/__tests__/helpers/fake-upstreams.js";
 import { AccountRepository } from "../../src/accounts/account-repository.js";
 import { createApp } from "../../src/app.js";
+import { AuditOutbox } from "../../src/audit/audit-outbox.js";
 import { parseEnv } from "../../src/config/env.js";
 import { createLogger } from "../../src/logger.js";
 import { generateSigningJwk } from "../../src/oidc/jwks.js";
-import { ensureOidcIndexes } from "../../src/oidc/mongo-adapter.js";
+import { ensureOidcIndexes } from "../../src/oidc/oidc-indexes.js";
 import { createProvider } from "../../src/oidc/provider.js";
 import {
 	createServices,
 	ensureAccountLayerIndexes,
 } from "../../src/services.js";
+import { envClientSecrets, envTenant } from "../../src/tenants/env-tenant.js";
 import {
 	E2E_ISSUER,
 	E2E_PORT,
@@ -60,16 +62,24 @@ const env = parseEnv({
 	...FAKE_UPSTREAM_ENV,
 });
 const logger = createLogger(env.LOG_LEVEL);
-const accounts = new AccountRepository(db);
+const tenant = envTenant(env);
+const accounts = new AccountRepository(
+	db,
+	tenant,
+	new AuditOutbox(db, tenant, logger),
+);
 const provider = createProvider({
-	env,
+	tenant,
 	db,
 	jwks: { keys: [await generateSigningJwk()] },
+	cookieKeys: env.COOKIE_KEYS,
+	clientSecrets: envClientSecrets(env),
 	accountStore: accounts,
 	logger,
 });
 const services = createServices({
 	env,
+	tenant,
 	db,
 	provider,
 	logger,

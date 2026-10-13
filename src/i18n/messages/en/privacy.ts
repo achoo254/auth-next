@@ -2,7 +2,7 @@
 export const enPrivacy = {
 	"privacy.title": "Privacy policy",
 	"privacy.subtitle":
-		"Applies to the sign-in service auth.hoandat.com. Updated 9 October 2026.",
+		"Applies to the sign-in service auth.{brandDomain}. Updated 9 October 2026.",
 	"privacy.stored.title": "Data we store",
 	"privacy.stored.profile":
 		"Username, email address, display name and profile picture.",

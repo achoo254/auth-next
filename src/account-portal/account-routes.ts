@@ -67,10 +67,10 @@ export function createAccountRouter(services: AppServices): Router {
 			async (req, res, portal) => {
 				const { account } = portal;
 				const page = pageContext(req);
-				const grants = await listGrants(services.db, account._id);
+				const grants = await listGrants(services, account._id);
 				const [sessions, devices, apps] = await Promise.all([
-					listSessions(services.db, account._id),
-					listDeviceGrants(services.db, grants),
+					listSessions(services, account._id),
+					listDeviceGrants(services, grants),
 					listAuthorizedApps(services.provider, grants),
 					rememberTelegramLocale(services, account, page.i18n.locale),
 				]);

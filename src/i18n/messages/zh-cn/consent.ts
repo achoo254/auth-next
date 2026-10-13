@@ -3,8 +3,8 @@ import type { Translation } from "../translation.js";
 
 export const zhConsent: Translation<typeof enConsent> = {
 	"consent.pageTitle": "授予访问权限",
-	"consent.titleForApp": "允许 {app} 使用你的 hoandat 账号",
-	"consent.titleExternal": "允许外部应用使用你的 hoandat 账号",
+	"consent.titleForApp": "允许 {app} 使用你的 {brand} 账号",
+	"consent.titleExternal": "允许外部应用使用你的 {brand} 账号",
 	"consent.redirect":
 		"允许后，你将返回 {host}，并附带一个代码，应用用它换取 token。",
 	"consent.willBeAbleTo": "该应用将能够：",
@@ -12,12 +12,12 @@ export const zhConsent: Translation<typeof enConsent> = {
 	"consent.deny": "拒绝",
 	"consent.revokeHint": "你可以随时在账号页面撤销此权限。",
 	"consent.externalNotice":
-		"外部应用，并非由 hoandat.com 发布。应用名称由其自行填写，hoandat 不核实其背后是谁；仅当你刚刚亲自连接它时才允许（例如使用 MCP 的 coding agent）。",
+		"外部应用，并非由 {brandDomain} 发布。应用名称由其自行填写，{brand} 不核实其背后是谁；仅当你刚刚亲自连接它时才允许（例如使用 MCP 的 coding agent）。",
 	"consent.lookalikeWarning":
-		"该应用名称看起来像 hoandat.com 的产品，但并不是。只有当你刚在自己电脑上的 coding agent 中添加 Localman MCP 时才属正常（此时名称包含 localman，且你会被带回 localhost 或 127.0.0.1）；否则请拒绝。",
+		"该应用名称看起来像 {brandDomain} 的产品，但并不是。只有当你刚在自己电脑上的 coding agent 中添加 Localman MCP 时才属正常（此时名称包含 localman，且你会被带回 localhost 或 127.0.0.1）；否则请拒绝。",
 	"consent.credentialsWarning":
 		"允许该应用代你创建新的访问密钥和 secret。只授权给你信任的应用。",
-	"scope.openid": "知道你是谁（你的 hoandat 账号 ID）",
+	"scope.openid": "知道你是谁（你的 {brand} 账号 ID）",
 	"scope.profile": "查看你的姓名、用户名和头像",
 	"scope.email": "查看你的邮箱地址",
 	"scope.offlineAccess": "在你未打开应用时保持登录（最长 30 天）",

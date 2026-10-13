@@ -1,7 +1,13 @@
 import type { Collection, Db } from "mongodb";
-import { AuditOutbox } from "../audit/audit-outbox.js";
+import type { AuditOutbox } from "../audit/audit-outbox.js";
 import type { Locale } from "../i18n/locales.js";
 import type { AccountProfile, AccountStore } from "../oidc/claims.js";
+import {
+	type TenantFilter,
+	type TenantScope,
+	inTenant,
+	tenantTag,
+} from "../tenants/tenant-data.js";
 import { translateConflicts } from "./account-conflicts.js";
 import { AccountLinks } from "./account-links.js";
 import {
@@ -14,21 +20,34 @@ import {
 	toAccountProfile,
 } from "./user-model.js";
 
-export type NewAccount = Omit<AccountDocument, "_id" | "createdAt">;
+export type NewAccount = Omit<
+	AccountDocument,
+	"_id" | "createdAt" | "tenantId"
+>;
 
-/** Data access for accounts; the only module that touches `accounts`. */
+/**
+ * Data access for the accounts of one tenant; the only module that touches
+ * `accounts`. Every query is limited to the tenant, so an account of
+ * another tenant does not exist here.
+ */
 export class AccountRepository implements AccountStore {
 	private readonly accounts: Collection<AccountDocument>;
+	private readonly scope: TenantFilter;
 	/** Provider, Telegram and email-ownership changes. */
 	readonly links: AccountLinks;
 
-	/** `audit` records credential changes made here for Localman's audit log. */
+	/**
+	 * `audit` records credential changes made here for Localman's audit log;
+	 * it must belong to the same tenant.
+	 */
 	constructor(
 		db: Db,
-		readonly audit: AuditOutbox = new AuditOutbox(db),
+		readonly tenant: TenantScope,
+		readonly audit: AuditOutbox,
 	) {
 		this.accounts = accountsCollection(db);
-		this.links = new AccountLinks(this.accounts, audit);
+		this.scope = inTenant(tenant);
+		this.links = new AccountLinks(this.accounts, this.scope, audit);
 	}
 
 	/** oidc-provider lookup: disabled accounts no longer exist for clients. */
@@ -40,6 +59,7 @@ export class AccountRepository implements AccountStore {
 	async findActiveById(id: string): Promise<AccountDocument | undefined> {
 		const account = await this.accounts.findOne({
 			_id: id,
+			...this.scope,
 			disabledAt: { $exists: false },
 		});
 		return account ?? undefined;
@@ -47,8 +67,10 @@ export class AccountRepository implements AccountStore {
 
 	async findByEmail(email: string): Promise<AccountDocument | undefined> {
 		return (
-			(await this.accounts.findOne({ email: normalizeEmail(email) })) ??
-			undefined
+			(await this.accounts.findOne({
+				email: normalizeEmail(email),
+				...this.scope,
+			})) ?? undefined
 		);
 	}
 
@@ -59,6 +81,7 @@ export class AccountRepository implements AccountStore {
 		return (
 			(await this.accounts.findOne({
 				[`providers.${provider}`]: providerId,
+				...this.scope,
 			})) ?? undefined
 		);
 	}
@@ -67,6 +90,7 @@ export class AccountRepository implements AccountStore {
 	async create(input: NewAccount): Promise<AccountDocument> {
 		const account: AccountDocument = {
 			...input,
+			...tenantTag(this.tenant),
 			username: normalizeUsername(input.username),
 			email:
 				input.email === undefined ? undefined : normalizeEmail(input.email),
@@ -82,7 +106,7 @@ export class AccountRepository implements AccountStore {
 
 	async usernameTaken(username: string): Promise<boolean> {
 		const count = await this.accounts.countDocuments(
-			{ username: normalizeUsername(username) },
+			{ username: normalizeUsername(username), ...this.scope },
 			{ limit: 1 },
 		);
 		return count > 0;
@@ -90,7 +114,7 @@ export class AccountRepository implements AccountStore {
 
 	async updateName(id: string, name: string | undefined): Promise<void> {
 		await this.accounts.updateOne(
-			{ _id: id },
+			{ _id: id, ...this.scope },
 			name ? { $set: { name } } : { $unset: { name: "" } },
 		);
 	}
@@ -104,6 +128,7 @@ export class AccountRepository implements AccountStore {
 		const result = await this.accounts.updateOne(
 			{
 				_id: id,
+				...this.scope,
 				"telegram.chatId": { $type: "string" },
 				telegramLocale: { $ne: locale },
 			},

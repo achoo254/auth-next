@@ -1,11 +1,11 @@
-import type { Db } from "mongodb";
 import { collectionNameFor } from "../oidc/mongo-adapter.js";
 import type { AppServices } from "../services.js";
-import { GRANT_META_COLLECTION, revokeGrant } from "./grant-directory.js";
+import { type TenantDb, inTenant } from "../tenants/tenant-data.js";
+import { forgetDeviceGrants, revokeGrant } from "./grant-directory.js";
 
 /** Every grant id of an account (optionally of one client); no page limit. */
 export async function grantIdsOf(
-	db: Db,
+	{ db, tenant }: TenantDb,
 	accountId: string,
 	clientId?: string,
 ): Promise<string[]> {
@@ -14,6 +14,7 @@ export async function grantIdsOf(
 		.find(
 			{
 				"payload.accountId": accountId,
+				...inTenant(tenant),
 				...(clientId ? { "payload.clientId": clientId } : {}),
 			},
 			{ projection: { _id: 1 } },
@@ -32,8 +33,6 @@ export async function revokeGrants(
 	for (const grantId of grantIds) {
 		if (await revokeGrant(services.provider, accountId, grantId)) revoked += 1;
 	}
-	await services.db
-		.collection<{ _id: string }>(GRANT_META_COLLECTION)
-		.deleteMany({ _id: { $in: [...grantIds] } });
+	await forgetDeviceGrants(services, grantIds);
 	return revoked;
 }

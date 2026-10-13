@@ -1,13 +1,20 @@
-import type { Db } from "mongodb";
 import type Provider from "oidc-provider";
 import type { Logger } from "../logger.js";
 import { collectionNameFor } from "../oidc/mongo-adapter.js";
 import { TTL_SECONDS } from "../oidc/provider.js";
+import {
+	type TenantDb,
+	inTenant,
+	tenantTag,
+	upsertInTenant,
+} from "../tenants/tenant-data.js";
 import { revokeGrant } from "./grant-directory.js";
 
 interface SessionMetaDocument {
 	/** The provider session's `uid` (stable across id rotation). */
 	_id: string;
+	/** Absent only on metadata stored before tenants existed. */
+	tenantId?: string | null;
 	accountId: string;
 	userAgent?: string;
 	ip?: string;
@@ -33,7 +40,7 @@ export interface OpenSession {
  */
 export function trackSessions(
 	provider: Provider,
-	db: Db,
+	{ db, tenant }: TenantDb,
 	logger: Logger,
 ): void {
 	const meta = db.collection<SessionMetaDocument>(SESSION_META_COLLECTION);
@@ -41,36 +48,40 @@ export function trackSessions(
 		const session = ctx.oidc.session;
 		if (!session?.accountId || !session.uid) return;
 		const now = new Date();
-		meta
-			.updateOne(
-				{ _id: session.uid },
-				{
-					$set: {
-						accountId: session.accountId,
-						userAgent: ctx.get("user-agent").slice(0, 300),
-						ip: ctx.ip,
-						lastSeenAt: now,
-						expiresAt: new Date(now.getTime() + TTL_SECONDS.Session * 1000),
-					},
-					$setOnInsert: { firstSeenAt: now },
-				},
-				{ upsert: true },
-			)
-			.catch((error: unknown) => {
-				logger.warn({ err: error }, "Could not record session activity");
-			});
+		const filter = { _id: session.uid, ...inTenant(tenant) };
+		const update = {
+			$set: {
+				...tenantTag(tenant),
+				accountId: session.accountId,
+				userAgent: ctx.get("user-agent").slice(0, 300),
+				ip: ctx.ip,
+				lastSeenAt: now,
+				expiresAt: new Date(now.getTime() + TTL_SECONDS.Session * 1000),
+			},
+			$setOnInsert: { firstSeenAt: now },
+		};
+		upsertInTenant(
+			() => meta.updateOne(filter, update, { upsert: true }),
+			() => meta.updateOne(filter, update),
+		).catch((error: unknown) => {
+			logger.warn({ err: error }, "Could not record session activity");
+		});
 	});
 }
 
 /** Live provider sessions of one account, joined with recorded details. */
 export async function listSessions(
-	db: Db,
+	{ db, tenant }: TenantDb,
 	accountId: string,
 ): Promise<OpenSession[]> {
 	const sessions = await db
 		.collection(collectionNameFor("Session"))
 		.find(
-			{ "payload.accountId": accountId, expiresAt: { $gt: new Date() } },
+			{
+				"payload.accountId": accountId,
+				...inTenant(tenant),
+				expiresAt: { $gt: new Date() },
+			},
 			{ projection: { "payload.uid": 1, "payload.loginTs": 1 } },
 		)
 		.limit(100)
@@ -87,7 +98,7 @@ export async function listSessions(
 	});
 	const metas = await db
 		.collection<SessionMetaDocument>(SESSION_META_COLLECTION)
-		.find({ _id: { $in: rows.map((row) => row.uid) } })
+		.find({ _id: { $in: rows.map((row) => row.uid) }, ...inTenant(tenant) })
 		.toArray();
 	const byUid = new Map(metas.map((meta) => [meta._id, meta]));
 	return rows
@@ -109,14 +120,18 @@ export async function listSessions(
  * limit: "sign out every other session" must not miss one.
  */
 export async function otherSessionUids(
-	db: Db,
+	{ db, tenant }: TenantDb,
 	accountId: string,
 	currentUid: string,
 ): Promise<string[]> {
 	const sessions = await db
 		.collection(collectionNameFor("Session"))
 		.find(
-			{ "payload.accountId": accountId, expiresAt: { $gt: new Date() } },
+			{
+				"payload.accountId": accountId,
+				...inTenant(tenant),
+				expiresAt: { $gt: new Date() },
+			},
 			{ projection: { "payload.uid": 1 } },
 		)
 		.toArray();
@@ -146,7 +161,7 @@ function backchannelLogoutOf(client: object): BackchannelLogout | undefined {
  */
 export async function revokeSession(
 	provider: Provider,
-	db: Db,
+	{ db, tenant }: TenantDb,
 	logger: Logger,
 	accountId: string,
 	uid: string,
@@ -174,6 +189,6 @@ export async function revokeSession(
 	await session.destroy();
 	await db
 		.collection<SessionMetaDocument>(SESSION_META_COLLECTION)
-		.deleteOne({ _id: uid });
+		.deleteOne({ _id: uid, ...inTenant(tenant) });
 	return true;
 }

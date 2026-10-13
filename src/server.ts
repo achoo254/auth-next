@@ -16,9 +16,10 @@ import {
 	primarySigningKey,
 	rsaSigningKey,
 } from "./oidc/jwks.js";
-import { ensureOidcIndexes } from "./oidc/mongo-adapter.js";
+import { ensureOidcIndexes } from "./oidc/oidc-indexes.js";
 import { createProvider } from "./oidc/provider.js";
 import { createServices, ensureAccountLayerIndexes } from "./services.js";
+import { envClientSecrets, envTenant } from "./tenants/env-tenant.js";
 
 const SHUTDOWN_TIMEOUT_MS = 10_000;
 /**
@@ -60,6 +61,7 @@ function closeServer(server: Server): Promise<void> {
 }
 
 const env = loadEnvOrExit();
+const tenant = envTenant(env);
 const logger: Logger = createLogger(env.LOG_LEVEL);
 let server: Server | undefined;
 let mongo: MongoClient | undefined;
@@ -117,17 +119,21 @@ try {
 	await ensureAccountLayerIndexes(connection.db);
 	const accounts = new AccountRepository(
 		connection.db,
-		new AuditOutbox(connection.db, logger),
+		tenant,
+		new AuditOutbox(connection.db, tenant, logger),
 	);
 	const provider = createProvider({
-		env,
+		tenant,
 		db: connection.db,
 		jwks,
+		cookieKeys: env.COOKIE_KEYS,
+		clientSecrets: envClientSecrets(env),
 		accountStore: accounts,
 		logger,
 	});
 	const services = createServices({
 		env,
+		tenant,
 		db: connection.db,
 		provider,
 		logger,
@@ -147,7 +153,7 @@ try {
 		delivery: delivery && {
 			config: delivery,
 			sign: createSecurityEventSigner({
-				issuer: env.ISSUER,
+				issuer: tenant.issuer,
 				audience: delivery.url,
 				jwks,
 			}),
@@ -161,7 +167,7 @@ try {
 	server = await listen(createApp({ services, env }), env.HOST, env.PORT);
 	auditDispatcher?.start();
 	logger.info(
-		{ host: env.HOST, port: env.PORT, issuer: env.ISSUER },
+		{ host: env.HOST, port: env.PORT, issuer: tenant.issuer },
 		"hoandat-auth listening",
 	);
 } catch (error) {

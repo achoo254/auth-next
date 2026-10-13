@@ -1,4 +1,5 @@
 import type { Collection, Filter, UpdateFilter } from "mongodb";
+import type { TenantFilter } from "../tenants/tenant-data.js";
 import { translateConflicts } from "./account-conflicts.js";
 import type { AccountDocument } from "./user-model.js";
 
@@ -35,6 +36,7 @@ function atVersion(version: number): Filter<AccountDocument> {
  */
 export async function writeWithVersion(
 	accounts: Collection<AccountDocument>,
+	scope: TenantFilter,
 	id: string,
 	expectedVersion: number | undefined,
 	precondition: Filter<AccountDocument>,
@@ -43,7 +45,7 @@ export async function writeWithVersion(
 	const clauses: Filter<AccountDocument>[] = [precondition];
 	if (expectedVersion !== undefined) clauses.push(atVersion(expectedVersion));
 	const after = await translateConflicts(() =>
-		accounts.findOneAndUpdate({ _id: id, $and: clauses }, update, {
+		accounts.findOneAndUpdate({ _id: id, ...scope, $and: clauses }, update, {
 			returnDocument: "after",
 			projection: { securityVersion: 1 },
 			ignoreUndefined: true,
@@ -52,7 +54,7 @@ export async function writeWithVersion(
 	if (after) return { applied: true, version: after.securityVersion ?? 0 };
 	if (expectedVersion === undefined) return { applied: false, stale: false };
 	const current = await accounts.findOne(
-		{ _id: id },
+		{ _id: id, ...scope },
 		{ projection: { securityVersion: 1 } },
 	);
 	return {

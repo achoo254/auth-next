@@ -19,7 +19,7 @@ export function appRevokePath(clientId: string): string {
 function appRow(view: AccountView, app: AuthorizedApp): SafeHtml {
 	const { i18n } = view.page;
 	const name = app.firstParty
-		? html`<b>${app.name}</b> <span class="badge badge-neutral">hoandat</span>`
+		? html`<b>${app.name}</b> <span class="badge badge-neutral">${i18n.brand.name}</span>`
 		: html`${quotedClientName(i18n, app.name)} ${externalAppBadge(i18n, `app-external-${app.clientId}`)}`;
 	return html`<li class="item-row" data-id="app-${app.clientId}">
 <div>${name}

@@ -4,7 +4,7 @@ import type { Translation } from "../translation.js";
 export const viPrivacy: Translation<typeof enPrivacy> = {
 	"privacy.title": "Chính sách quyền riêng tư",
 	"privacy.subtitle":
-		"Áp dụng cho dịch vụ đăng nhập auth.hoandat.com. Cập nhật ngày 09/10/2026.",
+		"Áp dụng cho dịch vụ đăng nhập auth.{brandDomain}. Cập nhật ngày 09/10/2026.",
 	"privacy.stored.title": "Dữ liệu được lưu",
 	"privacy.stored.profile":
 		"Tên đăng nhập, địa chỉ email, tên hiển thị và ảnh đại diện.",

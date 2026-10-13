@@ -1,7 +1,7 @@
 import type { Router } from "express";
 import { AccountConflictError } from "../accounts/account-conflicts.js";
 import { decideUpstreamLogin } from "../accounts/account-linking.js";
-import { providerDetail } from "../accounts/account-links.js";
+import { providerDetail } from "../accounts/provider-link.js";
 import { UPSTREAM_LABELS } from "../accounts/upstream-client.js";
 import { isValidUsername, normalizeUsername } from "../accounts/user-model.js";
 import { formText } from "../http/form.js";

@@ -4,6 +4,15 @@ import type { Locale } from "./locales.js";
 
 export type MessageParams = Readonly<Record<string, string | number>>;
 
+/**
+ * Who the pages speak for: the tenant's display name and domain. Messages
+ * name them through `{brand}` and `{brandDomain}`, filled in automatically.
+ */
+export interface Brand {
+	readonly name: string;
+	readonly domain: string;
+}
+
 /** BCP 47 tag handed to Intl for each page language. */
 const INTL_LOCALE: Readonly<Record<Locale, string>> = {
 	en: "en-GB",
@@ -17,6 +26,7 @@ export const PAGE_TIME_ZONE = "Asia/Ho_Chi_Minh";
 /** Messages of one language, plus its date format. */
 export interface Translator {
 	readonly locale: Locale;
+	readonly brand: Brand;
 	/** Plain text; `{name}` placeholders are filled from `params`. */
 	t(key: MessageKey, params?: MessageParams): string;
 	/**
@@ -37,9 +47,13 @@ function fill(message: string, params: MessageParams): string {
 	});
 }
 
-const cache = new Map<Locale, Translator>();
+const cache = new Map<string, Translator>();
 
-function createTranslator(locale: Locale): Translator {
+function createTranslator(locale: Locale, brand: Brand): Translator {
+	const brandParams: MessageParams = {
+		brand: brand.name,
+		brandDomain: brand.domain,
+	};
 	const messages = DICTIONARIES[locale];
 	const dates = new Intl.DateTimeFormat(INTL_LOCALE[locale], {
 		timeZone: PAGE_TIME_ZONE,
@@ -48,15 +62,18 @@ function createTranslator(locale: Locale): Translator {
 		timeStyle: "short",
 	});
 	const t = (key: MessageKey, params?: MessageParams): string =>
-		params ? fill(messages[key], params) : messages[key];
+		fill(messages[key], { ...brandParams, ...params });
 	return {
 		locale,
+		brand,
 		t,
 		rich(key, params) {
 			// split() with a capture group: odd entries are placeholder names.
 			const parts = messages[key].split(/\{(\w+)\}/);
 			return html`${parts.map((part, index) =>
-				index % 2 === 0 ? part : (params[part] ?? `{${part}}`),
+				index % 2 === 0
+					? part
+					: (params[part] ?? brandParams[part] ?? `{${part}}`),
 			)}`;
 		},
 		date(value) {
@@ -65,12 +82,21 @@ function createTranslator(locale: Locale): Translator {
 	};
 }
 
-/** The (shared, stateless) translator of a language. */
-export function translator(locale: Locale): Translator {
-	let found = cache.get(locale);
+/** The (shared, stateless) translator of a language for one brand. */
+export function translator(locale: Locale, brand: Brand): Translator {
+	const key = `${locale}\n${brand.name}\n${brand.domain}`;
+	let found = cache.get(key);
 	if (!found) {
-		found = createTranslator(locale);
-		cache.set(locale, found);
+		found = createTranslator(locale, brand);
+		cache.set(key, found);
 	}
 	return found;
+}
+
+/** The brand of a tenant. */
+export function brandOf(tenant: {
+	readonly displayName: string;
+	readonly domain: string;
+}): Brand {
+	return { name: tenant.displayName, domain: tenant.domain };
 }

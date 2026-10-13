@@ -1,12 +1,13 @@
 import { errors } from "oidc-provider";
-import { RESOURCES } from "./resources.js";
 
 /** RFC 8693 token type of an OAuth access token. */
 export const ACCESS_TOKEN_TYPE =
 	"urn:ietf:params:oauth:token-type:access_token";
 
-/** The only target and scope a token exchange may produce. */
-export const EXCHANGE_TARGET = RESOURCES.tunnel;
+/**
+ * The only scope a token exchange may produce. The only target is the
+ * calling tenant's Tunelo (`resources.tunnel`), never another tenant's.
+ */
 export const EXCHANGE_SCOPE = "tunnels:read";
 
 /** Parameters the token endpoint keeps for this grant (RFC 8693 §2.1). */
@@ -52,10 +53,14 @@ function list(params: Params, name: string): string[] {
 
 /**
  * Checks everything about the request except the subject token itself:
- * token types, the target (only Tunelo) and the scope (only tunnels:read,
- * which is also the default). Throws the RFC 8693 / RFC 6749 error.
+ * token types, the target (only `target`, the tenant's Tunelo) and the
+ * scope (only tunnels:read, which is also the default). Throws the
+ * RFC 8693 / RFC 6749 error.
  */
-export function parseExchangeRequest(params: Params): ExchangeRequest {
+export function parseExchangeRequest(
+	params: Params,
+	target: string,
+): ExchangeRequest {
 	const subjectToken = single(params, "subject_token");
 	if (!subjectToken) {
 		throw new errors.InvalidRequest("subject_token is required");
@@ -83,12 +88,12 @@ export function parseExchangeRequest(params: Params): ExchangeRequest {
 	const targets = [...list(params, "resource"), ...list(params, "audience")];
 	if (targets.length === 0) {
 		throw new errors.InvalidRequest(
-			`resource or audience is required (${EXCHANGE_TARGET})`,
+			`resource or audience is required (${target})`,
 		);
 	}
-	if (targets.some((target) => target !== EXCHANGE_TARGET)) {
+	if (targets.some((value) => value !== target)) {
 		throw new errors.InvalidTarget(
-			`tokens can only be exchanged for ${EXCHANGE_TARGET}`,
+			`tokens can only be exchanged for ${target}`,
 		);
 	}
 

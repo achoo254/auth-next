@@ -1,7 +1,7 @@
 import { AccountConflictError } from "../accounts/account-conflicts.js";
 import type { AccountDocument } from "../accounts/user-model.js";
 import type { Locale } from "../i18n/locales.js";
-import { translator } from "../i18n/translator.js";
+import { brandOf, translator } from "../i18n/translator.js";
 import type { AppServices } from "../services.js";
 import type { TelegramBot } from "./bot-client.js";
 import { noticeLocale } from "./bot-locale.js";
@@ -66,7 +66,8 @@ export async function confirmTelegramLink(
 ): Promise<string> {
 	const chatId = String(chat.id);
 	const holder = await consumeTelegramLinkCode(services.accountTokens, code);
-	const { t } = translator(holder?.locale ?? chatLocale);
+	const brand = brandOf(services.tenant);
+	const { t } = translator(holder?.locale ?? chatLocale, brand);
 	const expired = async (): Promise<string> => {
 		await bot.sendMessage(chatId, t("bot.link.expired"));
 		return t("bot.link.expiredShort");
@@ -94,7 +95,7 @@ export async function confirmTelegramLink(
 	if (previous && previous !== chatId) {
 		// The old chat hears it in its own language: whoever moved the link
 		// may not be the owner reading that chat.
-		const moved = translator(noticeLocale(account)).t("bot.link.moved", {
+		const moved = translator(noticeLocale(account), brand).t("bot.link.moved", {
 			username: account.username,
 		});
 		await bot.sendMessage(previous, moved).catch((error: unknown) => {

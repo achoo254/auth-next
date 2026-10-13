@@ -67,7 +67,7 @@ export async function completeConsent(
 		const code = await deviceCodeOf(services, interaction);
 		deviceName = deviceNameOf(code?.params, code?.deviceInfo);
 		await recordDeviceGrant(
-			services.db,
+			services,
 			{
 				_id: grantId,
 				accountId,
@@ -167,7 +167,9 @@ export async function showConsent(
 			uid: interaction.uid,
 			clientName,
 			external,
-			imitatesFirstParty: external && imitatesFirstPartyName(clientName),
+			imitatesFirstParty:
+				external &&
+				imitatesFirstPartyName(clientName, services.tenant.displayName),
 			redirectHost: redirectHostOf(interaction, client.redirectUris),
 			scopes: requestedScopes(interaction),
 			username: account.username,

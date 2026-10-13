@@ -3,7 +3,7 @@ import type { Translation } from "../translation.js";
 
 export const viAccount: Translation<typeof enAccount> = {
 	"account.pageTitle": "Tài khoản",
-	"account.title": "Tài khoản hoandat",
+	"account.title": "Tài khoản {brand}",
 	"account.signOut": "Đăng xuất",
 	"account.noEmail": "Chưa có email",
 	"account.emailVerified": "đã xác minh qua {provider}",
@@ -22,7 +22,7 @@ export const viAccount: Translation<typeof enAccount> = {
 	"account.profile.save": "Lưu",
 	"account.signIn.title": "Cách đăng nhập",
 	"account.signIn.description":
-		"hoandat không dùng mật khẩu: bạn đăng nhập bằng Google hoặc GitHub. Liên kết cả hai để vẫn vào được tài khoản khi mất một cách.",
+		"{brand} không dùng mật khẩu: bạn đăng nhập bằng Google hoặc GitHub. Liên kết cả hai để vẫn vào được tài khoản khi mất một cách.",
 	"account.signIn.empty": "Đăng nhập bằng Google và GitHub đang tạm tắt.",
 	"account.signIn.notLinked": "Chưa liên kết",
 	"account.signIn.linked": "Đã liên kết ({identity})",
@@ -34,7 +34,7 @@ export const viAccount: Translation<typeof enAccount> = {
 	"account.signIn.unlink": "Huỷ liên kết {provider}",
 	"account.sessions.title": "Phiên đang mở",
 	"account.sessions.description":
-		"Các trình duyệt đang đăng nhập tài khoản hoandat của bạn.",
+		"Các trình duyệt đang đăng nhập tài khoản {brand} của bạn.",
 	"account.sessions.empty": "Không có phiên nào.",
 	"account.sessions.thisBrowser": "Trình duyệt này",
 	"account.sessions.signedInAt": "Đăng nhập {date}",

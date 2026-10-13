@@ -1,8 +1,8 @@
 /** Consent, scope descriptions, the device (Tunelo CLI) pages. */
 export const enConsent = {
 	"consent.pageTitle": "Allow access",
-	"consent.titleForApp": "Allow {app} to use your hoandat account",
-	"consent.titleExternal": "Allow an external app to use your hoandat account",
+	"consent.titleForApp": "Allow {app} to use your {brand} account",
+	"consent.titleExternal": "Allow an external app to use your {brand} account",
 	"consent.redirect":
 		"After you allow it, you go back to {host} with a code the app exchanges for tokens.",
 	"consent.willBeAbleTo": "The app will be able to:",
@@ -11,12 +11,12 @@ export const enConsent = {
 	"consent.revokeHint":
 		"You can remove this access any time on your account page.",
 	"consent.externalNotice":
-		"External app, not published by hoandat.com. The app chose its own name and hoandat doesn't check who is behind it. Only allow it if you just connected it yourself (for example a coding agent using MCP).",
+		"External app, not published by {brandDomain}. The app chose its own name and {brand} doesn't check who is behind it. Only allow it if you just connected it yourself (for example a coding agent using MCP).",
 	"consent.lookalikeWarning":
-		"This app's name looks like a hoandat.com product, but it isn't one. That's only expected when you just added Localman MCP to a coding agent on your own machine (then the name contains localman and you're sent back to localhost or 127.0.0.1). Otherwise, deny.",
+		"This app's name looks like a {brandDomain} product, but it isn't one. That's only expected when you just added Localman MCP to a coding agent on your own machine (then the name contains localman and you're sent back to localhost or 127.0.0.1). Otherwise, deny.",
 	"consent.credentialsWarning":
 		"Lets the app create new access keys and secrets for you. Only allow apps you trust.",
-	"scope.openid": "Know who you are (your hoandat account ID)",
+	"scope.openid": "Know who you are (your {brand} account ID)",
 	"scope.profile": "See your name, username and profile picture",
 	"scope.email": "See your email address",
 	"scope.offlineAccess":

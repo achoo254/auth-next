@@ -2,7 +2,6 @@ import { decodeJwt } from "jose";
 import * as client from "openid-client";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { STATIC_CLIENT_IDS } from "../oidc/clients.js";
-import { RESOURCES } from "../oidc/resources.js";
 import {
 	TUNELO_CALLBACK,
 	codeTokens,
@@ -21,6 +20,7 @@ import {
 	type TestIdp,
 	startTestIdp,
 } from "./helpers/test-idp.js";
+import { RESOURCES } from "./helpers/test-tenant.js";
 
 /** Chat ids are unique per account; each test links its own. */
 let nextChat = 424_242_000;

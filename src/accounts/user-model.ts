@@ -28,6 +28,12 @@ export interface ProviderDetail {
  */
 export interface AccountDocument {
 	_id: string;
+	/**
+	 * The tenant the account belongs to; usernames, emails and linked
+	 * provider accounts are unique per tenant only. Absent only on accounts
+	 * created before tenants existed (until the backfill tags them).
+	 */
+	tenantId?: string | null;
 	/** Lowercase, `^[a-z0-9_]{3,30}$`, unique. */
 	username: string;
 	/**
@@ -145,43 +151,44 @@ export function toAccountProfile(account: AccountDocument): AccountProfile {
 	};
 }
 
-/** Unique indexes back the "unique" rules; partial ones skip unset fields. */
+/**
+ * The keys unique within a tenant. Each index leads with `tenantId`, so the
+ * same Google account, email or username can exist once in every tenant.
+ * Partial ones skip unset fields.
+ */
+const TENANT_UNIQUE_KEYS = [
+	{ key: "username", name: "tenant_username" },
+	{ key: "email", name: "tenant_email_when_set" },
+	{ key: "providers.google", name: "tenant_providers_google" },
+	{ key: "providers.github", name: "tenant_providers_github" },
+	{ key: "telegram.chatId", name: "tenant_telegram_chat" },
+] as const;
+
+/**
+ * Creates the per-tenant unique indexes. The global unique indexes of the
+ * single-tenant era (`username_1`, `email_unique_when_set`,
+ * `providers.google_1`, `providers.github_1`, `telegram.chatId_1`) are left
+ * alone here: with one tenant they enforce the same rules, and they are
+ * dropped once every account carries a `tenantId`.
+ */
 export async function ensureAccountIndexes(db: Db): Promise<void> {
 	const accounts = accountsCollection(db);
 	// Early databases had a plain unique index on email, which cannot hold
 	// several accounts without an email; replace it with the partial one.
 	const legacy = await accounts.indexExists("email_1").catch(() => false);
 	if (legacy) await accounts.dropIndex("email_1");
-	await Promise.all([
-		accounts.createIndex({ username: 1 }, { unique: true }),
-		accounts.createIndex(
-			{ email: 1 },
-			{
-				unique: true,
-				name: "email_unique_when_set",
-				partialFilterExpression: { email: { $type: "string" } },
-			},
+	await Promise.all(
+		TENANT_UNIQUE_KEYS.map(({ key, name }) =>
+			accounts.createIndex(
+				{ tenantId: 1, [key]: 1 },
+				key === "username"
+					? { unique: true, name }
+					: {
+							unique: true,
+							name,
+							partialFilterExpression: { [key]: { $type: "string" } },
+						},
+			),
 		),
-		accounts.createIndex(
-			{ "providers.google": 1 },
-			{
-				unique: true,
-				partialFilterExpression: { "providers.google": { $type: "string" } },
-			},
-		),
-		accounts.createIndex(
-			{ "providers.github": 1 },
-			{
-				unique: true,
-				partialFilterExpression: { "providers.github": { $type: "string" } },
-			},
-		),
-		accounts.createIndex(
-			{ "telegram.chatId": 1 },
-			{
-				unique: true,
-				partialFilterExpression: { "telegram.chatId": { $type: "string" } },
-			},
-		),
-	]);
+	);
 }

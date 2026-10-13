@@ -1,7 +1,8 @@
 import express, { type Request, type RequestHandler } from "express";
 import { rateLimit } from "express-rate-limit";
 import { requestLocale } from "../i18n/request-locale.js";
-import { translator } from "../i18n/translator.js";
+import { brandOf, translator } from "../i18n/translator.js";
+import { requestTenant } from "../tenants/request-tenant.js";
 
 /**
  * Body parser for the server-rendered forms only. It must never run in
@@ -28,7 +29,9 @@ export function formRateLimit(
 		standardHeaders: "draft-8",
 		legacyHeaders: false,
 		message: (req: Request) =>
-			translator(requestLocale(req)).t("common.tooManyRequests"),
+			translator(requestLocale(req), brandOf(requestTenant(req))).t(
+				"common.tooManyRequests",
+			),
 		validate: { xForwardedForHeader: false },
 	});
 }

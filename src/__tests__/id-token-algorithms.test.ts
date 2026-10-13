@@ -3,6 +3,7 @@ import { createInMemoryAccountStore } from "../oidc/claims.js";
 import { checkDiscovery } from "../oidc/client-seed.js";
 import { generateSigningJwk } from "../oidc/jwks.js";
 import { buildProviderConfiguration } from "../oidc/provider.js";
+import { envClientSecrets } from "../tenants/env-tenant.js";
 import { type TestIdp, startTestIdp } from "./helpers/test-idp.js";
 
 const CLIENT = {
@@ -33,7 +34,9 @@ describe("ID token signing algorithms", () => {
 
 	it("keeps ES256 as the default and offers RS256 beside it", () => {
 		const configuration = buildProviderConfiguration({
-			env: idp.env,
+			tenant: idp.tenant,
+			cookieKeys: idp.env.COOKIE_KEYS,
+			clientSecrets: envClientSecrets(idp.env),
 			db: idp.db,
 			jwks: idp.jwks,
 			accountStore: createInMemoryAccountStore([]),
@@ -63,7 +66,9 @@ describe("ID token signing algorithms", () => {
 
 	it("offers RS256 only when the key set holds an RSA key", async () => {
 		const configuration = buildProviderConfiguration({
-			env: idp.env,
+			tenant: idp.tenant,
+			cookieKeys: idp.env.COOKIE_KEYS,
+			clientSecrets: envClientSecrets(idp.env),
 			db: idp.db,
 			jwks: { keys: [await generateSigningJwk()] },
 			accountStore: createInMemoryAccountStore([]),

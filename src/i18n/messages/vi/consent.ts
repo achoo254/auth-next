@@ -3,9 +3,9 @@ import type { Translation } from "../translation.js";
 
 export const viConsent: Translation<typeof enConsent> = {
 	"consent.pageTitle": "Cấp quyền",
-	"consent.titleForApp": "Cho phép {app} dùng tài khoản hoandat của bạn",
+	"consent.titleForApp": "Cho phép {app} dùng tài khoản {brand} của bạn",
 	"consent.titleExternal":
-		"Cho phép một ứng dụng bên ngoài dùng tài khoản hoandat của bạn",
+		"Cho phép một ứng dụng bên ngoài dùng tài khoản {brand} của bạn",
 	"consent.redirect":
 		"Sau khi cho phép, bạn được chuyển về {host} kèm mã để ứng dụng nhận token.",
 	"consent.willBeAbleTo": "Ứng dụng sẽ được:",
@@ -14,12 +14,12 @@ export const viConsent: Translation<typeof enConsent> = {
 	"consent.revokeHint":
 		"Bạn có thể thu hồi quyền này bất cứ lúc nào ở trang tài khoản.",
 	"consent.externalNotice":
-		"Ứng dụng bên ngoài, không do hoandat.com phát hành. Tên ứng dụng do chính nó tự khai và hoandat không kiểm tra ai đứng sau nó; chỉ cho phép nếu chính bạn vừa kết nối nó (ví dụ một coding agent dùng MCP).",
+		"Ứng dụng bên ngoài, không do {brandDomain} phát hành. Tên ứng dụng do chính nó tự khai và {brand} không kiểm tra ai đứng sau nó; chỉ cho phép nếu chính bạn vừa kết nối nó (ví dụ một coding agent dùng MCP).",
 	"consent.lookalikeWarning":
-		"Tên ứng dụng giống sản phẩm của hoandat.com nhưng không phải. Điều này chỉ bình thường khi chính bạn vừa thêm Localman MCP vào một coding agent trên máy mình (khi đó tên có chữ localman và bạn được chuyển về localhost hoặc 127.0.0.1); nếu không, hãy từ chối.",
+		"Tên ứng dụng giống sản phẩm của {brandDomain} nhưng không phải. Điều này chỉ bình thường khi chính bạn vừa thêm Localman MCP vào một coding agent trên máy mình (khi đó tên có chữ localman và bạn được chuyển về localhost hoặc 127.0.0.1); nếu không, hãy từ chối.",
 	"consent.credentialsWarning":
 		"Cho phép tạo khoá truy cập và secret mới thay bạn. Chỉ cấp cho ứng dụng bạn tin tưởng.",
-	"scope.openid": "Biết bạn là ai (mã định danh tài khoản hoandat)",
+	"scope.openid": "Biết bạn là ai (mã định danh tài khoản {brand})",
 	"scope.profile": "Xem tên, username và ảnh đại diện",
 	"scope.email": "Xem địa chỉ email",
 	"scope.offlineAccess":

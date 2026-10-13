@@ -1,5 +1,11 @@
 import { createHash, randomBytes } from "node:crypto";
 import type { Collection, Db } from "mongodb";
+import {
+	type TenantFilter,
+	type TenantScope,
+	inTenant,
+	tenantTag,
+} from "../tenants/tenant-data.js";
 
 /**
  * Tokens that act on an account. They are stamped with the account's
@@ -19,6 +25,8 @@ export type TokenData = Record<string, string>;
 interface OneTimeTokenDocument {
 	/** SHA-256 of kind and token: the token itself is never stored. */
 	_id: string;
+	/** Absent only on tokens stored before tenants existed. */
+	tenantId?: string | null;
 	kind: OneTimeTokenKind;
 	data: TokenData;
 	expiresAt: Date;
@@ -38,15 +46,21 @@ export function randomToken(): string {
 /**
  * Storage of short-lived single-use secrets, hashed, with a TTL index.
  * `take` deletes atomically, so two requests racing on one token cannot
- * both succeed. Used directly only by the two token services below.
+ * both succeed. Limited to one tenant: another tenant's token reads as
+ * missing. Used directly only by the two token services below.
  */
 export class TokenCollection {
 	private readonly tokens: Collection<OneTimeTokenDocument>;
+	private readonly scope: TenantFilter;
 
-	constructor(db: Db) {
+	constructor(
+		db: Db,
+		private readonly tenant: TenantScope,
+	) {
 		this.tokens = db.collection<OneTimeTokenDocument>(
 			ONE_TIME_TOKENS_COLLECTION,
 		);
+		this.scope = inTenant(tenant);
 	}
 
 	async put(
@@ -56,8 +70,13 @@ export class TokenCollection {
 		ttlSeconds: number,
 	): Promise<void> {
 		await this.tokens.replaceOne(
-			{ _id: keyOf(kind, token) },
-			{ kind, data, expiresAt: new Date(Date.now() + ttlSeconds * 1000) },
+			{ _id: keyOf(kind, token), ...this.scope },
+			{
+				...tenantTag(this.tenant),
+				kind,
+				data,
+				expiresAt: new Date(Date.now() + ttlSeconds * 1000),
+			},
 			{ upsert: true },
 		);
 	}
@@ -69,6 +88,7 @@ export class TokenCollection {
 	): Promise<TokenData | undefined> {
 		const document = await this.tokens.findOne({
 			_id: keyOf(kind, token),
+			...this.scope,
 			kind,
 			expiresAt: { $gt: new Date() },
 		});
@@ -82,6 +102,7 @@ export class TokenCollection {
 	): Promise<TokenData | undefined> {
 		const document = await this.tokens.findOneAndDelete({
 			_id: keyOf(kind, token),
+			...this.scope,
 			kind,
 			expiresAt: { $gt: new Date() },
 		});
@@ -91,6 +112,7 @@ export class TokenCollection {
 	async deleteFor(accountId: string, kind?: OneTimeTokenKind): Promise<void> {
 		await this.tokens.deleteMany({
 			"data.accountId": accountId,
+			...this.scope,
 			...(kind ? { kind } : {}),
 		});
 	}
@@ -100,8 +122,8 @@ export class TokenCollection {
 export class OneTimeTokenStore {
 	private readonly collection: TokenCollection;
 
-	constructor(db: Db) {
-		this.collection = new TokenCollection(db);
+	constructor(db: Db, tenant: TenantScope) {
+		this.collection = new TokenCollection(db, tenant);
 	}
 
 	put(
@@ -128,6 +150,6 @@ export async function ensureOneTimeTokenIndexes(db: Db): Promise<void> {
 		{ expiresAt: 1 },
 		{ expireAfterSeconds: 0, name: "expiresAt_ttl" },
 	);
-	await tokens.createIndex({ kind: 1, "data.accountId": 1 });
-	await tokens.createIndex({ "data.accountId": 1 });
+	await tokens.createIndex({ tenantId: 1, kind: 1, "data.accountId": 1 });
+	await tokens.createIndex({ tenantId: 1, "data.accountId": 1 });
 }

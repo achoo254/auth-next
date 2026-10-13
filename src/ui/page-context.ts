@@ -1,9 +1,13 @@
 import type { Request } from "express";
 import type { KoaContextWithOIDC } from "oidc-provider";
 import { requestLocale } from "../i18n/request-locale.js";
-import { type Translator, translator } from "../i18n/translator.js";
+import { type Translator, brandOf, translator } from "../i18n/translator.js";
+import { requestTenant } from "../tenants/request-tenant.js";
 
-/** What every page needs about the request: its language and its path. */
+/**
+ * What every page needs about the request: its language (and the brand of
+ * the tenant serving it) and its path.
+ */
 export interface PageContext {
 	readonly i18n: Translator;
 	/**
@@ -37,7 +41,10 @@ export function pageContext(
 	const fallback = options.fallbackPath ?? "/account";
 	const isGet = req.method === "GET" || req.method === "HEAD";
 	return {
-		i18n: translator(requestLocale(req, options.uiLocales)),
+		i18n: translator(
+			requestLocale(req, options.uiLocales),
+			brandOf(requestTenant(req)),
+		),
 		path: isGet ? returnPath(req.originalUrl, fallback) : fallback,
 	};
 }
@@ -54,7 +61,10 @@ export function koaPageContext(
 	const fallback = options.path ?? ctx.path;
 	const isGet = ctx.method === "GET" && options.path === undefined;
 	return {
-		i18n: translator(requestLocale(ctx.req, options.uiLocales)),
+		i18n: translator(
+			requestLocale(ctx.req, options.uiLocales),
+			brandOf(requestTenant(ctx.req)),
+		),
 		path: isGet ? returnPath(ctx.originalUrl, fallback) : fallback,
 	};
 }

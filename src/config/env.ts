@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { normalizeTenantDomain } from "../tenants/tenant.js";
 import {
 	checkIntegrationGroups,
 	integrationEnvShape,
@@ -60,6 +61,24 @@ const envSchema = z
 					.array(secret)
 					.min(1, "must list at least one key; the first one signs"),
 			),
+		/**
+		 * Domain of the primary tenant (the one this environment configures):
+		 * resources and audiences follow from it. Explicit rather than derived
+		 * from ISSUER, which may have any shape (conformance harness).
+		 */
+		TENANT_DOMAIN: z
+			.string()
+			.default("hoandat.com")
+			.transform((value, ctx) => {
+				const domain = normalizeTenantDomain(value);
+				if (!domain) {
+					ctx.addIssue({ code: "custom", message: "must be a domain name" });
+					return z.NEVER;
+				}
+				return domain;
+			}),
+		/** Brand of the primary tenant, shown in pages and messages. */
+		TENANT_DISPLAY_NAME: z.string().trim().min(1).max(40).default("hoandat"),
 		LOCALMAN_WEB_URL: httpUrl.default("https://localman.hoandat.com"),
 		LOCALMAN_WEB_CLIENT_SECRET: secret,
 		TUNELO_WEB_URL: httpUrl.default("https://tunnel.hoandat.com"),

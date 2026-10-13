@@ -1,9 +1,9 @@
 import type { ClientMetadata } from "oidc-provider";
-import type { Env } from "../config/env.js";
+import type { TenantResources } from "../tenants/tenant-resources.js";
+import type { Tenant } from "../tenants/tenant.js";
 import {
 	ALLOWED_RESOURCES_PROPERTY,
 	LOCALMAN_SCOPES,
-	RESOURCES,
 	TELEGRAM_SCOPE,
 	TUNNEL_SCOPES,
 } from "./resources.js";
@@ -68,18 +68,29 @@ function appUrl(base: string, path: string): string {
 	return new URL(path, base).href;
 }
 
+/** Secrets of the confidential first-party clients of one tenant. */
+export interface StaticClientSecrets {
+	readonly localmanWeb: string;
+	readonly tuneloWeb: string;
+}
+
 /**
- * The first-party clients. Secrets and app origins come from the
- * environment so local and staging deployments can point elsewhere.
+ * The first-party clients of a tenant. Client ids are the same in every
+ * tenant; app origins, resources, names and secrets are the tenant's, so
+ * local and staging deployments can point elsewhere.
  */
-export function buildStaticClients(env: Env): ClientMetadata[] {
-	const localman = env.LOCALMAN_WEB_URL;
-	const tunelo = env.TUNELO_WEB_URL;
+export function buildStaticClients(
+	tenant: Pick<Tenant, "issuer" | "displayName" | "webApps">,
+	resources: TenantResources,
+	secrets: StaticClientSecrets,
+): ClientMetadata[] {
+	const localman = tenant.webApps.localman;
+	const tunelo = tenant.webApps.tunelo;
 	return [
 		{
 			client_id: STATIC_CLIENT_IDS.localmanWeb,
 			client_name: "Localman",
-			client_secret: env.LOCALMAN_WEB_CLIENT_SECRET,
+			client_secret: secrets.localmanWeb,
 			token_endpoint_auth_method: "client_secret_basic",
 			// Token exchange: a user's Localman session buys a short
 			// tunnels:read token for Tunelo's API.
@@ -99,7 +110,7 @@ export function buildStaticClients(env: Env): ClientMetadata[] {
 				["openid", "profile", "email", TELEGRAM_SCOPE],
 				LOCALMAN_SCOPES,
 			),
-			[ALLOWED_RESOURCES_PROPERTY]: [RESOURCES.localman],
+			[ALLOWED_RESOURCES_PROPERTY]: [resources.localman],
 		},
 		{
 			client_id: STATIC_CLIENT_IDS.tuneloCli,
@@ -110,12 +121,12 @@ export function buildStaticClients(env: Env): ClientMetadata[] {
 			response_types: [],
 			redirect_uris: [],
 			scope: scopeOf(["openid", "offline_access"], TUNNEL_SCOPES),
-			[ALLOWED_RESOURCES_PROPERTY]: [RESOURCES.tunnel],
+			[ALLOWED_RESOURCES_PROPERTY]: [resources.tunnel],
 		},
 		{
 			client_id: STATIC_CLIENT_IDS.tuneloWeb,
 			client_name: "Tunelo",
-			client_secret: env.TUNELO_WEB_CLIENT_SECRET,
+			client_secret: secrets.tuneloWeb,
 			token_endpoint_auth_method: "client_secret_basic",
 			grant_types: ["authorization_code", "refresh_token"],
 			response_types: ["code"],
@@ -125,18 +136,18 @@ export function buildStaticClients(env: Env): ClientMetadata[] {
 			backchannel_logout_session_required: true,
 			// No offline_access: its refresh tokens live with the IdP session.
 			scope: scopeOf(["openid", "profile", "email"], TUNNEL_SCOPES),
-			[ALLOWED_RESOURCES_PROPERTY]: [RESOURCES.tunnel],
+			[ALLOWED_RESOURCES_PROPERTY]: [resources.tunnel],
 		},
 		{
 			// Public client with PKCE: /account starts an ordinary
 			// authorization request so sign-in goes through the same login
 			// pages, then only the IdP session cookie matters.
 			client_id: STATIC_CLIENT_IDS.accountPortal,
-			client_name: "Tài khoản hoandat",
+			client_name: `Tài khoản ${tenant.displayName}`,
 			token_endpoint_auth_method: "none",
 			grant_types: ["authorization_code"],
 			response_types: ["code"],
-			redirect_uris: [appUrl(env.ISSUER, ACCOUNT_PORTAL_CALLBACK_PATH)],
+			redirect_uris: [appUrl(tenant.issuer, ACCOUNT_PORTAL_CALLBACK_PATH)],
 			scope: "openid",
 			[ALLOWED_RESOURCES_PROPERTY]: [],
 		},
