@@ -65,7 +65,10 @@ IdP gắn cứng với `hoandat.com`: một issuer, một bộ audience (`https:
 
 - **Không sinh conf nginx theo tenant.** Mỗi app ship block regex của mình (`tenant-auth.conf` ở repo này; block `localman.`/`tunnel.` ở `localman-next`), cùng một tệp cấp `http` (`tenants-http.conf`: map `$ssl_server_name` → tên chứng chỉ, log redact link `/admin/handoff`) và một block port 80 cho mọi host tenant (`tenants-acme.conf`: HTTP-01, còn lại 301). Block cụ thể của các host hiện có luôn thắng block regex.
 - **Provisioner** (Node, root, systemd timer, `src/provisioner/`): đọc hàng đợi qua API nội bộ, kiểm lại domain bằng `normalizeTenantDomain` + danh sách cấm của chính nó (chỉ nhận giá trị đã chuẩn y nguyên), từ chối hostname đã có block khác (`nginx -T`), chạy certbot bằng `execFile` không shell; không reload nginx (chứng chỉ đọc theo SNI). Mặc định Let's Encrypt **staging** tới khi đổi tường minh. Gia hạn là timer riêng cho config-dir của tenant.
-- Domain có nhãn đầu `auth`/`localman`/`tunnel` không nhận được (map chứng chỉ sẽ hiểu sai host).
+- Domain có nhãn đầu `auth`/`localman`/`tunnel` không nhận được (map chứng chỉ sẽ hiểu sai host); provisioner kiểm lại điều này.
+- Provisioner chạy từ bản copy root-owned (bundle đủ dependency) và tự đọc `/etc/nginx` để kiểm trùng tên (exact, wildcard, regex); tệp credentials nằm ngoài cây chứng chỉ mà worker nginx đọc được.
+- **Giới hạn đã biết:** trên .65 IdP (pm2) đang chạy bằng root, nên IdP bị chiếm thì đọc được private key của provisioner và mở được token DNS; câu "IdP không mở được token DNS" chỉ đúng khi IdP chạy bằng user riêng (`uid` trong `infra/ecosystem.config.cjs`, chỉ `.env` và `secrets/` thuộc user đó). Việc chuyển này đổi cách chạy của máy dùng chung, cần user quyết.
+- nginx 1.20 đọc lại PEM ở mỗi bắt tay (chưa có `ssl_certificate_cache`, có từ 1.27.4); SNI lạ chỉ sinh dòng lỗi trong `tenants.error.log`.
 
 ## Hệ quả
 

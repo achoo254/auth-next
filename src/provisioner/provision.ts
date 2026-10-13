@@ -5,11 +5,15 @@ import {
 	deleteCommand,
 	issueHostsCommand,
 	issueWildcardCommand,
-	nginxDumpCommand,
+	readableByNginxCommands,
 } from "./certbot-commands.js";
 import { configuredServerNames, conflictingName } from "./nginx-names.js";
+
+/** What a Cloudflare API token looks like; anything else never reaches the ini file. */
+const CLOUDFLARE_TOKEN = /^[A-Za-z0-9_-]{20,200}$/;
 import { openSealed, parseSealed } from "./open-sealed.js";
 import { type ProvisionerConfig, checkedDomain } from "./provisioner-config.js";
+import { type Outcome, type WorkItem, parseWork } from "./provisioner-work.js";
 
 /** Runs a program without a shell; output is never logged or reported. */
 export type CommandRunner = (
@@ -24,6 +28,8 @@ export interface ProvisionerFiles {
 
 export interface ProvisionerDependencies {
 	readonly config: ProvisionerConfig;
+	/** The nginx configuration with its includes (nginx-config.ts). */
+	readonly nginxConfig: () => Promise<string>;
 	readonly privateKeyPem: string;
 	readonly run: CommandRunner;
 	readonly files: ProvisionerFiles;
@@ -31,47 +37,9 @@ export interface ProvisionerDependencies {
 	readonly log: (message: string, fields?: Record<string, unknown>) => void;
 }
 
-interface WorkItem {
-	readonly tenantId: string;
-	readonly domain: unknown;
-	readonly action: "issue" | "remove";
-	readonly dnsCredential: unknown;
-}
-
-type Outcome =
-	| { readonly outcome: "issued" | "removed" }
-	| {
-			readonly outcome: "failed";
-			readonly error: string;
-	  };
-
 function authorization(config: ProvisionerConfig): string {
 	const credentials = `provisioner:${config.PROVISIONER_INTERNAL_SECRET}`;
 	return `Basic ${Buffer.from(credentials).toString("base64")}`;
-}
-
-function parseWork(body: unknown): WorkItem[] {
-	const work =
-		typeof body === "object" && body !== null
-			? Reflect.get(body, "work")
-			: undefined;
-	if (!Array.isArray(work)) return [];
-	return work.flatMap((item: unknown) => {
-		if (typeof item !== "object" || item === null) return [];
-		const tenantId = Reflect.get(item, "tenantId");
-		const action = Reflect.get(item, "action");
-		if (typeof tenantId !== "string" || !/^ten_[\w-]+$/.test(tenantId))
-			return [];
-		if (action !== "issue" && action !== "remove") return [];
-		return [
-			{
-				tenantId,
-				action,
-				domain: Reflect.get(item, "domain"),
-				dnsCredential: Reflect.get(item, "dnsCredential"),
-			},
-		];
-	});
 }
 
 async function removeTenant(
@@ -90,44 +58,68 @@ async function removeTenant(
 	return { outcome: "removed" };
 }
 
+/** Runs commands in order; false at the first failure. */
+async function runAll(
+	deps: ProvisionerDependencies,
+	commands: readonly Command[],
+): Promise<boolean> {
+	for (const command of commands) {
+		if ((await deps.run(command)).code !== 0) return false;
+	}
+	return true;
+}
+
 async function issueTenant(
 	deps: ProvisionerDependencies,
 	item: WorkItem,
 	domain: string,
-	configured: ReadonlySet<string>,
+	configured: readonly string[],
 ): Promise<Outcome> {
 	const conflict = conflictingName(domain, configured);
 	if (conflict)
 		return { outcome: "failed", error: `server name in use: ${conflict}` };
+	const names = certificateNames(domain);
 	if ((await deps.run(issueHostsCommand(deps.config, domain))).code !== 0) {
 		return { outcome: "failed", error: "http-01 issuance failed" };
 	}
+	if (
+		!(await runAll(deps, readableByNginxCommands(deps.config, names.hosts)))
+	) {
+		return { outcome: "failed", error: "certificate permissions failed" };
+	}
+	if (item.dnsCredential === null || item.dnsCredential === undefined) {
+		return { outcome: "issued" };
+	}
 	const sealed = parseSealed(item.dnsCredential);
-	if (sealed) {
-		let token: string;
-		try {
-			token = openSealed(sealed, deps.privateKeyPem, item.tenantId);
-		} catch {
-			return { outcome: "failed", error: "dns token does not open" };
-		}
-		const path = credentialsPath(deps.config, domain);
-		await deps.files.writeSecret(path, `dns_cloudflare_api_token = ${token}\n`);
-		if (
-			(await deps.run(issueWildcardCommand(deps.config, domain))).code !== 0
-		) {
-			return { outcome: "failed", error: "dns-01 issuance failed" };
-		}
+	let token: string | undefined;
+	try {
+		token = sealed && openSealed(sealed, deps.privateKeyPem, item.tenantId);
+	} catch {
+		token = undefined;
+	}
+	if (!token || !CLOUDFLARE_TOKEN.test(token)) {
+		return { outcome: "failed", error: "dns token does not open" };
+	}
+	const path = credentialsPath(deps.config, domain);
+	await deps.files.writeSecret(path, `dns_cloudflare_api_token = ${token}\n`);
+	if ((await deps.run(issueWildcardCommand(deps.config, domain))).code !== 0) {
+		return { outcome: "failed", error: "dns-01 issuance failed" };
+	}
+	if (
+		!(await runAll(deps, readableByNginxCommands(deps.config, names.wildcard)))
+	) {
+		return { outcome: "failed", error: "certificate permissions failed" };
 	}
 	return { outcome: "issued" };
 }
 
 /**
  * One pass of the provisioner: reads due work from the IdP's internal API,
- * checks each domain itself, issues or removes the tenant's certificates
- * and reports each outcome. It never touches nginx: the tenants' server
- * blocks load certificates by name at handshake, so new files take effect
- * without a reload. Renewal is certbot's own timer for the tenants'
- * config directory, not this pass.
+ * checks each domain itself (and against every name nginx already serves),
+ * issues or removes the tenant's certificates, makes them readable to the
+ * nginx workers and reports each outcome. It never reloads nginx: the
+ * tenants' server blocks load certificates by name at handshake. Renewal
+ * is certbot's own timer for the tenants' config directory.
  */
 export async function provisionOnce(
 	deps: ProvisionerDependencies,
@@ -142,28 +134,37 @@ export async function provisionOnce(
 		throw new Error(`work queue answered HTTP ${response.status}`);
 	const work = parseWork(await response.json());
 	if (work.length === 0) return { handled: 0, failed: 0 };
-	const dump = await deps.run(nginxDumpCommand(deps.config));
-	if (dump.code !== 0) throw new Error("nginx -T failed");
-	const configured = configuredServerNames(dump.output);
+	const configured = configuredServerNames(await deps.nginxConfig());
 	let failed = 0;
 	for (const item of work) {
-		const domain = checkedDomain(item.domain, deps.config);
-		const outcome: Outcome = !domain
-			? { outcome: "failed", error: "domain refused by the provisioner" }
-			: item.action === "remove"
-				? await removeTenant(deps, domain)
-				: await issueTenant(deps, item, domain, configured);
+		// One tenant's failure (or a lost report) never stops the others.
+		let outcome: Outcome;
+		try {
+			const domain = checkedDomain(item.domain, deps.config);
+			outcome = !domain
+				? { outcome: "failed", error: "domain refused by the provisioner" }
+				: item.action === "remove"
+					? await removeTenant(deps, domain)
+					: await issueTenant(deps, item, domain, configured);
+		} catch {
+			outcome = { outcome: "failed", error: "provisioner error" };
+		}
 		if (outcome.outcome === "failed") failed += 1;
+		const reported = await deps
+			.fetch(`${base}/internal/certificates/${item.tenantId}`, {
+				method: "POST",
+				headers: { ...headers, "content-type": "application/json" },
+				body: JSON.stringify(outcome),
+				redirect: "error",
+			})
+			.then((answer) => answer.ok)
+			.catch(() => false);
+		if (!reported) failed += 1;
 		deps.log("Tenant certificate work", {
 			tenantId: item.tenantId,
 			action: item.action,
 			outcome: outcome.outcome,
-		});
-		await deps.fetch(`${base}/internal/certificates/${item.tenantId}`, {
-			method: "POST",
-			headers: { ...headers, "content-type": "application/json" },
-			body: JSON.stringify(outcome),
-			redirect: "error",
+			reported,
 		});
 	}
 	return { handled: work.length, failed };

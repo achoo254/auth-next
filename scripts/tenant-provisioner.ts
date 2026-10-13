@@ -14,6 +14,7 @@ import { execFile } from "node:child_process";
 import { generateKeyPairSync } from "node:crypto";
 import { chmod, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
+import { readNginxConfig } from "../src/provisioner/nginx-config.js";
 import {
 	type CommandRunner,
 	provisionOnce,
@@ -70,6 +71,7 @@ async function runOnce(): Promise<number> {
 	const result = await provisionOnce({
 		config,
 		privateKeyPem: await readFile(config.PROVISIONER_PRIVATE_KEY_PATH, "utf8"),
+		nginxConfig: () => readNginxConfig(config.PROVISIONER_NGINX_CONF),
 		run,
 		fetch,
 		log,

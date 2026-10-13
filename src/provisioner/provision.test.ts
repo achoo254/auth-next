@@ -12,7 +12,7 @@ const PUBLIC_PEM = publicKey.export({ type: "spki", format: "pem" }).toString();
 const PRIVATE_PEM = privateKey
 	.export({ type: "pkcs8", format: "pem" })
 	.toString();
-const TOKEN = "cf-token-must-never-reach-argv";
+const TOKEN = "cfTokenMustNeverReachArgv0123456789abcd";
 
 const config = parseProvisionerConfig({
 	PROVISIONER_INTERNAL_SECRET: "p".repeat(40),
@@ -30,6 +30,7 @@ server { server_name ~^auth\\.(?<tenant>.+)$; }
 function harness(
 	work: unknown[],
 	failing: (command: Command) => string | undefined = () => undefined,
+	reportFailure = false,
 ) {
 	const commands: Command[] = [];
 	const reports: { tenantId: string; body: unknown }[] = [];
@@ -47,9 +48,9 @@ function harness(
 				removed.push(path);
 			},
 		},
+		nginxConfig: async () => NGINX_DUMP,
 		run: async (command) => {
 			commands.push(command);
-			if (command.args[0] === "-T") return { code: 0, output: NGINX_DUMP };
 			const failure = failing(command);
 			return failure ? { code: 1, output: failure } : { code: 0, output: "" };
 		},
@@ -64,6 +65,7 @@ function harness(
 				tenantId: url.split("/").pop() ?? "",
 				body: JSON.parse(String(init?.body)),
 			});
+			if (reportFailure) throw new Error("IdP restarting");
 			return new Response(null, { status: 204 });
 		},
 	};
@@ -135,6 +137,7 @@ describe("provisioner", () => {
 		"x.hoandat.com",
 		"../../etc",
 		"*.acme.org",
+		"localman.acme.org",
 		42,
 	])("refuses the domain %j without running certbot", async (domain) => {
 		const run = harness([
@@ -233,6 +236,66 @@ describe("provisioner", () => {
 			"/etc/letsencrypt-tenants/credentials/old.org.ini",
 		]);
 		expect(run.reports[0]?.body).toEqual({ outcome: "removed" });
+	});
+
+	it("refuses a token that does not look like one, and a corrupt credential", async () => {
+		const odd = harness([
+			{
+				tenantId: "ten_h",
+				domain: "odd.org",
+				action: "issue",
+				dnsCredential: sealForProvisioner(
+					"bad\nkey = x",
+					"ten_h\ndns-cloudflare",
+					PUBLIC_PEM,
+				),
+			},
+		]);
+		await provisionOnce(odd.deps);
+		expect(odd.reports[0]?.body).toEqual({
+			outcome: "failed",
+			error: "dns token does not open",
+		});
+		expect(odd.secrets.size).toBe(0);
+		const corrupt = harness([
+			{
+				tenantId: "ten_i",
+				domain: "corrupt.org",
+				action: "issue",
+				dnsCredential: { kid: 1 },
+			},
+		]);
+		await provisionOnce(corrupt.deps);
+		expect(corrupt.reports[0]?.body).toEqual({
+			outcome: "failed",
+			error: "dns token does not open",
+		});
+	});
+
+	it("keeps going when a report is lost, and counts it as a failure", async () => {
+		const run = harness(
+			[
+				{
+					tenantId: "ten_j",
+					domain: "one.org",
+					action: "issue",
+					dnsCredential: null,
+				},
+				{
+					tenantId: "ten_k",
+					domain: "two.org",
+					action: "issue",
+					dnsCredential: null,
+				},
+			],
+			() => undefined,
+			true,
+		);
+		expect(await provisionOnce(run.deps)).toEqual({ handled: 2, failed: 2 });
+		expect(run.reports.map((report) => report.tenantId)).toEqual([
+			"ten_j",
+			"ten_k",
+		]);
 	});
 
 	it("defaults to Let's Encrypt staging", () => {

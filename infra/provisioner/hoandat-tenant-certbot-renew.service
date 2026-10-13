@@ -8,9 +8,10 @@ Wants=network-online.target
 
 [Service]
 Type=oneshot
-ExecStart=/usr/local/bin/certbot renew --config-dir /etc/letsencrypt-tenants --work-dir /etc/letsencrypt-tenants/work --logs-dir /etc/letsencrypt-tenants/logs --non-interactive
+ExecStart=/usr/bin/flock /etc/letsencrypt-tenants/.lock /usr/local/bin/certbot renew --config-dir /etc/letsencrypt-tenants --work-dir /etc/letsencrypt-tenants/work --logs-dir /etc/letsencrypt-tenants/logs --non-interactive
 NoNewPrivileges=yes
 PrivateTmp=yes
 ProtectSystem=strict
 ProtectHome=read-only
 ReadWritePaths=/etc/letsencrypt-tenants /var/lib/hoandat-tenant-acme
+ReadOnlyPaths=/etc/hoandat-tenant-provisioner/credentials

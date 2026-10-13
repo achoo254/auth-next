@@ -10,7 +10,7 @@ import {
 	type TenantOwner,
 	newTenantId,
 } from "./tenant-registry.js";
-import { normalizeTenantDomain } from "./tenant.js";
+import { looksLikeAppHost, normalizeTenantDomain } from "./tenant.js";
 
 /** Why a claim cannot start or be verified; each has its own message. */
 export type ClaimError =
@@ -28,8 +28,6 @@ export type ClaimError =
 export type ClaimResult<T> =
 	| { readonly ok: true; readonly value: T }
 	| { readonly ok: false; readonly error: ClaimError };
-
-const APP_LABELS: ReadonlySet<string> = new Set(["auth", "localman", "tunnel"]);
 
 /** Tenants holding a slot (claimed or active) per account, so one person cannot fill TENANT_MAX_ACTIVE. */
 export const MAX_TENANTS_PER_ACCOUNT = 2;
@@ -81,7 +79,7 @@ export async function startClaim(
 	// suffixes) would let one person mint tenants without end.
 	if (
 		!domain ||
-		APP_LABELS.has(domain.split(".")[0] ?? "") ||
+		looksLikeAppHost(domain) ||
 		!parse(domain, { allowPrivateDomains: true }).isIcann
 	) {
 		return { ok: false, error: "invalid-domain" };

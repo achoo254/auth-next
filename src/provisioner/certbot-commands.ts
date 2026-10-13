@@ -113,7 +113,23 @@ export function deleteCommand(
 	};
 }
 
-/** `nginx -T`: the full configuration, to check names before issuing. */
-export function nginxDumpCommand(config: ProvisionerConfig): Command {
-	return { file: config.PROVISIONER_NGINX, args: ["-T"] };
+/**
+ * Lets nginx workers (its group) read one certificate: nginx loads tenant
+ * certificates at handshake, as the worker user. certbot keeps the group
+ * bits of a private key when it renews.
+ */
+export function readableByNginxCommands(
+	config: ProvisionerConfig,
+	certName: string,
+): Command[] {
+	const paths = ["live", "archive"].map((dir) =>
+		join(config.PROVISIONER_CONFIG_DIR, dir, certName),
+	);
+	return [
+		{
+			file: "/usr/bin/chgrp",
+			args: ["-R", config.PROVISIONER_NGINX_GROUP, ...paths],
+		},
+		{ file: "/usr/bin/chmod", args: ["-R", "g+rX,o-rwx", ...paths] },
+	];
 }

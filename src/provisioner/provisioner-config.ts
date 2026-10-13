@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { normalizeTenantDomain } from "../tenants/tenant.js";
+import { looksLikeAppHost, normalizeTenantDomain } from "../tenants/tenant.js";
 
 const domainList = z
 	.string()
@@ -21,6 +21,18 @@ const schema = z.object({
 	PROVISIONER_INTERNAL_URL: z.url().default("http://127.0.0.1:4501"),
 	PROVISIONER_INTERNAL_SECRET: z.string().min(32),
 	PROVISIONER_PRIVATE_KEY_PATH: z.string().min(1),
+	/** Root-only: the Cloudflare credentials files (never readable by nginx). */
+	PROVISIONER_SECRETS_DIR: z
+		.string()
+		.min(1)
+		.default("/etc/hoandat-tenant-provisioner/credentials"),
+	/** Group nginx workers run as: certificates are made readable to it. */
+	PROVISIONER_NGINX_GROUP: z
+		.string()
+		.regex(/^[a-z_][a-z0-9_-]*$/)
+		.default("nginx"),
+	/** The nginx configuration read (with its includes) to spot name clashes. */
+	PROVISIONER_NGINX_CONF: z.string().min(1).default("/etc/nginx/nginx.conf"),
 	/** Separate from /etc/letsencrypt: own ACME account, own renewals. */
 	PROVISIONER_CONFIG_DIR: z.string().min(1).default("/etc/letsencrypt-tenants"),
 	PROVISIONER_WEBROOT: z
@@ -28,7 +40,6 @@ const schema = z.object({
 		.min(1)
 		.default("/var/lib/hoandat-tenant-acme"),
 	PROVISIONER_CERTBOT: z.string().min(1).default("/usr/local/bin/certbot"),
-	PROVISIONER_NGINX: z.string().min(1).default("/usr/sbin/nginx"),
 	/** "staging" uses Let's Encrypt staging (test runs). */
 	PROVISIONER_ACME: z.enum(["production", "staging"]).default("staging"),
 	/** The primary tenant's domain and every other domain on the machine. */
@@ -64,5 +75,6 @@ export function checkedDomain(
 		config.PROVISIONER_BLOCKED_DOMAINS,
 	);
 	// Only an already canonical value passes: no case, port or dot rewriting.
-	return domain === value ? domain : undefined;
+	if (domain !== value || looksLikeAppHost(domain)) return undefined;
+	return domain;
 }

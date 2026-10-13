@@ -26,6 +26,18 @@ export interface Tenant {
 	readonly webApps: { readonly localman: string; readonly tunelo: string };
 }
 
+/** First labels of a tenant's app hosts (auth.<d>, localman.<d>, tunnel.<d>). */
+const APP_LABELS: ReadonlySet<string> = new Set(["auth", "localman", "tunnel"]);
+
+/**
+ * True when `domain` reads as an app host of another domain (auth.x,
+ * localman.x, tunnel.x): nginx maps hosts to certificates by those labels,
+ * so such a domain can never be a tenant.
+ */
+export function looksLikeAppHost(domain: string): boolean {
+	return APP_LABELS.has(domain.split(".")[0] ?? "");
+}
+
 /** The hostnames of a tenant, fixed by convention under its domain. */
 export interface TenantAppHosts {
 	readonly auth: string;
