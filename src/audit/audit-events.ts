@@ -3,6 +3,14 @@ import type { UpstreamProvider } from "../accounts/user-model.js";
 /** Ways to reach or vouch for an account that can be linked and unlinked. */
 export type LinkedMethod = UpstreamProvider | "telegram";
 
+/** What a tenant owner configures at /admin. */
+export type TenantSetting =
+	| "display-name"
+	| "google"
+	| "github"
+	| "dns-cloudflare"
+	| "telegram";
+
 /** Why sessions or grants were revoked. */
 export type RevocationCause = "account-page" | "token-revocation";
 
@@ -31,6 +39,11 @@ export type AuditEventData = {
 		readonly cause: RevocationCause;
 		readonly clientId?: string;
 	};
+	/** A domain became a tenant; `sub` is the owner's identity (`google:<id>`). */
+	"tenant.claimed": { readonly domain: string };
+	/** The owner changed a setting (never its value). */
+	"tenant.configured": { readonly setting: TenantSetting };
+	"tenant.suspended": { readonly reason: string };
 	/** RP-initiated logout at the IdP: everywhere, or only from one app. */
 	"session.logout": {
 		readonly scope: "all" | "client";

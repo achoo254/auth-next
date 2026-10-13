@@ -24,6 +24,7 @@ import {
 } from "./grant-directory.js";
 import {
 	type PortalHandler,
+	consumePortalReturn,
 	consumeReauthState,
 	portalCsrfScope,
 	portalRoute,
@@ -112,6 +113,11 @@ export function createAccountRouter(services: AppServices): Router {
 				res,
 				queryValue(req, "state") ?? "",
 			);
+			const returnTo = consumePortalReturn(services, req, res);
+			if (returnTo) {
+				res.redirect(303, returnTo);
+				return;
+			}
 			res.redirect(303, reauthed ? "/account?notice=reauthed" : "/account");
 		}),
 	);

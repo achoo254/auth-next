@@ -10,6 +10,8 @@ import { ensureOidcIndexes } from "../../oidc/oidc-indexes.js";
 import { ensureAccountLayerIndexes } from "../../services.js";
 import { parseKeyring } from "../../tenants/secret-keyring.js";
 import { type Serving, createServing } from "../../tenants/serving.js";
+import type { TenancyOverrides } from "../../tenants/tenancy.js";
+import { ensureTenantClaimIndexes } from "../../tenants/tenant-claims.js";
 import {
 	type TenantDocument,
 	TenantRegistry,
@@ -32,7 +34,7 @@ export interface MultiTenantServer {
 	readonly serving: Serving;
 	readonly registry: TenantRegistry;
 	readonly secrets: TenantSecrets;
-	/** Adds a registry tenant (claimed by default) and returns its document. */
+	/** Adds a registry tenant (active by default) and returns its document. */
 	addTenant(
 		domain: string,
 		status?: TenantDocument["status"],
@@ -65,6 +67,7 @@ async function freePort(): Promise<number> {
  */
 export async function startMultiTenantServer(
 	extraEnv: Readonly<Record<string, string>> = {},
+	overrides: TenancyOverrides = {},
 ): Promise<MultiTenantServer> {
 	const mongoUrl = `${inject("mongoUri").replace(/\/$/, "")}/multi_${randomUUID().slice(0, 8)}`;
 	const mongo = new MongoClient(mongoUrl);
@@ -73,6 +76,7 @@ export async function startMultiTenantServer(
 	await ensureOidcIndexes(db);
 	await ensureAccountLayerIndexes(db);
 	await ensureTenantRegistryIndexes(db);
+	await ensureTenantClaimIndexes(db);
 	const port = await freePort();
 	const env = parseEnv({
 		NODE_ENV: "test",
@@ -93,7 +97,13 @@ export async function startMultiTenantServer(
 	const jwks = {
 		keys: [await generateSigningJwk(), await generateSigningJwk("RS256")],
 	};
-	const serving = await createServing(env, db, jwks, createLogger("silent"));
+	const serving = await createServing(
+		env,
+		db,
+		jwks,
+		createLogger("silent"),
+		overrides,
+	);
 	const publicServer = createServer(serving.app);
 	await listen(publicServer, port);
 	const internalServer = createServer(serving.internalApp);
@@ -109,7 +119,7 @@ export async function startMultiTenantServer(
 		serving,
 		registry,
 		secrets: new TenantSecrets(db, keyring),
-		async addTenant(domain, status = "claimed") {
+		async addTenant(domain, status = "active") {
 			const document: TenantDocument = {
 				_id: newTenantId(),
 				domain,

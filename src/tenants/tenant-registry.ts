@@ -1,61 +1,20 @@
-import { randomBytes } from "node:crypto";
 import type { Collection, Db } from "mongodb";
-import type { UpstreamProvider } from "../accounts/user-model.js";
-import type { TenantStatus } from "./tenant.js";
+import {
+	SERVING_STATUSES,
+	TENANTS_COLLECTION,
+	type TenantCertificate,
+	type TenantDocument,
+	type TenantOwner,
+} from "./tenant-document.js";
 
-/** Who claimed a domain: the upstream identity that proved the TXT record. */
-export interface TenantOwner {
-	readonly provider: UpstreamProvider;
-	readonly providerId: string;
-	readonly email?: string;
-}
-
-/** Certificate state, driven by the provisioner through the internal API. */
-export interface TenantCertificate {
-	readonly status: "pending" | "issued" | "failed" | "removing";
-	readonly attempts: number;
-	readonly lastAttemptAt?: Date;
-	/** Short reason of the last failure; never a log or a secret. */
-	readonly lastError?: string;
-	readonly nextAttemptAt?: Date;
-	readonly issuedAt?: Date;
-}
-
-/** One claimed domain in the `tenants` collection (the registry). */
-export interface TenantDocument {
-	/** `ten_<random>`: never reused, so a domain claimed again starts empty. */
-	_id: string;
-	/** Normalised domain (normalizeTenantDomain); unique. */
-	domain: string;
-	displayName: string;
-	status: TenantStatus;
-	owner?: TenantOwner;
-	/** The TXT value at `_auth-claim.<domain>` that proved ownership. */
-	claimTxt?: string;
-	certificate?: TenantCertificate;
-	createdAt: Date;
-	claimedAt?: Date;
-	activatedAt?: Date;
-	suspendedAt?: Date;
-	suspendedReason?: string;
-	/**
-	 * Bumped by every change of settings or status; a runtime built for an
-	 * older version is rebuilt on the next request. Absent means 0.
-	 */
-	configVersion?: number;
-	/** Last periodic ownership check, and failures in a row since a success. */
-	ownershipCheckedAt?: Date;
-	ownershipFailures?: number;
-}
-
-export const TENANTS_COLLECTION = "tenants";
-
-export function newTenantId(): string {
-	return `ten_${randomBytes(12).toString("base64url")}`;
-}
-
-/** Statuses that count against TENANT_MAX_ACTIVE and serve pages. */
-export const SERVING_STATUSES: readonly TenantStatus[] = ["claimed", "active"];
+export {
+	SERVING_STATUSES,
+	TENANTS_COLLECTION,
+	type TenantCertificate,
+	type TenantDocument,
+	type TenantOwner,
+	newTenantId,
+} from "./tenant-document.js";
 
 /**
  * The tenant registry, owned by the IdP: Localman and Tunelo look tenants up
@@ -170,6 +129,44 @@ export class TenantRegistry {
 			})
 			.limit(200)
 			.toArray();
+	}
+
+	/**
+	 * Suspends tenants claimed before `before` that never became active
+	 * (nobody can have signed in to them) and queues their certificates for
+	 * removal; the provisioner's "removed" report then deletes them, which
+	 * frees the domain. Returns them.
+	 */
+	async expireUnactivated(before: Date): Promise<TenantDocument[]> {
+		const stale = await this.tenants
+			.find({ status: "claimed", claimedAt: { $lt: before } })
+			.limit(50)
+			.toArray();
+		for (const tenant of stale) {
+			await this.tenants.updateOne(
+				{ _id: tenant._id, status: "claimed" },
+				{
+					$set: {
+						status: "suspended",
+						suspendedAt: new Date(),
+						suspendedReason: "not-activated",
+						certificate: { status: "removing", attempts: 0 },
+					},
+					$inc: { configVersion: 1 },
+				},
+			);
+		}
+		return stale;
+	}
+
+	/** Deletes a tenant that never served anyone (expired before activation). */
+	async deleteUnactivated(id: string): Promise<boolean> {
+		const result = await this.tenants.deleteOne({
+			_id: id,
+			status: "suspended",
+			suspendedReason: "not-activated",
+		});
+		return result.deletedCount === 1;
 	}
 
 	/** Records an ownership check; returns the failures in a row after it. */

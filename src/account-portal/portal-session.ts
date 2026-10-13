@@ -8,6 +8,14 @@ import {
 } from "../oidc/clients.js";
 import { OIDC_ROUTES } from "../oidc/provider.js";
 import type { AppServices } from "../services.js";
+import {
+	isPortalReturnPath,
+	portalStateCookie,
+	portalStateCookieOptions,
+	rememberPortalReturn,
+} from "./portal-cookies.js";
+
+export { consumePortalReturn } from "./portal-cookies.js";
 
 export interface PortalContext {
 	readonly account: AccountDocument;
@@ -62,7 +70,10 @@ export function portalCsrfScope(portal: PortalContext): string {
 export function redirectToPortalLogin(
 	services: AppServices,
 	res: Response,
-	options: { readonly reauthenticate?: boolean } = {},
+	options: {
+		readonly reauthenticate?: boolean;
+		readonly returnTo?: string;
+	} = {},
 ): void {
 	const verifier = randomBytes(32).toString("base64url");
 	const nonce = randomBytes(16).toString("base64url");
@@ -82,27 +93,8 @@ export function redirectToPortalLogin(
 		...portalStateCookieOptions(services),
 		maxAge: 30 * 60 * 1000,
 	});
+	if (options.returnTo) rememberPortalReturn(services, res, options.returnTo);
 	res.redirect(303, url.href);
-}
-
-function portalStateCookie(services: AppServices): string {
-	return services.issuer.startsWith("https:")
-		? "__Host-portal_state"
-		: "portal_state";
-}
-
-function portalStateCookieOptions(services: AppServices): {
-	httpOnly: true;
-	sameSite: "lax";
-	secure: boolean;
-	path: string;
-} {
-	return {
-		httpOnly: true,
-		sameSite: "lax",
-		secure: services.issuer.startsWith("https:"),
-		path: "/",
-	};
 }
 
 /**
@@ -150,9 +142,15 @@ export function portalRoute(
 	return (req, res, next) => {
 		const run = async (): Promise<void> => {
 			const portal = await loadPortalContext(services, req, res);
+			const returnTo = `${req.baseUrl}${req.path}`;
 			if (!portal) {
-				if (req.method === "GET") redirectToPortalLogin(services, res);
-				else res.redirect(303, "/account");
+				if (req.method === "GET")
+					redirectToPortalLogin(services, res, { returnTo });
+				else
+					res.redirect(
+						303,
+						isPortalReturnPath(returnTo) ? returnTo : "/account",
+					);
 				return;
 			}
 			if (options.csrf && !services.csrf.verify(req, portalCsrfScope(portal))) {
@@ -162,7 +160,10 @@ export function portalRoute(
 			if (options.recentLogin && !isRecentLogin(portal)) {
 				// The form is not replayed: after signing in again the user lands
 				// on /account (with a notice) and repeats the action.
-				redirectToPortalLogin(services, res, { reauthenticate: true });
+				redirectToPortalLogin(services, res, {
+					reauthenticate: true,
+					returnTo: req.baseUrl === "/account" ? undefined : returnTo,
+				});
 				return;
 			}
 			await handler(req, res, portal);

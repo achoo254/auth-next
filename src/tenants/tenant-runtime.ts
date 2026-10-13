@@ -16,6 +16,7 @@ import { type AppServices, createServices } from "../services.js";
 import { createTelegramBot } from "../telegram/bot-client.js";
 import { derivedClientSecrets } from "./app-client-secrets.js";
 import { envClientSecrets, envTenant } from "./env-tenant.js";
+import type { Tenancy } from "./tenancy.js";
 import { parseOAuthApp, parseTelegramBot } from "./tenant-integrations.js";
 import type { TenantDocument } from "./tenant-registry.js";
 import { webAppsFor } from "./tenant-resources.js";
@@ -39,6 +40,7 @@ export function buildPrimaryRuntime(
 	db: Db,
 	jwks: SigningJwks,
 	logger: Logger,
+	tenancy?: Tenancy,
 ): TenantRuntime {
 	const tenant = envTenant(env);
 	const accounts = new AccountRepository(
@@ -62,6 +64,7 @@ export function buildPrimaryRuntime(
 		provider,
 		logger,
 		accounts,
+		tenancy,
 	});
 	return {
 		tenant,
@@ -91,6 +94,8 @@ export interface RuntimeFactoryDependencies {
 	readonly secrets: TenantSecrets;
 	/** `APP_CLIENT_SECRET_KEY`: derives the tenant's Localman/Tunelo secrets. */
 	readonly appClientSecretKey: string;
+	/** Its /admin pages. */
+	readonly tenancy?: Tenancy;
 }
 
 /**
@@ -149,6 +154,7 @@ export async function buildTenantRuntime(
 		provider,
 		logger,
 		accounts,
+		tenancy: deps.tenancy,
 		integrations: {
 			upstreams: createUpstreamsFrom(tenant.issuer, {
 				google: parseOAuthApp(await secrets.get(tenant.id, "google")),

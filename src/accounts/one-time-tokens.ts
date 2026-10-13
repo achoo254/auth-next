@@ -15,7 +15,11 @@ import {
 export type AccountTokenKind = "telegram-link" | "upstream-link-state";
 
 /** Tokens not tied to an account (yet): OAuth sign-in state, a pending profile. */
-export type FreeTokenKind = "upstream-state" | "upstream-pending";
+export type FreeTokenKind =
+	| "upstream-state"
+	| "upstream-pending"
+	/** Opens a tenant's /admin for its owner; issued by the primary tenant. */
+	| "tenant-admin-handoff";
 
 /** What a one-time token is for; a token never works for another kind. */
 export type OneTimeTokenKind = AccountTokenKind | FreeTokenKind;

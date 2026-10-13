@@ -27,6 +27,23 @@ export const tenantsEnvShape = {
 	INTERNAL_API_CREDENTIALS: z.string().optional(),
 	/** This service's public IPv4: tenant DNS must point exactly here. */
 	SERVICE_IPV4: z.ipv4().optional(),
+	/** PEM file of the provisioner's RSA public key (DNS tokens are sealed to it). */
+	PROVISIONER_PUBLIC_KEY_PATH: z.string().min(1).optional(),
+	/** No new claims while the machine has less memory available than this. */
+	CLAIM_MIN_AVAILABLE_MB: z.coerce.number().int().min(0).default(300),
+	/**
+	 * Domains nobody may claim (with everything under them), besides the
+	 * primary tenant's: every other domain served on this machine.
+	 */
+	CLAIM_BLOCKED_DOMAINS: z
+		.string()
+		.default("inetdev.io.vn")
+		.transform((value) =>
+			value
+				.split(",")
+				.map((domain) => domain.trim())
+				.filter((domain) => domain.length > 0),
+		),
 };
 
 export function checkTenantsGroup(

@@ -64,6 +64,14 @@ Mặc định IdP chỉ phục vụ tenant `hoandat.com`. Bật sổ tenant bằ
 | `INTERNAL_HOST`, `INTERNAL_PORT` | API nội bộ, mặc định `127.0.0.1:4501`, chỉ nhận địa chỉ loopback |
 | `SERVICE_IPV4` | IP công khai của máy; có thì mỗi tenant được kiểm lại 6 giờ một lần (TXT `_auth-claim.<d>`, bản ghi A của mọi host); 3 lần sai dứt khoát liền thì `suspended`; lỗi resolver hay một lượt mọi tenant cùng sai không đình chỉ ai |
 
+Nhận domain (`/claim` trên issuer chính) mở khi có `SERVICE_IPV4`; thêm:
+
+| Env | Ý nghĩa |
+|---|---|
+| `CLAIM_BLOCKED_DOMAINS` | domain không ai được nhận (kèm mọi domain dưới nó), cách bằng dấu phẩy; mặc định `inetdev.io.vn`. Đặt mọi domain khác đang phục vụ trên máy. Domain của tenant chính luôn bị chặn |
+| `CLAIM_MIN_AVAILABLE_MB` | không nhận domain mới khi `MemAvailable` dưới ngưỡng này, mặc định 300 |
+| `PROVISIONER_PUBLIC_KEY_PATH` | PEM public key RSA của provisioner (phase 04); thiếu thì owner chưa lưu được token Cloudflare |
+
 **Backup khoá (bắt buộc trước khi có tenant thứ hai):** chép `TENANT_SECRETS_KEY` vào thư mục secret ngoài server (mục "Nơi lưu secret"). Mất khoá thì mọi tenant mất khoá ký, OAuth và bot; backup database không đủ để khôi phục.
 
 **Xoay `TENANT_SECRETS_KEY`:** thêm khoá mới **lên đầu** (`k2:<mới>,k1:<cũ>`), restart; khi khởi động IdP niêm phong lại mọi secret còn mang khoá cũ (log `Tenant secrets re-sealed` với số lượng). Restart thêm một lần: không còn log đó nghĩa là đã xong, lúc này mới bỏ `k1`.

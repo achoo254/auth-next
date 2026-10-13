@@ -18,6 +18,10 @@ import { INTERACTION_PATH } from "./oidc/provider.js";
 import type { AppServices } from "./services.js";
 import { createTelegramLinkRouter } from "./telegram/link-routes.js";
 import { createTelegramWebhookRouter } from "./telegram/webhook-routes.js";
+import { inactiveTenant } from "./tenants/admin-gate-pages.js";
+import { createAdminRouter } from "./tenants/admin-routes.js";
+import { createClaimRouter } from "./tenants/claim-routes.js";
+import { PRIMARY_TENANT_ID } from "./tenants/env-tenant.js";
 import { bindRequestTenant } from "./tenants/request-tenant.js";
 
 export interface TenantAppOptions {
@@ -53,6 +57,16 @@ export function createTenantApp(options: TenantAppOptions): Express {
 	// read the same forwarded headers as the provider itself.
 	app.use(forwardTrustedClientInfo);
 	app.use("/assets", createAssetsRouter());
+	const { tenancy } = services;
+	if (tenancy && tenant.id === PRIMARY_TENANT_ID) {
+		app.use(createClaimRouter(services, tenancy));
+	}
+	if (tenancy && tenant.id !== PRIMARY_TENANT_ID) {
+		app.use(createAdminRouter(services, tenancy));
+		// Until its owner adds a sign-in provider, a claimed tenant serves
+		// nothing but /admin: no sign-in page, no provider endpoint.
+		if (tenant.status !== "active") app.use(inactiveTenant(tenant));
+	}
 	app.use(createAppsRouter(tenant));
 	app.use(createPrivacyRouter(new URL(tenant.issuer).host));
 	app.use(createLanguageRouter(services));

@@ -14,9 +14,11 @@ import type { Logger } from "../logger.js";
 import type { SigningJwks } from "../oidc/jwks.js";
 import { createInternalApi } from "./internal-api.js";
 import { parseInternalCredentials } from "./internal-auth.js";
-import { SYSTEM_RESOLVER, checkAllOwnership } from "./ownership-check.js";
+import { SYSTEM_RESOLVER } from "./ownership-check.js";
 import { RuntimeRegistry } from "./runtime-registry.js";
 import { parseKeyring } from "./secret-keyring.js";
+import { type TenancyOverrides, createTenancy } from "./tenancy.js";
+import { createTenantMaintenance } from "./tenant-maintenance.js";
 import { SERVING_STATUSES, TenantRegistry } from "./tenant-registry.js";
 import {
 	type TenantRuntime,
@@ -26,9 +28,6 @@ import {
 	tenantSigningKeys,
 } from "./tenant-runtime.js";
 import { TenantSecrets } from "./tenant-secrets.js";
-
-/** Tick of the ownership job; each tenant is re-checked every 6 hours. */
-const OWNERSHIP_TICK_MS = 60 * 60 * 1000;
 
 /** Everything the server process runs, assembled from the environment. */
 export interface Serving {
@@ -54,16 +53,30 @@ export async function createServing(
 	db: Db,
 	jwks: SigningJwks,
 	logger: Logger,
+	overrides: TenancyOverrides = {},
 ): Promise<Serving> {
-	const primary = buildPrimaryRuntime(env, db, jwks, logger);
-	const primaryHosts = [
-		new URL(primary.tenant.issuer).host,
-		...env.ALLOWED_HOSTS,
-	];
 	const registry = new TenantRegistry(db);
 	const keyring = parseKeyring(env.TENANT_SECRETS_KEY);
 	const secrets = keyring && new TenantSecrets(db, keyring);
 	const appClientSecretKey = env.APP_CLIENT_SECRET_KEY;
+	// The registry is built after the tenancy that refers to it.
+	const built: { runtimes?: RuntimeRegistry } = {};
+	const tenancy =
+		secrets && appClientSecretKey
+			? await createTenancy(
+					env,
+					db,
+					logger,
+					{ registry, secrets },
+					(id) => built.runtimes?.dispose(id),
+					overrides,
+				)
+			: undefined;
+	const primary = buildPrimaryRuntime(env, db, jwks, logger, tenancy);
+	const primaryHosts = [
+		new URL(primary.tenant.issuer).host,
+		...env.ALLOWED_HOSTS,
+	];
 	const runtimes =
 		secrets && appClientSecretKey
 			? new RuntimeRegistry({
@@ -75,11 +88,12 @@ export async function createServing(
 					logger,
 					build: (document) =>
 						buildTenantRuntime(
-							{ env, db, logger, secrets, appClientSecretKey },
+							{ env, db, logger, secrets, appClientSecretKey, tenancy },
 							document,
 						),
 				})
 			: undefined;
+	built.runtimes = runtimes;
 	const hosts = new Set(primaryHosts.map((host) => host.toLowerCase()));
 	const lookup = async (host: string | undefined): Promise<TenantLookup> => {
 		if (runtimes) return runtimes.lookup(host);
@@ -128,20 +142,17 @@ export async function createServing(
 				})
 			: undefined;
 
-	let ownershipTimer: NodeJS.Timeout | undefined;
-	const serviceIp = env.SERVICE_IPV4;
-	const checkOwnership = (): void => {
-		if (!runtimes || !serviceIp) return;
-		checkAllOwnership({
-			registry,
-			resolver: SYSTEM_RESOLVER,
-			serviceIp,
-			logger,
-			onSuspended: (tenant) => runtimes.dispose(tenant._id),
-		}).catch((error: unknown) => {
-			logger.warn({ err: error }, "Tenant ownership check failed");
-		});
-	};
+	const maintenance =
+		runtimes && env.SERVICE_IPV4
+			? createTenantMaintenance({
+					db,
+					registry,
+					runtimes,
+					resolver: SYSTEM_RESOLVER,
+					serviceIp: env.SERVICE_IPV4,
+					logger,
+				})
+			: undefined;
 	return {
 		primary,
 		app,
@@ -157,16 +168,10 @@ export async function createServing(
 				.catch((error: unknown) => {
 					logger.error({ err: error }, "Re-sealing tenant secrets failed");
 				});
-			if (runtimes && serviceIp) {
-				// First pass soon after start, then hourly; each pass only checks
-				// tenants not checked for 6 hours, so restarts never skip one.
-				setTimeout(checkOwnership, 60_000).unref();
-				ownershipTimer = setInterval(checkOwnership, OWNERSHIP_TICK_MS);
-				ownershipTimer.unref();
-			}
+			maintenance?.start();
 		},
 		async stop() {
-			clearInterval(ownershipTimer);
+			maintenance?.stop();
 			await auditDispatcher.stop();
 		},
 	};

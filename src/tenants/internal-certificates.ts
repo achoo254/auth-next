@@ -88,6 +88,15 @@ export function certificateRouter(
 					.json({ error: "outcome must be issued, failed or removed" });
 				return;
 			}
+			// A tenant that expired before activation has no data: once its
+			// certificates are gone, the domain is free again.
+			if (
+				outcome === "removed" &&
+				(await registry.deleteUnactivated(tenant._id))
+			) {
+				res.status(204).end();
+				return;
+			}
 			await registry.setCertificate(tenant._id, certificate);
 			res.status(204).end();
 		} catch (error) {

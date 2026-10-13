@@ -44,6 +44,7 @@ Commands: `pnpm dev`, `pnpm build`, `pnpm lint`, `pnpm typecheck`, `pnpm test`, 
 - Domain đi vào DNS, certbot, nginx luôn qua `normalizeTenantDomain`.
 - Không có đọc tương thích: `inTenant` khớp `tenantId` tuyệt đối; khởi động chạy `migrateToTenants` (gắn document cũ cho tenant chính, gỡ chỉ mục toàn cục) và không phục vụ nếu còn document chưa gắn. Sau khi có tenant thứ hai chỉ sửa tiến.
 - Tenant sổ (`tenants`) chạy trong `TenantRuntime` dựng lười (`src/tenants/tenant-runtime.ts`), chọn theo Host ở `src/http/tenant-dispatcher.ts`; không bao giờ lấy Google/GitHub/bot của env cho tenant sổ (`integrations` của `createServices`).
+- Nhận domain chỉ ở `/claim` của tenant chính (`src/tenants/claim-*.ts`); owner là danh tính upstream của lượt nhận, không bao giờ "người đến trước". `/admin` của tenant chỉ mở bằng liên kết một lần từ `/claim` (`admin-session.ts`); tenant chưa `active` chỉ phục vụ `/admin`.
 - Secret của tenant chỉ qua `TenantSecrets` (niêm phong, AAD theo tenant và loại); token DNS chỉ `putForProvisioner`. Không API nào trả secret; API nội bộ chỉ trên loopback, mỗi app một Basic credentials.
 
 ## Quy ước code

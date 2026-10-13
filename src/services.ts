@@ -21,6 +21,7 @@ import { telegramBotConfig } from "./config/integrations-env.js";
 import { type Csrf, createCsrf } from "./http/csrf.js";
 import type { Logger } from "./logger.js";
 import { type TelegramBot, createTelegramBot } from "./telegram/bot-client.js";
+import type { Tenancy } from "./tenants/tenancy.js";
 import type { Tenant } from "./tenants/tenant.js";
 
 /**
@@ -42,10 +43,14 @@ export interface AppServices {
 	/** Account-bound one-time tokens, checked against `securityVersion`. */
 	readonly accountTokens: AccountTokens;
 	readonly csrf: Csrf;
+	/** COOKIE_KEYS: the first signs, the others still verify. */
+	readonly cookieKeys: readonly string[];
 	readonly upstreams: Upstreams;
 	readonly telegram?: TelegramBot;
 	/** Per-IP budget for form POSTs and Google/GitHub sign-in starts. */
 	readonly formPostsPerMinute: number;
+	/** Claiming domains (/claim) and tenant administration (/admin), when enabled. */
+	readonly tenancy?: Tenancy;
 }
 
 export interface ServiceDependencies {
@@ -68,6 +73,7 @@ export interface ServiceDependencies {
 		readonly telegram?: TelegramBot;
 	};
 	readonly formPostsPerMinute?: number;
+	readonly tenancy?: Tenancy;
 }
 
 export function createServices(deps: ServiceDependencies): AppServices {
@@ -95,11 +101,13 @@ export function createServices(deps: ServiceDependencies): AppServices {
 		tokens: new OneTimeTokenStore(db, tenant),
 		accountTokens: new AccountTokens(db, deps.accounts),
 		csrf: createCsrf(env.COOKIE_KEYS, secureCookies),
+		cookieKeys: env.COOKIE_KEYS,
 		upstreams:
 			deps.integrations?.upstreams ??
 			deps.upstreams ??
 			createUpstreams(env, tenant.issuer),
 		formPostsPerMinute: deps.formPostsPerMinute ?? 30,
+		tenancy: deps.tenancy,
 		telegram: deps.integrations
 			? deps.integrations.telegram
 			: (deps.telegram ??

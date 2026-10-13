@@ -217,6 +217,37 @@ describe("certificate queue (provisioner)", () => {
 		expect(await server.secrets.get(acme._id, "google")).toBeUndefined();
 	});
 
+	it("frees the domain of a tenant never activated once its certificates are removed", async () => {
+		const stale = await server.addTenant("stale.example.org", "claimed");
+		await server.db
+			.collection("tenants")
+			.updateOne(
+				{ _id: stale._id as never },
+				{ $set: { claimedAt: new Date(Date.now() - 8 * 24 * 3_600_000) } },
+			);
+		const expired = await server.registry.expireUnactivated(
+			new Date(Date.now() - 7 * 24 * 3_600_000),
+		);
+		expect(expired.map((tenant) => tenant.domain)).toContain(
+			"stale.example.org",
+		);
+		expect(await server.registry.findById(stale._id)).toMatchObject({
+			status: "suspended",
+			suspendedReason: "not-activated",
+			certificate: { status: "removing" },
+		});
+		const body = (await (await work()).json()) as {
+			work: { tenantId: string; action: string }[];
+		};
+		expect(body.work).toContainEqual(
+			expect.objectContaining({ tenantId: stale._id, action: "remove" }),
+		);
+		expect((await report(stale._id, { outcome: "removed" })).status).toBe(204);
+		expect(
+			await server.registry.findByDomain("stale.example.org"),
+		).toBeUndefined();
+	});
+
 	it("backs off after a failure and records issuance", async () => {
 		expect(
 			(

@@ -2,7 +2,8 @@
  * TEST ONLY. The real IdP app (provider, pages, MongoDB adapter, account
  * layer) on a fixed port against mongodb-memory-server, with Google, GitHub
  * and Telegram answered by fakes. A second tiny server plays the client app
- * (OAuth callbacks) and exposes the Telegram messages the bot "sent".
+ * (OAuth callbacks), exposes the Telegram messages the bot "sent" and
+ * holds the DNS records domain claims are checked against (fake resolver).
  * Started and stopped by Playwright's webServer.
  */
 import { randomBytes } from "node:crypto";
@@ -26,9 +27,18 @@ import {
 	ensureAccountLayerIndexes,
 } from "../../src/services.js";
 import { envClientSecrets, envTenant } from "../../src/tenants/env-tenant.js";
+import { parseKeyring } from "../../src/tenants/secret-keyring.js";
+import { createTenancy } from "../../src/tenants/tenancy.js";
+import { ensureTenantClaimIndexes } from "../../src/tenants/tenant-claims.js";
+import {
+	TenantRegistry,
+	ensureTenantRegistryIndexes,
+} from "../../src/tenants/tenant-registry.js";
+import { TenantSecrets } from "../../src/tenants/tenant-secrets.js";
 import {
 	E2E_ISSUER,
 	E2E_PORT,
+	E2E_SERVICE_IP,
 	E2E_TOOLS,
 	E2E_TOOLS_PORT,
 } from "./e2e-config.js";
@@ -48,6 +58,8 @@ await mongo.connect();
 const db = mongo.db();
 await ensureOidcIndexes(db);
 await ensureAccountLayerIndexes(db);
+await ensureTenantRegistryIndexes(db);
+await ensureTenantClaimIndexes(db);
 
 const env = parseEnv({
 	NODE_ENV: "test",
@@ -58,11 +70,43 @@ const env = parseEnv({
 	LOCALMAN_WEB_CLIENT_SECRET: randomBytes(32).toString("base64url"),
 	TUNELO_WEB_CLIENT_SECRET: randomBytes(32).toString("base64url"),
 	LOCALMAN_WEB_URL: E2E_TOOLS,
+	TENANT_SECRETS_KEY: `e2e:${randomBytes(32).toString("base64")}`,
+	APP_CLIENT_SECRET_KEY: randomBytes(32).toString("base64url"),
+	SERVICE_IPV4: E2E_SERVICE_IP,
 	LOG_LEVEL: process.env.E2E_LOG_LEVEL ?? "warn",
 	...FAKE_UPSTREAM_ENV,
 });
 const logger = createLogger(env.LOG_LEVEL);
 const tenant = envTenant(env);
+/** DNS as the claim pages see it: `TXT <name>` / `A <name>` → values. */
+const records = new Map<string, string[]>();
+const notFound = (): Error =>
+	Object.assign(new Error("ENOTFOUND"), { code: "ENOTFOUND" });
+const keyring = parseKeyring(env.TENANT_SECRETS_KEY);
+if (!keyring) throw new Error("e2e keyring missing");
+const tenancy = await createTenancy(
+	env,
+	db,
+	logger,
+	{ registry: new TenantRegistry(db), secrets: new TenantSecrets(db, keyring) },
+	() => undefined,
+	{
+		availableMemoryMb: () => 4_000,
+		resolver: {
+			resolveTxt: async (name) => {
+				const value = records.get(`TXT ${name}`);
+				if (!value) throw notFound();
+				return [value];
+			},
+			resolve4: async (name) => {
+				const parent = name.split(".").slice(1).join(".");
+				const value = records.get(`A ${name}`) ?? records.get(`A *.${parent}`);
+				if (!value) throw notFound();
+				return value;
+			},
+		},
+	},
+);
 const accounts = new AccountRepository(
 	db,
 	tenant,
@@ -85,11 +129,26 @@ const services = createServices({
 	logger,
 	accounts,
 	formPostsPerMinute: 1_000,
+	tenancy,
 });
 const idp = createServer(createApp({ services, env, rateLimits: [] }));
 
 const tools = createServer((req, res) => {
 	const url = new URL(req.url ?? "/", E2E_TOOLS);
+	if (url.pathname === "/dns" && req.method === "POST") {
+		let body = "";
+		req.on("data", (chunk: Buffer) => {
+			body += chunk.toString("utf8");
+		});
+		req.on("end", () => {
+			const entries: unknown = JSON.parse(body);
+			if (Array.isArray(entries)) {
+				for (const [key, values] of entries) records.set(key, values);
+			}
+			res.writeHead(204).end();
+		});
+		return;
+	}
 	if (url.pathname === "/telegram/messages") {
 		res.writeHead(200, { "content-type": "application/json" });
 		res.end(JSON.stringify(fake.telegramMessages));

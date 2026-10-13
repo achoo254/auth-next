@@ -14,6 +14,7 @@ import {
 import { ensureOidcIndexes } from "./oidc/oidc-indexes.js";
 import { ensureAccountLayerIndexes } from "./services.js";
 import { type Serving, createServing } from "./tenants/serving.js";
+import { ensureTenantClaimIndexes } from "./tenants/tenant-claims.js";
 import { migrateToTenants } from "./tenants/tenant-migration.js";
 import { ensureTenantRegistryIndexes } from "./tenants/tenant-registry.js";
 
@@ -115,6 +116,7 @@ try {
 	await ensureOidcIndexes(connection.db);
 	await ensureAccountLayerIndexes(connection.db);
 	await ensureTenantRegistryIndexes(connection.db);
+	await ensureTenantClaimIndexes(connection.db);
 	await migrateToTenants(connection.db, logger);
 	serving = await createServing(env, connection.db, jwks, logger);
 	const { services } = serving.primary;

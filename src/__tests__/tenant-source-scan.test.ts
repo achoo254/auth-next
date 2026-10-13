@@ -26,6 +26,8 @@ const DATA_ACCESS_MODULES = new Set([
 	// the audit queue is the one deliberate all-tenants reader (dispatcher).
 	"src/tenants/tenant-registry.ts",
 	"src/tenants/tenant-secrets.ts",
+	// Claims wait outside any tenant until verified, keyed by account.
+	"src/tenants/tenant-claims.ts",
 	"src/audit/audit-queue.ts",
 	"src/services.ts",
 ]);

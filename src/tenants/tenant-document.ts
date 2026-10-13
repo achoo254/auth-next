@@ -1,0 +1,57 @@
+import { randomBytes } from "node:crypto";
+import type { UpstreamProvider } from "../accounts/user-model.js";
+import type { TenantStatus } from "./tenant.js";
+
+/** Who claimed a domain: the upstream identity that proved the TXT record. */
+export interface TenantOwner {
+	readonly provider: UpstreamProvider;
+	readonly providerId: string;
+	readonly email?: string;
+}
+
+/** Certificate state, driven by the provisioner through the internal API. */
+export interface TenantCertificate {
+	readonly status: "pending" | "issued" | "failed" | "removing";
+	readonly attempts: number;
+	readonly lastAttemptAt?: Date;
+	/** Short reason of the last failure; never a log or a secret. */
+	readonly lastError?: string;
+	readonly nextAttemptAt?: Date;
+	readonly issuedAt?: Date;
+}
+
+/** One claimed domain in the `tenants` collection (the registry). */
+export interface TenantDocument {
+	/** `ten_<random>`: never reused, so a domain claimed again starts empty. */
+	_id: string;
+	/** Normalised domain (normalizeTenantDomain); unique. */
+	domain: string;
+	displayName: string;
+	status: TenantStatus;
+	owner?: TenantOwner;
+	/** The TXT value at `_auth-claim.<domain>` that proved ownership. */
+	claimTxt?: string;
+	certificate?: TenantCertificate;
+	createdAt: Date;
+	claimedAt?: Date;
+	activatedAt?: Date;
+	suspendedAt?: Date;
+	suspendedReason?: string;
+	/**
+	 * Bumped by every change of settings or status; a runtime built for an
+	 * older version is rebuilt on the next request. Absent means 0.
+	 */
+	configVersion?: number;
+	/** Last periodic ownership check, and failures in a row since a success. */
+	ownershipCheckedAt?: Date;
+	ownershipFailures?: number;
+}
+
+export const TENANTS_COLLECTION = "tenants";
+
+export function newTenantId(): string {
+	return `ten_${randomBytes(12).toString("base64url")}`;
+}
+
+/** Statuses that count against TENANT_MAX_ACTIVE and serve pages. */
+export const SERVING_STATUSES: readonly TenantStatus[] = ["claimed", "active"];
