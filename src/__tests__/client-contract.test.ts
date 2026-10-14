@@ -55,6 +55,7 @@ describe("static clients match the integration contract", () => {
 				envTenant(env),
 				resourcesFor(env.TENANT_DOMAIN),
 				envClientSecrets(env),
+				env.CHAT_MOBILE_REDIRECT_URI,
 			).map((entry) => [entry.client_id, entry]),
 		);
 		expect(byId.get(STATIC_CLIENT_IDS.localmanWeb)).toMatchObject({
@@ -62,6 +63,9 @@ describe("static clients match the integration contract", () => {
 			backchannel_logout_uri:
 				"https://localman.hoandat.com/auth/backchannel-logout",
 			backchannel_logout_session_required: true,
+		});
+		expect(byId.get(STATIC_CLIENT_IDS.chatMobile)).toMatchObject({
+			redirect_uris: [env.CHAT_MOBILE_REDIRECT_URI],
 		});
 		expect(byId.get(STATIC_CLIENT_IDS.tuneloWeb)).toMatchObject({
 			redirect_uris: ["https://tunnel.hoandat.com/auth/callback"],

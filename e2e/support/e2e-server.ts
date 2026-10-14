@@ -118,6 +118,7 @@ const provider = createProvider({
 	db,
 	jwks: { keys: [await generateSigningJwk()] },
 	cookieKeys: env.COOKIE_KEYS,
+	chatMobileRedirectUri: env.CHAT_MOBILE_REDIRECT_URI,
 	clientSecrets: envClientSecrets(env),
 	accountStore: accounts,
 	logger,

@@ -15,6 +15,28 @@ const REQUIRED = {
 };
 
 describe("parseEnv", () => {
+	it("takes the chat mobile redirect from the environment and checks its form", () => {
+		expect(parseEnv(REQUIRED).CHAT_MOBILE_REDIRECT_URI).toBe(
+			"com.hoandat.chat:/auth/callback",
+		);
+		expect(
+			parseEnv({
+				...REQUIRED,
+				CHAT_MOBILE_REDIRECT_URI: "vn.example.talk:/auth/callback",
+			}).CHAT_MOBILE_REDIRECT_URI,
+		).toBe("vn.example.talk:/auth/callback");
+		for (const bad of [
+			"https://chat.hoandat.com/auth/callback",
+			"chat:/auth/callback",
+			"com.hoandat.chat://auth/callback",
+			"javascript:/x",
+		]) {
+			expect(() =>
+				parseEnv({ ...REQUIRED, CHAT_MOBILE_REDIRECT_URI: bad }),
+			).toThrow(/CHAT_MOBILE_REDIRECT_URI/);
+		}
+	});
+
 	it("applies defaults around the required values", () => {
 		const env = parseEnv(REQUIRED);
 		expect(env).toMatchObject({

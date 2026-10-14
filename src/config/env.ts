@@ -1,4 +1,8 @@
 import { z } from "zod";
+import {
+	CHAT_MOBILE_REDIRECT_URI,
+	PRIVATE_USE_REDIRECT,
+} from "../oidc/chat-clients.js";
 import { normalizeTenantDomain } from "../tenants/tenant.js";
 import {
 	checkIntegrationGroups,
@@ -87,6 +91,13 @@ const envSchema = z
 		TUNELO_WEB_CLIENT_SECRET: secret,
 		CHAT_WEB_URL: httpUrl.default("https://chat.hoandat.com"),
 		CHAT_WEB_CLIENT_SECRET: secret,
+		CHAT_MOBILE_REDIRECT_URI: z
+			.string()
+			.default(CHAT_MOBILE_REDIRECT_URI)
+			.refine(
+				(value) => PRIVATE_USE_REDIRECT.test(value),
+				"must be a private-use scheme redirect like com.example.app:/auth/callback",
+			),
 		TRUST_PROXY: z
 			.string()
 			.default("loopback")

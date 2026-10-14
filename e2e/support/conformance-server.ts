@@ -101,6 +101,7 @@ const tenant = envTenant(env);
 const configuration = buildProviderConfiguration({
 	tenant,
 	cookieKeys: env.COOKIE_KEYS,
+	chatMobileRedirectUri: env.CHAT_MOBILE_REDIRECT_URI,
 	clientSecrets: envClientSecrets(env),
 	db,
 	jwks: {

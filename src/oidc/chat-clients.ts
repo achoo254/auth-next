@@ -9,10 +9,16 @@ export const CHAT_CLIENT_IDS = {
 } as const;
 
 /**
- * Private-use URI scheme redirect of the chat mobile app (RFC 8252 §7.1).
- * It is fixed when the app is built, so it is the same in every tenant.
+ * Default private-use URI scheme redirect of the chat mobile app (RFC 8252
+ * §7.1); `CHAT_MOBILE_REDIRECT_URI` overrides it. The scheme is fixed when
+ * the app is built (its brand configuration), so it is the same in every
+ * tenant, and renaming the app only changes configuration on both sides.
  */
 export const CHAT_MOBILE_REDIRECT_URI = "com.hoandat.chat:/auth/callback";
+
+/** `<reverse-domain scheme>:/<path>`, the RFC 8252 §7.1 form with one slash. */
+export const PRIVATE_USE_REDIRECT =
+	/^[a-z][a-z0-9]*(\.[a-z][a-z0-9-]*){2,}:\/[a-z0-9_-]+(\/[a-z0-9_-]+)*$/;
 
 /**
  * Loopback redirect of the chat desktop app (RFC 8252 §7.3): oidc-provider
@@ -49,6 +55,7 @@ function nativeChatClient(
 export function buildChatClients(
 	chatOrigin: string,
 	webSecret: string,
+	mobileRedirectUri: string,
 ): ClientMetadata[] {
 	const at = (path: string): string => new URL(path, chatOrigin).href;
 	return [
@@ -67,7 +74,7 @@ export function buildChatClients(
 			scope: CHAT_SCOPE,
 			[ALLOWED_RESOURCES_PROPERTY]: [],
 		},
-		nativeChatClient(CHAT_CLIENT_IDS.chatMobile, CHAT_MOBILE_REDIRECT_URI),
+		nativeChatClient(CHAT_CLIENT_IDS.chatMobile, mobileRedirectUri),
 		nativeChatClient(CHAT_CLIENT_IDS.chatDesktop, CHAT_DESKTOP_REDIRECT_URI),
 	];
 }

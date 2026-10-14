@@ -62,6 +62,7 @@ export async function inspectStaticClients(deps: {
 		db: deps.db,
 		jwks: deps.jwks,
 		cookieKeys: deps.env.COOKIE_KEYS,
+		chatMobileRedirectUri: deps.env.CHAT_MOBILE_REDIRECT_URI,
 		clientSecrets: envClientSecrets(deps.env),
 		accountStore: createInMemoryAccountStore([]),
 		logger: createLogger("silent"),

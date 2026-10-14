@@ -36,6 +36,7 @@ describe("ID token signing algorithms", () => {
 		const configuration = buildProviderConfiguration({
 			tenant: idp.tenant,
 			cookieKeys: idp.env.COOKIE_KEYS,
+			chatMobileRedirectUri: idp.env.CHAT_MOBILE_REDIRECT_URI,
 			clientSecrets: envClientSecrets(idp.env),
 			db: idp.db,
 			jwks: idp.jwks,
@@ -68,6 +69,7 @@ describe("ID token signing algorithms", () => {
 		const configuration = buildProviderConfiguration({
 			tenant: idp.tenant,
 			cookieKeys: idp.env.COOKIE_KEYS,
+			chatMobileRedirectUri: idp.env.CHAT_MOBILE_REDIRECT_URI,
 			clientSecrets: envClientSecrets(idp.env),
 			db: idp.db,
 			jwks: { keys: [await generateSigningJwk()] },

@@ -141,6 +141,7 @@ export async function startTestIdp(options: TestIdpOptions): Promise<TestIdp> {
 		db,
 		jwks,
 		cookieKeys: env.COOKIE_KEYS,
+		chatMobileRedirectUri: env.CHAT_MOBILE_REDIRECT_URI,
 		clientSecrets: envClientSecrets(env),
 		accountStore:
 			options.interactions === "real"

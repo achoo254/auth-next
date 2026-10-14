@@ -108,6 +108,7 @@ export function buildStaticClients(
 	tenant: Pick<Tenant, "issuer" | "displayName" | "webApps">,
 	resources: TenantResources,
 	secrets: StaticClientSecrets,
+	chatMobileRedirectUri: string,
 ): ClientMetadata[] {
 	const localman = tenant.webApps.localman;
 	const tunelo = tenant.webApps.tunelo;
@@ -176,6 +177,10 @@ export function buildStaticClients(
 			scope: "openid",
 			[ALLOWED_RESOURCES_PROPERTY]: [],
 		},
-		...buildChatClients(tenant.webApps.chat, secrets.chatWeb),
+		...buildChatClients(
+			tenant.webApps.chat,
+			secrets.chatWeb,
+			chatMobileRedirectUri,
+		),
 	];
 }

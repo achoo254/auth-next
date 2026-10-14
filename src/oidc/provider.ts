@@ -84,6 +84,8 @@ export interface ProviderDependencies {
 	/** Keys signing the provider's cookies (shared by every tenant). */
 	readonly cookieKeys: readonly string[];
 	readonly clientSecrets: StaticClientSecrets;
+	/** Redirect of the chat mobile app; one value for every tenant. */
+	readonly chatMobileRedirectUri: string;
 	readonly accountStore: AccountStore;
 	readonly logger: Logger;
 }
@@ -107,6 +109,7 @@ export function buildProviderConfiguration(
 			tenant,
 			resources.resources,
 			deps.clientSecrets,
+			deps.chatMobileRedirectUri,
 		),
 		findAccount: createFindAccount(accountStore),
 		jwks: { keys: jwks.keys.map((key) => ({ ...key })) },
