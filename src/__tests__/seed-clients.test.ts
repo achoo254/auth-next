@@ -13,6 +13,7 @@ import {
 import { STATIC_CLIENT_IDS } from "../oidc/clients.js";
 import { collectionNameFor } from "../oidc/mongo-adapter.js";
 import {
+	CHAT_WEB_SECRET,
 	LOCALMAN_WEB_SECRET,
 	TUNELO_WEB_SECRET,
 	type TestIdp,
@@ -76,6 +77,7 @@ function seed(args: readonly string[], env: Record<string, string> = {}) {
 			COOKIE_KEYS: idp.env.COOKIE_KEYS.join(","),
 			LOCALMAN_WEB_CLIENT_SECRET: LOCALMAN_WEB_SECRET,
 			TUNELO_WEB_CLIENT_SECRET: TUNELO_WEB_SECRET,
+			CHAT_WEB_CLIENT_SECRET: CHAT_WEB_SECRET,
 			...env,
 		},
 	});
@@ -98,6 +100,7 @@ describe("seed-clients", () => {
 		const text = formatSeedReport(first);
 		expect(text).not.toContain(LOCALMAN_WEB_SECRET);
 		expect(text).not.toContain(TUNELO_WEB_SECRET);
+		expect(text).not.toContain(CHAT_WEB_SECRET);
 	});
 
 	it("flags a stored record that shadows a static client", async () => {

@@ -92,6 +92,7 @@ const env = parseEnv({
 	COOKIE_KEYS: randomBytes(32).toString("base64url"),
 	LOCALMAN_WEB_CLIENT_SECRET: secrets.client,
 	TUNELO_WEB_CLIENT_SECRET: secrets.client2,
+	CHAT_WEB_CLIENT_SECRET: randomBytes(32).toString("base64url"),
 	LOG_LEVEL: process.env.CONFORMANCE_LOG_LEVEL ?? "warn",
 	...FAKE_OAUTH_ENV,
 });

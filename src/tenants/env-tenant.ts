@@ -12,7 +12,7 @@ export const PRIMARY_TENANT_ID = "primary";
  * The primary tenant, from the environment: its issuer is `ISSUER` as
  * before (any shape, so the conformance harness keeps working), its domain
  * `TENANT_DOMAIN` (resources and audiences follow from it), its web apps
- * `LOCALMAN_WEB_URL` and `TUNELO_WEB_URL`. It is always active; documents
+ * `LOCALMAN_WEB_URL`, `TUNELO_WEB_URL` and `CHAT_WEB_URL`. It is always active; documents
  * written before tenants existed are tagged as its own at startup.
  */
 export function envTenant(
@@ -23,6 +23,7 @@ export function envTenant(
 		| "TENANT_DISPLAY_NAME"
 		| "LOCALMAN_WEB_URL"
 		| "TUNELO_WEB_URL"
+		| "CHAT_WEB_URL"
 	>,
 ): Tenant {
 	return {
@@ -31,16 +32,26 @@ export function envTenant(
 		displayName: env.TENANT_DISPLAY_NAME,
 		issuer: env.ISSUER,
 		status: "active",
-		webApps: { localman: env.LOCALMAN_WEB_URL, tunelo: env.TUNELO_WEB_URL },
+		webApps: {
+			localman: env.LOCALMAN_WEB_URL,
+			tunelo: env.TUNELO_WEB_URL,
+			chat: env.CHAT_WEB_URL,
+		},
 	};
 }
 
 /** The primary tenant's first-party client secrets, from the environment. */
 export function envClientSecrets(
-	env: Pick<Env, "LOCALMAN_WEB_CLIENT_SECRET" | "TUNELO_WEB_CLIENT_SECRET">,
+	env: Pick<
+		Env,
+		| "LOCALMAN_WEB_CLIENT_SECRET"
+		| "TUNELO_WEB_CLIENT_SECRET"
+		| "CHAT_WEB_CLIENT_SECRET"
+	>,
 ): StaticClientSecrets {
 	return {
 		localmanWeb: env.LOCALMAN_WEB_CLIENT_SECRET,
 		tuneloWeb: env.TUNELO_WEB_CLIENT_SECRET,
+		chatWeb: env.CHAT_WEB_CLIENT_SECRET,
 	};
 }

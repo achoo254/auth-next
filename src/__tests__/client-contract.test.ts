@@ -48,6 +48,7 @@ describe("static clients match the integration contract", () => {
 			COOKIE_KEYS: "k".repeat(32),
 			LOCALMAN_WEB_CLIENT_SECRET: "l".repeat(32),
 			TUNELO_WEB_CLIENT_SECRET: "t".repeat(32),
+			CHAT_WEB_CLIENT_SECRET: "c".repeat(32),
 		});
 		const byId = new Map(
 			buildStaticClients(

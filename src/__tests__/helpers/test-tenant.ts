@@ -17,6 +17,7 @@ export const PRIMARY_TEST_TENANT: Tenant = {
 	webApps: {
 		localman: "https://localman.hoandat.com",
 		tunelo: "https://tunnel.hoandat.com",
+		chat: "https://chat.hoandat.com",
 	},
 };
 
@@ -36,6 +37,7 @@ export const OTHER_TEST_TENANT: Tenant = {
 	webApps: {
 		localman: "https://localman.example.org",
 		tunelo: "https://tunnel.example.org",
+		chat: "https://chat.example.org",
 	},
 };
 

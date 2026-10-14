@@ -35,6 +35,7 @@ const PRODUCTION_URLS = [
 	"ISSUER",
 	"LOCALMAN_WEB_URL",
 	"TUNELO_WEB_URL",
+	"CHAT_WEB_URL",
 ] as const;
 
 const envSchema = z
@@ -84,6 +85,8 @@ const envSchema = z
 		LOCALMAN_WEB_CLIENT_SECRET: secret,
 		TUNELO_WEB_URL: httpUrl.default("https://tunnel.hoandat.com"),
 		TUNELO_WEB_CLIENT_SECRET: secret,
+		CHAT_WEB_URL: httpUrl.default("https://chat.hoandat.com"),
+		CHAT_WEB_CLIENT_SECRET: secret,
 		TRUST_PROXY: z
 			.string()
 			.default("loopback")

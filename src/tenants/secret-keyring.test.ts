@@ -75,6 +75,8 @@ describe("derivedClientSecrets", () => {
 			a.localmanWeb,
 		);
 		expect(a.localmanWeb).not.toBe(a.tuneloWeb);
+		expect(a.chatWeb).not.toBe(a.localmanWeb);
+		expect(a.chatWeb).not.toBe(a.tuneloWeb);
 		expect(a.localmanWeb).toMatch(/^[\w-]{43}$/);
 	});
 
@@ -91,5 +93,10 @@ describe("derivedClientSecrets", () => {
 			derivedClientSecrets(master, "ten_a").tuneloWeb,
 		);
 		expect(localmanKey).not.toBe(appClientKey(master, "tunelo-web"));
+		const chatKey = appClientKey(master, "chat-web");
+		expect(asApp(chatKey, "ten_a")).toBe(
+			derivedClientSecrets(master, "ten_a").chatWeb,
+		);
+		expect(chatKey).not.toBe(localmanKey);
 	});
 });

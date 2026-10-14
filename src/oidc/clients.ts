@@ -1,6 +1,7 @@
 import type { ClientMetadata } from "oidc-provider";
 import type { TenantResources } from "../tenants/tenant-resources.js";
 import type { Tenant } from "../tenants/tenant.js";
+import { CHAT_CLIENT_IDS, buildChatClients } from "./chat-clients.js";
 import {
 	ALLOWED_RESOURCES_PROPERTY,
 	LOCALMAN_SCOPES,
@@ -19,6 +20,7 @@ export const STATIC_CLIENT_IDS = {
 	tuneloWeb: "tunelo-web",
 	/** The IdP's own /account pages; signs the user in, never redeems a code. */
 	accountPortal: "hoandat-account",
+	...CHAT_CLIENT_IDS,
 } as const;
 
 /** Where the IdP sends the browser back after signing in for /account. */
@@ -44,13 +46,14 @@ export function isStaticClientId(clientId: unknown): boolean {
 
 /**
  * Clients whose refresh tokens are bound to the IdP browser session instead
- * of `offline_access`: every DCR (MCP) client, Localman web (Jev 0.94) and
- * the Tunelo web console (Jev 1.00): signing out at the IdP ends their grant
+ * of `offline_access`: every DCR (MCP) client, Localman web (Jev 0.94),
+ * the Tunelo web console (Jev 1.00) and chat web: signing out at the IdP ends their grant
  * and refresh tokens, even when a back-channel logout is lost.
  */
 const SESSION_BOUND_STATIC_CLIENTS: ReadonlySet<string> = new Set([
 	STATIC_CLIENT_IDS.localmanWeb,
 	STATIC_CLIENT_IDS.tuneloWeb,
+	STATIC_CLIENT_IDS.chatWeb,
 ]);
 
 export function refreshesWithSession(clientId: string): boolean {
@@ -58,6 +61,27 @@ export function refreshesWithSession(clientId: string): boolean {
 		!isStaticClientId(clientId) || SESSION_BOUND_STATIC_CLIENTS.has(clientId)
 	);
 }
+
+/**
+ * First-party native apps whose grant belongs to the device rather than to
+ * the IdP browser session: they get refresh tokens without offline_access,
+ * keep them when the user signs out in the browser, and slide without the
+ * 90-day cap; each device stays revocable at /account.
+ */
+const DEVICE_BOUND_STATIC_CLIENTS: ReadonlySet<string> = new Set([
+	STATIC_CLIENT_IDS.chatMobile,
+	STATIC_CLIENT_IDS.chatDesktop,
+]);
+
+export function refreshesPerDevice(clientId: string | undefined): boolean {
+	return clientId !== undefined && DEVICE_BOUND_STATIC_CLIENTS.has(clientId);
+}
+
+/** Static clients that never use an API access token, so list no resource. */
+export const CLIENTS_WITHOUT_RESOURCES: ReadonlySet<string> = new Set([
+	STATIC_CLIENT_IDS.accountPortal,
+	...Object.values(CHAT_CLIENT_IDS),
+]);
 
 function scopeOf(...groups: readonly (readonly string[])[]): string {
 	return groups.flat().join(" ");
@@ -72,6 +96,7 @@ function appUrl(base: string, path: string): string {
 export interface StaticClientSecrets {
 	readonly localmanWeb: string;
 	readonly tuneloWeb: string;
+	readonly chatWeb: string;
 }
 
 /**
@@ -151,5 +176,6 @@ export function buildStaticClients(
 			scope: "openid",
 			[ALLOWED_RESOURCES_PROPERTY]: [],
 		},
+		...buildChatClients(tenant.webApps.chat, secrets.chatWeb),
 	];
 }

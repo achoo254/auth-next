@@ -25,6 +25,7 @@ const APP_URLS = {
 	webApps: {
 		localman: "https://localman.example.test",
 		tunelo: "https://tunnel.example.test",
+		chat: "https://chat.example.test",
 	},
 };
 

@@ -10,8 +10,8 @@ function hmac(key: string, message: string): string {
  * The key one app holds to compute its own client secret in every tenant:
  * HMAC-SHA256 of `app-client-key\n<clientId>` under `APP_CLIENT_SECRET_KEY`
  * (which only the IdP holds), base64url. Localman gets the key of
- * `localman-web`, Tunelo the key of `tunelo-web`, so a leak at one app
- * never yields the other's secrets.
+ * `localman-web`, Tunelo the key of `tunelo-web`, chat the key of
+ * `chat-web`, so a leak at one app never yields another's secrets.
  */
 export function appClientKey(masterKey: string, clientId: string): string {
 	return hmac(masterKey, `app-client-key\n${clientId}`);
@@ -46,6 +46,11 @@ export function derivedClientSecrets(
 			masterKey,
 			tenantId,
 			STATIC_CLIENT_IDS.tuneloWeb,
+		),
+		chatWeb: derivedClientSecret(
+			masterKey,
+			tenantId,
+			STATIC_CLIENT_IDS.chatWeb,
 		),
 	};
 }

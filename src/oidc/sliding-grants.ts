@@ -1,7 +1,7 @@
 import type { KoaContextWithOIDC, RefreshToken } from "oidc-provider";
 import { GRANT_META_COLLECTION } from "../account-portal/grant-directory.js";
 import { type TenantDb, inTenant } from "../tenants/tenant-data.js";
-import { STATIC_CLIENT_IDS } from "./clients.js";
+import { STATIC_CLIENT_IDS, refreshesPerDevice } from "./clients.js";
 import { collectionNameFor } from "./mongo-adapter.js";
 
 const DAY = 24 * 60 * 60;
@@ -12,13 +12,16 @@ export const GRANT_IDLE_SECONDS = 30 * DAY;
 export const GRANT_MAX_SECONDS = 90 * DAY;
 
 /**
- * Whether a client's grants end 90 days after sign-in. Tunelo CLI devices
- * are exempt (Jev 0.98): lab servers run tunnels unattended for months, so
- * a device that keeps refreshing stays signed in; one idle for 30 days still
- * expires, and each device stays revocable at /account.
+ * Whether a client's grants end 90 days after sign-in. Device grants are
+ * exempt: Tunelo CLI (Jev 0.98), whose lab servers run tunnels unattended
+ * for months, and the chat mobile and desktop apps, which stay signed in
+ * like any messaging app. A device that keeps refreshing stays signed in;
+ * one idle for 30 days still expires, and each stays revocable at /account.
  */
 export function hasHardCap(clientId: string | undefined): boolean {
-	return clientId !== STATIC_CLIENT_IDS.tuneloCli;
+	return (
+		clientId !== STATIC_CLIENT_IDS.tuneloCli && !refreshesPerDevice(clientId)
+	);
 }
 
 function epochNow(): number {

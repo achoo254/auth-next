@@ -8,6 +8,7 @@ const STAGING = {
 	webApps: {
 		localman: "https://localman.staging.example",
 		tunelo: "https://tunnel.staging.example",
+		chat: "https://chat.staging.example",
 	},
 };
 

@@ -23,7 +23,11 @@ export interface Tenant {
 	readonly issuer: string;
 	readonly status: TenantStatus;
 	/** Where the tenant's web apps live (redirect and logout URIs). */
-	readonly webApps: { readonly localman: string; readonly tunelo: string };
+	readonly webApps: {
+		readonly localman: string;
+		readonly tunelo: string;
+		readonly chat: string;
+	};
 }
 
 /** First labels of a tenant's app hosts (auth.<d>, localman.<d>, tunnel.<d>). */

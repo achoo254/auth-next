@@ -69,6 +69,7 @@ const env = parseEnv({
 	COOKIE_KEYS: randomBytes(32).toString("base64url"),
 	LOCALMAN_WEB_CLIENT_SECRET: randomBytes(32).toString("base64url"),
 	TUNELO_WEB_CLIENT_SECRET: randomBytes(32).toString("base64url"),
+	CHAT_WEB_CLIENT_SECRET: randomBytes(32).toString("base64url"),
 	LOCALMAN_WEB_URL: E2E_TOOLS,
 	TENANT_SECRETS_KEY: `e2e:${randomBytes(32).toString("base64")}`,
 	APP_CLIENT_SECRET_KEY: randomBytes(32).toString("base64url"),

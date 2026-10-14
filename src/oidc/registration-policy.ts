@@ -1,5 +1,5 @@
 import { type ClientMetadata, type Configuration, errors } from "oidc-provider";
-import { STATIC_CLIENT_IDS, isStaticClientId } from "./clients.js";
+import { CLIENTS_WITHOUT_RESOURCES, isStaticClientId } from "./clients.js";
 import { withoutOfflineAccess } from "./dynamic-client-scopes.js";
 import {
 	ALLOWED_RESOURCES_PROPERTY,
@@ -190,10 +190,12 @@ function validateResources(
 		enforceDynamicClientPolicy(metadata, policy.resources.localmanMcp);
 		return;
 	}
-	// Static clients list known resources; only the account portal, which
-	// never receives an access token, may list none.
+	// Static clients list known resources; only those that never use an API
+	// access token (the account portal, chat) may list none.
 	const resources = stringList(metadata[ALLOWED_RESOURCES_PROPERTY]);
-	const mayBeEmpty = metadata.client_id === STATIC_CLIENT_IDS.accountPortal;
+	const mayBeEmpty =
+		typeof metadata.client_id === "string" &&
+		CLIENTS_WITHOUT_RESOURCES.has(metadata.client_id);
 	if (
 		(resources.length === 0 && !mayBeEmpty) ||
 		!resources.every(policy.isResourceIndicator)

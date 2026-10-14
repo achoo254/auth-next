@@ -4,6 +4,7 @@
  *
  *   node --env-file=.env dist/app-client-key.mjs localman-web <out-file>
  *   node --env-file=.env dist/app-client-key.mjs tunelo-web <out-file>
+ *   node --env-file=.env dist/app-client-key.mjs chat-web <out-file>
  *
  * The key goes to a new file (mode 600) for the app's own secret store,
  * never to the terminal.
@@ -16,6 +17,7 @@ import { appClientKey } from "../src/tenants/app-client-secrets.js";
 const APPS: readonly string[] = [
 	STATIC_CLIENT_IDS.localmanWeb,
 	STATIC_CLIENT_IDS.tuneloWeb,
+	STATIC_CLIENT_IDS.chatWeb,
 ];
 
 async function main(): Promise<void> {

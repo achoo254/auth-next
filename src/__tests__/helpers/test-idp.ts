@@ -47,6 +47,7 @@ export const TEST_ACCOUNT: AccountProfile = {
 
 export const LOCALMAN_WEB_SECRET = randomBytes(32).toString("base64url");
 export const TUNELO_WEB_SECRET = randomBytes(32).toString("base64url");
+export const CHAT_WEB_SECRET = randomBytes(32).toString("base64url");
 export const LOCALMAN_CALLBACK = "https://localman.hoandat.com/auth/callback";
 
 /** localman-web's redirect URI at `idp` (LOCALMAN_CALLBACK for the primary tenant). */
@@ -114,6 +115,7 @@ export async function startTestIdp(options: TestIdpOptions): Promise<TestIdp> {
 		COOKIE_KEYS: randomBytes(32).toString("base64url"),
 		LOCALMAN_WEB_CLIENT_SECRET: LOCALMAN_WEB_SECRET,
 		TUNELO_WEB_CLIENT_SECRET: TUNELO_WEB_SECRET,
+		CHAT_WEB_CLIENT_SECRET: CHAT_WEB_SECRET,
 		LOG_LEVEL: "silent",
 		...(options.withoutUpstreams ? {} : FAKE_OAUTH_ENV),
 		...options.env,
