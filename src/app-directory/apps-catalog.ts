@@ -2,17 +2,21 @@ import type { MessageKey } from "../i18n/dictionaries.js";
 import type { Translator } from "../i18n/translator.js";
 import { STATIC_CLIENT_IDS } from "../oidc/clients.js";
 import { OIDC_ROUTES } from "../oidc/provider.js";
+import { PRIMARY_TENANT_ID } from "../tenants/env-tenant.js";
 import { resourcesFor } from "../tenants/tenant-resources.js";
 import type { Tenant } from "../tenants/tenant.js";
 import { type SafeHtml, html } from "../ui/html.js";
 
 /** Where the apps that sign in through this IdP live: the tenant's. */
-export type AppDirectoryTenant = Pick<Tenant, "issuer" | "domain" | "webApps">;
+export type AppDirectoryTenant = Pick<
+	Tenant,
+	"id" | "issuer" | "domain" | "webApps"
+>;
 
 /** One palette hue per app, from the data-viz tokens (apps.css). */
-export type AppTone = "violet" | "cyan" | "green" | "amber";
+export type AppTone = "violet" | "cyan" | "green" | "amber" | "blue";
 
-type AppIconName = "localman" | "mcp" | "terminal" | "tunnel";
+type AppIconName = "localman" | "mcp" | "terminal" | "tunnel" | "chat";
 
 /** One app on the page; `id` is its `client_id` when it has a fixed one. */
 export interface ListedApp {
@@ -34,6 +38,7 @@ const ICON_SHAPES: Readonly<Record<AppIconName, SafeHtml>> = {
 	mcp: html`<path d="M9 3v4M15 3v4M7 7h10v4a5 5 0 0 1-10 0V7zM12 16v5"/>`,
 	terminal: html`<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9l3 3-3 3M13 15h4"/>`,
 	tunnel: html`<path d="M3 20V12a9 9 0 0 1 18 0v8M7 20v-8a5 5 0 0 1 10 0v8M3 20h18"/>`,
+	chat: html`<path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/><path d="M8.5 12h.01M12 12h.01M15.5 12h.01"/>`,
 };
 
 /**
@@ -62,7 +67,8 @@ function code(value: string): SafeHtml {
 
 /**
  * The first-party apps of src/oidc/clients.ts, plus the MCP clients that
- * register themselves for Localman's MCP resource.
+ * register themselves for Localman's MCP resource. Chat is listed only for
+ * the primary tenant: other tenants have no chat host yet.
  */
 export function listedApps(
 	tenant: AppDirectoryTenant,
@@ -113,5 +119,19 @@ export function listedApps(
 			signIn: html`${i18n.t("apps.tuneloWeb.signIn")}`,
 			href: tenant.webApps.tunelo,
 		},
+		...(tenant.id === PRIMARY_TENANT_ID ? [chatWeb(tenant, i18n)] : []),
 	];
+}
+
+function chatWeb(tenant: AppDirectoryTenant, i18n: Translator): ListedApp {
+	return {
+		id: STATIC_CLIENT_IDS.chatWeb,
+		name: "Chat",
+		tone: "blue",
+		icon: "chat",
+		kind: "apps.kind.web",
+		description: "apps.chatWeb.description",
+		signIn: html`${i18n.t("apps.chatWeb.signIn")}`,
+		href: tenant.webApps.chat,
+	};
 }

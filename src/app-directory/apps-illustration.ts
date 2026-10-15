@@ -95,6 +95,13 @@ function hubLabel(
 	return html`<text class="hub-text ${className}" x="${HUB.cx}" y="${cy}" text-anchor="middle"${fit}>${text}</text>`;
 }
 
+/** "A, B and C" in the page's language. */
+function appNames(i18n: Translator, apps: readonly ListedApp[]): string {
+	return new Intl.ListFormat(i18n.locale, { type: "conjunction" }).format(
+		apps.map((app) => app.name),
+	);
+}
+
 /** `host` is the issuer's host, written under the hub. */
 export function hubDiagram(
 	i18n: Translator,
@@ -120,7 +127,7 @@ export function hubDiagram(
 			app.tone,
 		),
 	);
-	return html`<svg class="hub" viewBox="0 0 ${VIEW.width} ${VIEW.height}" role="img" aria-label="${i18n.t("apps.diagram.label")}" data-id="apps-hub">
+	return html`<svg class="hub" viewBox="0 0 ${VIEW.width} ${VIEW.height}" role="img" aria-label="${i18n.t("apps.diagram.label", { apps: appNames(i18n, apps) })}" data-id="apps-hub">
 ${inbound}${outbound}
 ${KEYS.map(keyNode)}
 <g class="hub-node hub-core">

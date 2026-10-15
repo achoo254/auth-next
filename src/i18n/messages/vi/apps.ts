@@ -5,14 +5,14 @@ export const viApps: Translation<typeof enApps> = {
 	"apps.eyebrow": "Đăng nhập {brand}",
 	"apps.title": "Một tài khoản cho mọi ứng dụng {brand}",
 	"apps.subtitle":
-		"Đăng nhập một lần bằng Google hoặc GitHub, rồi dùng cùng tài khoản đó trong Localman, MCP server của nó và Tunelo.",
+		"Đăng nhập một lần bằng Google hoặc GitHub, rồi dùng cùng tài khoản đó trong mọi ứng dụng bên dưới.",
 	"apps.trust.providers": "Đăng nhập bằng Google hoặc GitHub",
 	"apps.trust.noPassword": "Không phải tạo hay nhớ mật khẩu",
 	"apps.trust.control": "Bạn chọn ứng dụng nào được quyền truy cập",
 	"apps.cta.account": "Quản lý tài khoản",
 	"apps.cta.how": "Đăng nhập diễn ra thế nào",
 	"apps.diagram.label":
-		"Tài khoản {brand}, vào bằng Google hoặc GitHub, đăng nhập cho bạn vào Localman, Localman MCP, Tunelo CLI và Tunelo.",
+		"Tài khoản {brand}, vào bằng Google hoặc GitHub, đăng nhập cho bạn vào {apps}.",
 	"apps.list.title": "Ứng dụng bạn dùng được",
 	"apps.kind.web": "Ứng dụng web",
 	"apps.kind.mcp": "MCP server",
@@ -31,6 +31,9 @@ export const viApps: Translation<typeof enApps> = {
 		"Chạy {command} trong terminal, rồi nhập mã nó hiện ở {device}.",
 	"apps.tuneloWeb.description": "Tunnel của bạn trên trình duyệt.",
 	"apps.tuneloWeb.signIn": "Chọn Đăng nhập trên trang.",
+	"apps.chatWeb.description":
+		"Nhắn tin nhanh, tìm lại lịch sử tin nhắn và dùng bot.",
+	"apps.chatWeb.signIn": "Chọn Đăng nhập trên trang.",
 	"apps.steps.title": "Đăng nhập diễn ra thế nào",
 	"apps.steps.choose.title": "Chọn một ứng dụng",
 	"apps.steps.choose.body":

@@ -1,8 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { renderAppsPage } from "../app-directory/apps-page.js";
+import { PRIMARY_TENANT_ID } from "../tenants/env-tenant.js";
 import { testPage } from "./helpers/test-page.js";
 
 const STAGING = {
+	id: PRIMARY_TENANT_ID,
 	issuer: "https://auth.staging.example",
 	domain: "hoandat.com",
 	webApps: {
@@ -17,6 +19,7 @@ describe("app list page", () => {
 		const html = renderAppsPage(STAGING, testPage("en", "/apps"));
 		expect(html).toContain('href="https://localman.staging.example"');
 		expect(html).toContain('href="https://tunnel.staging.example"');
+		expect(html).toContain('href="https://chat.staging.example"');
 		expect(html).toContain("https://auth.staging.example/device");
 		expect(html).not.toContain('https://localman.hoandat.com"');
 	});
@@ -25,6 +28,7 @@ describe("app list page", () => {
 		const html = renderAppsPage(STAGING, testPage("en", "/apps"));
 		expect(html).toContain('data-id="app-open-localman-web"');
 		expect(html).toContain('data-id="app-open-tunelo-web"');
+		expect(html).toContain('data-id="app-open-chat-web"');
 		expect(html).not.toContain('data-id="app-open-tunelo-cli"');
 		expect(html).not.toContain('data-id="app-open-localman-mcp"');
 	});
@@ -40,10 +44,27 @@ describe("app list page", () => {
 			"Localman MCP",
 			"Tunelo CLI",
 			"Tunelo",
+			"Chat",
 		]) {
 			expect(hub).toContain(`>${name}</text>`);
 		}
 		expect(html).toContain('role="img"');
+		expect(html).toContain(
+			"signs you in to Localman, Localman MCP, Tunelo CLI, Tunelo, and Chat.",
+		);
+	});
+
+	it("lists chat only for the primary tenant, the one with a chat host", () => {
+		const html = renderAppsPage(
+			{ ...STAGING, id: "tenant-inetdev" },
+			testPage("en", "/apps"),
+		);
+		expect(html).not.toContain('data-id="app-chat-web"');
+		expect(html).not.toContain("https://chat.staging.example");
+		expect(html).not.toContain(">Chat</text>");
+		expect(html).toContain(
+			"signs you in to Localman, Localman MCP, Tunelo CLI, and Tunelo.",
+		);
 	});
 
 	it("links the sign-in steps from the hero", () => {

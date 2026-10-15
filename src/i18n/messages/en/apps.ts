@@ -3,14 +3,14 @@ export const enApps = {
 	"apps.eyebrow": "{brand} sign-in",
 	"apps.title": "One account for every {brand} app",
 	"apps.subtitle":
-		"Sign in once with Google or GitHub and use the same account in Localman, its MCP server and Tunelo.",
+		"Sign in once with Google or GitHub and use the same account in every app below.",
 	"apps.trust.providers": "Sign in with Google or GitHub",
 	"apps.trust.noPassword": "No password to create or remember",
 	"apps.trust.control": "You choose which apps get access",
 	"apps.cta.account": "Manage your account",
 	"apps.cta.how": "How sign-in works",
 	"apps.diagram.label":
-		"Your {brand} account, reached with Google or GitHub, signs you in to Localman, Localman MCP, Tunelo CLI and Tunelo.",
+		"Your {brand} account, reached with Google or GitHub, signs you in to {apps}.",
 	"apps.list.title": "Apps you can open",
 	"apps.kind.web": "Web app",
 	"apps.kind.mcp": "MCP server",
@@ -30,6 +30,9 @@ export const enApps = {
 		"Run {command} in a terminal, then enter the code it shows at {device}.",
 	"apps.tuneloWeb.description": "Your tunnels in the browser.",
 	"apps.tuneloWeb.signIn": "Choose Sign in on the site.",
+	"apps.chatWeb.description":
+		"Fast messaging with searchable history and bots.",
+	"apps.chatWeb.signIn": "Choose Sign in on the site.",
 	"apps.steps.title": "How sign-in works",
 	"apps.steps.choose.title": "Pick an app",
 	"apps.steps.choose.body":

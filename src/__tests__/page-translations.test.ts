@@ -15,11 +15,13 @@ import { renderErrorPage } from "../interactions/error-page.js";
 import { renderLogin, renderSignup } from "../interactions/login-page.js";
 import { renderChooseUsername } from "../interactions/upstream-pages.js";
 import { renderPrivacyPage } from "../legal/privacy-page.js";
+import { PRIMARY_TENANT_ID } from "../tenants/env-tenant.js";
 import { testPage } from "./helpers/test-page.js";
 
 const HOST = "auth.example.test";
 const NOW = new Date("2026-10-10T01:00:00Z");
 const APP_URLS = {
+	id: PRIMARY_TENANT_ID,
 	issuer: `https://${HOST}`,
 	domain: "hoandat.com",
 	webApps: {
