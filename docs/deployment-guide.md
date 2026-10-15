@@ -60,7 +60,7 @@ Mặc định IdP chỉ phục vụ tenant `hoandat.com`. Bật sổ tenant bằ
 | Env | Ý nghĩa |
 |---|---|
 | `TENANT_SECRETS_KEY` | `kid:base64` của khoá 32 byte (`openssl rand -base64 32`), có thể nhiều khoá cách bằng dấu phẩy; khoá đầu niêm phong secret của tenant (OAuth, bot, khoá ký) bằng AES-256-GCM |
-| `APP_CLIENT_SECRET_KEY` | ≥ 32 ký tự, chỉ IdP giữ; khoá riêng của Localman và Tunelo suy từ nó: `node --env-file=.env dist/app-client-key.mjs localman-web <file>` (và `tunelo-web`), file mode 600, chép vào secret của app tương ứng |
+| `APP_CLIENT_SECRET_KEY` | ≥ 32 ký tự, chỉ IdP giữ; khoá riêng của Localman và Tunelo suy từ nó: `node --env-file=.env dist/app-client-key.mjs localman-web <file>` (và `tunelo-web`, `chat-web`), file mode 600, chép vào secret của app tương ứng |
 | `TENANT_MAX_ACTIVE` | số tenant đang phục vụ tối đa, mặc định 20 (đo 2026-10-13: mỗi runtime rỗi thêm khoảng 0,4 MB RSS; 50 runtime thêm 21 MB) |
 | `INTERNAL_API_CREDENTIALS` | `localman:<secret>,tunelo:<secret>,provisioner:<secret>` (≥ 32 ký tự mỗi secret); thiếu thì API nội bộ tắt |
 | `INTERNAL_HOST`, `INTERNAL_PORT` | API nội bộ, mặc định `127.0.0.1:4501`, chỉ nhận địa chỉ loopback |
@@ -97,6 +97,28 @@ Chứng chỉ của tenant do provisioner cấp (root, systemd timer 5 phút), k
 **Trạng thái production (13/10/2026):** đã cài đủ 5 bước. `PROVISIONER_ACME=production`, `PROVISIONER_BLOCKED_DOMAINS=hoandat.com,inet.vn,hoandat.io.vn`; ba file nginx tenant trong `conf.d`. Thử ở staging với `inetdev.io.vn` đạt cả `<d>` (HTTP-01) lẫn `wildcard.<d>` (DNS-01), rồi chuyển production: hai chứng chỉ hiện của Let's Encrypt thật, `certbot renew --dry-run $C` đạt. Token Cloudflare có thể là token cá nhân hay token của tài khoản (`cfat_`); trang `/admin` kiểm bằng tra zone và tạo/xoá một bản ghi TXT, không gọi `/user/tokens/verify` (endpoint đó từ chối token của tài khoản).
 
 **Tạm dừng:** `systemctl stop hoandat-tenant-provisioner.timer` (hàng đợi vẫn giữ, chạy tiếp khi bật lại). **Gỡ tenant:** đặt `certificate.status` của tenant thành `removing` (qua `scripts/prod-mongosh.sh`, sau backup); lượt sau provisioner `certbot delete` hai chứng chỉ, xoá tệp credentials và báo `removed`. Provisioner tự từ chối domain không chuẩn, domain trong `PROVISIONER_BLOCKED_DOMAINS` và hostname mà `nginx -T` đã có block khác phục vụ.
+
+## Client của app chat
+
+App chat (repo `chat-next`, `https://chat.hoandat.com`, pm2 `chat-api` trên cùng máy) đăng nhập qua ba client `chat-web`, `chat-mobile`, `chat-desktop` (`src/oidc/chat-clients.ts`). Deploy và vận hành phía chat ở `chat-next/docs/deployment-guide.md`; bước đầu của nó là đặt `.env` của IdP:
+
+| Env | Ý nghĩa |
+|---|---|
+| `CHAT_WEB_URL` | origin của web chat, production `https://chat.hoandat.com`; redirect và back-channel logout của `chat-web` nằm dưới nó |
+| `CHAT_WEB_CLIENT_SECRET` | ≥ 32 ký tự, **bắt buộc** (thiếu thì IdP không khởi động); sinh trên server, cùng giá trị ghi vào `/opt/chat/.env` dưới tên `OIDC_CLIENT_SECRET`. Hai bên lệch nhau thì chat nhận `invalid_client` ở `/token` |
+| `CHAT_MOBILE_REDIRECT_URI` | tuỳ chọn, mặc định `com.hoandat.chat:/auth/callback`; đổi khi app chat đổi `urlScheme` trong `brand.config.json` |
+
+Tenant khác: secret của `chat-web` suy từ `APP_CLIENT_SECRET_KEY` (mục trên), không nằm trong `.env`. Trang `/apps` chỉ hiện Chat ở tenant chính cho tới khi có host `chat.<domain>` theo tenant.
+
+Kiểm từ ngoài: IdP biết client thì chuyển lỗi "PKCE required" về đúng redirect của nó, client lạ thì không chuyển hướng:
+
+```bash
+for c in chat-web chat-mobile chat-desktop; do
+  curl -s -o /dev/null -w "$c %{redirect_url}\n" "https://auth.hoandat.com/auth?client_id=$c&response_type=code&scope=openid" | cut -d'?' -f1
+done
+```
+
+**Trạng thái production (15/10/2026):** đã đặt `CHAT_WEB_URL`, `CHAT_WEB_CLIENT_SECRET` (chưa đặt `CHAT_MOBILE_REDIRECT_URI`, dùng mặc định); `/opt/chat/.env` có `OIDC_ISSUER`, `OIDC_CLIENT_ID`, `OIDC_CLIENT_SECRET`; cả ba client có trên IdP (build 14/10/2026 15:57). API nội bộ chưa có vai `chat` (`InternalRole` trong `src/tenants/internal-auth.ts` chỉ có `localman`, `tunelo`, `provisioner`).
 
 ## Tuỳ chọn bật sau
 

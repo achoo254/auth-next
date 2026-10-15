@@ -37,10 +37,12 @@ ID token mặc định ký **ES256**. Discovery quảng bá `id_token_signing_al
 | `localman-web` | confidential (`client_secret_basic`) | Code + PKCE, refresh (gắn phiên IdP), **token exchange** | `openid profile email telegram` + scope API Localman (không có `offline_access`) | `https://localman.hoandat.com` (chỉ khi xin scope API); đổi được token `https://tunnel.hoandat.com` | `https://localman.hoandat.com/auth/backchannel-logout` |
 | `tunelo-cli` | public (`none`) | Device flow, refresh | `openid offline_access tunnels:open tunnels:read` | `https://tunnel.hoandat.com` | không |
 | `tunelo-web` | confidential (`client_secret_basic`) | Code + PKCE, refresh (gắn phiên IdP) | `openid profile email tunnels:open tunnels:read` (không có `offline_access`; trang web Tunelo xin `openid profile`) | `https://tunnel.hoandat.com` | `https://tunnel.hoandat.com/auth/backchannel-logout` |
+| `chat-web` | confidential (`client_secret_basic`) | Code + PKCE, refresh (gắn phiên IdP) | `openid profile email` (không có `offline_access`) | không có: access token opaque chỉ dùng cho userinfo | `https://chat.hoandat.com/auth/backchannel-logout` |
+| `chat-mobile`, `chat-desktop` | public, native (`none`) | Code + PKCE qua trình duyệt hệ thống, refresh (theo thiết bị, mục 8) | `openid profile email` | không có | không |
 | client MCP (DCR) | public hoặc confidential | Code + PKCE, refresh (gắn phiên IdP) | mặc định `mock:read mock:write client:read client:write client:send`; thêm `credentials:write` chỉ khi khai rõ lúc đăng ký; `offline_access` bị bỏ qua (mục 9) | luôn `https://localman.hoandat.com/mcp` | không được khai |
 | `hoandat-account` | nội bộ IdP | không dùng ngoài IdP | | | |
 
-Redirect URI: `${LOCALMAN_WEB_URL}/auth/callback`, `${TUNELO_WEB_URL}/auth/callback`; post-logout về `/` của app. PKCE (`S256`) bắt buộc với **mọi** client, kể cả confidential.
+Redirect URI: `${LOCALMAN_WEB_URL}/auth/callback`, `${TUNELO_WEB_URL}/auth/callback`, `${CHAT_WEB_URL}/auth/callback`; post-logout về `/` của app. `chat-mobile` dùng redirect private-use scheme `CHAT_MOBILE_REDIRECT_URI` (mặc định `com.hoandat.chat:/auth/callback`, RFC 8252 §7.1, phải trùng `urlScheme` trong `brand.config.json` của app chat); `chat-desktop` dùng loopback `http://127.0.0.1:<cổng bất kỳ>/auth/callback` (RFC 8252 §7.3). Phần riêng của app chat: `chat-next/docs/integrations/hoandat-auth.md`. PKCE (`S256`) bắt buộc với **mọi** client, kể cả confidential.
 
 **`aud` chính xác** (so khớp nguyên chuỗi, không `/` cuối):
 
@@ -147,7 +149,7 @@ const url = oidc.buildAuthorizationUrl(config, {
 - Bot của Localman chỉ nhắn được cho user đã từng bấm Start với **chính bot đó** (Telegram trả 403 "bot can't initiate conversation" nếu chưa). `telegram_chat_id` là chat riêng giữa user và bot của IdP, có cùng giá trị với id người dùng Telegram, nên dùng được cho bot Localman sau khi user mở `t.me/<bot Localman>` và bấm Start; gặp 403 thì nhắc user làm việc đó.
 - Chat có thể đổi (liên kết lại chat khác) hoặc bị gỡ. Localman phải đọc lại `userinfo` (a) mỗi lần đăng nhập, (b) mỗi lần refresh access token, và (c) khi nhận sự kiện audit `method.linked` hoặc `method.unlinked` với `method: "telegram"` (mục 10) của user đó; khi đó xoá chat cũ đã lưu. Không gửi gì tới chat cũ sau khi `userinfo` không còn trả nó.
 
-## 5. Back-channel logout (Localman web, Tunelo web)
+## 5. Back-channel logout (Localman web, Tunelo web, Chat web)
 
 Khi user đăng xuất ở IdP hoặc phiên IdP bị thu hồi (ở `/account`), IdP `POST` form `logout_token=<JWT>` tới URI back-channel của client. App phải:
 
@@ -222,8 +224,9 @@ const tokens = await oidc.pollDeviceAuthorizationGrant(cli, device);
 ## 8. Refresh token và phiên trượt
 
 - Refresh token **dùng một lần, xoay vòng**: mỗi lần refresh nhận token mới; đưa lại token cũ làm IdP thu hồi cả grant. Hai refresh song song cùng một token thì một cái nhận `invalid_grant`. Vì vậy **phải khoá khi refresh** (Tunelo CLI: file lock vì nhiều tiến trình; app web: mutex theo phiên) và ghi token mới trước khi nhả khoá.
-- **Phiên trượt 30/90 ngày**: mỗi lần refresh thành công, grant được gia hạn tới 30 ngày sau lần đó, nhưng không quá 90 ngày kể từ lúc đăng nhập. Không refresh quá 30 ngày thì phải đăng nhập lại; tới ngày 90 thì luôn phải đăng nhập lại ở app web. Riêng thiết bị Tunelo CLI (`tunelo-cli`) không có trần 90 ngày: còn refresh trong 30 ngày là phiên còn mãi (thu hồi từng máy ở `/account`).
-- `localman-web`, `tunelo-web` và client MCP không có `offline_access` (client MCP xin thì bị bỏ qua, mục 9): refresh token của chúng gắn với phiên trình duyệt ở IdP (đăng xuất ở IdP là hết), vẫn theo trần 30/90 ngày.
+- **Phiên trượt 30/90 ngày**: mỗi lần refresh thành công, grant được gia hạn tới 30 ngày sau lần đó, nhưng không quá 90 ngày kể từ lúc đăng nhập. Không refresh quá 30 ngày thì phải đăng nhập lại; tới ngày 90 thì luôn phải đăng nhập lại ở app web. Riêng thiết bị Tunelo CLI (`tunelo-cli`) và app chat native (`chat-mobile`, `chat-desktop`) không có trần 90 ngày: còn refresh trong 30 ngày là phiên còn mãi (thu hồi từng máy ở `/account`).
+- `chat-mobile`, `chat-desktop` nhận refresh token không cần `offline_access`, và refresh token của chúng không chết khi người dùng đăng xuất trên trình duyệt: mỗi máy là một grant riêng.
+- `localman-web`, `tunelo-web`, `chat-web` và client MCP không có `offline_access` (client MCP xin thì bị bỏ qua, mục 9): refresh token của chúng gắn với phiên trình duyệt ở IdP (đăng xuất ở IdP là hết), vẫn theo trần 30/90 ngày.
 - `revocation_endpoint`: client chỉ thu hồi được token của chính nó. Thu hồi refresh token thu hồi cả grant (`tunelo logout`); thu hồi access token làm mọi token của grant mất hiệu lực nhưng giữ grant.
 
 ## 9. Client MCP (Localman MCP)

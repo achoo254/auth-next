@@ -14,9 +14,11 @@ Người dùng xem danh sách này ở trang công khai `/apps` (mở `auth.hoan
 | Localman MCP | `https://localman.hoandat.com/mcp` | mỗi client MCP một id (DCR) | Client MCP (ví dụ Claude Code) tự đăng ký qua `/reg`, người dùng duyệt quyền ở trang consent |
 | Tunelo CLI | lệnh `tunelo` trên máy người dùng | `tunelo-cli` | `tunelo login` (device flow): mở `/device`, nhập mã, duyệt từng máy |
 | Tunelo web | `https://tunnel.hoandat.com` | `tunelo-web` | Nút đăng nhập trên web (Code + PKCE) |
+| Chat web (repo `chat-next`) | `https://chat.hoandat.com` | `chat-web` | Nút đăng nhập trên web (Code + PKCE); phiên gắn với phiên IdP |
+| Chat mobile, desktop (repo `chat-next`) | app iOS/Android, macOS/Windows/Linux | `chat-mobile`, `chat-desktop` | Trình duyệt hệ thống, Code + PKCE; redirect private-use scheme (`CHAT_MOBILE_REDIRECT_URI`) hoặc loopback cổng bất kỳ |
 | Trang tài khoản | `https://auth.hoandat.com/account` | `hoandat-account` | Nội bộ IdP, không dành cho app bên ngoài |
 
-Địa chỉ trên là của production; môi trường khác đổi qua `LOCALMAN_WEB_URL`, `TUNELO_WEB_URL`, `ISSUER`. Localman còn nhận sự kiện audit từ IdP (mục **Audit** bên dưới). Client tĩnh chỉ khai ở [`src/oidc/clients.ts`](src/oidc/clients.ts); thêm app mới thì khai ở đó rồi cập nhật bảng này, trang `/apps`, mục [Client và audience](#client-và-audience) và [`docs/integration-guide.md`](docs/integration-guide.md) mục 2.
+Địa chỉ trên là của production; môi trường khác đổi qua `LOCALMAN_WEB_URL`, `TUNELO_WEB_URL`, `CHAT_WEB_URL`, `ISSUER`. Trang `/apps` chỉ liệt kê Chat ở tenant chính: tenant khác chưa có host `chat.<domain>`. Localman còn nhận sự kiện audit từ IdP (mục **Audit** bên dưới). Client tĩnh chỉ khai ở [`src/oidc/clients.ts`](src/oidc/clients.ts); thêm app mới thì khai ở đó rồi cập nhật bảng này, trang `/apps`, mục [Client và audience](#client-và-audience) và [`docs/integration-guide.md`](docs/integration-guide.md) mục 2.
 
 ## Domain riêng (tenant)
 
@@ -60,10 +62,12 @@ Client phải đọc endpoint từ `/.well-known/openid-configuration`, không h
 | `localman-web` | confidential | Code + PKCE, refresh (gắn phiên IdP), token exchange | `openid profile email telegram` + scope API Localman | `https://localman.hoandat.com`; token exchange cấp `https://tunnel.hoandat.com` |
 | `tunelo-cli` | public | device code, refresh | `openid offline_access tunnels:open tunnels:read` | `https://tunnel.hoandat.com` |
 | `tunelo-web` | confidential | Code + PKCE, refresh (gắn phiên IdP) | `openid profile email tunnels:open tunnels:read` | `https://tunnel.hoandat.com` (trang web Tunelo chỉ xin `openid profile`, nhận access token opaque cho userinfo) |
+| `chat-web` | confidential | Code + PKCE, refresh (gắn phiên IdP) | `openid profile email` | không có (chat tự cấp phiên, chỉ đọc ID token và userinfo) |
+| `chat-mobile`, `chat-desktop` | public, native | Code + PKCE, refresh (theo thiết bị) | `openid profile email` | không có |
 | Client MCP (DCR) | public hoặc confidential | Code + PKCE, refresh | chỉ `mock:read mock:write client:read client:write client:send`, cộng `credentials:write` nếu khai rõ lúc đăng ký | luôn `https://localman.hoandat.com/mcp` |
 | `hoandat-account` | public, nội bộ | Code + PKCE (code không bao giờ được đổi) | `openid` | không có |
 
-Back-channel logout: `localman-web` tới `${LOCALMAN_WEB_URL}/auth/backchannel-logout`, `tunelo-web` tới `${TUNELO_WEB_URL}/auth/backchannel-logout` (cả hai có `sid`).
+Back-channel logout: `localman-web` tới `${LOCALMAN_WEB_URL}/auth/backchannel-logout`, `tunelo-web` tới `${TUNELO_WEB_URL}/auth/backchannel-logout`, `chat-web` tới `${CHAT_WEB_URL}/auth/backchannel-logout` (cả ba có `sid`).
 
 **Token exchange** (RFC 8693, grant `urn:ietf:params:oauth:grant-type:token-exchange`): chỉ `localman-web`, đổi access token opaque của phiên Localman lấy JWT `aud=https://tunnel.hoandat.com`, `scope=tunnels:read`, sống 15 phút, có `act`/`azp` là `localman-web`, không có refresh token. Subject token phải còn sống (grant chưa bị thu hồi, tài khoản không bị khoá). Chi tiết và mã lỗi: [`docs/integration-guide.md`](docs/integration-guide.md) mục 6.
 
@@ -77,8 +81,8 @@ Khi request không có `resource`, IdP chỉ gắn audience nếu scope xin có 
 
 ### Lưu ý cho client
 - **Refresh token dùng một lần và xoay vòng.** Mỗi lần refresh trả về refresh token mới; dùng lại token cũ sẽ thu hồi cả grant. Hai request refresh song song với cùng một token thì chỉ một cái thắng, cái còn lại nhận `invalid_grant`. Vì vậy client (đặc biệt Tunelo CLI chạy nhiều tiến trình) **phải khoá khi refresh** (file lock hoặc mutex) và lưu token mới trước khi nhả khoá.
-- **Phiên trượt, trần 90 ngày.** Mỗi lần refresh thành công, grant (và refresh token mới) được gia hạn thêm 30 ngày tính từ lúc refresh, nhưng không bao giờ quá 90 ngày kể từ lúc đăng nhập. Bỏ không refresh quá 30 ngày thì phiên hết hạn; tới ngày thứ 90 thì dù đang dùng cũng phải đăng nhập lại ở app web. Refresh token gần trần chỉ sống tới đúng trần. Áp cho mọi grant có refresh token, **trừ thiết bị Tunelo CLI** (`tunelo-cli`, Jev 0.98): máy chạy liên tục (server lab) cứ refresh là còn phiên, không có trần 90 ngày; máy bỏ quá 30 ngày vẫn hết hạn, và mỗi thiết bị thu hồi được ở `/account` (`hasHardCap` trong `src/oidc/sliding-grants.ts`). Riêng `localman-web` và client MCP (không có `offline_access`) thì refresh token còn gắn với phiên trình duyệt ở IdP: đăng xuất ở IdP thu hồi grant của chúng, kể cả token exchange của Localman (Jev 0.94).
-- `offline_access` chỉ có hiệu lực khi request kèm `prompt=consent` (OIDC Core); chỉ `tunelo-cli` có scope này. `tunelo-web` (trang web Tunelo), như `localman-web`, có refresh token gắn với phiên IdP: đăng xuất ở IdP thì lần refresh sau của nó nhận `invalid_grant`, kể cả khi back-channel logout không tới.
+- **Phiên trượt, trần 90 ngày.** Mỗi lần refresh thành công, grant (và refresh token mới) được gia hạn thêm 30 ngày tính từ lúc refresh, nhưng không bao giờ quá 90 ngày kể từ lúc đăng nhập. Bỏ không refresh quá 30 ngày thì phiên hết hạn; tới ngày thứ 90 thì dù đang dùng cũng phải đăng nhập lại ở app web. Refresh token gần trần chỉ sống tới đúng trần. Áp cho mọi grant có refresh token, **trừ thiết bị Tunelo CLI và app chat native** (`tunelo-cli`, Jev 0.98): máy chạy liên tục (server lab) cứ refresh là còn phiên, không có trần 90 ngày; máy bỏ quá 30 ngày vẫn hết hạn, và mỗi thiết bị thu hồi được ở `/account` (`hasHardCap` trong `src/oidc/sliding-grants.ts`). `chat-mobile`, `chat-desktop` cũng vậy, và nhận refresh token không cần `offline_access`; refresh token của chúng không chết khi người dùng đăng xuất trên trình duyệt (`refreshesPerDevice`). Riêng `localman-web` và client MCP (không có `offline_access`) thì refresh token còn gắn với phiên trình duyệt ở IdP: đăng xuất ở IdP thu hồi grant của chúng, kể cả token exchange của Localman (Jev 0.94).
+- `offline_access` chỉ có hiệu lực khi request kèm `prompt=consent` (OIDC Core); chỉ `tunelo-cli` có scope này. `tunelo-web` (trang web Tunelo) và `chat-web`, như `localman-web`, có refresh token gắn với phiên IdP: đăng xuất ở IdP thì lần refresh sau của nó nhận `invalid_grant`, kể cả khi back-channel logout không tới.
 - Revocation: client chỉ thu hồi được token của chính nó.
 - Introspection: client chỉ xem được token của chính mình; riêng `localman-web` và `tunelo-web` xem được mọi token. Token không được phép xem trả `{"active": false}`.
 
@@ -94,7 +98,7 @@ Mọi trang là HTML render phía server, không có JavaScript (CSP `script-src
 
 | Đường dẫn | Việc |
 |---|---|
-| `/apps` | Trang công khai liệt kê ứng dụng đăng nhập qua IdP, địa chỉ lấy từ `LOCALMAN_WEB_URL`, `TUNELO_WEB_URL`, `ISSUER`; `/` chuyển hướng (302) tới đây |
+| `/apps` | Trang công khai liệt kê ứng dụng đăng nhập qua IdP, địa chỉ lấy từ `LOCALMAN_WEB_URL`, `TUNELO_WEB_URL`, `CHAT_WEB_URL` (Chat chỉ ở tenant chính), `ISSUER`; `/` chuyển hướng (302) tới đây |
 | `/interaction/:uid` | Đăng nhập và đăng ký bằng Google/GitHub, consent, duyệt thiết bị. Gắn với cookie interaction của `oidc-provider` |
 | `/device` | Nhập mã thiết bị (trang của `oidc-provider` đã thay giao diện) |
 | `/session/end` | Đăng xuất (trang của `oidc-provider` đã thay giao diện) |
