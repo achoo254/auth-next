@@ -5,7 +5,7 @@ import { AuditDispatcher } from "../audit/audit-dispatcher.js";
 import { allTenantsAuditQueue } from "../audit/audit-queue.js";
 import type { Env } from "../config/env.js";
 import { auditDeliveryConfig } from "../config/integrations-env.js";
-import { securityHeaders } from "../http/security.js";
+import { nativeRedirectSchemes, securityHeaders } from "../http/security.js";
 import {
 	type TenantLookup,
 	createDispatcher,
@@ -105,7 +105,7 @@ export async function createServing(
 		trustProxy: env.TRUST_PROXY,
 		lookup,
 		logger,
-		headers: securityHeaders(primary.tenant.issuer),
+		headers: securityHeaders(primary.tenant.issuer, nativeRedirectSchemes(env)),
 	});
 
 	const delivery = auditDeliveryConfig(env);

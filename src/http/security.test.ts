@@ -10,7 +10,9 @@ import {
 	type RateLimitRule,
 	applySecurity,
 	forwardTrustedClientInfo,
+	nativeRedirectSchemes,
 	requireKnownHost,
+	securityHeaders,
 } from "./security.js";
 
 let server: Server | undefined;
@@ -155,5 +157,28 @@ describe("host check", () => {
 		expect(await statusWithHost(base, "localhost:4500")).toBe(200);
 		expect(await statusWithHost(base, "evil.example")).toBe(421);
 		expect(await statusWithHost(base, "localhost:4501")).toBe(421);
+	});
+});
+
+describe("form-action", () => {
+	it("lets the consent form redirect to the native apps' schemes", async () => {
+		const schemes = nativeRedirectSchemes({
+			CHAT_MOBILE_REDIRECT_URI: "com.hoandat.chat:/auth/callback",
+			SCRIBE_MOBILE_REDIRECT_URI: "com.hoandat.scribe:/auth/callback",
+		});
+		expect(schemes).toEqual(["com.hoandat.chat:", "com.hoandat.scribe:"]);
+		const app = express();
+		app.use(securityHeaders("https://auth.example.com", schemes));
+		app.get("/", (_req, res) => {
+			res.send("ok");
+		});
+		server = app.listen(0);
+		const { port } = server.address() as AddressInfo;
+		const res = await fetch(`http://127.0.0.1:${port}/`);
+		const formAction = (res.headers.get("content-security-policy") ?? "")
+			.split(";")
+			.find((d) => d.trim().startsWith("form-action"));
+		expect(formAction).toContain("com.hoandat.scribe:");
+		expect(formAction).toContain("com.hoandat.chat:");
 	});
 });

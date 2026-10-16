@@ -59,10 +59,16 @@ export interface SecurityOptions {
  * script (oidc-provider adds a hash for its form_post page itself), no
  * inline style (every page uses the self-hosted stylesheets), no framing.
  * Images may be https (Google/GitHub avatars). form-action must
- * also allow the redirect chain after a form post (back to https apps and
- * loopback MCP clients), because browsers apply it to redirects too.
+ * also allow the redirect chain after a form post (back to https apps,
+ * loopback MCP clients and the private-use schemes of native apps), because
+ * browsers apply it to redirects too: without the scheme, WebKit drops the
+ * redirect to `com.example.app:/auth/callback` after the consent form and
+ * the app's sign-in sheet never closes.
  */
-function contentSecurityPolicy(issuer: string): Parameters<typeof helmet>[0] {
+function contentSecurityPolicy(
+	issuer: string,
+	nativeSchemes: readonly string[],
+): Parameters<typeof helmet>[0] {
 	const https = new URL(issuer).protocol === "https:";
 	return {
 		contentSecurityPolicy: {
@@ -81,6 +87,7 @@ function contentSecurityPolicy(issuer: string): Parameters<typeof helmet>[0] {
 					"https:",
 					"http://localhost:*",
 					"http://127.0.0.1:*",
+					...nativeSchemes,
 				],
 				frameAncestors: ["'none'"],
 				objectSrc: ["'none'"],
@@ -138,9 +145,26 @@ export function applySecurity(app: Express, options: SecurityOptions): void {
 	app.use(rateLimiter(options.rateLimits ?? RATE_LIMIT_RULES));
 }
 
+/**
+ * CSP scheme sources (`com.example.app:`) of the native apps' configured
+ * private-use redirect URIs.
+ */
+export function nativeRedirectSchemes(env: {
+	readonly CHAT_MOBILE_REDIRECT_URI: string;
+	readonly SCRIBE_MOBILE_REDIRECT_URI: string;
+}): string[] {
+	const schemes = [env.CHAT_MOBILE_REDIRECT_URI, env.SCRIBE_MOBILE_REDIRECT_URI]
+		.map((uri) => URL.parse(uri)?.protocol)
+		.filter((scheme): scheme is string => scheme !== undefined);
+	return [...new Set(schemes)];
+}
+
 /** Security headers (CSP, framing, HSTS...) of the pages served at `issuer`. */
-export function securityHeaders(issuer: string): RequestHandler {
-	return helmet(contentSecurityPolicy(issuer));
+export function securityHeaders(
+	issuer: string,
+	nativeSchemes: readonly string[] = [],
+): RequestHandler {
+	return helmet(contentSecurityPolicy(issuer, nativeSchemes));
 }
 
 /**

@@ -7,6 +7,7 @@ import { createErrorHandler } from "./http/error-handler.js";
 import {
 	type RateLimitRule,
 	forwardTrustedClientInfo,
+	nativeRedirectSchemes,
 	securityHeaders,
 } from "./http/security.js";
 import { createDispatcher } from "./http/tenant-dispatcher.js";
@@ -26,7 +27,10 @@ import { bindRequestTenant } from "./tenants/request-tenant.js";
 
 export interface TenantAppOptions {
 	readonly services: AppServices;
-	readonly env: Pick<Env, "TRUST_PROXY">;
+	readonly env: Pick<
+		Env,
+		"TRUST_PROXY" | "CHAT_MOBILE_REDIRECT_URI" | "SCRIBE_MOBILE_REDIRECT_URI"
+	>;
 	/**
 	 * Replaces the interaction pages under /interaction. Tests only: the
 	 * automatic sign-in helper never ships in production wiring.
@@ -51,7 +55,7 @@ export function createTenantApp(options: TenantAppOptions): Express {
 		"trust proxy",
 		env.TRUST_PROXY === false ? false : [...env.TRUST_PROXY],
 	);
-	app.use(securityHeaders(tenant.issuer));
+	app.use(securityHeaders(tenant.issuer, nativeRedirectSchemes(env)));
 	app.use(bindRequestTenant(tenant));
 	// Interaction handlers call provider.interactionDetails/Finished, which
 	// read the same forwarded headers as the provider itself.
@@ -96,7 +100,13 @@ export function createTenantApp(options: TenantAppOptions): Express {
 }
 
 export interface AppOptions extends TenantAppOptions {
-	readonly env: Pick<Env, "TRUST_PROXY" | "ALLOWED_HOSTS">;
+	readonly env: Pick<
+		Env,
+		| "TRUST_PROXY"
+		| "ALLOWED_HOSTS"
+		| "CHAT_MOBILE_REDIRECT_URI"
+		| "SCRIBE_MOBILE_REDIRECT_URI"
+	>;
 	readonly rateLimits?: readonly RateLimitRule[];
 }
 
@@ -117,7 +127,10 @@ export function createApp(options: AppOptions): Express {
 		trustProxy: env.TRUST_PROXY,
 		rateLimits: options.rateLimits,
 		logger: services.logger,
-		headers: securityHeaders(services.tenant.issuer),
+		headers: securityHeaders(
+			services.tenant.issuer,
+			nativeRedirectSchemes(env),
+		),
 		lookup: async (host) =>
 			host && hosts.has(host.toLowerCase())
 				? { kind: "found", runtime }
