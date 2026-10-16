@@ -133,6 +133,8 @@ App Scribe (repo `scribe-next`, thư mục local `one-scribe`, `https://scribe.h
 
 Kiểm từ ngoài (cùng cách như chat): `for c in scribe-web scribe-mobile scribe-web-dev; do curl -s -o /dev/null -w "$c %{redirect_url}\n" "https://auth.hoandat.com/auth?client_id=$c&response_type=code&scope=openid" | cut -d'?' -f1; done`.
 
+**Trạng thái production (16/10/2026):** deploy commit `e1a7c96`; `.env` có `SCRIBE_WEB_DEV_URL=http://localhost:5174` + `SCRIBE_WEB_DEV_CLIENT_SECRET` (bản sao ở máy dev của chủ sở hữu, `~/.onescribe-dev/.oidc-web-dev-secret`) ⟹ `scribe-web-dev`, `scribe-mobile` đang bật; `SCRIBE_WEB_CLIENT_SECRET` chưa đặt (bật khi `scribe.hoandat.com` có site, Phase 7b của plan Scribe).
+
 ## Tuỳ chọn bật sau
 
 - Google/GitHub (đã bật 2026-10-09): GitHub OAuth App "hoandat · Tài khoản" (owner `achoo254`, app id 3916221); Google Cloud project `hoandat-auth`, Google Auth Platform ở trạng thái "In production" (External), web client `auth.hoandat.com`. Callback lần lượt `https://auth.hoandat.com/oauth/github/callback` và `/oauth/google/callback`. Google bắt buộc link chính sách quyền riêng tư `https://auth.hoandat.com/privacy` trước khi publish.
