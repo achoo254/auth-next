@@ -8,6 +8,8 @@ import { E2E_ISSUER } from "./e2e/support/e2e-config.js";
  */
 export default defineConfig({
 	testDir: "e2e",
+	// Guide screenshots run on their own (playwright.guide.config.ts).
+	testIgnore: "guide/**",
 	workers: 1,
 	fullyParallel: false,
 	forbidOnly: true,

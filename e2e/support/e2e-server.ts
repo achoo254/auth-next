@@ -4,6 +4,8 @@
  * and Telegram answered by fakes. A second tiny server plays the client app
  * (OAuth callbacks), exposes the Telegram messages the bot "sent" and
  * holds the DNS records domain claims are checked against (fake resolver).
+ * Claimed domains are served on their own hosts, as in production (tests
+ * reach them with the tenant's Host header).
  * Started and stopped by Playwright's webServer.
  */
 import { randomBytes } from "node:crypto";
@@ -15,9 +17,14 @@ import {
 	FakeUpstreams,
 } from "../../src/__tests__/helpers/fake-upstreams.js";
 import { AccountRepository } from "../../src/accounts/account-repository.js";
-import { createApp } from "../../src/app.js";
+import { createTenantApp } from "../../src/app.js";
 import { AuditOutbox } from "../../src/audit/audit-outbox.js";
 import { parseEnv } from "../../src/config/env.js";
+import {
+	nativeRedirectSchemes,
+	securityHeaders,
+} from "../../src/http/security.js";
+import { createDispatcher } from "../../src/http/tenant-dispatcher.js";
 import { createLogger } from "../../src/logger.js";
 import { generateSigningJwk } from "../../src/oidc/jwks.js";
 import { ensureOidcIndexes } from "../../src/oidc/oidc-indexes.js";
@@ -31,6 +38,7 @@ import {
 	envScribeClients,
 	envTenant,
 } from "../../src/tenants/env-tenant.js";
+import { RuntimeRegistry } from "../../src/tenants/runtime-registry.js";
 import { parseKeyring } from "../../src/tenants/secret-keyring.js";
 import { createTenancy } from "../../src/tenants/tenancy.js";
 import { ensureTenantClaimIndexes } from "../../src/tenants/tenant-claims.js";
@@ -38,6 +46,7 @@ import {
 	TenantRegistry,
 	ensureTenantRegistryIndexes,
 } from "../../src/tenants/tenant-registry.js";
+import { buildTenantRuntime } from "../../src/tenants/tenant-runtime.js";
 import { TenantSecrets } from "../../src/tenants/tenant-secrets.js";
 import {
 	E2E_ISSUER,
@@ -89,12 +98,18 @@ const notFound = (): Error =>
 	Object.assign(new Error("ENOTFOUND"), { code: "ENOTFOUND" });
 const keyring = parseKeyring(env.TENANT_SECRETS_KEY);
 if (!keyring) throw new Error("e2e keyring missing");
+const appClientSecretKey = env.APP_CLIENT_SECRET_KEY;
+if (!appClientSecretKey) throw new Error("e2e app client key missing");
+const registry = new TenantRegistry(db);
+const secrets = new TenantSecrets(db, keyring);
+// The runtime registry is built after the tenancy that refers to it.
+const built: { runtimes?: RuntimeRegistry } = {};
 const tenancy = await createTenancy(
 	env,
 	db,
 	logger,
-	{ registry: new TenantRegistry(db), secrets: new TenantSecrets(db, keyring) },
-	() => undefined,
+	{ registry, secrets },
+	(id) => built.runtimes?.dispose(id),
 	{
 		availableMemoryMb: () => 4_000,
 		resolver: {
@@ -112,6 +127,7 @@ const tenancy = await createTenancy(
 		},
 	},
 );
+const jwks = { keys: [await generateSigningJwk()] };
 const accounts = new AccountRepository(
 	db,
 	tenant,
@@ -120,7 +136,7 @@ const accounts = new AccountRepository(
 const provider = createProvider({
 	tenant,
 	db,
-	jwks: { keys: [await generateSigningJwk()] },
+	jwks,
 	cookieKeys: env.COOKIE_KEYS,
 	chatMobileRedirectUri: env.CHAT_MOBILE_REDIRECT_URI,
 	scribeClients: envScribeClients(env),
@@ -138,7 +154,35 @@ const services = createServices({
 	formPostsPerMinute: 1_000,
 	tenancy,
 });
-const idp = createServer(createApp({ services, env, rateLimits: [] }));
+const runtimes = new RuntimeRegistry({
+	primary: {
+		tenant,
+		services,
+		app: createTenantApp({ services, env }),
+		jwks,
+		version: 0,
+	},
+	primaryHosts: [new URL(E2E_ISSUER).host],
+	primaryDomain: tenant.domain,
+	registry,
+	maxActive: env.TENANT_MAX_ACTIVE,
+	logger,
+	build: (document) =>
+		buildTenantRuntime(
+			{ env, db, logger, secrets, appClientSecretKey, tenancy },
+			document,
+		),
+});
+built.runtimes = runtimes;
+const idp = createServer(
+	createDispatcher({
+		trustProxy: env.TRUST_PROXY,
+		rateLimits: [],
+		logger,
+		headers: securityHeaders(tenant.issuer, nativeRedirectSchemes(env)),
+		lookup: (host) => runtimes.lookup(host),
+	}),
+);
 
 const tools = createServer((req, res) => {
 	const url = new URL(req.url ?? "/", E2E_TOOLS);

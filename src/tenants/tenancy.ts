@@ -4,7 +4,10 @@ import { freemem } from "node:os";
 import type { Db } from "mongodb";
 import type { Env } from "../config/env.js";
 import type { Logger } from "../logger.js";
-import { type OwnershipResolver, SYSTEM_RESOLVER } from "./ownership-check.js";
+import {
+	type OwnershipResolver,
+	SYSTEM_RESOLVER,
+} from "./ownership-records.js";
 import { TenantClaims } from "./tenant-claims.js";
 import type { TenantRegistry } from "./tenant-registry.js";
 import type { TenantSecrets } from "./tenant-secrets.js";

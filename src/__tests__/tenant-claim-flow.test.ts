@@ -3,7 +3,7 @@ import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import type { OwnershipResolver } from "../tenants/ownership-check.js";
+import type { OwnershipResolver } from "../tenants/ownership-records.js";
 import { sharedFakeUpstreams } from "./helpers/fake-upstreams.js";
 import {
 	type MultiTenantServer,

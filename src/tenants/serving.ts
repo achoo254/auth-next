@@ -14,7 +14,7 @@ import type { Logger } from "../logger.js";
 import type { SigningJwks } from "../oidc/jwks.js";
 import { createInternalApi } from "./internal-api.js";
 import { parseInternalCredentials } from "./internal-auth.js";
-import { SYSTEM_RESOLVER } from "./ownership-check.js";
+import { SYSTEM_RESOLVER } from "./ownership-records.js";
 import { RuntimeRegistry } from "./runtime-registry.js";
 import { parseKeyring } from "./secret-keyring.js";
 import { type TenancyOverrides, createTenancy } from "./tenancy.js";

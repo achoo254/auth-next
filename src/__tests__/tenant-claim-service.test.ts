@@ -2,8 +2,8 @@ import type { Db } from "mongodb";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { createLogger } from "../logger.js";
 import { startClaim, verifyClaim } from "../tenants/claim-service.js";
-import type { OwnershipResolver } from "../tenants/ownership-check.js";
-import { claimTxtName } from "../tenants/ownership-check.js";
+import type { OwnershipResolver } from "../tenants/ownership-records.js";
+import { claimTxtName } from "../tenants/ownership-records.js";
 import { SecretKeyring } from "../tenants/secret-keyring.js";
 import type { Tenancy } from "../tenants/tenancy.js";
 import {
@@ -250,7 +250,25 @@ describe("verifying a claim", () => {
 		).toEqual({
 			ok: false,
 			error: "dns-address",
+			wrongHosts: [
+				"auth",
+				"chat",
+				"localman",
+				"localmanWildcard",
+				"tunnel",
+				"tunnelWildcard",
+			],
 		});
+		// Only the hosts still wrong are named.
+		pointAt("acme.org", mine.value.txt);
+		dns.a.set("chat.acme.org", ["198.51.100.7"]);
+		expect(
+			await verifyClaim(tenancy(), mine.value._id, {
+				id: "acc_a",
+				identities: [ALICE],
+			}),
+		).toMatchObject({ ok: false, error: "dns-address", wrongHosts: ["chat"] });
+		pointAt("acme.org", mine.value.txt, "198.51.100.7");
 		expect(
 			await verifyClaim(tenancy(), mine.value._id, {
 				id: "acc_b",

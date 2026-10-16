@@ -1,7 +1,7 @@
 import { MongoServerError } from "mongodb";
 import { parse } from "tldts";
 import { AuditOutbox } from "../audit/audit-outbox.js";
-import { checkOwnership } from "./ownership-check.js";
+import { type AppHostKey, checkOwnershipRecords } from "./ownership-records.js";
 import type { Tenancy } from "./tenancy.js";
 import { type ClaimDocument, MAX_PENDING_CLAIMS } from "./tenant-claims.js";
 import {
@@ -27,7 +27,12 @@ export type ClaimError =
 
 export type ClaimResult<T> =
 	| { readonly ok: true; readonly value: T }
-	| { readonly ok: false; readonly error: ClaimError };
+	| {
+			readonly ok: false;
+			readonly error: ClaimError;
+			/** With "dns-address": the hosts whose records are not right yet. */
+			readonly wrongHosts?: readonly AppHostKey[];
+	  };
 
 /** Tenants holding a slot (claimed or active) per account, so one person cannot fill TENANT_MAX_ACTIVE. */
 export const MAX_TENANTS_PER_ACCOUNT = 2;
@@ -126,19 +131,21 @@ export async function verifyClaim(
 		return { ok: false, error: "taken" };
 	}
 	if (!(await hasCapacity(tenancy))) return { ok: false, error: "capacity" };
-	const proof = await checkOwnership(
+	const proof = await checkOwnershipRecords(
 		claim.domain,
 		claim.txt,
 		tenancy.serviceIp,
 		tenancy.resolver,
 	);
-	if (proof !== "ok") {
+	if (proof.result !== "ok") {
 		const errors = {
 			txt: "dns-txt",
 			address: "dns-address",
 			unknown: "dns-unreachable",
 		} as const;
-		return { ok: false, error: errors[proof] };
+		return proof.result === "address"
+			? { ok: false, error: "dns-address", wrongHosts: proof.wrongHosts }
+			: { ok: false, error: errors[proof.result] };
 	}
 	const now = new Date();
 	const tenant: TenantDocument = {

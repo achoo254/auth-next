@@ -2,7 +2,7 @@
 export const enTenants = {
 	"claim.title": "Use your own domain",
 	"claim.lead":
-		"Run {brand} sign-in, Localman and Tunelo on a domain you control: auth., localman. and tunnel. under it, with their own accounts.",
+		"Run {brand} sign-in, Chat, Localman and Tunelo on a domain you control: auth., chat., localman. and tunnel. under it, with their own accounts.",
 	"claim.unavailable": "Claiming domains is not open on this server.",
 	"claim.noIdentity":
 		"Link a Google or GitHub account to your account first: the domain's owner is that account.",
@@ -13,14 +13,15 @@ export const enTenants = {
 	"claim.form.submit": "Start claim",
 	"claim.pending.title": "Waiting for DNS: {domain}",
 	"claim.pending.lead":
-		"Add these records at your DNS provider, then check. Each A record can be DNS only or proxied by Cloudflare (any SSL mode).",
+		"Add these records at your DNS provider, then check. DNS only is the simplest and works for everything. Proxied through Cloudflare also works with the zone's SSL mode on Full (strict); Flexible breaks Chat's real-time connection.",
 	"claim.records.hint":
 		"Click a name or value to select all of it, then copy it into your DNS provider.",
 	"claim.records.type": "Type",
 	"claim.records.name": "Name",
 	"claim.records.content": "Content",
 	"claim.records.proxy": "Proxy",
-	"claim.records.proxyEither": "DNS only or Proxied",
+	"claim.records.wrong": "Not yet",
+	"claim.records.proxyChoice": "DNS only (recommended)",
 	"claim.pending.expires": "The claim expires {date}.",
 	"claim.pending.verify": "Check DNS",
 	"claim.tenants.title": "Your domains",
@@ -44,7 +45,7 @@ export const enTenants = {
 	"claim.error.dnsTxt":
 		"The TXT record is missing or has another value. DNS changes can take a few minutes.",
 	"claim.error.dnsAddress":
-		"Not every hostname points to {ip} (DNS only) or to Cloudflare's proxy yet.",
+		"The records marked “Not yet” do not point to {ip} (DNS only) or to Cloudflare's proxy. Fix them and check again; DNS changes can take a few minutes.",
 	"claim.error.dnsUnreachable":
 		"DNS could not be checked right now. Try again in a minute.",
 	"admin.title": "Admin",
@@ -56,7 +57,7 @@ export const enTenants = {
 	"admin.status.active": "Active: people sign in at {issuer}.",
 	"admin.hosts.title": "Addresses",
 	"admin.hosts.help":
-		"Their A records can be DNS only or proxied by Cloudflare. Proxied, the *.localman. and *.tunnel. subdomains need a Cloudflare edge certificate that covers two-level wildcards (paid plans).",
+		"Their A records can be DNS only (recommended) or proxied by Cloudflare. Proxied needs SSL Full (strict): Flexible breaks Chat's real-time connection. Proxied *.localman. and *.tunnel. subdomains also need a Cloudflare edge certificate that covers two-level wildcards (paid plans).",
 	"admin.certificate.pending": "Certificates: being issued.",
 	"admin.certificate.issued": "Certificates: issued {date}.",
 	"admin.certificate.failed":

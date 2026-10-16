@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { CLOUDFLARE_IPV4_RANGES, isCloudflareIpv4 } from "./cloudflare-ips.js";
-import { pointsHere } from "./ownership-check.js";
+import { pointsHere } from "./ownership-records.js";
 
 describe("isCloudflareIpv4", () => {
 	it("accepts addresses inside the ranges, edges included", () => {

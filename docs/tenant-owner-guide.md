@@ -6,6 +6,9 @@ dùng Localman ở `localman.<domain>` và Tunelo ở `tunnel.<domain>`. Mỗi d
 (ADR [0006](decisions/0006-tenants-by-domain.md)). Không cần cài gì: mọi thứ chạy trên máy
 chủ của hoandat.com.
 
+Bản cho khách, có ảnh chụp màn hình từng bước và đủ ba ngôn ngữ, ở trang công khai
+`https://auth.hoandat.com/guide/domain` (`src/guide/`). Đổi các bước ở đây thì sửa cả trang đó.
+
 ## Cần chuẩn bị
 
 - Một tài khoản ở `https://auth.hoandat.com` có liên kết Google hoặc GitHub. Danh tính

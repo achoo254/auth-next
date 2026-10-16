@@ -2,10 +2,8 @@ import type { Db } from "mongodb";
 import { AuditOutbox } from "../audit/audit-outbox.js";
 import type { Logger } from "../logger.js";
 import { ownerSubject } from "./claim-service.js";
-import {
-	type OwnershipResolver,
-	checkAllOwnership,
-} from "./ownership-check.js";
+import { checkAllOwnership } from "./ownership-check.js";
+import type { OwnershipResolver } from "./ownership-records.js";
 import type { RuntimeRegistry } from "./runtime-registry.js";
 import type { TenantDocument, TenantRegistry } from "./tenant-registry.js";
 

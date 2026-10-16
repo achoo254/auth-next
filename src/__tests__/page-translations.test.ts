@@ -8,6 +8,7 @@ import {
 	renderAccountPage,
 } from "../account-portal/account-page.js";
 import { renderAppsPage } from "../app-directory/apps-page.js";
+import { renderDomainGuide } from "../guide/domain-guide-page.js";
 import type { Locale } from "../i18n/locales.js";
 import { renderConsent } from "../interactions/consent-page.js";
 import { renderDeviceApproval } from "../interactions/device-verify-page.js";
@@ -107,6 +108,7 @@ function pages(locale: Locale): Record<string, string> {
 		}),
 		error: renderErrorPage({ host: HOST, page, message: "x", code: "c" }),
 		privacy: renderPrivacyPage(HOST, page),
+		guide: renderDomainGuide(HOST, "/claim", page),
 		apps: renderAppsPage(APP_URLS, page),
 		account: renderAccountPage(view),
 		confirmApp: renderRemoveAppConfirm({

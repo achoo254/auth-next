@@ -38,6 +38,8 @@ SSH_TARGET=<alias> [SSH_OPTS="-F ssh_config"] bash infra/deploy.sh
 
 Script build, rsync `dist/ static/ infra/ package.json pnpm-lock.yaml pnpm-workspace.yaml` (chủ sở hữu `root`), cài dependency production bằng pnpm 11.9, `pm2 startOrReload`, `pm2 save`, rồi đợi `/healthz`.
 
+Ảnh của trang `/guide/domain` nằm trong `static/img/guide/` và đi theo deploy. Đổi giao diện `/claim` hay `/admin` thì chụp lại bằng `pnpm guide:screenshots` (dữ liệu mẫu, tự che giá trị TXT) trước khi deploy; ảnh của Cloudflare, GitHub, Google ở `common/` chụp tay, che email, ID, domain thật trước khi lưu.
+
 ## Chuyển sang dữ liệu có tenant (ADR 0006)
 
 Bản đầu tiên có tenant deploy theo thứ tự này (lệnh trên server chạy trong `/var/www/hoandat-auth`):

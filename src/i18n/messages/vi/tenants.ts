@@ -4,7 +4,7 @@ import type { Translation } from "../translation.js";
 export const viTenants: Translation<typeof enTenants> = {
 	"claim.title": "Dùng domain của riêng bạn",
 	"claim.lead":
-		"Chạy đăng nhập {brand}, Localman và Tunelo trên domain bạn sở hữu: auth., localman. và tunnel. dưới domain đó, với tài khoản riêng.",
+		"Chạy đăng nhập {brand}, Chat, Localman và Tunelo trên domain bạn sở hữu: auth., chat., localman. và tunnel. dưới domain đó, với tài khoản riêng.",
 	"claim.unavailable": "Máy chủ này chưa mở nhận domain.",
 	"claim.noIdentity":
 		"Hãy liên kết một tài khoản Google hoặc GitHub với tài khoản của bạn trước: chủ của domain là tài khoản đó.",
@@ -15,14 +15,15 @@ export const viTenants: Translation<typeof enTenants> = {
 	"claim.form.submit": "Bắt đầu nhận domain",
 	"claim.pending.title": "Đang chờ DNS: {domain}",
 	"claim.pending.lead":
-		"Thêm các bản ghi này ở nhà cung cấp DNS rồi bấm kiểm tra. Mỗi bản ghi A để Chỉ DNS hoặc bật proxy Cloudflare (chế độ SSL nào cũng được).",
+		"Thêm các bản ghi này ở nhà cung cấp DNS rồi bấm kiểm tra. Chỉ DNS là đơn giản nhất và mọi thứ đều chạy. Bật proxy Cloudflare cũng được nếu SSL của zone để Full (strict); Flexible làm hỏng kết nối thời gian thực của Chat.",
 	"claim.records.hint":
 		"Bấm vào tên hoặc giá trị để chọn cả ô, rồi copy sang nhà cung cấp DNS.",
 	"claim.records.type": "Loại",
 	"claim.records.name": "Tên",
 	"claim.records.content": "Giá trị",
 	"claim.records.proxy": "Proxy",
-	"claim.records.proxyEither": "Chỉ DNS hoặc Proxied",
+	"claim.records.wrong": "Chưa đúng",
+	"claim.records.proxyChoice": "Chỉ DNS (khuyên dùng)",
 	"claim.pending.expires": "Lượt nhận hết hạn lúc {date}.",
 	"claim.pending.verify": "Kiểm tra DNS",
 	"claim.tenants.title": "Domain của bạn",
@@ -47,7 +48,7 @@ export const viTenants: Translation<typeof enTenants> = {
 	"claim.error.dnsTxt":
 		"Không thấy bản ghi TXT hoặc giá trị khác. Thay đổi DNS có thể mất vài phút.",
 	"claim.error.dnsAddress":
-		"Chưa phải mọi hostname đều trỏ tới {ip} (Chỉ DNS) hoặc qua proxy Cloudflare.",
+		"Các bản ghi đánh dấu “Chưa đúng” chưa trỏ tới {ip} (Chỉ DNS) hoặc qua proxy Cloudflare. Sửa rồi kiểm tra lại; thay đổi DNS có thể mất vài phút.",
 	"claim.error.dnsUnreachable":
 		"Chưa kiểm được DNS lúc này. Hãy thử lại sau một phút.",
 	"admin.title": "Quản trị",
@@ -59,7 +60,7 @@ export const viTenants: Translation<typeof enTenants> = {
 	"admin.status.active": "Đang hoạt động: người dùng đăng nhập tại {issuer}.",
 	"admin.hosts.title": "Địa chỉ",
 	"admin.hosts.help":
-		"Bản ghi A của các địa chỉ này để Chỉ DNS hoặc bật proxy Cloudflare đều được. Khi bật proxy, subdomain của *.localman. và *.tunnel. cần chứng chỉ edge của Cloudflare phủ wildcard hai cấp (gói trả phí).",
+		"Bản ghi A của các địa chỉ này để Chỉ DNS (khuyên dùng) hoặc bật proxy Cloudflare. Khi bật proxy, SSL phải là Full (strict): Flexible làm hỏng kết nối thời gian thực của Chat. Bật proxy cho subdomain của *.localman. và *.tunnel. còn cần chứng chỉ edge của Cloudflare phủ wildcard hai cấp (gói trả phí).",
 	"admin.certificate.pending": "Chứng chỉ: đang cấp.",
 	"admin.certificate.issued": "Chứng chỉ: đã cấp lúc {date}.",
 	"admin.certificate.failed":

@@ -15,6 +15,7 @@ export const STATIC_DIR = fileURLToPath(new URL("../static", import.meta.url));
 const require = createRequire(import.meta.url);
 
 const CSS_DIR = `${STATIC_DIR}/css`;
+const IMG_DIR = `${STATIC_DIR}/img`;
 const ONE_HOUR_MS = 60 * 60 * 1000;
 
 /**
@@ -89,8 +90,9 @@ function cssRoute(): RequestHandler {
 }
 
 /**
- * /assets: the token and page stylesheets, plus self-hosted Inter and
- * JetBrains Mono (each weight's CSS covers the Vietnamese subset).
+ * /assets: the token and page stylesheets, the guide's images, plus
+ * self-hosted Inter and JetBrains Mono (each weight's CSS covers the
+ * Vietnamese subset).
  */
 export function createAssetsRouter(): Router {
 	const router = Router();
@@ -100,5 +102,14 @@ export function createAssetsRouter(): Router {
 		fontRoute(fontPackageDir("jetbrains-mono")),
 	);
 	router.use("/css", cssRoute());
+	// Guide screenshots: replaced in place when regenerated, so cached briefly.
+	router.use(
+		"/img",
+		express.static(IMG_DIR, {
+			index: false,
+			fallthrough: false,
+			maxAge: ONE_HOUR_MS,
+		}),
+	);
 	return router;
 }

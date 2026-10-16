@@ -3,6 +3,7 @@ import { createAccountRouter } from "./account-portal/account-routes.js";
 import { createAppsRouter } from "./app-directory/apps-page.js";
 import { createAssetsRouter } from "./assets.js";
 import type { Env } from "./config/env.js";
+import { createDomainGuideRouter } from "./guide/domain-guide-page.js";
 import { createErrorHandler } from "./http/error-handler.js";
 import {
 	type RateLimitRule,
@@ -21,7 +22,7 @@ import { createTelegramLinkRouter } from "./telegram/link-routes.js";
 import { createTelegramWebhookRouter } from "./telegram/webhook-routes.js";
 import { inactiveTenant } from "./tenants/admin-gate-pages.js";
 import { createAdminRouter } from "./tenants/admin-routes.js";
-import { createClaimRouter } from "./tenants/claim-routes.js";
+import { CLAIM_PATH, createClaimRouter } from "./tenants/claim-routes.js";
 import { PRIMARY_TENANT_ID } from "./tenants/env-tenant.js";
 import { bindRequestTenant } from "./tenants/request-tenant.js";
 
@@ -64,6 +65,7 @@ export function createTenantApp(options: TenantAppOptions): Express {
 	const { tenancy } = services;
 	if (tenancy && tenant.id === PRIMARY_TENANT_ID) {
 		app.use(createClaimRouter(services, tenancy));
+		app.use(createDomainGuideRouter(new URL(tenant.issuer).host, CLAIM_PATH));
 	}
 	if (tenancy && tenant.id !== PRIMARY_TENANT_ID) {
 		app.use(createAdminRouter(services, tenancy));

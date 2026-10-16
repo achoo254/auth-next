@@ -4,7 +4,7 @@ import type { Translation } from "../translation.js";
 export const zhTenants: Translation<typeof enTenants> = {
 	"claim.title": "使用你自己的域名",
 	"claim.lead":
-		"在你拥有的域名上运行 {brand} 登录、Localman 和 Tunelo：其下的 auth.、localman. 和 tunnel.，并使用独立的账号。",
+		"在你拥有的域名上运行 {brand} 登录、Chat、Localman 和 Tunelo：其下的 auth.、chat.、localman. 和 tunnel.，并使用独立的账号。",
 	"claim.unavailable": "此服务器尚未开放域名认领。",
 	"claim.noIdentity":
 		"请先将 Google 或 GitHub 账号关联到你的账号：域名的所有者就是该账号。",
@@ -15,13 +15,14 @@ export const zhTenants: Translation<typeof enTenants> = {
 	"claim.form.submit": "开始认领",
 	"claim.pending.title": "等待 DNS：{domain}",
 	"claim.pending.lead":
-		"在你的 DNS 服务商处添加以下记录，然后检查。每条 A 记录可设为仅 DNS，或经 Cloudflare 代理（任一 SSL 模式）。",
+		"在你的 DNS 服务商处添加以下记录，然后检查。仅 DNS 最简单，所有功能都可用。经 Cloudflare 代理也可以，但区域的 SSL 模式须为 Full (strict)；Flexible 会破坏 Chat 的实时连接。",
 	"claim.records.hint": "点击名称或内容即可全选，然后复制到 DNS 服务商。",
 	"claim.records.type": "类型",
 	"claim.records.name": "名称",
 	"claim.records.content": "内容",
 	"claim.records.proxy": "代理",
-	"claim.records.proxyEither": "仅 DNS 或已代理",
+	"claim.records.wrong": "未正确",
+	"claim.records.proxyChoice": "仅 DNS（推荐）",
 	"claim.pending.expires": "认领将于 {date} 过期。",
 	"claim.pending.verify": "检查 DNS",
 	"claim.tenants.title": "你的域名",
@@ -40,7 +41,7 @@ export const zhTenants: Translation<typeof enTenants> = {
 	"claim.error.notFound": "此认领已过期或不属于你。",
 	"claim.error.dnsTxt": "未找到 TXT 记录或其值不同。DNS 更改可能需要几分钟。",
 	"claim.error.dnsAddress":
-		"并非所有主机名都已指向 {ip}（仅 DNS）或 Cloudflare 代理。",
+		"标记为“未正确”的记录尚未指向 {ip}（仅 DNS）或 Cloudflare 代理。修改后再检查；DNS 更改可能需要几分钟。",
 	"claim.error.dnsUnreachable": "暂时无法检查 DNS，请一分钟后重试。",
 	"admin.title": "管理",
 	"admin.lead": "{domain} 的设置。只有其所有者能打开此页面。",
@@ -50,7 +51,7 @@ export const zhTenants: Translation<typeof enTenants> = {
 	"admin.status.active": "已启用：用户在 {issuer} 登录。",
 	"admin.hosts.title": "地址",
 	"admin.hosts.help":
-		"这些地址的 A 记录可设为仅 DNS，或经 Cloudflare 代理。经代理时，*.localman. 和 *.tunnel. 的子域名需要覆盖两级通配符的 Cloudflare 边缘证书（付费套餐）。",
+		"这些地址的 A 记录可设为仅 DNS（推荐）或经 Cloudflare 代理。经代理时 SSL 须为 Full (strict)：Flexible 会破坏 Chat 的实时连接。代理 *.localman. 和 *.tunnel. 的子域名还需要覆盖两级通配符的 Cloudflare 边缘证书（付费套餐）。",
 	"admin.certificate.pending": "证书：正在签发。",
 	"admin.certificate.issued": "证书：已于 {date} 签发。",
 	"admin.certificate.failed":

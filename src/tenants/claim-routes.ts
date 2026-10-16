@@ -19,6 +19,7 @@ import type { AppServices } from "../services.js";
 import { pageContext } from "../ui/page-context.js";
 import { sendPage } from "../ui/send-page.js";
 import { issueAdminHandoff } from "./admin-session.js";
+import { verifyFailureQuery, wrongRecordsFrom } from "./claim-dns-feedback.js";
 import { type ClaimIdentity, renderClaimPage } from "./claim-page.js";
 import { type ClaimError, startClaim, verifyClaim } from "./claim-service.js";
 import type { Tenancy } from "./tenancy.js";
@@ -96,6 +97,7 @@ export function createClaimRouter(
 						identities,
 						claims: await tenancy.claims.listFor(portal.account._id),
 						tenants: await tenancy.registry.listByOwners(identities),
+						wrongRecords: wrongRecordsFrom(req.query),
 						notice: isClaimError(error)
 							? {
 									tone: "error",
@@ -150,14 +152,15 @@ export function createClaimRouter(
 		portalRoute(
 			services,
 			async (req, res, portal) => {
-				const result = await verifyClaim(tenancy, routeParam(req, "claimId"), {
+				const claimId = routeParam(req, "claimId");
+				const result = await verifyClaim(tenancy, claimId, {
 					id: portal.account._id,
 					identities: identitiesOf(portal.account),
 				});
 				if (result.ok) tenancy.changed(result.value._id);
 				res.redirect(
 					303,
-					`${CLAIM_PATH}?${result.ok ? "notice=verified" : `error=${result.error}`}`,
+					`${CLAIM_PATH}?${result.ok ? "notice=verified" : verifyFailureQuery(result.error, claimId, result.wrongHosts)}`,
 				);
 			},
 			{ csrf: true },

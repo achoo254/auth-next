@@ -1,12 +1,14 @@
 import type { Db } from "mongodb";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { createLogger } from "../logger.js";
-import type { OwnershipResolver } from "../tenants/ownership-check.js";
 import {
 	SUSPEND_AFTER_FAILURES,
 	checkAllOwnership,
-	claimTxtName,
 } from "../tenants/ownership-check.js";
+import {
+	type OwnershipResolver,
+	claimTxtName,
+} from "../tenants/ownership-records.js";
 import { RuntimeRegistry, authDomainOf } from "../tenants/runtime-registry.js";
 import {
 	type TenantDocument,

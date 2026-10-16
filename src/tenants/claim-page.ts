@@ -1,6 +1,7 @@
 import { accountCard, emptyState } from "../account-portal/account-card.js";
 import { accountIcon } from "../account-portal/account-icons.js";
 import { UPSTREAM_LABELS } from "../accounts/upstream-client.js";
+import { DOMAIN_GUIDE_PATH } from "../guide/domain-guide-page.js";
 import type { MessageKey } from "../i18n/dictionaries.js";
 import {
 	alertBox,
@@ -12,6 +13,8 @@ import {
 import { type SafeHtml, html } from "../ui/html.js";
 import { renderPage } from "../ui/layout.js";
 import type { PageContext } from "../ui/page-context.js";
+import type { WrongRecords } from "./claim-dns-feedback.js";
+import { APP_HOST_KEYS } from "./ownership-records.js";
 import { type ClaimDocument, claimRecord } from "./tenant-claims.js";
 import type { TenantDocument, TenantOwner } from "./tenant-registry.js";
 import { appHostsFor } from "./tenant.js";
@@ -31,6 +34,8 @@ export interface ClaimView {
 	readonly identities: readonly ClaimIdentity[];
 	readonly claims: readonly ClaimDocument[];
 	readonly tenants: readonly TenantDocument[];
+	/** Records the last DNS check found wrong, marked in their claim's table. */
+	readonly wrongRecords?: WrongRecords;
 	readonly notice?: {
 		readonly tone: "success" | "error";
 		readonly text: string;
@@ -60,24 +65,19 @@ function dnsRecords(view: ClaimView, claim: ClaimDocument): SafeHtml {
 	const txt = claimRecord(claim);
 	const hosts = appHostsFor(claim.domain);
 	const ip = view.serviceIp ?? "";
-	const addresses = [
-		hosts.auth,
-		hosts.chat,
-		hosts.localman,
-		hosts.localmanWildcard,
-		hosts.tunnel,
-		hosts.tunnelWildcard,
-	];
-	const proxy = i18n.t("claim.records.proxyEither");
+	const wrong =
+		view.wrongRecords?.claimId === claim._id ? view.wrongRecords.hosts : [];
+	const proxy = i18n.t("claim.records.proxyChoice");
+	const wrongBadge = html` <span class="badge badge-warning">${i18n.t("claim.records.wrong")}</span>`;
 	return html`<div class="dns-records" data-id="claim-records">
 <table>
 <caption class="help">${i18n.t("claim.records.hint")}</caption>
 <thead><tr><th scope="col">${i18n.t("claim.records.type")}</th><th scope="col">${i18n.t("claim.records.name")}</th><th scope="col">${i18n.t("claim.records.content")}</th><th scope="col">${i18n.t("claim.records.proxy")}</th></tr></thead>
 <tbody>
 <tr><td>TXT</td><td><code class="copyable host" data-id="claim-txt-name">${hostName(txt.name)}</code></td><td><code class="copyable" data-id="claim-txt-value">${txt.value}</code></td><td></td></tr>
-${addresses.map(
-	(host) =>
-		html`<tr><td>A</td><td><code class="copyable host">${hostName(host)}</code></td><td><code class="copyable host">${ip}</code></td><td>${proxy}</td></tr>`,
+${APP_HOST_KEYS.map(
+	(key) =>
+		html`<tr data-id="claim-record-${key}"><td>A</td><td><code class="copyable host">${hostName(hosts[key])}</code></td><td><code class="copyable host">${ip}</code></td><td>${proxy}${wrong.includes(key) ? wrongBadge : ""}</td></tr>`,
 )}
 </tbody>
 </table>
@@ -138,6 +138,7 @@ ${view.identities.map((identity) =>
 export function renderClaimPage(view: ClaimView): string {
 	const { i18n } = view.page;
 	const body = html`${pageTitle(i18n.t("claim.title"), i18n.t("claim.lead"))}
+<p class="help"><a href="${DOMAIN_GUIDE_PATH}" data-id="claim-guide-link">${i18n.t("claim.guideLink")}</a></p>
 ${view.notice ? alertBox(view.notice.tone, view.notice.text) : ""}
 <div class="account-grid">
 ${accountCard({ id: "claim-start", icon: accountIcon("apps"), title: i18n.t("claim.form.submit"), description: i18n.t("claim.form.domainHelp"), body: claimForm(view) })}

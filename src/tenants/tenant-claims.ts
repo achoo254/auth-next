@@ -1,6 +1,6 @@
 import { randomBytes } from "node:crypto";
 import type { Collection, Db } from "mongodb";
-import { claimTxtName } from "./ownership-check.js";
+import { claimTxtName } from "./ownership-records.js";
 import type { TenantOwner } from "./tenant-registry.js";
 
 /** How long a started claim waits for its DNS records. */

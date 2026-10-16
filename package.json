@@ -17,6 +17,7 @@
 		"typecheck": "tsc --noEmit",
 		"test": "vitest run",
 		"test:e2e": "playwright test",
+		"guide:screenshots": "playwright test -c playwright.guide.config.ts",
 		"generate-key": "tsx scripts/generate-signing-key.ts",
 		"conformance:idp": "tsx e2e/support/conformance-server.ts",
 		"check:tokens": "tsx scripts/check-tokens.ts",
