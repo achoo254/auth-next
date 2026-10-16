@@ -24,6 +24,21 @@ export const CLOUDFLARE_IPV4_RANGES: readonly string[] = [
 	"131.0.72.0/22",
 ];
 
+/**
+ * Cloudflare's published IPv6 ranges (https://www.cloudflare.com/ips-v6).
+ * Not used by the ownership check (tenants publish A records); nginx
+ * trusts them too, for when the server answers over IPv6.
+ */
+export const CLOUDFLARE_IPV6_RANGES: readonly string[] = [
+	"2400:cb00::/32",
+	"2606:4700::/32",
+	"2803:f800::/32",
+	"2405:b500::/32",
+	"2405:8100::/32",
+	"2a06:98c0::/29",
+	"2c0f:f248::/32",
+];
+
 function toNumber(ip: string): number {
 	return ip.split(".").reduce((value, octet) => value * 256 + Number(octet), 0);
 }

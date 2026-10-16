@@ -1,6 +1,10 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import { CLOUDFLARE_IPV4_RANGES, isCloudflareIpv4 } from "./cloudflare-ips.js";
+import {
+	CLOUDFLARE_IPV4_RANGES,
+	CLOUDFLARE_IPV6_RANGES,
+	isCloudflareIpv4,
+} from "./cloudflare-ips.js";
 import { pointsHere } from "./ownership-records.js";
 
 describe("isCloudflareIpv4", () => {
@@ -27,17 +31,24 @@ describe("isCloudflareIpv4", () => {
 				conf,
 			);
 		const listed = [
-			...(block?.[1] ?? "").matchAll(/^\s*([0-9./]+)\s+1;/gm),
+			...(block?.[1] ?? "").matchAll(/^\s*([0-9a-f.:/]+)\s+1;/gm),
 		].map((match) => match[1]);
-		expect(listed).toEqual(CLOUDFLARE_IPV4_RANGES);
+		expect(listed).toEqual([
+			...CLOUDFLARE_IPV4_RANGES,
+			...CLOUDFLARE_IPV6_RANGES,
+		]);
 	});
 
 	it("matches the real-IP trust of the tenant auth block", () => {
 		const conf = readFileSync("infra/nginx/tenant-auth.conf", "utf8");
 		const trusted = [
-			...conf.matchAll(/^\s*set_real_ip_from\s+([0-9./]+);/gm),
+			...conf.matchAll(/^\s*set_real_ip_from\s+([0-9a-f.:/]+);/gm),
 		].map((match) => match[1]);
-		expect(trusted).toEqual(["127.0.0.1", ...CLOUDFLARE_IPV4_RANGES]);
+		expect(trusted).toEqual([
+			"127.0.0.1",
+			...CLOUDFLARE_IPV4_RANGES,
+			...CLOUDFLARE_IPV6_RANGES,
+		]);
 	});
 });
 
