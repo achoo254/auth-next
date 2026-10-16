@@ -1,5 +1,6 @@
 import { type Request, type Response, Router } from "express";
 import type { UpstreamProvider } from "../accounts/user-model.js";
+import { DOMAIN_GUIDE_PATH } from "../guide/domain-guide-page.js";
 import {
 	formRateLimit,
 	formValue,
@@ -106,6 +107,7 @@ export function createAdminRouter(
 				page,
 				csrf: services.csrf.token(req, res, scope(session)),
 				tenant,
+				guideUrl: new URL(DOMAIN_GUIDE_PATH, tenancy.claimUrl).href,
 				oauth,
 				dnsConfigured: await tenancy.secrets.has(tenantId, "dns-cloudflare"),
 				dnsAvailable: tenancy.provisionerPublicKey !== undefined,

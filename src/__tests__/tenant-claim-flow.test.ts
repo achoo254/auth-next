@@ -235,7 +235,11 @@ describe("tenant admin", () => {
 		expect((await owner.request(handoff)).headers.get("location")).toBe(
 			"/admin",
 		);
-		expect(await adminForm()).toContain('data-id="admin-save-name"');
+		const admin = await adminForm();
+		expect(admin).toContain('data-id="admin-save-name"');
+		// The guide lives on the primary tenant only: linked absolutely.
+		expect(admin).toContain('data-id="admin-guide-link"');
+		expect(admin).toMatch(/href="https?:\/\/[^"/]+\/guide\/domain"/);
 		// Used once: the same link gives nobody a session.
 		const stranger = new HostClient(AUTH);
 		await stranger.request(handoff);

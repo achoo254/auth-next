@@ -26,6 +26,8 @@ export interface AdminView {
 	readonly page: PageContext;
 	readonly csrf: string;
 	readonly tenant: TenantDocument;
+	/** The step-by-step guide, on the primary tenant (absolute URL). */
+	readonly guideUrl: string;
 	/** Client ids of the configured OAuth apps (never their secrets). */
 	readonly oauth: Readonly<Partial<Record<UpstreamProvider, string>>>;
 	readonly dnsConfigured: boolean;
@@ -153,6 +155,7 @@ export function renderAdminPage(view: AdminView): string {
 		}),
 	];
 	const body = html`${pageTitle(i18n.t("admin.title"), i18n.t("admin.lead", { domain }))}
+<p class="help"><a class="link" href="${view.guideUrl}" data-id="admin-guide-link">${i18n.t("claim.guideLink")}</a></p>
 ${view.result ? alertBox(view.result.tone, view.result.text) : ""}
 ${overview(view)}
 <div class="account-grid">${cards}</div>
