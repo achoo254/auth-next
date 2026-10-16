@@ -141,9 +141,11 @@ const url = oidc.buildAuthorizationUrl(config, {
 | Scope | Claim | Ở đâu |
 |---|---|---|
 | `openid` | `sub` | ID token, userinfo |
-| `profile` | `preferred_username`, `name`, `picture`, `telegram_linked` | ID token, userinfo |
-| `email` | `email`, `email_verified` (`true` chỉ khi Google/GitHub xác minh) | ID token, userinfo |
+| `profile` | `preferred_username`, `name`, `picture`, `telegram_linked` | userinfo |
+| `email` | `email`, `email_verified` (`true` chỉ khi Google/GitHub xác minh) | userinfo |
 | `telegram` (chỉ `localman-web`) | `telegram_chat_id` (chuỗi), `telegram_username` (không có `@`, có thể thiếu) | **chỉ userinfo**, và chỉ khi đã liên kết |
+
+Với code flow, ID token chỉ có `sub` (kèm `sid`, `auth_time`); claim của `profile` và `email` **không** nằm trong ID token (oidc-provider giữ `conformIdTokenClaims` mặc định). Client lấy hồ sơ bằng `userinfo_endpoint` với access token vừa nhận và kiểm `sub` của userinfo khớp ID token (Scribe từng đọc `email` trong ID token và từ chối mọi lần đăng nhập, 16/10/2026).
 
 ### Chat Telegram cho thông báo của Localman
 
