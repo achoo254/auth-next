@@ -1,4 +1,3 @@
-import { setDefaultResultOrder } from "node:dns";
 import type { Server } from "node:http";
 import { setDefaultAutoSelectFamilyAttemptTimeout } from "node:net";
 import type { Express } from "express";
@@ -29,14 +28,6 @@ const SHUTDOWN_TIMEOUT_MS = 10_000;
 const CONNECT_ATTEMPT_TIMEOUT_MS = 1_000;
 
 setDefaultAutoSelectFamilyAttemptTimeout(CONNECT_ATTEMPT_TIMEOUT_MS);
-/**
- * The production host learns an IPv6 default route from router adverts but
- * has no global IPv6 address, so every IPv6 connect dies. Hosts behind
- * Cloudflare answer AAAA first, and with the default "verbatim" order the
- * back-channel logout POSTs (2.5 s budget) and audit deliveries timed out
- * before happy eyeballs reached IPv4 (2026-10-16). Resolve IPv4 first.
- */
-setDefaultResultOrder("ipv4first");
 
 function loadEnvOrExit(): Env {
 	try {
