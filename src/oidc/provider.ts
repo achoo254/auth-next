@@ -100,6 +100,28 @@ export function tenantResourcePolicy(
 	return createResourcePolicy(resourcesFor(tenant.domain));
 }
 
+/**
+ * Budget of the provider's own outbound calls (back-channel logout, client
+ * JWKS). The apps share this host but are reached through Cloudflare, and
+ * that path took up to ~5 s on 2026-10-16, so the 2.5 s default dropped
+ * back-channel logouts to Scribe and chat. Back-channel calls are not retried.
+ */
+export const PROVIDER_HTTP_TIMEOUT_MS = 10_000;
+
+/**
+ * oidc-provider's `fetch`: same request (its SSRF-guarding dispatcher and
+ * headers kept), only the 2.5 s abort signal replaced by our budget.
+ */
+export function providerFetch(
+	url: string | URL | Request,
+	options?: RequestInit,
+): Promise<Response> {
+	return globalThis.fetch(url, {
+		...options,
+		signal: AbortSignal.timeout(PROVIDER_HTTP_TIMEOUT_MS),
+	});
+}
+
 export function buildProviderConfiguration(
 	deps: Omit<ProviderDependencies, "logger">,
 ): Configuration {
@@ -166,6 +188,7 @@ export function buildProviderConfiguration(
 			!token.scopes.has("offline_access") &&
 			!refreshesPerDevice(ctx.oidc.client?.clientId),
 		features: buildProviderFeatures(resources),
+		fetch: providerFetch,
 	};
 }
 
