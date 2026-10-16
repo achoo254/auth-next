@@ -39,8 +39,12 @@ chọn cả giá trị để copy).
 Mỗi bản ghi A có thể trỏ thẳng về máy chủ (DNS only) hoặc bật proxy Cloudflare (Proxied, mây
 cam), chế độ SSL nào của zone cũng được:
 
-- **Flexible:** đoạn từ Cloudflare về máy chủ không mã hoá. Dùng được, nhưng Full (strict) an
-  toàn hơn.
+- **Flexible:** đoạn từ Cloudflare về máy chủ không mã hoá. Trang web và đăng nhập chạy được,
+  nhưng **WebSocket không tin được**: Cloudflare cắt kết nối khi frame từ 8 byte trở lên (đo
+  16/10/2026), nên app dùng WebSocket như chat không đồng bộ được. Host nào cần WebSocket thì
+  đặt Full (strict) cho riêng host đó bằng Configuration Rule của Cloudflare (Rules →
+  Configuration Rules, điều kiện `Hostname equals chat.<domain>`, SSL: Full (strict)); gói free
+  cũng có. Full (strict) cũng an toàn hơn.
 - **Full / Full (strict):** máy chủ có chứng chỉ Let's Encrypt thật cho các host này. Nếu bật
   "Always Use HTTPS" mà chưa có token Cloudflare (bước 5), lần cấp chứng chỉ đầu có thể không
   qua: thêm token, hoặc để DNS only tới khi chứng chỉ được cấp.
