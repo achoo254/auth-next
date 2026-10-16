@@ -31,6 +31,14 @@ describe("isCloudflareIpv4", () => {
 		].map((match) => match[1]);
 		expect(listed).toEqual(CLOUDFLARE_IPV4_RANGES);
 	});
+
+	it("matches the real-IP trust of the tenant auth block", () => {
+		const conf = readFileSync("infra/nginx/tenant-auth.conf", "utf8");
+		const trusted = [
+			...conf.matchAll(/^\s*set_real_ip_from\s+([0-9./]+);/gm),
+		].map((match) => match[1]);
+		expect(trusted).toEqual(["127.0.0.1", ...CLOUDFLARE_IPV4_RANGES]);
+	});
 });
 
 describe("pointsHere", () => {
