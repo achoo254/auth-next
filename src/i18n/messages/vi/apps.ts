@@ -34,6 +34,9 @@ export const viApps: Translation<typeof enApps> = {
 	"apps.chatWeb.description":
 		"Nhắn tin nhanh, tìm lại lịch sử tin nhắn và dùng bot.",
 	"apps.chatWeb.signIn": "Chọn Đăng nhập trên trang.",
+	"apps.scribeWeb.description":
+		"Ghi âm và chuyển thành bản chép lời để tìm kiếm, chỉnh sửa.",
+	"apps.scribeWeb.signIn": "Chọn Đăng nhập trên trang.",
 	"apps.steps.title": "Đăng nhập diễn ra thế nào",
 	"apps.steps.choose.title": "Chọn một ứng dụng",
 	"apps.steps.choose.body":

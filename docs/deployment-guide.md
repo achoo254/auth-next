@@ -120,6 +120,19 @@ done
 
 **Trạng thái production (15/10/2026):** đã đặt `CHAT_WEB_URL`, `CHAT_WEB_CLIENT_SECRET` (chưa đặt `CHAT_MOBILE_REDIRECT_URI`, dùng mặc định); `/opt/chat/.env` có `OIDC_ISSUER`, `OIDC_CLIENT_ID`, `OIDC_CLIENT_SECRET`; cả ba client có trên IdP (build 14/10/2026 15:57). API nội bộ chưa có vai `chat` (`InternalRole` trong `src/tenants/internal-auth.ts` chỉ có `localman`, `tunelo`, `provisioner`).
 
+## Client của app Scribe
+
+App Scribe (repo `scribe-next`, thư mục local `one-scribe`, `https://scribe.hoandat.com`, systemd trên cùng máy) đăng nhập qua `scribe-web` (confidential, BFF: backend đổi code, cookie phiên của Scribe), `scribe-mobile` (public native, scheme riêng) và `scribe-web-dev` (tuỳ chọn, chỉ cho dev local) — `src/oidc/scribe-clients.ts`. **Chỉ tenant chính** có các client này; không có secret dẫn xuất theo tenant.
+
+| Env | Ý nghĩa |
+|---|---|
+| `SCRIBE_WEB_URL` | origin của Scribe, mặc định `https://scribe.hoandat.com`; redirect `/api/auth/callback`, back-channel `/api/auth/backchannel-logout` |
+| `SCRIBE_WEB_CLIENT_SECRET` | tuỳ chọn, ≥ 32 ký tự; có thì bật `scribe-web` + `scribe-mobile` và thẻ Scribe ở `/apps`; thiếu thì không có client web và IdP vẫn khởi động. Cùng giá trị ở tệp secret OIDC của Scribe |
+| `SCRIBE_MOBILE_REDIRECT_URI` | tuỳ chọn, mặc định `com.hoandat.scribe:/auth/callback`; phải trùng URL scheme của app iPhone |
+| `SCRIBE_WEB_DEV_URL` + `SCRIBE_WEB_DEV_CLIENT_SECRET` | đặt cả hai hoặc không: bật `scribe-web-dev` (redirect loopback, cổng khớp chính xác, vd `http://localhost:5174/api/auth/callback`, không back-channel) và `scribe-mobile`, để thử dev local + iOS simulator trước khi site prod có |
+
+Kiểm từ ngoài (cùng cách như chat): `for c in scribe-web scribe-mobile scribe-web-dev; do curl -s -o /dev/null -w "$c %{redirect_url}\n" "https://auth.hoandat.com/auth?client_id=$c&response_type=code&scope=openid" | cut -d'?' -f1; done`.
+
 ## Tuỳ chọn bật sau
 
 - Google/GitHub (đã bật 2026-10-09): GitHub OAuth App "hoandat · Tài khoản" (owner `achoo254`, app id 3916221); Google Cloud project `hoandat-auth`, Google Auth Platform ở trạng thái "In production" (External), web client `auth.hoandat.com`. Callback lần lượt `https://auth.hoandat.com/oauth/github/callback` và `/oauth/google/callback`. Google bắt buộc link chính sách quyền riêng tư `https://auth.hoandat.com/privacy` trước khi publish.

@@ -15,7 +15,7 @@ import { createProvider } from "../oidc/provider.js";
 import { type AppServices, createServices } from "../services.js";
 import { createTelegramBot } from "../telegram/bot-client.js";
 import { derivedClientSecrets } from "./app-client-secrets.js";
-import { envClientSecrets, envTenant } from "./env-tenant.js";
+import { envClientSecrets, envScribeClients, envTenant } from "./env-tenant.js";
 import type { Tenancy } from "./tenancy.js";
 import { parseOAuthApp, parseTelegramBot } from "./tenant-integrations.js";
 import type { TenantDocument } from "./tenant-registry.js";
@@ -54,6 +54,7 @@ export function buildPrimaryRuntime(
 		jwks,
 		cookieKeys: env.COOKIE_KEYS,
 		chatMobileRedirectUri: env.CHAT_MOBILE_REDIRECT_URI,
+		scribeClients: envScribeClients(env),
 		clientSecrets: envClientSecrets(env),
 		accountStore: accounts,
 		logger,

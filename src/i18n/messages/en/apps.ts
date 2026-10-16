@@ -33,6 +33,9 @@ export const enApps = {
 	"apps.chatWeb.description":
 		"Fast messaging with searchable history and bots.",
 	"apps.chatWeb.signIn": "Choose Sign in on the site.",
+	"apps.scribeWeb.description":
+		"Record audio and turn it into searchable, editable transcripts.",
+	"apps.scribeWeb.signIn": "Choose Sign in on the site.",
 	"apps.steps.title": "How sign-in works",
 	"apps.steps.choose.title": "Pick an app",
 	"apps.steps.choose.body":

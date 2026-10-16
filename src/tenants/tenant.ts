@@ -27,6 +27,8 @@ export interface Tenant {
 		readonly localman: string;
 		readonly tunelo: string;
 		readonly chat: string;
+		/** Scribe: the primary tenant only, and only when it is configured. */
+		readonly scribe?: string;
 	};
 }
 

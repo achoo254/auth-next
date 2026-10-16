@@ -34,6 +34,7 @@ import {
 	SUPPORTED_SCOPES,
 	createResourcePolicy,
 } from "./resources.js";
+import type { ScribeClientsConfig } from "./scribe-clients.js";
 import {
 	GRANT_IDLE_SECONDS,
 	createRotateAndSlideGrant,
@@ -86,6 +87,8 @@ export interface ProviderDependencies {
 	readonly clientSecrets: StaticClientSecrets;
 	/** Redirect of the chat mobile app; one value for every tenant. */
 	readonly chatMobileRedirectUri: string;
+	/** Scribe's clients; honoured for the primary tenant only. */
+	readonly scribeClients?: ScribeClientsConfig;
 	readonly accountStore: AccountStore;
 	readonly logger: Logger;
 }
@@ -110,6 +113,7 @@ export function buildProviderConfiguration(
 			resources.resources,
 			deps.clientSecrets,
 			deps.chatMobileRedirectUri,
+			deps.scribeClients,
 		),
 		findAccount: createFindAccount(accountStore),
 		jwks: { keys: jwks.keys.map((key) => ({ ...key })) },

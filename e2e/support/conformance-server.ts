@@ -47,7 +47,11 @@ import {
 	createServices,
 	ensureAccountLayerIndexes,
 } from "../../src/services.js";
-import { envClientSecrets, envTenant } from "../../src/tenants/env-tenant.js";
+import {
+	envClientSecrets,
+	envScribeClients,
+	envTenant,
+} from "../../src/tenants/env-tenant.js";
 
 const issuer = process.env.CONFORMANCE_ISSUER;
 if (!issuer?.startsWith("https://")) {
@@ -102,6 +106,7 @@ const configuration = buildProviderConfiguration({
 	tenant,
 	cookieKeys: env.COOKIE_KEYS,
 	chatMobileRedirectUri: env.CHAT_MOBILE_REDIRECT_URI,
+	scribeClients: envScribeClients(env),
 	clientSecrets: envClientSecrets(env),
 	db,
 	jwks: {

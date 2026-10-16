@@ -32,6 +32,8 @@ export const zhApps: Translation<typeof enApps> = {
 	"apps.tuneloWeb.signIn": "在网站上选择登录。",
 	"apps.chatWeb.description": "快速聊天，可搜索历史消息并使用机器人。",
 	"apps.chatWeb.signIn": "在网站上选择登录。",
+	"apps.scribeWeb.description": "录音并转写为可搜索、可编辑的文字稿。",
+	"apps.scribeWeb.signIn": "在网站上选择登录。",
 	"apps.steps.title": "登录流程",
 	"apps.steps.choose.title": "选择一个应用",
 	"apps.steps.choose.body": "在它的网站上选择登录，或在终端运行 {command}。",

@@ -14,9 +14,15 @@ export type AppDirectoryTenant = Pick<
 >;
 
 /** One palette hue per app, from the data-viz tokens (apps.css). */
-export type AppTone = "violet" | "cyan" | "green" | "amber" | "blue";
+export type AppTone = "violet" | "cyan" | "green" | "amber" | "blue" | "red";
 
-type AppIconName = "localman" | "mcp" | "terminal" | "tunnel" | "chat";
+type AppIconName =
+	| "localman"
+	| "mcp"
+	| "terminal"
+	| "tunnel"
+	| "chat"
+	| "scribe";
 
 /** One app on the page; `id` is its `client_id` when it has a fixed one. */
 export interface ListedApp {
@@ -39,6 +45,7 @@ const ICON_SHAPES: Readonly<Record<AppIconName, SafeHtml>> = {
 	terminal: html`<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9l3 3-3 3M13 15h4"/>`,
 	tunnel: html`<path d="M3 20V12a9 9 0 0 1 18 0v8M7 20v-8a5 5 0 0 1 10 0v8M3 20h18"/>`,
 	chat: html`<path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/><path d="M8.5 12h.01M12 12h.01M15.5 12h.01"/>`,
+	scribe: html`<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3M8 21h8"/>`,
 };
 
 /**
@@ -68,7 +75,8 @@ function code(value: string): SafeHtml {
 /**
  * The first-party apps of src/oidc/clients.ts, plus the MCP clients that
  * register themselves for Localman's MCP resource. Chat is listed only for
- * the primary tenant: other tenants have no chat host yet.
+ * the primary tenant: other tenants have no chat host yet. Scribe likewise,
+ * and only once its client is configured (`webApps.scribe`).
  */
 export function listedApps(
 	tenant: AppDirectoryTenant,
@@ -120,6 +128,9 @@ export function listedApps(
 			href: tenant.webApps.tunelo,
 		},
 		...(tenant.id === PRIMARY_TENANT_ID ? [chatWeb(tenant, i18n)] : []),
+		...(tenant.id === PRIMARY_TENANT_ID && tenant.webApps.scribe
+			? [scribeWeb(tenant.webApps.scribe, i18n)]
+			: []),
 	];
 }
 
@@ -133,5 +144,18 @@ function chatWeb(tenant: AppDirectoryTenant, i18n: Translator): ListedApp {
 		description: "apps.chatWeb.description",
 		signIn: html`${i18n.t("apps.chatWeb.signIn")}`,
 		href: tenant.webApps.chat,
+	};
+}
+
+function scribeWeb(href: string, i18n: Translator): ListedApp {
+	return {
+		id: STATIC_CLIENT_IDS.scribeWeb,
+		name: "Scribe",
+		tone: "red",
+		icon: "scribe",
+		kind: "apps.kind.web",
+		description: "apps.scribeWeb.description",
+		signIn: html`${i18n.t("apps.scribeWeb.signIn")}`,
+		href,
 	};
 }

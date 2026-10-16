@@ -26,6 +26,10 @@
 	--tone: var(--c-viz-blue);
 	--tone-text: var(--c-viz-blue-text);
 }
+.tone-red {
+	--tone: var(--c-viz-red);
+	--tone-text: var(--c-viz-red-text);
+}
 
 /* hero */
 .apps-hero {

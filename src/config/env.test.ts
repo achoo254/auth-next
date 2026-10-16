@@ -37,6 +37,58 @@ describe("parseEnv", () => {
 		}
 	});
 
+	it("leaves Scribe off by default and checks its redirect and dev client", () => {
+		const env = parseEnv(REQUIRED);
+		expect(env.SCRIBE_WEB_URL).toBe("https://scribe.hoandat.com");
+		expect(env.SCRIBE_WEB_CLIENT_SECRET).toBeUndefined();
+		expect(env.SCRIBE_MOBILE_REDIRECT_URI).toBe(
+			"com.hoandat.scribe:/auth/callback",
+		);
+		expect(env.SCRIBE_WEB_DEV_URL).toBeUndefined();
+		expect(
+			parseEnv({
+				...REQUIRED,
+				SCRIBE_MOBILE_REDIRECT_URI: "vn.example.notes:/auth/callback",
+			}).SCRIBE_MOBILE_REDIRECT_URI,
+		).toBe("vn.example.notes:/auth/callback");
+		for (const bad of [
+			"https://scribe.hoandat.com/api/auth/callback",
+			"scribe:/auth/callback",
+			"com.hoandat.scribe://auth/callback",
+		]) {
+			expect(() =>
+				parseEnv({ ...REQUIRED, SCRIBE_MOBILE_REDIRECT_URI: bad }),
+			).toThrow(/SCRIBE_MOBILE_REDIRECT_URI/);
+		}
+		expect(() =>
+			parseEnv({ ...REQUIRED, SCRIBE_WEB_CLIENT_SECRET: "short-hunter5" }),
+		).toThrow(/SCRIBE_WEB_CLIENT_SECRET: must be at least 32/);
+		const dev = {
+			SCRIBE_WEB_DEV_URL: "http://localhost:5174",
+			SCRIBE_WEB_DEV_CLIENT_SECRET: "d".repeat(32),
+		};
+		expect(parseEnv({ ...REQUIRED, ...dev }).SCRIBE_WEB_DEV_URL).toBe(
+			"http://localhost:5174",
+		);
+		expect(() =>
+			parseEnv({ ...REQUIRED, SCRIBE_WEB_DEV_URL: dev.SCRIBE_WEB_DEV_URL }),
+		).toThrow(/SCRIBE_WEB_DEV_CLIENT_SECRET: must be set together/);
+		expect(() =>
+			parseEnv({
+				...REQUIRED,
+				SCRIBE_WEB_DEV_CLIENT_SECRET: dev.SCRIBE_WEB_DEV_CLIENT_SECRET,
+			}),
+		).toThrow(/SCRIBE_WEB_DEV_URL: must be set together/);
+		for (const url of [
+			"https://scribe.hoandat.com",
+			"http://192.168.1.5:5174",
+		]) {
+			expect(() =>
+				parseEnv({ ...REQUIRED, ...dev, SCRIBE_WEB_DEV_URL: url }),
+			).toThrow(/SCRIBE_WEB_DEV_URL: must be on localhost/);
+		}
+	});
+
 	it("applies defaults around the required values", () => {
 		const env = parseEnv(REQUIRED);
 		expect(env).toMatchObject({
@@ -129,6 +181,19 @@ describe("parseEnv", () => {
 			expect(errorFor({ TUNELO_WEB_URL: "https://127.0.0.1" })).toMatch(
 				/TUNELO_WEB_URL:/,
 			);
+		});
+
+		it("requires a public https Scribe URL but lets the dev client stay on loopback", () => {
+			expect(errorFor({ SCRIBE_WEB_URL: "http://scribe.hoandat.com" })).toMatch(
+				/SCRIBE_WEB_URL:/,
+			);
+			expect(
+				errorFor({
+					SCRIBE_WEB_CLIENT_SECRET: "s".repeat(32),
+					SCRIBE_WEB_DEV_URL: "http://localhost:5174",
+					SCRIBE_WEB_DEV_CLIENT_SECRET: "d".repeat(32),
+				}),
+			).toBe("");
 		});
 
 		it("requires the reverse proxy to be named explicitly", () => {

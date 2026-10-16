@@ -26,7 +26,11 @@ import {
 	createServices,
 	ensureAccountLayerIndexes,
 } from "../../src/services.js";
-import { envClientSecrets, envTenant } from "../../src/tenants/env-tenant.js";
+import {
+	envClientSecrets,
+	envScribeClients,
+	envTenant,
+} from "../../src/tenants/env-tenant.js";
 import { parseKeyring } from "../../src/tenants/secret-keyring.js";
 import { createTenancy } from "../../src/tenants/tenancy.js";
 import { ensureTenantClaimIndexes } from "../../src/tenants/tenant-claims.js";
@@ -119,6 +123,7 @@ const provider = createProvider({
 	jwks: { keys: [await generateSigningJwk()] },
 	cookieKeys: env.COOKIE_KEYS,
 	chatMobileRedirectUri: env.CHAT_MOBILE_REDIRECT_URI,
+	scribeClients: envScribeClients(env),
 	clientSecrets: envClientSecrets(env),
 	accountStore: accounts,
 	logger,

@@ -8,6 +8,7 @@ import {
 	checkIntegrationGroups,
 	integrationEnvShape,
 } from "./integrations-env.js";
+import { checkScribeDevGroup, scribeEnvShape } from "./scribe-env.js";
 import { checkTenantsGroup, tenantsEnvShape } from "./tenants-env.js";
 import { type TrustProxy, parseTrustProxy } from "./trust-proxy.js";
 
@@ -40,6 +41,7 @@ const PRODUCTION_URLS = [
 	"LOCALMAN_WEB_URL",
 	"TUNELO_WEB_URL",
 	"CHAT_WEB_URL",
+	"SCRIBE_WEB_URL",
 ] as const;
 
 const envSchema = z
@@ -68,9 +70,8 @@ const envSchema = z
 					.min(1, "must list at least one key; the first one signs"),
 			),
 		/**
-		 * Domain of the primary tenant (the one this environment configures):
-		 * resources and audiences follow from it. Explicit rather than derived
-		 * from ISSUER, which may have any shape (conformance harness).
+		 * Domain of the primary tenant (resources and audiences follow from it);
+		 * not derived from ISSUER, which may have any shape (conformance).
 		 */
 		TENANT_DOMAIN: z
 			.string()
@@ -132,10 +133,12 @@ const envSchema = z
 			.default("info"),
 		...integrationEnvShape,
 		...tenantsEnvShape,
+		...scribeEnvShape,
 	})
 	.superRefine((env, ctx) => {
 		checkIntegrationGroups(env, ctx);
 		checkTenantsGroup(env, ctx);
+		checkScribeDevGroup(env, ctx);
 		if (env.NODE_ENV !== "production") return;
 		for (const key of PRODUCTION_URLS) {
 			if (!isPublicHttpsUrl(env[key])) {

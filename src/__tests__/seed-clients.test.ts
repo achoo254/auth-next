@@ -15,6 +15,8 @@ import { collectionNameFor } from "../oidc/mongo-adapter.js";
 import {
 	CHAT_WEB_SECRET,
 	LOCALMAN_WEB_SECRET,
+	SCRIBE_WEB_DEV_SECRET,
+	SCRIBE_WEB_SECRET,
 	TUNELO_WEB_SECRET,
 	type TestIdp,
 	startTestIdp,
@@ -101,6 +103,26 @@ describe("seed-clients", () => {
 		expect(text).not.toContain(LOCALMAN_WEB_SECRET);
 		expect(text).not.toContain(TUNELO_WEB_SECRET);
 		expect(text).not.toContain(CHAT_WEB_SECRET);
+		expect(text).not.toContain(SCRIBE_WEB_SECRET);
+		expect(text).not.toContain(SCRIBE_WEB_DEV_SECRET);
+	});
+
+	it("leaves Scribe out of the report when it is not configured", async () => {
+		const { stdout } = await seed(["--skip-discovery"]);
+		expect(stdout).toContain("- chat-web");
+		expect(stdout).not.toContain("scribe");
+		const configured = await seed(["--skip-discovery"], {
+			SCRIBE_WEB_CLIENT_SECRET: SCRIBE_WEB_SECRET,
+		});
+		expect(configured.stdout).toContain('- scribe-web "Scribe"');
+		expect(configured.stdout).toContain(
+			"back-channel logout https://scribe.hoandat.com/api/auth/backchannel-logout",
+		);
+		expect(configured.stdout).toContain(
+			"redirect com.hoandat.scribe:/auth/callback",
+		);
+		expect(configured.stdout).not.toContain("scribe-web-dev");
+		expect(configured.stdout).not.toContain(SCRIBE_WEB_SECRET);
 	});
 
 	it("flags a stored record that shadows a static client", async () => {

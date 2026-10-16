@@ -67,6 +67,29 @@ describe("app list page", () => {
 		);
 	});
 
+	it("lists Scribe for the primary tenant once its client is configured", () => {
+		const scribe = "https://scribe.staging.example";
+		const withScribe = { ...STAGING, webApps: { ...STAGING.webApps, scribe } };
+		const html = renderAppsPage(withScribe, testPage("en", "/apps"));
+		expect(html).toContain('data-id="app-open-scribe-web"');
+		expect(html).toContain(`href="${scribe}"`);
+		expect(html).toContain(">Scribe</text>");
+		expect(html).toContain(
+			"signs you in to Localman, Localman MCP, Tunelo CLI, Tunelo, Chat, and Scribe.",
+		);
+		const vi = renderAppsPage(withScribe, testPage("vi", "/apps"));
+		expect(vi).toContain("Ghi âm và chuyển thành bản chép lời");
+
+		const unconfigured = renderAppsPage(STAGING, testPage("en", "/apps"));
+		expect(unconfigured).not.toContain('data-id="app-scribe-web"');
+		const other = renderAppsPage(
+			{ ...withScribe, id: "tenant-inetdev" },
+			testPage("en", "/apps"),
+		);
+		expect(other).not.toContain('data-id="app-scribe-web"');
+		expect(other).not.toContain(scribe);
+	});
+
 	it("links the sign-in steps from the hero", () => {
 		const html = renderAppsPage(STAGING, testPage("en", "/apps"));
 		expect(html).toContain('href="#how-sign-in-works"');

@@ -7,7 +7,11 @@ import {
 	TOKEN_EXCHANGE_GRANT,
 	buildStaticClients,
 } from "../oidc/clients.js";
-import { envClientSecrets, envTenant } from "../tenants/env-tenant.js";
+import {
+	envClientSecrets,
+	envScribeClients,
+	envTenant,
+} from "../tenants/env-tenant.js";
 import { resourcesFor } from "../tenants/tenant-resources.js";
 import { discoverClient, runCodeFlow } from "./helpers/flows.js";
 import {
@@ -17,7 +21,7 @@ import {
 	type TestIdp,
 	startTestIdp,
 } from "./helpers/test-idp.js";
-import { RESOURCES } from "./helpers/test-tenant.js";
+import { OTHER_TEST_TENANT, RESOURCES } from "./helpers/test-tenant.js";
 
 let idp: TestIdp;
 
@@ -56,6 +60,7 @@ describe("static clients match the integration contract", () => {
 				resourcesFor(env.TENANT_DOMAIN),
 				envClientSecrets(env),
 				env.CHAT_MOBILE_REDIRECT_URI,
+				envScribeClients(env),
 			).map((entry) => [entry.client_id, entry]),
 		);
 		expect(byId.get(STATIC_CLIENT_IDS.localmanWeb)).toMatchObject({
@@ -73,6 +78,92 @@ describe("static clients match the integration contract", () => {
 				"https://tunnel.hoandat.com/auth/backchannel-logout",
 			backchannel_logout_session_required: true,
 		});
+	});
+
+	it("derives Scribe's URIs, for the primary tenant only and only once configured", () => {
+		const base = {
+			MONGO_URL: "mongodb://127.0.0.1:27017/auth",
+			SIGNING_KEYS_PATH: "unused.json",
+			COOKIE_KEYS: "k".repeat(32),
+			LOCALMAN_WEB_CLIENT_SECRET: "l".repeat(32),
+			TUNELO_WEB_CLIENT_SECRET: "t".repeat(32),
+			CHAT_WEB_CLIENT_SECRET: "c".repeat(32),
+		};
+		const idsOf = (
+			env: ReturnType<typeof parseEnv>,
+			tenant = envTenant(env),
+		): Map<string, Record<string, unknown>> =>
+			new Map(
+				buildStaticClients(
+					tenant,
+					resourcesFor(env.TENANT_DOMAIN),
+					envClientSecrets(env),
+					env.CHAT_MOBILE_REDIRECT_URI,
+					envScribeClients(env),
+				).map((entry) => [entry.client_id, entry]),
+			);
+		const unset = parseEnv(base);
+		expect(envTenant(unset).webApps.scribe).toBeUndefined();
+		const off = idsOf(unset);
+		expect(off.has(STATIC_CLIENT_IDS.scribeWeb)).toBe(false);
+		expect(off.has(STATIC_CLIENT_IDS.scribeMobile)).toBe(false);
+		expect(off.has(STATIC_CLIENT_IDS.scribeWebDev)).toBe(false);
+
+		const env = parseEnv({ ...base, SCRIBE_WEB_CLIENT_SECRET: "s".repeat(32) });
+		expect(envTenant(env).webApps.scribe).toBe("https://scribe.hoandat.com");
+		const byId = idsOf(env);
+		expect(byId.get(STATIC_CLIENT_IDS.scribeWeb)).toMatchObject({
+			client_secret: "s".repeat(32),
+			redirect_uris: ["https://scribe.hoandat.com/api/auth/callback"],
+			post_logout_redirect_uris: ["https://scribe.hoandat.com/"],
+			backchannel_logout_uri:
+				"https://scribe.hoandat.com/api/auth/backchannel-logout",
+			backchannel_logout_session_required: true,
+		});
+		expect(byId.get(STATIC_CLIENT_IDS.scribeMobile)).toMatchObject({
+			redirect_uris: ["com.hoandat.scribe:/auth/callback"],
+		});
+		// The dev client is its own switch.
+		expect(byId.has(STATIC_CLIENT_IDS.scribeWebDev)).toBe(false);
+
+		const other = idsOf(env, { ...OTHER_TEST_TENANT, issuer: env.ISSUER });
+		expect([...other.keys()].filter((id) => id.startsWith("scribe"))).toEqual(
+			[],
+		);
+		expect(other.has(STATIC_CLIENT_IDS.chatWeb)).toBe(true);
+	});
+
+	it("scribe-web and scribe-mobile: Code + PKCE, no resource, no offline_access", async () => {
+		expect(await metadataOf(STATIC_CLIENT_IDS.scribeWeb)).toMatchObject({
+			client_name: "Scribe",
+			token_endpoint_auth_method: "client_secret_basic",
+			grant_types: ["authorization_code", "refresh_token"],
+			response_types: ["code"],
+			scope: "openid profile email",
+			allowed_resources: [],
+		});
+		expect(await metadataOf(STATIC_CLIENT_IDS.scribeMobile)).toMatchObject({
+			client_name: "Scribe",
+			application_type: "native",
+			token_endpoint_auth_method: "none",
+			grant_types: ["authorization_code", "refresh_token"],
+			scope: "openid profile email",
+			allowed_resources: [],
+		});
+		expect(await metadataOf(STATIC_CLIENT_IDS.scribeWebDev)).toMatchObject({
+			token_endpoint_auth_method: "client_secret_basic",
+			redirect_uris: ["http://localhost:5174/api/auth/callback"],
+			allowed_resources: [],
+		});
+		for (const id of [
+			STATIC_CLIENT_IDS.scribeWeb,
+			STATIC_CLIENT_IDS.scribeMobile,
+			STATIC_CLIENT_IDS.scribeWebDev,
+		]) {
+			const metadata = await metadataOf(id);
+			expect(metadata.grant_types).not.toContain(TOKEN_EXCHANGE_GRANT);
+			expect(scopes(metadata)).not.toContain("offline_access");
+		}
 	});
 
 	it("localman-web: confidential code client that alone may exchange tokens", async () => {

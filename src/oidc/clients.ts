@@ -8,6 +8,11 @@ import {
 	TELEGRAM_SCOPE,
 	TUNNEL_SCOPES,
 } from "./resources.js";
+import {
+	SCRIBE_CLIENT_IDS,
+	type ScribeClientsConfig,
+	buildScribeClients,
+} from "./scribe-clients.js";
 
 export const DEVICE_CODE_GRANT = "urn:ietf:params:oauth:grant-type:device_code";
 /** RFC 8693; only localman-web may use it (see token-exchange.ts). */
@@ -21,6 +26,7 @@ export const STATIC_CLIENT_IDS = {
 	/** The IdP's own /account pages; signs the user in, never redeems a code. */
 	accountPortal: "hoandat-account",
 	...CHAT_CLIENT_IDS,
+	...SCRIBE_CLIENT_IDS,
 } as const;
 
 /** Where the IdP sends the browser back after signing in for /account. */
@@ -47,13 +53,16 @@ export function isStaticClientId(clientId: unknown): boolean {
 /**
  * Clients whose refresh tokens are bound to the IdP browser session instead
  * of `offline_access`: every DCR (MCP) client, Localman web (Jev 0.94),
- * the Tunelo web console (Jev 1.00) and chat web: signing out at the IdP ends their grant
- * and refresh tokens, even when a back-channel logout is lost.
+ * the Tunelo web console (Jev 1.00), chat web and Scribe web: signing out at
+ * the IdP ends their grant and refresh tokens, even when a back-channel
+ * logout is lost.
  */
 const SESSION_BOUND_STATIC_CLIENTS: ReadonlySet<string> = new Set([
 	STATIC_CLIENT_IDS.localmanWeb,
 	STATIC_CLIENT_IDS.tuneloWeb,
 	STATIC_CLIENT_IDS.chatWeb,
+	STATIC_CLIENT_IDS.scribeWeb,
+	STATIC_CLIENT_IDS.scribeWebDev,
 ]);
 
 export function refreshesWithSession(clientId: string): boolean {
@@ -71,6 +80,7 @@ export function refreshesWithSession(clientId: string): boolean {
 const DEVICE_BOUND_STATIC_CLIENTS: ReadonlySet<string> = new Set([
 	STATIC_CLIENT_IDS.chatMobile,
 	STATIC_CLIENT_IDS.chatDesktop,
+	STATIC_CLIENT_IDS.scribeMobile,
 ]);
 
 export function refreshesPerDevice(clientId: string | undefined): boolean {
@@ -81,6 +91,7 @@ export function refreshesPerDevice(clientId: string | undefined): boolean {
 export const CLIENTS_WITHOUT_RESOURCES: ReadonlySet<string> = new Set([
 	STATIC_CLIENT_IDS.accountPortal,
 	...Object.values(CHAT_CLIENT_IDS),
+	...Object.values(SCRIBE_CLIENT_IDS),
 ]);
 
 function scopeOf(...groups: readonly (readonly string[])[]): string {
@@ -102,13 +113,15 @@ export interface StaticClientSecrets {
 /**
  * The first-party clients of a tenant. Client ids are the same in every
  * tenant; app origins, resources, names and secrets are the tenant's, so
- * local and staging deployments can point elsewhere.
+ * local and staging deployments can point elsewhere. Scribe's clients
+ * exist for the primary tenant only (see buildScribeClients).
  */
 export function buildStaticClients(
-	tenant: Pick<Tenant, "issuer" | "displayName" | "webApps">,
+	tenant: Pick<Tenant, "id" | "issuer" | "displayName" | "webApps">,
 	resources: TenantResources,
 	secrets: StaticClientSecrets,
 	chatMobileRedirectUri: string,
+	scribe?: ScribeClientsConfig,
 ): ClientMetadata[] {
 	const localman = tenant.webApps.localman;
 	const tunelo = tenant.webApps.tunelo;
@@ -182,5 +195,6 @@ export function buildStaticClients(
 			secrets.chatWeb,
 			chatMobileRedirectUri,
 		),
+		...buildScribeClients(tenant, scribe),
 	];
 }

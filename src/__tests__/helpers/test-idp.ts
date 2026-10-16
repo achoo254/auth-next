@@ -22,7 +22,11 @@ import {
 	createServices,
 	ensureAccountLayerIndexes,
 } from "../../services.js";
-import { envClientSecrets, envTenant } from "../../tenants/env-tenant.js";
+import {
+	envClientSecrets,
+	envScribeClients,
+	envTenant,
+} from "../../tenants/env-tenant.js";
 import type { Tenant } from "../../tenants/tenant.js";
 import { createAutoInteractions } from "./auto-interactions.js";
 import {
@@ -48,6 +52,10 @@ export const TEST_ACCOUNT: AccountProfile = {
 export const LOCALMAN_WEB_SECRET = randomBytes(32).toString("base64url");
 export const TUNELO_WEB_SECRET = randomBytes(32).toString("base64url");
 export const CHAT_WEB_SECRET = randomBytes(32).toString("base64url");
+export const SCRIBE_WEB_SECRET = randomBytes(32).toString("base64url");
+export const SCRIBE_WEB_DEV_SECRET = randomBytes(32).toString("base64url");
+/** A developer's local Scribe, served the scribe-web-dev client. */
+export const SCRIBE_WEB_DEV_URL = "http://localhost:5174";
 export const LOCALMAN_CALLBACK = "https://localman.hoandat.com/auth/callback";
 
 /** localman-web's redirect URI at `idp` (LOCALMAN_CALLBACK for the primary tenant). */
@@ -116,6 +124,9 @@ export async function startTestIdp(options: TestIdpOptions): Promise<TestIdp> {
 		LOCALMAN_WEB_CLIENT_SECRET: LOCALMAN_WEB_SECRET,
 		TUNELO_WEB_CLIENT_SECRET: TUNELO_WEB_SECRET,
 		CHAT_WEB_CLIENT_SECRET: CHAT_WEB_SECRET,
+		SCRIBE_WEB_CLIENT_SECRET: SCRIBE_WEB_SECRET,
+		SCRIBE_WEB_DEV_URL,
+		SCRIBE_WEB_DEV_CLIENT_SECRET: SCRIBE_WEB_DEV_SECRET,
 		LOG_LEVEL: "silent",
 		...(options.withoutUpstreams ? {} : FAKE_OAUTH_ENV),
 		...options.env,
@@ -142,6 +153,7 @@ export async function startTestIdp(options: TestIdpOptions): Promise<TestIdp> {
 		jwks,
 		cookieKeys: env.COOKIE_KEYS,
 		chatMobileRedirectUri: env.CHAT_MOBILE_REDIRECT_URI,
+		scribeClients: envScribeClients(env),
 		clientSecrets: envClientSecrets(env),
 		accountStore:
 			options.interactions === "real"
