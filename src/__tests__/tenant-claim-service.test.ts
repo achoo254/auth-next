@@ -80,6 +80,7 @@ function pointAt(domain: string, txt: string, ip = IP): void {
 	dns.txt.set(claimTxtName(domain), txt);
 	for (const host of [
 		`auth.${domain}`,
+		`chat.${domain}`,
 		`localman.${domain}`,
 		`tunnel.${domain}`,
 		`*.localman.${domain}`,
@@ -210,7 +211,7 @@ describe("starting a claim", () => {
 });
 
 describe("verifying a claim", () => {
-	it("needs this claim's TXT value and every host pointing here, DNS only", async () => {
+	it("needs this claim's TXT value and every host reaching here, DNS only or proxied", async () => {
 		const mine = await startClaim(tenancy(), {
 			domain: "acme.org",
 			...by(ALICE, "acc_a"),
@@ -240,7 +241,7 @@ describe("verifying a claim", () => {
 			ok: false,
 			error: "dns-txt",
 		});
-		pointAt("acme.org", mine.value.txt, "104.16.0.1");
+		pointAt("acme.org", mine.value.txt, "198.51.100.7");
 		expect(
 			await verifyClaim(tenancy(), mine.value._id, {
 				id: "acc_a",
@@ -260,6 +261,8 @@ describe("verifying a claim", () => {
 			error: "not-found",
 		});
 		pointAt("acme.org", mine.value.txt);
+		// A host proxied by Cloudflare reaches the service too.
+		dns.a.set("chat.acme.org", ["104.21.4.9", "172.67.180.12"]);
 		const done = await verifyClaim(tenancy(), mine.value._id, {
 			id: "acc_a",
 			identities: [ALICE],

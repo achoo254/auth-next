@@ -32,12 +32,17 @@ export interface Tenant {
 	};
 }
 
-/** First labels of a tenant's app hosts (auth.<d>, localman.<d>, tunnel.<d>). */
-const APP_LABELS: ReadonlySet<string> = new Set(["auth", "localman", "tunnel"]);
+/** First labels of a tenant's app hosts (auth.<d>, chat.<d>, localman.<d>, tunnel.<d>). */
+const APP_LABELS: ReadonlySet<string> = new Set([
+	"auth",
+	"chat",
+	"localman",
+	"tunnel",
+]);
 
 /**
  * True when `domain` reads as an app host of another domain (auth.x,
- * localman.x, tunnel.x): nginx maps hosts to certificates by those labels,
+ * chat.x, localman.x, tunnel.x): nginx maps hosts to certificates by those labels,
  * so such a domain can never be a tenant.
  */
 export function looksLikeAppHost(domain: string): boolean {
@@ -47,6 +52,7 @@ export function looksLikeAppHost(domain: string): boolean {
 /** The hostnames of a tenant, fixed by convention under its domain. */
 export interface TenantAppHosts {
 	readonly auth: string;
+	readonly chat: string;
 	readonly localman: string;
 	readonly localmanWildcard: string;
 	readonly tunnel: string;
@@ -56,6 +62,7 @@ export interface TenantAppHosts {
 export function appHostsFor(domain: string): TenantAppHosts {
 	return {
 		auth: `auth.${domain}`,
+		chat: `chat.${domain}`,
 		localman: `localman.${domain}`,
 		localmanWildcard: `*.localman.${domain}`,
 		tunnel: `tunnel.${domain}`,

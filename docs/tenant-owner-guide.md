@@ -29,14 +29,26 @@ chọn cả giá trị để copy).
 | Loại | Tên | Giá trị | Proxy |
 |---|---|---|---|
 | TXT | `_auth-claim.<domain>` | giá trị trên trang claim | — |
-| A | `auth.<domain>` | IP trên trang claim | **DNS only** |
-| A | `localman.<domain>` | như trên | **DNS only** |
-| A | `*.localman.<domain>` | như trên | **DNS only** |
-| A | `tunnel.<domain>` | như trên | **DNS only** |
-| A | `*.tunnel.<domain>` | như trên | **DNS only** |
+| A | `auth.<domain>` | IP trên trang claim | DNS only hoặc Proxied |
+| A | `chat.<domain>` | như trên | DNS only hoặc Proxied |
+| A | `localman.<domain>` | như trên | DNS only hoặc Proxied |
+| A | `*.localman.<domain>` | như trên | DNS only hoặc Proxied |
+| A | `tunnel.<domain>` | như trên | DNS only hoặc Proxied |
+| A | `*.tunnel.<domain>` | như trên | DNS only hoặc Proxied |
 
-Bản ghi A phải trỏ thẳng về máy chủ (trên Cloudflare: tắt proxy, "DNS only"), vì chứng chỉ
-được cấp và phục vụ ngay tại máy chủ. **Giữ bản ghi TXT sau khi nhận xong**: máy chủ kiểm lại
+Mỗi bản ghi A có thể trỏ thẳng về máy chủ (DNS only) hoặc bật proxy Cloudflare (Proxied, mây
+cam), chế độ SSL nào của zone cũng được:
+
+- **Flexible:** đoạn từ Cloudflare về máy chủ không mã hoá. Dùng được, nhưng Full (strict) an
+  toàn hơn.
+- **Full / Full (strict):** máy chủ có chứng chỉ Let's Encrypt thật cho các host này. Nếu bật
+  "Always Use HTTPS" mà chưa có token Cloudflare (bước 5), lần cấp chứng chỉ đầu có thể không
+  qua: thêm token, hoặc để DNS only tới khi chứng chỉ được cấp.
+- `*.localman.` và `*.tunnel.` là wildcard hai cấp: gói free của Cloudflare không có chứng chỉ
+  edge cho chúng. Muốn Proxied các host đó thì cần chứng chỉ edge trả phí (Advanced
+  Certificate Manager); không thì để DNS only.
+
+**Giữ bản ghi TXT sau khi nhận xong**: máy chủ kiểm lại
 6 giờ một lần, TXT mất hoặc A không còn trỏ về thì sau 3 lần sai liền tenant bị tạm đình chỉ
 (trang không phục vụ, không cấp token), và tự trở lại khi DNS đúng lại.
 
@@ -66,7 +78,8 @@ không bao giờ hiện lại; không gỡ được cách đăng nhập cuối c
 
 ## 5. Token Cloudflare (chỉ khi DNS nằm trên Cloudflare)
 
-Chứng chỉ của `auth.`, `localman.`, `tunnel.` được cấp không cần token. Chứng chỉ wildcard
+Chứng chỉ của `auth.`, `chat.`, `localman.`, `tunnel.` được cấp không cần token (HTTP-01); có
+token thì chúng cũng được cấp qua DNS, chạy với mọi chế độ proxy. Chứng chỉ wildcard
 (`*.localman.`, `*.tunnel.`, cho mock và tunnel) cần chứng minh qua DNS:
 dash.cloudflare.com → My Profile → API Tokens → **Create Token** → mẫu **Edit zone DNS**,
 Zone Resources chọn zone của domain (token của tài khoản cùng quyền cũng được). Dán vào mục

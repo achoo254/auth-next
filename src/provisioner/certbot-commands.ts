@@ -38,15 +38,28 @@ function common(config: ProvisionerConfig): string[] {
 }
 
 /**
- * HTTP-01 certificate for auth., localman. and tunnel. of the domain,
- * answered from the shared webroot by the tenants' port-80 server block.
+ * Certificate for auth., chat., localman. and tunnel. of the domain.
+ * With the owner's Cloudflare token (`dns`) it is a DNS-01 certificate,
+ * which works whether the hosts are DNS-only or proxied by Cloudflare in
+ * any SSL mode; without it, HTTP-01 answered from the shared webroot by the
+ * tenants' port-80 server block (DNS-only hosts, or proxied in Flexible).
  * `--keep-until-expiring` makes a second run a no-op.
  */
 export function issueHostsCommand(
 	config: ProvisionerConfig,
 	domain: string,
+	dns = false,
 ): Command {
 	const hosts = appHostsFor(domain);
+	const method = dns
+		? [
+				"--dns-cloudflare",
+				"--dns-cloudflare-credentials",
+				credentialsPath(config, domain),
+				"--dns-cloudflare-propagation-seconds",
+				"30",
+			]
+		: ["--webroot", "--webroot-path", config.PROVISIONER_WEBROOT];
 	return {
 		file: config.PROVISIONER_CERTBOT,
 		args: [
@@ -55,13 +68,13 @@ export function issueHostsCommand(
 			"--agree-tos",
 			"--register-unsafely-without-email",
 			"--keep-until-expiring",
-			"--webroot",
-			"--webroot-path",
-			config.PROVISIONER_WEBROOT,
+			...method,
 			"--cert-name",
 			certificateNames(domain).hosts,
 			"-d",
 			hosts.auth,
+			"-d",
+			hosts.chat,
 			"-d",
 			hosts.localman,
 			"-d",

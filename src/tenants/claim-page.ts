@@ -62,12 +62,13 @@ function dnsRecords(view: ClaimView, claim: ClaimDocument): SafeHtml {
 	const ip = view.serviceIp ?? "";
 	const addresses = [
 		hosts.auth,
+		hosts.chat,
 		hosts.localman,
 		hosts.localmanWildcard,
 		hosts.tunnel,
 		hosts.tunnelWildcard,
 	];
-	const dnsOnly = i18n.t("claim.records.dnsOnly");
+	const proxy = i18n.t("claim.records.proxyEither");
 	return html`<div class="dns-records" data-id="claim-records">
 <table>
 <caption class="help">${i18n.t("claim.records.hint")}</caption>
@@ -76,7 +77,7 @@ function dnsRecords(view: ClaimView, claim: ClaimDocument): SafeHtml {
 <tr><td>TXT</td><td><code class="copyable host" data-id="claim-txt-name">${hostName(txt.name)}</code></td><td><code class="copyable" data-id="claim-txt-value">${txt.value}</code></td><td></td></tr>
 ${addresses.map(
 	(host) =>
-		html`<tr><td>A</td><td><code class="copyable host">${hostName(host)}</code></td><td><code class="copyable host">${ip}</code></td><td>${dnsOnly}</td></tr>`,
+		html`<tr><td>A</td><td><code class="copyable host">${hostName(host)}</code></td><td><code class="copyable host">${ip}</code></td><td>${proxy}</td></tr>`,
 )}
 </tbody>
 </table>

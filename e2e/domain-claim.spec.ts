@@ -43,6 +43,7 @@ test("claim a domain: TXT and A records, then open its admin", async ({
 		[`TXT _auth-claim.${domain}`, [txt]],
 		...[
 			`auth.${domain}`,
+			`chat.${domain}`,
 			`localman.${domain}`,
 			`tunnel.${domain}`,
 			`*.localman.${domain}`,

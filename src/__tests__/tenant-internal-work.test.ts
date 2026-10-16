@@ -207,6 +207,7 @@ describe("certificate queue (provisioner)", () => {
 			action: "issue",
 			http01: [
 				"auth.acme.example.org",
+				"chat.acme.example.org",
 				"localman.acme.example.org",
 				"tunnel.acme.example.org",
 			],

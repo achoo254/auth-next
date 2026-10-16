@@ -69,6 +69,7 @@ function overview(view: AdminView): SafeHtml {
 	return html`${alertBox(view.tenant.status === "active" ? "success" : "warning", i18n.t(status, { issuer: issuerOf(view.tenant) }))}
 <p class="label">${i18n.t("admin.hosts.title")}</p>
 <p class="help">${Object.values(hosts).map((host) => html`<code class="mono">${host}</code> `)}</p>
+<p class="help" data-id="admin-hosts-proxy">${i18n.t("admin.hosts.help")}</p>
 ${certificateLine(view)}`;
 }
 

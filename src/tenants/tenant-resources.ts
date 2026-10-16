@@ -34,6 +34,6 @@ export function webAppsFor(domain: string): {
 	return {
 		localman: resources.localman,
 		tunelo: resources.tunnel,
-		chat: `https://chat.${domain}`,
+		chat: `https://${appHostsFor(domain).chat}`,
 	};
 }

@@ -79,29 +79,37 @@ async function issueTenant(
 	if (conflict)
 		return { outcome: "failed", error: `server name in use: ${conflict}` };
 	const names = certificateNames(domain);
-	if ((await deps.run(issueHostsCommand(deps.config, domain))).code !== 0) {
-		return { outcome: "failed", error: "http-01 issuance failed" };
+	const dns = item.dnsCredential !== null && item.dnsCredential !== undefined;
+	if (dns) {
+		const sealed = parseSealed(item.dnsCredential ?? "");
+		let token: string | undefined;
+		try {
+			token = sealed && openSealed(sealed, deps.privateKeyPem, item.tenantId);
+		} catch {
+			token = undefined;
+		}
+		if (!token || !CLOUDFLARE_TOKEN.test(token)) {
+			return { outcome: "failed", error: "dns token does not open" };
+		}
+		const path = credentialsPath(deps.config, domain);
+		await deps.files.writeSecret(path, `dns_cloudflare_api_token = ${token}\n`);
+	}
+	// With a token the hosts certificate is DNS-01 too, so proxied hosts
+	// (any Cloudflare SSL mode) get one; without, HTTP-01.
+	if (
+		(await deps.run(issueHostsCommand(deps.config, domain, dns))).code !== 0
+	) {
+		return {
+			outcome: "failed",
+			error: dns ? "dns-01 issuance failed" : "http-01 issuance failed",
+		};
 	}
 	if (
 		!(await runAll(deps, readableByNginxCommands(deps.config, names.hosts)))
 	) {
 		return { outcome: "failed", error: "certificate permissions failed" };
 	}
-	if (item.dnsCredential === null || item.dnsCredential === undefined) {
-		return { outcome: "issued" };
-	}
-	const sealed = parseSealed(item.dnsCredential);
-	let token: string | undefined;
-	try {
-		token = sealed && openSealed(sealed, deps.privateKeyPem, item.tenantId);
-	} catch {
-		token = undefined;
-	}
-	if (!token || !CLOUDFLARE_TOKEN.test(token)) {
-		return { outcome: "failed", error: "dns token does not open" };
-	}
-	const path = credentialsPath(deps.config, domain);
-	await deps.files.writeSecret(path, `dns_cloudflare_api_token = ${token}\n`);
+	if (!dns) return { outcome: "issued" };
 	if ((await deps.run(issueWildcardCommand(deps.config, domain))).code !== 0) {
 		return { outcome: "failed", error: "dns-01 issuance failed" };
 	}

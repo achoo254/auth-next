@@ -44,7 +44,7 @@ export function certificateRouter(
 						domain: tenant.domain,
 						action:
 							tenant.certificate?.status === "removing" ? "remove" : "issue",
-						http01: [hosts.auth, hosts.localman, hosts.tunnel],
+						http01: [hosts.auth, hosts.chat, hosts.localman, hosts.tunnel],
 						dns01: [hosts.localmanWildcard, hosts.tunnelWildcard],
 						dnsCredential:
 							(await secrets?.sealedForProvisioner(tenant._id)) ?? null,

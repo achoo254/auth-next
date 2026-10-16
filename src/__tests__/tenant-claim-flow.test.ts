@@ -169,6 +169,7 @@ describe("claiming a domain", () => {
 		records.set(`TXT _auth-claim.${DOMAIN}`, [txt]);
 		for (const host of [
 			AUTH,
+			`chat.${DOMAIN}`,
 			`localman.${DOMAIN}`,
 			`tunnel.${DOMAIN}`,
 			`*.localman.${DOMAIN}`,

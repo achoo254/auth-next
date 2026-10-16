@@ -48,6 +48,7 @@ export function conflictingName(
 	const hosts = appHostsFor(domain);
 	const probes = [
 		hosts.auth,
+		hosts.chat,
 		hosts.localman,
 		hosts.tunnel,
 		hosts.localmanWildcard.replace("*", "probe-label"),

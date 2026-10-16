@@ -76,7 +76,7 @@ const sealed = (tenantId: string) =>
 	sealForProvisioner(TOKEN, `${tenantId}\ndns-cloudflare`, PUBLIC_PEM);
 
 describe("provisioner", () => {
-	it("issues HTTP-01 and DNS-01 certificates, the token only in a credentials file", async () => {
+	it("issues DNS-01 certificates with the owner's token, the token only in a credentials file", async () => {
 		const run = harness([
 			{
 				tenantId: "ten_a",
@@ -98,11 +98,14 @@ describe("provisioner", () => {
 					)[0],
 			),
 		).toEqual(["acme.org", "wildcard.acme.org"]);
+		// DNS-01 for the hosts too, so they may be proxied in any SSL mode.
+		expect(certbot[0]?.args).not.toContain("--webroot");
 		expect(certbot[0]?.args).toEqual(
 			expect.arrayContaining([
-				"--webroot",
+				"--dns-cloudflare",
 				"-d",
 				"auth.acme.org",
+				"chat.acme.org",
 				"--test-cert",
 				"--config-dir",
 				"/etc/letsencrypt-tenants",
@@ -124,6 +127,36 @@ describe("provisioner", () => {
 		expect([...run.secrets.keys()]).toEqual([
 			"/etc/letsencrypt-tenants/credentials/acme.org.ini",
 		]);
+		expect(run.reports).toEqual([
+			{ tenantId: "ten_a", body: { outcome: "issued" } },
+		]);
+	});
+
+	it("issues only the hosts certificate over HTTP-01 without a token", async () => {
+		const run = harness([
+			{
+				tenantId: "ten_a",
+				domain: "acme.org",
+				action: "issue",
+				dnsCredential: null,
+			},
+		]);
+		expect(await provisionOnce(run.deps)).toEqual({ handled: 1, failed: 0 });
+		const certbot = run.commands.filter(
+			(command) => command.args[0] === "certonly",
+		);
+		expect(certbot).toHaveLength(1);
+		expect(certbot[0]?.args).not.toContain("--dns-cloudflare");
+		expect(certbot[0]?.args).toEqual(
+			expect.arrayContaining([
+				"--webroot",
+				"auth.acme.org",
+				"chat.acme.org",
+				"localman.acme.org",
+				"tunnel.acme.org",
+			]),
+		);
+		expect(run.secrets.size).toBe(0);
 		expect(run.reports).toEqual([
 			{ tenantId: "ten_a", body: { outcome: "issued" } },
 		]);

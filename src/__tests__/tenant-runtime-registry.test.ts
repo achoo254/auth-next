@@ -325,6 +325,7 @@ describe("ownership re-check", () => {
 	const ip = "203.0.113.65";
 	const pointingHere = (domain: string) => ({
 		[`auth.${domain}`]: [ip],
+		[`chat.${domain}`]: [ip],
 		[`localman.${domain}`]: [ip],
 		[`tunnel.${domain}`]: [ip],
 	});
@@ -346,24 +347,25 @@ describe("ownership re-check", () => {
 		};
 		const kept = await add("kept.example.org", "kept-proof");
 		const lost = await add("lost.example.org", "lost-proof");
-		const cdn = await add("cdn.example.org", "cdn-proof");
+		const elsewhere = await add("elsewhere.example.org", "elsewhere-proof");
 		const records = {
 			txt: {
 				[claimTxtName("kept.example.org")]: "kept-proof",
-				[claimTxtName("cdn.example.org")]: "cdn-proof",
+				[claimTxtName("elsewhere.example.org")]: "elsewhere-proof",
 				[claimTxtName("lost.example.org")]: "someone-else",
 			},
 			a: {
 				...pointingHere("kept.example.org"),
 				...pointingHere("lost.example.org"),
-				...pointingHere("cdn.example.org"),
+				...pointingHere("elsewhere.example.org"),
 			},
 			wildcardA: {
 				"localman.kept.example.org": [ip],
 				"tunnel.kept.example.org": [ip],
-				// Proxied through a CDN: the wildcard answers another address.
-				"localman.cdn.example.org": ["104.16.0.1"],
-				"tunnel.cdn.example.org": [ip],
+				// The wildcard answers an address that is neither this
+				// service nor Cloudflare's proxy.
+				"localman.elsewhere.example.org": ["198.51.100.7"],
+				"tunnel.elsewhere.example.org": [ip],
 			},
 		};
 		const suspended: string[] = [];
@@ -380,10 +382,15 @@ describe("ownership re-check", () => {
 				.collection("tenants")
 				.updateMany({}, { $set: { ownershipCheckedAt: new Date(0) } });
 		}
-		expect(suspended.sort()).toEqual(["cdn.example.org", "lost.example.org"]);
+		expect(suspended.sort()).toEqual([
+			"elsewhere.example.org",
+			"lost.example.org",
+		]);
 		expect((await local.findById(kept._id))?.status).toBe("active");
 		expect((await local.findById(lost._id))?.status).toBe("suspended");
-		expect((await local.findById(cdn._id))?.suspendedReason).toBe("ownership");
+		expect((await local.findById(elsewhere._id))?.suspendedReason).toBe(
+			"ownership",
+		);
 		await isolated.close();
 	});
 });

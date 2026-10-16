@@ -1,6 +1,7 @@
 import { randomBytes } from "node:crypto";
 import { promises as dns } from "node:dns";
 import type { Logger } from "../logger.js";
+import { isCloudflareIpv4 } from "./cloudflare-ips.js";
 import type { TenantDocument, TenantRegistry } from "./tenant-registry.js";
 import { appHostsFor } from "./tenant.js";
 
@@ -48,10 +49,27 @@ async function lookup<T>(run: () => Promise<T[]>): Promise<T[]> {
 export type OwnershipResult = "ok" | "txt" | "address" | "unknown";
 
 /**
+ * True when a host's A records reach this service: all of them are the
+ * service address (DNS only), or all of them are Cloudflare's (proxied, in
+ * any SSL mode). A mix, or any other address, does not.
+ */
+export function pointsHere(
+	addresses: readonly string[],
+	serviceIp: string,
+): boolean {
+	if (addresses.length === 0) return false;
+	return (
+		addresses.every((ip) => ip === serviceIp) ||
+		addresses.every(isCloudflareIpv4)
+	);
+}
+
+/**
  * What a domain must hold to be (and stay) a tenant: the claim TXT value,
- * and every app hostname (wildcards probed with a random label) resolving
- * to this service's address only. A record behind a CDN proxy fails, since
- * certificates and two-level wildcards need DNS-only records.
+ * and every app hostname (wildcards probed with a random label) reaching
+ * this service, directly or through Cloudflare's proxy (`pointsHere`). The
+ * TXT record is the proof of ownership; a proxied record only proves the
+ * host goes through Cloudflare.
  */
 export async function checkOwnership(
 	domain: string,
@@ -79,6 +97,7 @@ async function checkRecords(
 	const probe = randomBytes(6).toString("hex");
 	const names = [
 		hosts.auth,
+		hosts.chat,
 		hosts.localman,
 		hosts.tunnel,
 		hosts.localmanWildcard.replace("*", probe),
@@ -86,9 +105,7 @@ async function checkRecords(
 	];
 	for (const name of names) {
 		const addresses = await lookup(() => resolver.resolve4(name));
-		if (addresses.length === 0 || addresses.some((ip) => ip !== serviceIp)) {
-			return "address";
-		}
+		if (!pointsHere(addresses, serviceIp)) return "address";
 	}
 	return "ok";
 }

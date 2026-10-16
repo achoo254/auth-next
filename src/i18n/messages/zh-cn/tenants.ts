@@ -15,13 +15,13 @@ export const zhTenants: Translation<typeof enTenants> = {
 	"claim.form.submit": "开始认领",
 	"claim.pending.title": "等待 DNS：{domain}",
 	"claim.pending.lead":
-		"在你的 DNS 服务商处添加以下记录，然后检查。A 记录必须仅 DNS（不经代理）。",
+		"在你的 DNS 服务商处添加以下记录，然后检查。每条 A 记录可设为仅 DNS，或经 Cloudflare 代理（任一 SSL 模式）。",
 	"claim.records.hint": "点击名称或内容即可全选，然后复制到 DNS 服务商。",
 	"claim.records.type": "类型",
 	"claim.records.name": "名称",
 	"claim.records.content": "内容",
 	"claim.records.proxy": "代理",
-	"claim.records.dnsOnly": "仅 DNS",
+	"claim.records.proxyEither": "仅 DNS 或已代理",
 	"claim.pending.expires": "认领将于 {date} 过期。",
 	"claim.pending.verify": "检查 DNS",
 	"claim.tenants.title": "你的域名",
@@ -39,7 +39,8 @@ export const zhTenants: Translation<typeof enTenants> = {
 	"claim.error.capacity": "此服务器暂时无法接收更多域名，请稍后再试。",
 	"claim.error.notFound": "此认领已过期或不属于你。",
 	"claim.error.dnsTxt": "未找到 TXT 记录或其值不同。DNS 更改可能需要几分钟。",
-	"claim.error.dnsAddress": "并非所有主机名都只指向 {ip}（仅 DNS，不经代理）。",
+	"claim.error.dnsAddress":
+		"并非所有主机名都已指向 {ip}（仅 DNS）或 Cloudflare 代理。",
 	"claim.error.dnsUnreachable": "暂时无法检查 DNS，请一分钟后重试。",
 	"admin.title": "管理",
 	"admin.lead": "{domain} 的设置。只有其所有者能打开此页面。",
@@ -48,6 +49,8 @@ export const zhTenants: Translation<typeof enTenants> = {
 		"尚未启用：请在下方添加 Google 或 GitHub。在此之前，任何人都无法在此登录。",
 	"admin.status.active": "已启用：用户在 {issuer} 登录。",
 	"admin.hosts.title": "地址",
+	"admin.hosts.help":
+		"这些地址的 A 记录可设为仅 DNS，或经 Cloudflare 代理。经代理时，*.localman. 和 *.tunnel. 的子域名需要覆盖两级通配符的 Cloudflare 边缘证书（付费套餐）。",
 	"admin.certificate.pending": "证书：正在签发。",
 	"admin.certificate.issued": "证书：已于 {date} 签发。",
 	"admin.certificate.failed":

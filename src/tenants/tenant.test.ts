@@ -62,9 +62,10 @@ describe("normalizeTenantDomain", () => {
 });
 
 describe("appHostsFor", () => {
-	it("follows the auth./localman./tunnel. convention", () => {
+	it("follows the auth./chat./localman./tunnel. convention", () => {
 		expect(appHostsFor("example.org")).toEqual({
 			auth: "auth.example.org",
+			chat: "chat.example.org",
 			localman: "localman.example.org",
 			localmanWildcard: "*.localman.example.org",
 			tunnel: "tunnel.example.org",

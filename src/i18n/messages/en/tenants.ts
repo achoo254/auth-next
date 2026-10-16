@@ -13,14 +13,14 @@ export const enTenants = {
 	"claim.form.submit": "Start claim",
 	"claim.pending.title": "Waiting for DNS: {domain}",
 	"claim.pending.lead":
-		"Add these records at your DNS provider, then check. The A records must be DNS only (no proxy).",
+		"Add these records at your DNS provider, then check. Each A record can be DNS only or proxied by Cloudflare (any SSL mode).",
 	"claim.records.hint":
 		"Click a name or value to select all of it, then copy it into your DNS provider.",
 	"claim.records.type": "Type",
 	"claim.records.name": "Name",
 	"claim.records.content": "Content",
 	"claim.records.proxy": "Proxy",
-	"claim.records.dnsOnly": "DNS only",
+	"claim.records.proxyEither": "DNS only or Proxied",
 	"claim.pending.expires": "The claim expires {date}.",
 	"claim.pending.verify": "Check DNS",
 	"claim.tenants.title": "Your domains",
@@ -44,7 +44,7 @@ export const enTenants = {
 	"claim.error.dnsTxt":
 		"The TXT record is missing or has another value. DNS changes can take a few minutes.",
 	"claim.error.dnsAddress":
-		"Not every hostname points only to {ip} yet (DNS only, no proxy).",
+		"Not every hostname points to {ip} (DNS only) or to Cloudflare's proxy yet.",
 	"claim.error.dnsUnreachable":
 		"DNS could not be checked right now. Try again in a minute.",
 	"admin.title": "Admin",
@@ -55,6 +55,8 @@ export const enTenants = {
 		"Not active yet: add Google or GitHub below. Until then nobody can sign in here.",
 	"admin.status.active": "Active: people sign in at {issuer}.",
 	"admin.hosts.title": "Addresses",
+	"admin.hosts.help":
+		"Their A records can be DNS only or proxied by Cloudflare. Proxied, the *.localman. and *.tunnel. subdomains need a Cloudflare edge certificate that covers two-level wildcards (paid plans).",
 	"admin.certificate.pending": "Certificates: being issued.",
 	"admin.certificate.issued": "Certificates: issued {date}.",
 	"admin.certificate.failed":
