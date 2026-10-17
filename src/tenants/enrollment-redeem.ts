@@ -8,7 +8,6 @@ import {
 } from "./enrollment-bundle.js";
 import { verifyChallenge } from "./enrollment-challenge.js";
 import { checkClaimTxt } from "./ownership-records.js";
-import { newPullToken } from "./pull-tokens.js";
 import type { Tenancy } from "./tenancy.js";
 import type { InstallKey } from "./tenant-registry.js";
 
@@ -22,12 +21,7 @@ export type RedeemError =
 	| "challenge";
 
 export type RedeemResult =
-	| {
-			readonly ok: true;
-			readonly tenantId: string;
-			/** The install's new release pull token; the previous one stops working. */
-			readonly pullToken: string;
-	  }
+	| { readonly ok: true; readonly tenantId: string }
 	| { readonly ok: false; readonly error: RedeemError };
 
 /** A P-256 coordinate in base64url: 32 bytes, 43 characters. */
@@ -79,7 +73,7 @@ export async function redeemEnrollment(
 	}
 	if (tenant.status === "self_hosted") {
 		return tenant.installKey?.thumbprint === thumbprint
-			? enrolled(tenancy, tenant._id)
+			? { ok: true, tenantId: tenant._id }
 			: { ok: false, error: "not-enrolling" };
 	}
 	if (tenant.status !== "enrolling")
@@ -115,17 +109,5 @@ export async function redeemEnrollment(
 			domain: tenant.domain,
 		});
 	}
-	return enrolled(tenancy, tenant._id);
-}
-
-/** A successful redemption: a fresh pull token for the install, its hash kept. */
-async function enrolled(
-	tenancy: Tenancy,
-	tenantId: string,
-): Promise<RedeemResult> {
-	const { token, hash } = newPullToken();
-	if (!(await tenancy.registry.setPullTokenHash(tenantId, hash))) {
-		return { ok: false, error: "not-enrolling" };
-	}
-	return { ok: true, tenantId, pullToken: token };
+	return { ok: true, tenantId: tenant._id };
 }

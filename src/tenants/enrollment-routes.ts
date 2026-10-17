@@ -87,12 +87,7 @@ export function createEnrollmentRouter(
 				.then((result) => {
 					res.set("cache-control", "no-store");
 					if (result.ok) {
-						// The pull token is shown once: only its hash is kept.
-						res.status(200).json({
-							status: "self_hosted",
-							tenant_id: result.tenantId,
-							pull_token: result.pullToken,
-						});
+						res.status(200).json({ status: "self_hosted" });
 						return;
 					}
 					res.status(REDEEM_STATUS[result.error]).json({ error: result.error });

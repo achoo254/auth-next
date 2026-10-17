@@ -46,8 +46,6 @@ export interface Tenancy {
 	readonly signingJwks: SigningJwks;
 	/** Asks a self-hosted install to answer an enrollment challenge. */
 	readonly fetchChallenge: ChallengeFetcher;
-	/** GHCR owner and token of the release images (RELEASE_REGISTRY_*), if served. */
-	readonly releaseRegistry?: { readonly owner: string; readonly token: string };
 	readonly fetch: typeof fetch;
 	readonly logger: Logger;
 	availableMemoryMb(): number;
@@ -107,13 +105,6 @@ export async function createTenancy(
 		issuer: env.ISSUER,
 		signingJwks: stores.signingJwks,
 		fetchChallenge,
-		releaseRegistry:
-			env.RELEASE_REGISTRY_OWNER && env.RELEASE_REGISTRY_TOKEN
-				? {
-						owner: env.RELEASE_REGISTRY_OWNER,
-						token: env.RELEASE_REGISTRY_TOKEN,
-					}
-				: undefined,
 		fetch,
 		logger,
 		availableMemoryMb,

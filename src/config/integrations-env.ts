@@ -44,18 +44,6 @@ export const integrationEnvShape = {
 		.string()
 		.min(32, "must be at least 32 characters")
 		.optional(),
-	/**
-	 * GHCR owner of the self-hosted release images and a classic token with
-	 * read:packages: the gateway pulls for self-hosted installs (ADR 0007).
-	 */
-	RELEASE_REGISTRY_OWNER: z
-		.string()
-		.regex(/^[A-Za-z0-9-]{1,39}$/, "must be a GitHub user or organisation")
-		.optional(),
-	RELEASE_REGISTRY_TOKEN: z
-		.string()
-		.min(20, "must be a GitHub token")
-		.optional(),
 };
 
 const GROUPS = [
@@ -63,7 +51,6 @@ const GROUPS = [
 	["GITHUB_CLIENT_ID", "GITHUB_CLIENT_SECRET"],
 	["TELEGRAM_BOT_TOKEN", "TELEGRAM_BOT_USERNAME", "TELEGRAM_WEBHOOK_SECRET"],
 	["AUDIT_EVENTS_URL", "AUDIT_CLIENT_ID", "AUDIT_CLIENT_SECRET"],
-	["RELEASE_REGISTRY_OWNER", "RELEASE_REGISTRY_TOKEN"],
 ] as const;
 
 type GroupKey = (typeof GROUPS)[number][number];

@@ -32,8 +32,6 @@ const REDACT_PATHS = [
 	"*.subject_token",
 	"*.actor_token",
 	"*.password",
-	"*.pull_token",
-	"*.pullToken",
 ];
 
 /** `destination` defaults to stdout; tests pass a stream to read the lines. */

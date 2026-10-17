@@ -1,11 +1,11 @@
 #!/bin/bash
 # Moves a self-hosted install to a release (ADR 0007), when its operator
-# runs it; nothing comes from the gateway unasked.
+# runs it; nothing comes from hoandat unasked.
 #   ./update.sh            the newest release
 #   ./update.sh 1.2.0      that release
-# Signs in to the gateway's release registry with the credentials the IdP
-# kept when it enrolled, verifies every image's cosign signature (made by
-# hoandat-auth's release workflow) on the exact digest it will run, takes
+# Pulls the public release images from GHCR, verifies every image's cosign
+# signature (made by hoandat-auth's release workflow) on the exact digest
+# it will run, takes
 # the release's own bundle files, backs up MongoDB and Postgres, then
 # switches; if the stack does not come up healthy it goes back to the
 # previous release. Prints no secret.
@@ -21,51 +21,56 @@ fi
 cd "${UPDATE_DIR:-$DIR}"
 umask 077
 
-CREDENTIALS=data/secrets/auth/enrollment-key.json.registry.json
+# The release images, public on GHCR; RELEASE_REGISTRY in .env overrides.
+SIGNER_OWNER="${SIGNER_OWNER:-achoo254}"
+REGISTRY="$(sed -n 's/^RELEASE_REGISTRY=//p' .env | tail -n 1)"
+REGISTRY="${REGISTRY:-ghcr.io/$SIGNER_OWNER}"
 COSIGN_IMAGE=ghcr.io/sigstore/cosign/cosign:v2.4.1
 # The release workflow of hoandat-auth; GitHub Actions' OIDC issuer.
-SIGNER_OWNER="${SIGNER_OWNER:-achoo254}"
 SIGNER_IDENTITY="^https://github.com/$SIGNER_OWNER/hoandat-auth/\\.github/workflows/selfhosted-release\\.yml@"
 SIGNER_ISSUER=https://token.actions.githubusercontent.com
 IMAGES=(nginx auth localman tunelo chat)
 
-[ -f "$CREDENTIALS" ] || { echo "update: not enrolled yet ($CREDENTIALS missing)" >&2; exit 1; }
-field() { sed -n "s/.*\"$1\":\"\\([^\"]*\\)\".*/\\1/p" "$CREDENTIALS"; }
-REGISTRY="$(field registry)"
-USERNAME="$(field username)"
-[ -n "$REGISTRY" ] && [ -n "$USERNAME" ] || { echo "update: unreadable $CREDENTIALS" >&2; exit 1; }
+# GHCR's API answers public images to an anonymous token per image.
+HOST="${REGISTRY%%/*}"
+OWNER="${REGISTRY#*/}"
+registry_get() { # image path [curl args...]
+	local image="$1" path="$2" token
+	shift 2
+	token="$(curl -fsS "https://$HOST/token?scope=repository:$OWNER/selfhosted-$image:pull" |
+		sed -n 's/.*"token":"\([^"]*\)".*/\1/p')"
+	curl -fsS --config <(printf 'header = "Authorization: Bearer %s"\n' "$token") \
+		"$@" "https://$HOST/v2/$OWNER/selfhosted-$image/$path"
+}
 
-# Docker credentials in a private config dir, also mounted for cosign.
-export DOCKER_CONFIG="$PWD/data/docker"
-mkdir -p "$DOCKER_CONFIG"
-field password | docker login "$REGISTRY" --username "$USERNAME" --password-stdin >/dev/null
-
-# The registry's answer for one path, authenticated through a config on a
-# pipe (never in argv).
-registry_get() { # path [curl args...]
-	local path="$1" password
-	shift
-	password="$(field password)"
-	curl -fsS --config <(printf 'user = "%s:%s"\n' "$USERNAME" "$password") \
-		"$@" "https://$REGISTRY/v2/$path"
+# Every tag of the bundle image: GHCR pages tag lists (Link header).
+bundle_tags() {
+	local next="tags/list" headers page=0
+	headers="$(mktemp)"
+	while [ -n "$next" ] && [ "$page" -lt 200 ]; do
+		registry_get bundle "$next" -D "$headers"
+		echo
+		next="$(tr -d '\r' <"$headers" | sed -n 's#^[Ll]ink: </v2/[^>]*/selfhosted-bundle/\([^>]*\)>.*#\1#p')"
+		page=$((page + 1))
+	done
+	rm -f "$headers"
 }
 
 VERSION="${1:-}"
 if [ -z "$VERSION" ]; then
-	VERSION="$(registry_get selfhosted-bundle/tags/list |
-		grep -oE '"[0-9]+\.[0-9]+\.[0-9]+"' | tr -d '"' | sort -V | tail -n 1)"
+	VERSION="$(bundle_tags | grep -oE '"[0-9]+\.[0-9]+\.[0-9]+"' | tr -d '"' | sort -V | tail -n 1)"
 fi
 [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "update: no release version found" >&2; exit 1; }
 echo "update: release $VERSION"
 
 # The digest a tag names now; everything after this uses the digest only.
 digest_of() {
-	registry_get "selfhosted-$1/manifests/$VERSION" -I \
+	registry_get "$1" "manifests/$VERSION" -I \
 		-H 'Accept: application/vnd.oci.image.index.v1+json, application/vnd.docker.distribution.manifest.list.v2+json, application/vnd.oci.image.manifest.v1+json, application/vnd.docker.distribution.manifest.v2+json' |
 		tr -d '\r' | sed -n 's/^docker-content-digest: //Ip'
 }
 verify() { # image digest
-	docker run --rm -e DOCKER_CONFIG=/docker -v "$DOCKER_CONFIG:/docker:ro" "$COSIGN_IMAGE" verify \
+	docker run --rm "$COSIGN_IMAGE" verify \
 		--certificate-identity-regexp "$SIGNER_IDENTITY" \
 		--certificate-oidc-issuer "$SIGNER_ISSUER" \
 		"$REGISTRY/selfhosted-$1@$2" >/dev/null

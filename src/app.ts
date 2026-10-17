@@ -26,8 +26,6 @@ import { createAdminRouter } from "./tenants/admin-routes.js";
 import { CLAIM_PATH, createClaimRouter } from "./tenants/claim-routes.js";
 import { createEnrollmentRouter } from "./tenants/enrollment-routes.js";
 import { PRIMARY_TENANT_ID } from "./tenants/env-tenant.js";
-import { createReleaseRegistryRouter } from "./tenants/release-registry.js";
-import { createReleaseUpstream } from "./tenants/release-upstream.js";
 import { bindRequestTenant } from "./tenants/request-tenant.js";
 
 export interface TenantAppOptions {
@@ -73,17 +71,6 @@ export function createTenantApp(options: TenantAppOptions): Express {
 		app.use(offerDomainGuide);
 		app.use(createClaimRouter(services, tenancy));
 		app.use(createEnrollmentRouter(services, tenancy));
-		if (tenancy.releaseRegistry) {
-			app.use(
-				createReleaseRegistryRouter(
-					tenancy.registry,
-					createReleaseUpstream({
-						...tenancy.releaseRegistry,
-						fetch: tenancy.fetch,
-					}),
-				),
-			);
-		}
 		app.use(createDomainGuideRouter(new URL(tenant.issuer).host, CLAIM_PATH));
 	}
 	if (tenancy && tenant.id !== PRIMARY_TENANT_ID) {

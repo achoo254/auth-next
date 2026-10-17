@@ -43,7 +43,7 @@ curl -s https://auth.<domain>/.well-known/openid-configuration | head -c 200
 
 ## Cập nhật
 
-Bản phát hành do workflow `selfhosted-release` của hoandat-auth đẩy lên GHCR và ký; bản cài tải qua gateway (`https://auth.hoandat.com/v2`) bằng token tải nhận lúc enrollment, chỉ khi operator chạy:
+Bản phát hành do workflow `selfhosted-release` của hoandat-auth đẩy lên GHCR (`ghcr.io/achoo254/selfhosted-*`, công khai) và ký; bản cài tải thẳng từ GHCR, chỉ khi operator chạy:
 
 ```bash
 cd deploy/self-hosted
@@ -51,7 +51,7 @@ cd deploy/self-hosted
 ./update.sh 1.2.0    # một phiên bản cụ thể
 ```
 
-Script kiểm chữ ký cosign của từng image trên đúng digest sẽ chạy, lấy file bundle của phiên bản, backup MongoDB và Postgres vào `data/backups/<giờ>/`, chạy phiên bản mới theo digest (`release.env`, `compose.release.yaml`) và tự lùi về bản trước nếu stack không lên. Lần đầu chạy, bản cài chuyển từ image build tại chỗ (`init.sh`) sang image phát hành.
+Script kiểm chữ ký cosign của từng image trên đúng digest sẽ chạy (image không do workflow phát hành ký thì từ chối), lấy file bundle của phiên bản, backup MongoDB và Postgres vào `data/backups/<giờ>/`, chạy phiên bản mới theo digest (`release.env`, `compose.release.yaml`) và tự lùi về bản trước nếu stack không lên. Lần đầu chạy, bản cài chuyển từ image build tại chỗ (`init.sh`) sang image phát hành.
 
 ## Bên trong bundle
 
