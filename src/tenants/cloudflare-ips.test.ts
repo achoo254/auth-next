@@ -50,6 +50,21 @@ describe("isCloudflareIpv4", () => {
 			...CLOUDFLARE_IPV6_RANGES,
 		]);
 	});
+
+	it("matches the http-level real-IP trust of the self-hosted bundle", () => {
+		const conf = readFileSync(
+			"deploy/self-hosted/nginx/selfhosted-http.conf",
+			"utf8",
+		);
+		const trusted = [
+			...conf.matchAll(/^\s*set_real_ip_from\s+([0-9a-f.:/]+);/gm),
+		].map((match) => match[1]);
+		expect(trusted).toEqual([
+			...CLOUDFLARE_IPV4_RANGES,
+			...CLOUDFLARE_IPV6_RANGES,
+		]);
+		expect(conf).toMatch(/^real_ip_header\s+CF-Connecting-IP;/m);
+	});
 });
 
 describe("pointsHere", () => {

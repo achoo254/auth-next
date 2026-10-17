@@ -1,0 +1,3 @@
+# The install's settings and every secret init.sh generates.
+.env
+data/
