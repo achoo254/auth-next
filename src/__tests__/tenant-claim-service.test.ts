@@ -1,6 +1,7 @@
 import type { Db } from "mongodb";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { createLogger } from "../logger.js";
+import { generateSigningJwk } from "../oidc/jwks.js";
 import { startClaim, verifyClaim } from "../tenants/claim-service.js";
 import type { OwnershipResolver } from "../tenants/ownership-records.js";
 import { claimTxtName } from "../tenants/ownership-records.js";
@@ -17,6 +18,8 @@ import {
 } from "../tenants/tenant-registry.js";
 import { TenantSecrets } from "../tenants/tenant-secrets.js";
 import { openTestDb } from "./helpers/test-accounts.js";
+
+const gatewayJwks = { keys: [await generateSigningJwk()] };
 
 const IP = "203.0.113.65";
 const ALICE = { provider: "google" as const, providerId: "g-alice" };
@@ -68,6 +71,9 @@ function tenancy(overrides: Partial<Tenancy> = {}): Tenancy {
 		blockedDomains: ["hoandat.com", "inetdev.io.vn"],
 		telegramApiBaseUrl: "https://telegram.test",
 		claimUrl: "https://auth.hoandat.com/claim",
+		issuer: "https://auth.hoandat.com",
+		signingJwks: gatewayJwks,
+		fetchChallenge: async () => undefined,
 		fetch,
 		logger: createLogger("silent"),
 		availableMemoryMb: () => memoryMb,

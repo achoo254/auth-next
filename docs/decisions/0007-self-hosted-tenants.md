@@ -29,16 +29,18 @@ Tenant tự host chạy **cả bộ** (IdP, Localman, Tunelo, Chat) trên máy c
 
 ### 2. Nhận domain ở chế độ tự host
 
-- `/claim` (vẫn chỉ ở tenant chính) có lựa chọn chế độ: chạy trên hoandat (như ADR 0006) hoặc tự host. Chế độ ghi trong sổ tenant, không đổi được sau khi xác minh.
+- `/claim` (vẫn chỉ ở tenant chính) có lựa chọn chế độ khi bật `SELF_HOSTED_CLAIMS`: chạy trên hoandat (như ADR 0006) hoặc tự host. Lượt nhận mang chế độ; trong sổ tenant chế độ suy từ trạng thái (`enrolling`, `self_hosted` chỉ có ở tenant tự host), không đổi được sau khi xác minh.
 - Tự host chỉ cần TXT `_auth-claim.<d>` để xác minh sở hữu; **không** kiểm bản ghi A, không vào hàng đợi chứng chỉ, không dựng runtime. Owner là danh tính upstream của lượt nhận, như ADR 0006.
 - Tenant tự host không tính vào `TENANT_MAX_ACTIVE` và không cần `CLAIM_MIN_AVAILABLE_MB`; vẫn tính vào `MAX_TENANTS_PER_ACCOUNT`.
 
 ### 3. Gói enrollment
 
-- Xác minh xong, `/claim` cấp một gói enrollment: JWS ký bằng khoá ES256 của tenant chính (`primarySigningKey`), `aud` là `https://auth.<d>`, hạn ngắn, `jti` dùng một lần. Gói chứa domain, tên hiển thị và danh tính owner (provider và id upstream). Gói **không** chứa secret.
-- Bản cài xác minh gói bằng JWKS của gateway. URL gateway là cấu hình của bản cài, không cố định trong code (CLAUDE.md: không nhúng URL của `hoandat.com` vào code chạy).
-- Đổi gói là bước cuối của setup: bản cài đã chạy ở `https://auth.<d>` trên IP của tenant gửi gói về gateway; gateway kiểm `jti` chưa dùng, TXT còn đúng và `https://auth.<d>` trả lời thử thách của chính lượt đổi gói (chứng minh bản cài đang sống ở domain đó), rồi chuyển tenant sang `self_hosted`.
-- Bản cài dùng danh tính owner trong gói để mở trang quản trị cho đúng người ở lần đăng nhập Google/GitHub đầu tiên; không có "người đến trước làm owner".
+- Owner tải gói từ `/claim` khi tenant `enrolling` (POST có CSRF, cần đăng nhập gần đây). Gói là JWT ký bằng khoá ES256 của tenant chính (`primarySigningKey`), `typ` `hoandat-enrollment+jwt`, `aud` là `https://auth.<d>`, `sub` là id tenant, hạn 24 giờ, `jti` ngẫu nhiên. Gói chứa domain, tên hiển thị và danh tính owner (provider và id upstream). Gói **không** chứa secret.
+- Gói dùng một lần mà không lưu `jti`: đổi gói là phép ghi có điều kiện `enrolling` → `self_hosted`, nên sau lần đầu mọi gói của tenant đó đều hết dùng được. Owner tải lại được gói khác khi tenant còn `enrolling`.
+- Bản cài đặt `ENROLLMENT_GATEWAY` (issuer của gateway, cấu hình, không cố định trong code), `ENROLLMENT_BUNDLE_PATH`, `ENROLLMENT_KEY_PATH` (khoá ES256 của bản cài, tự sinh lần đầu, mode 600). Lúc khởi động bản cài kiểm gói bằng JWKS của gateway, đúng `aud` là `ISSUER` và đúng domain là `TENANT_DOMAIN`; sai thì không khởi động.
+- Đổi gói là bước cuối của setup: bản cài đã chạy ở `https://auth.<d>` gửi gói và khoá công khai của nó tới `POST /claim/enrollments` của gateway (JSON, không cookie). Gateway kiểm gói, tenant còn `enrolling`, TXT còn đúng, rồi gọi `https://auth.<d>/.well-known/hoandat-enrollment?nonce=<n>`; bản cài trả về nonce ký bằng chính khoá vừa gửi. Đạt thì tenant `self_hosted`, gateway lưu khoá công khai (thumbprint RFC 7638) và ghi audit `tenant.self_hosted`. Cùng bản cài đổi lại (cùng khoá) vẫn thành công; khoá khác bị từ chối.
+- Lượt gọi thử thách đi tới host do người khác kiểm soát: chỉ HTTPS có chứng chỉ hợp lệ, chỉ địa chỉ công khai (kiểm ngay lúc kết nối để chống DNS rebinding), không theo redirect, 10 giây, tối đa 16 KiB.
+- Bản cài **không** có trang quản trị như `/admin` của tenant sổ: domain là tenant chính của bản cài, cấu hình bằng `.env` như hoandat.com, và người giữ máy là người vận hành. Danh tính owner trong gói được ghi lại cho các bước sau (phase 05), không dùng để mở trang nào.
 
 ### 4. hoandat giữ gì sau khi chuyển
 

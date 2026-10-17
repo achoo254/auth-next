@@ -1,4 +1,4 @@
-import type { Express } from "express";
+import type { Express, RequestHandler } from "express";
 import type { Db } from "mongodb";
 import { AccountRepository } from "../accounts/account-repository.js";
 import { createUpstreamsFrom } from "../accounts/upstream-client.js";
@@ -41,6 +41,7 @@ export function buildPrimaryRuntime(
 	jwks: SigningJwks,
 	logger: Logger,
 	tenancy?: Tenancy,
+	enrollmentChallenge?: RequestHandler,
 ): TenantRuntime {
 	const tenant = envTenant(env);
 	const accounts = new AccountRepository(
@@ -71,7 +72,7 @@ export function buildPrimaryRuntime(
 	return {
 		tenant,
 		services,
-		app: createTenantApp({ services, env }),
+		app: createTenantApp({ services, env, enrollmentChallenge }),
 		jwks,
 		version: 0,
 	};

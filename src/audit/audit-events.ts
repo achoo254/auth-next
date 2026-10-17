@@ -48,6 +48,8 @@ export type AuditEventData = {
 	/** The owner changed a setting (never its value). */
 	"tenant.configured": { readonly setting: TenantSetting };
 	"tenant.suspended": { readonly reason: string };
+	/** A self-hosted tenant's install enrolled: it now runs on its owner's servers. */
+	"tenant.self_hosted": { readonly domain: string };
 	/** A self-hosted tenant's entry was removed (TXT gone, never enrolled). */
 	"tenant.released": { readonly reason: string };
 	/** RP-initiated logout at the IdP: everywhere, or only from one app. */

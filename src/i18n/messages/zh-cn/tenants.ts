@@ -40,6 +40,7 @@ export const zhTenants: Translation<typeof enTenants> = {
 	"claim.tenants.suspended": "已暂停",
 	"claim.tenants.enrolling": "已验证：等待你服务器上的安装",
 	"claim.tenants.selfHosted": "运行在你自己的服务器上",
+	"claim.tenants.bundle": "下载安装包",
 	"claim.tenants.admin": "打开管理页",
 	"claim.notice.started": "已开始认领。请添加下方的 DNS 记录。",
 	"claim.notice.verified": "域名已认领。打开管理页添加 Google 或 GitHub 登录。",

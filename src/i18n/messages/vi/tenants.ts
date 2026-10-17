@@ -41,6 +41,7 @@ export const viTenants: Translation<typeof enTenants> = {
 	"claim.tenants.suspended": "Tạm đình chỉ",
 	"claim.tenants.enrolling": "Đã xác minh: chờ bản cài trên máy chủ của bạn",
 	"claim.tenants.selfHosted": "Chạy trên máy chủ của bạn",
+	"claim.tenants.bundle": "Tải gói cài đặt",
 	"claim.tenants.admin": "Mở trang quản trị",
 	"claim.notice.started":
 		"Đã bắt đầu nhận domain. Hãy thêm các bản ghi DNS bên dưới.",

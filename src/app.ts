@@ -24,6 +24,7 @@ import { createTelegramWebhookRouter } from "./telegram/webhook-routes.js";
 import { inactiveTenant } from "./tenants/admin-gate-pages.js";
 import { createAdminRouter } from "./tenants/admin-routes.js";
 import { CLAIM_PATH, createClaimRouter } from "./tenants/claim-routes.js";
+import { createEnrollmentRouter } from "./tenants/enrollment-routes.js";
 import { PRIMARY_TENANT_ID } from "./tenants/env-tenant.js";
 import { bindRequestTenant } from "./tenants/request-tenant.js";
 
@@ -38,6 +39,8 @@ export interface TenantAppOptions {
 	 * automatic sign-in helper never ships in production wiring.
 	 */
 	readonly interactions?: RequestHandler;
+	/** A self-hosted install waiting to enroll answers its gateway here (ADR 0007). */
+	readonly enrollmentChallenge?: RequestHandler;
 }
 
 /**
@@ -67,11 +70,13 @@ export function createTenantApp(options: TenantAppOptions): Express {
 	if (tenancy && tenant.id === PRIMARY_TENANT_ID) {
 		app.use(offerDomainGuide);
 		app.use(createClaimRouter(services, tenancy));
+		app.use(createEnrollmentRouter(services, tenancy));
 		app.use(createDomainGuideRouter(new URL(tenant.issuer).host, CLAIM_PATH));
 	}
 	if (tenancy && tenant.id !== PRIMARY_TENANT_ID) {
 		app.use(createAdminRouter(services, tenancy));
 	}
+	if (options.enrollmentChallenge) app.use(options.enrollmentChallenge);
 	app.use(createPrivacyRouter(new URL(tenant.issuer).host));
 	app.use(createLanguageRouter(services));
 	// Until its owner adds a sign-in provider, a claimed tenant serves only

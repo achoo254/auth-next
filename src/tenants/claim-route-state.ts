@@ -5,7 +5,7 @@ import { offersHosting } from "./claim-checks.js";
 import type { ClaimIdentity } from "./claim-page.js";
 import type { ClaimError } from "./claim-service.js";
 import type { Tenancy } from "./tenancy.js";
-import type { TenantDocument } from "./tenant-registry.js";
+import type { TenantDocument, TenantOwner } from "./tenant-registry.js";
 import type { TenantHosting } from "./tenant.js";
 
 /** What /claim reads from an account and shows after each step. */
@@ -56,4 +56,26 @@ export function verifiedNotice(tenant: TenantDocument): string {
 	return tenant.status === "enrolling"
 		? "notice=verified-self"
 		: "notice=verified";
+}
+
+/**
+ * The tenant `tenantId` with its owner, when one of the account's linked
+ * identities owns it; undefined otherwise (another person's reads as missing).
+ */
+export async function ownedTenant(
+	tenancy: Tenancy,
+	account: AccountDocument,
+	tenantId: string,
+): Promise<
+	{ readonly tenant: TenantDocument; readonly owner: TenantOwner } | undefined
+> {
+	const tenant = await tenancy.registry.findById(tenantId);
+	const owner = tenant?.owner;
+	if (!tenant || !owner) return undefined;
+	const owns = identitiesOf(account).some(
+		(identity) =>
+			identity.provider === owner.provider &&
+			identity.providerId === owner.providerId,
+	);
+	return owns ? { tenant, owner } : undefined;
 }

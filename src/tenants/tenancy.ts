@@ -4,6 +4,11 @@ import { freemem } from "node:os";
 import type { Db } from "mongodb";
 import type { Env } from "../config/env.js";
 import type { Logger } from "../logger.js";
+import type { SigningJwks } from "../oidc/jwks.js";
+import {
+	type ChallengeFetcher,
+	fetchChallenge,
+} from "./enrollment-challenge.js";
 import {
 	type OwnershipResolver,
 	SYSTEM_RESOLVER,
@@ -36,6 +41,11 @@ export interface Tenancy {
 	readonly telegramApiBaseUrl: string;
 	/** Where owners start and open /admin from: the primary tenant's /claim. */
 	readonly claimUrl: string;
+	/** The primary tenant's issuer and keys: the gateway signing enrollment bundles. */
+	readonly issuer: string;
+	readonly signingJwks: SigningJwks;
+	/** Asks a self-hosted install to answer an enrollment challenge. */
+	readonly fetchChallenge: ChallengeFetcher;
 	readonly fetch: typeof fetch;
 	readonly logger: Logger;
 	availableMemoryMb(): number;
@@ -61,7 +71,7 @@ export function availableMemoryMb(): number {
 /** The Tenancy of a server whose registry tenants are enabled. */
 /** Network and machine facts tests replace (DNS, HTTP, free memory). */
 export type TenancyOverrides = Partial<
-	Pick<Tenancy, "resolver" | "fetch" | "availableMemoryMb">
+	Pick<Tenancy, "resolver" | "fetch" | "availableMemoryMb" | "fetchChallenge">
 >;
 
 export async function createTenancy(
@@ -71,6 +81,7 @@ export async function createTenancy(
 	stores: {
 		readonly registry: TenantRegistry;
 		readonly secrets: TenantSecrets;
+		readonly signingJwks: SigningJwks;
 	},
 	changed: (tenantId: string) => void,
 	overrides: TenancyOverrides = {},
@@ -91,6 +102,9 @@ export async function createTenancy(
 		provisionerPublicKey: keyPath ? await readFile(keyPath, "utf8") : undefined,
 		telegramApiBaseUrl: env.TELEGRAM_API_BASE_URL.replace(/\/+$/, ""),
 		claimUrl: `${env.ISSUER}/claim`,
+		issuer: env.ISSUER,
+		signingJwks: stores.signingJwks,
+		fetchChallenge,
 		fetch,
 		logger,
 		availableMemoryMb,

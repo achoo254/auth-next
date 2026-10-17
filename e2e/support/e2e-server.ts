@@ -103,13 +103,14 @@ const appClientSecretKey = env.APP_CLIENT_SECRET_KEY;
 if (!appClientSecretKey) throw new Error("e2e app client key missing");
 const registry = new TenantRegistry(db);
 const secrets = new TenantSecrets(db, keyring);
+const jwks = { keys: [await generateSigningJwk()] };
 // The runtime registry is built after the tenancy that refers to it.
 const built: { runtimes?: RuntimeRegistry } = {};
 const tenancy = await createTenancy(
 	env,
 	db,
 	logger,
-	{ registry, secrets },
+	{ registry, secrets, signingJwks: jwks },
 	(id) => built.runtimes?.dispose(id),
 	{
 		availableMemoryMb: () => 4_000,
@@ -128,7 +129,6 @@ const tenancy = await createTenancy(
 		},
 	},
 );
-const jwks = { keys: [await generateSigningJwk()] };
 const accounts = new AccountRepository(
 	db,
 	tenant,

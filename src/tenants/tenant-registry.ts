@@ -9,6 +9,7 @@ import {
 import { TenantLifecycle } from "./tenant-lifecycle.js";
 
 export {
+	type InstallKey,
 	SELF_HOSTED_STATUSES,
 	SERVING_STATUSES,
 	TENANTS_COLLECTION,

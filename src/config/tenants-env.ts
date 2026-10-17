@@ -3,6 +3,20 @@ import { z } from "zod";
 const LOOPBACK = new Set(["127.0.0.1", "::1", "localhost"]);
 
 /**
+ * A self-hosted install waiting to enroll at its gateway (ADR 0007): the
+ * gateway's issuer, the bundle the owner downloaded from its /claim, and
+ * where the install keeps the key it enrolls with (created when missing).
+ */
+const enrollmentEnvShape = {
+	ENROLLMENT_GATEWAY: z
+		.url({ protocol: /^https?$/, error: "must be an http(s) URL" })
+		.transform((value) => value.replace(/\/+$/, ""))
+		.optional(),
+	ENROLLMENT_BUNDLE_PATH: z.string().min(1).optional(),
+	ENROLLMENT_KEY_PATH: z.string().min(1).optional(),
+};
+
+/**
  * Settings for serving tenants beyond the primary one (ADR 0006). Without
  * TENANT_SECRETS_KEY and APP_CLIENT_SECRET_KEY the IdP serves the primary
  * tenant only, exactly as before.
@@ -52,15 +66,33 @@ export const tenantsEnvShape = {
 				.map((domain) => domain.trim())
 				.filter((domain) => domain.length > 0),
 		),
+	...enrollmentEnvShape,
 };
+
+const ENROLLMENT_KEYS = [
+	"ENROLLMENT_GATEWAY",
+	"ENROLLMENT_BUNDLE_PATH",
+	"ENROLLMENT_KEY_PATH",
+] as const;
 
 export function checkTenantsGroup(
 	env: {
 		readonly TENANT_SECRETS_KEY?: string;
 		readonly APP_CLIENT_SECRET_KEY?: string;
-	},
+	} & { readonly [K in (typeof ENROLLMENT_KEYS)[number]]?: string },
 	ctx: z.RefinementCtx,
 ): void {
+	const enrollment = ENROLLMENT_KEYS.filter((key) => env[key] !== undefined);
+	if (enrollment.length > 0 && enrollment.length < ENROLLMENT_KEYS.length) {
+		for (const key of ENROLLMENT_KEYS) {
+			if (env[key] !== undefined) continue;
+			ctx.addIssue({
+				code: "custom",
+				path: [key],
+				message: "must be set together with the other ENROLLMENT_* settings",
+			});
+		}
+	}
 	const set = [env.TENANT_SECRETS_KEY, env.APP_CLIENT_SECRET_KEY].filter(
 		(value) => value !== undefined,
 	);

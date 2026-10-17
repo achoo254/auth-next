@@ -22,6 +22,7 @@ import {
 	identitiesOf,
 	isClaimError,
 	offeredHostings,
+	ownedTenant,
 	verifiedNotice,
 } from "./claim-route-state.js";
 import { startClaim, verifyClaim } from "./claim-service.js";
@@ -145,28 +146,21 @@ export function createClaimRouter(
 		portalRoute(
 			services,
 			async (req, res, portal) => {
-				const tenant = await tenancy.registry.findById(
+				const owned = await ownedTenant(
+					tenancy,
+					portal.account,
 					routeParam(req, "tenantId"),
 				);
-				const owner = tenant?.owner;
-				const owns =
-					owner !== undefined &&
-					identitiesOf(portal.account).some(
-						(identity) =>
-							identity.provider === owner.provider &&
-							identity.providerId === owner.providerId,
-					);
 				// A self-hosted tenant has its /admin on its own servers.
 				if (
-					!tenant ||
-					!owner ||
-					!owns ||
-					tenant.status === "suspended" ||
-					isSelfHosted(tenant)
+					!owned ||
+					owned.tenant.status === "suspended" ||
+					isSelfHosted(owned.tenant)
 				) {
 					res.redirect(303, `${CLAIM_PATH}?error=not-found`);
 					return;
 				}
+				const { tenant, owner } = owned;
 				res.redirect(303, await issueAdminHandoff(tenancy, tenant, owner));
 			},
 			{ csrf: true, recentLogin: true },

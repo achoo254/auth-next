@@ -12,6 +12,7 @@ import {
 } from "../http/tenant-dispatcher.js";
 import type { Logger } from "../logger.js";
 import type { SigningJwks } from "../oidc/jwks.js";
+import { installEnrollmentFrom } from "./install-enrollment-env.js";
 import { createInternalApi } from "./internal-api.js";
 import { parseInternalCredentials } from "./internal-auth.js";
 import { SYSTEM_RESOLVER } from "./ownership-records.js";
@@ -67,12 +68,20 @@ export async function createServing(
 					env,
 					db,
 					logger,
-					{ registry, secrets },
+					{ registry, secrets, signingJwks: jwks },
 					(id) => built.runtimes?.dispose(id),
 					overrides,
 				)
 			: undefined;
-	const primary = buildPrimaryRuntime(env, db, jwks, logger, tenancy);
+	const enrollment = await installEnrollmentFrom(env, logger);
+	const primary = buildPrimaryRuntime(
+		env,
+		db,
+		jwks,
+		logger,
+		tenancy,
+		enrollment?.router,
+	);
 	const primaryHosts = [
 		new URL(primary.tenant.issuer).host,
 		...env.ALLOWED_HOSTS,
@@ -169,9 +178,11 @@ export async function createServing(
 					logger.error({ err: error }, "Re-sealing tenant secrets failed");
 				});
 			maintenance?.start();
+			enrollment?.start();
 		},
 		async stop() {
 			maintenance?.stop();
+			enrollment?.stop();
 			await auditDispatcher.stop();
 		},
 	};

@@ -40,6 +40,7 @@ export const enTenants = {
 	"claim.tenants.enrolling":
 		"Verified: waiting for the install on your servers",
 	"claim.tenants.selfHosted": "Runs on your own servers",
+	"claim.tenants.bundle": "Download setup bundle",
 	"claim.tenants.admin": "Open admin",
 	"claim.notice.started": "Claim started. Add the DNS records below.",
 	"claim.notice.verified":

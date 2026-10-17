@@ -1,6 +1,7 @@
 import type { Db } from "mongodb";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { createLogger } from "../logger.js";
+import { generateSigningJwk } from "../oidc/jwks.js";
 import { startClaim, verifyClaim } from "../tenants/claim-service.js";
 import {
 	SUSPEND_AFTER_FAILURES,
@@ -24,6 +25,8 @@ import {
 } from "../tenants/tenant-registry.js";
 import { TenantSecrets } from "../tenants/tenant-secrets.js";
 import { openTestDb } from "./helpers/test-accounts.js";
+
+const gatewayJwks = { keys: [await generateSigningJwk()] };
 
 /*
  * Self-hosted tenants (ADR 0007): proven by TXT only, never served,
@@ -69,6 +72,9 @@ function tenancy(overrides: Partial<Tenancy> = {}): Tenancy {
 		blockedDomains: ["hoandat.com"],
 		telegramApiBaseUrl: "https://telegram.test",
 		claimUrl: "https://auth.hoandat.com/claim",
+		issuer: "https://auth.hoandat.com",
+		signingJwks: gatewayJwks,
+		fetchChallenge: async () => undefined,
 		fetch,
 		logger: createLogger("silent"),
 		availableMemoryMb: () => 0,

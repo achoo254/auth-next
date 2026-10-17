@@ -1,5 +1,6 @@
 import type { Collection, Db } from "mongodb";
 import {
+	type InstallKey,
 	SELF_HOSTED_STATUSES,
 	SERVING_STATUSES,
 	TENANTS_COLLECTION,
@@ -135,6 +136,24 @@ export class TenantLifecycle {
 			}
 		}
 		return expired;
+	}
+
+	/**
+	 * `enrolling` to `self_hosted` with the install's key, only if still
+	 * enrolling: of two installs redeeming at once, one wins.
+	 */
+	async completeEnrollment(
+		id: string,
+		installKey: InstallKey,
+	): Promise<boolean> {
+		const result = await this.tenants.updateOne(
+			{ _id: id, status: "enrolling" },
+			{
+				$set: { status: "self_hosted", enrolledAt: new Date(), installKey },
+				$inc: { configVersion: 1 },
+			},
+		);
+		return result.modifiedCount === 1;
 	}
 
 	/** Deletes a self-hosted tenant's entry (its TXT is gone); frees the domain. */

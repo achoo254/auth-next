@@ -67,6 +67,29 @@ ${dnsRecords(i18n, claim, view.serviceIp, view.wrongRecords)}
 </li>`;
 }
 
+/**
+ * What the owner can do with a tenant from here: open its /admin, or, for
+ * a self-hosted one still enrolling, download the bundle its install needs.
+ */
+function tenantAction(view: ClaimView, tenant: TenantDocument): SafeHtml {
+	const { i18n } = view.page;
+	const form = (action: string, label: string, dataId: string): SafeHtml =>
+		html`<form method="post" action="/claim/tenants/${tenant._id}/${action}" class="inline-form">${csrfField(view.csrf)}${submitButton(label, { variant: "secondary", dataId })}</form>`;
+	if (tenant.status === "enrolling") {
+		return form(
+			"enrollment",
+			i18n.t("claim.tenants.bundle"),
+			`tenant-bundle-${tenant.domain}`,
+		);
+	}
+	if (tenant.status === "suspended" || isSelfHosted(tenant)) return html``;
+	return form(
+		"admin",
+		i18n.t("claim.tenants.admin"),
+		`tenant-admin-${tenant.domain}`,
+	);
+}
+
 function ownedTenant(view: ClaimView, tenant: TenantDocument): SafeHtml {
 	const { i18n } = view.page;
 	const status = STATUS_KEYS[tenant.status];
@@ -74,7 +97,7 @@ function ownedTenant(view: ClaimView, tenant: TenantDocument): SafeHtml {
 <p><b>${tenant.domain}</b></p>
 ${status ? html`<p class="help" data-id="tenant-status-${tenant.domain}">${i18n.t(status)}</p>` : ""}
 </div>
-${tenant.status === "suspended" || isSelfHosted(tenant) ? "" : html`<form method="post" action="/claim/tenants/${tenant._id}/admin" class="inline-form">${csrfField(view.csrf)}${submitButton(i18n.t("claim.tenants.admin"), { variant: "secondary", dataId: `tenant-admin-${tenant.domain}` })}</form>`}
+${tenantAction(view, tenant)}
 </li>`;
 }
 

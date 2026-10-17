@@ -20,6 +20,21 @@ export interface TenantCertificate {
 	readonly issuedAt?: Date;
 }
 
+/**
+ * The public ES256 key a self-hosted install enrolled with (ADR 0007):
+ * public parts only. Phase 05 seals secrets moved to the install to it.
+ */
+export interface InstallKey {
+	readonly jwk: {
+		readonly kty: "EC";
+		readonly crv: "P-256";
+		readonly x: string;
+		readonly y: string;
+	};
+	/** RFC 7638 thumbprint: the same install redeeming again is recognised. */
+	readonly thumbprint: string;
+}
+
 /** One claimed domain in the `tenants` collection (the registry). */
 export interface TenantDocument {
 	/** `ten_<random>`: never reused, so a domain claimed again starts empty. */
@@ -35,6 +50,9 @@ export interface TenantDocument {
 	createdAt: Date;
 	claimedAt?: Date;
 	activatedAt?: Date;
+	/** Self-hosted: when its install enrolled, and with which key. */
+	enrolledAt?: Date;
+	installKey?: InstallKey;
 	suspendedAt?: Date;
 	suspendedReason?: string;
 	/**
