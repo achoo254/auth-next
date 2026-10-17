@@ -58,7 +58,13 @@ Jev 0,99 cho docker compose (script cài trên máy trần: 0,01). Bundle `deplo
 
 ### 6. Cập nhật phiên bản
 
-Jev 0,70 cho kênh phát hành có chữ ký (tải tay: 0,30). hoandat công bố bản phát hành đã ký; bản cài kéo về khi operator của tenant chọn. Không có traffic nào đi từ hoandat vào bản cài. Đây là quyết định có độ tin thấp nhất: xem lại sau khi có tenant tự host đầu tiên.
+Jev 0,70 cho kênh phát hành có chữ ký (tải tay: 0,30). hoandat công bố bản phát hành đã ký; bản cài kéo về khi operator của tenant chọn. Không có traffic nào đi từ hoandat vào bản cài.
+
+Chi tiết (user chọn 17/10/2026, Jev tư vấn):
+
+- **Image dựng sẵn trên GHCR, ký cosign keyless** (Jev 0,91; tarball mã nguồn 0,09): workflow `.github/workflows/selfhosted-release.yml` chạy tay với phiên bản và commit của localman-next, chat-next; đẩy sáu image `selfhosted-{auth,localman,tunelo,chat,nginx,bundle}:<x.y.z>` (`linux/amd64`, private như các repo) và ký từng digest. Danh tính ký là chính workflow đó; `update.sh` kiểm danh tính này. Image dùng chung mọi domain: web của Localman đọc tenant qua `GET /api/v1/tenant`, web của Chat đọc từ `chat.<domain>` (localman-next không phải sửa, chat-next `3236784`), nginx gửi mọi `chat.<domain>` về tenant duy nhất. Image `selfhosted-bundle` mang file của bundle cùng phiên bản. Không có manifest riêng: một phiên bản là cùng một tag trên sáu image, mỗi image ký theo digest.
+- **Quyền tải riêng từng tenant qua gateway** (user chọn; Jev 1,00 khi biết GHCR chỉ xác thực bằng token classic của một tài khoản và không cấp được token cho từng tenant): gateway phục vụ phần đọc của API OCI ở `/v2` của tenant chính (`src/tenants/release-registry.ts`), xác thực Basic bằng id tenant và token tải. Token cấp khi đổi gói thành công (cả lượt gọi lại bằng cùng khoá, token cũ hết hiệu lực), trả về một lần, sổ tenant chỉ giữ SHA-256 (`pullTokenHash`). Manifest và danh sách tag gateway lấy từ GHCR bằng một token classic (`RELEASE_REGISTRY_OWNER`, `RELEASE_REGISTRY_TOKEN`); blob trả 307 về URL CDN có chữ ký của GitHub, nên lớp image không qua .65. Chỉ sáu image phát hành được phục vụ; tenant phải `self_hosted`. Thu hồi: gỡ `pullTokenHash` của tenant.
+- **Cập nhật:** `update.sh` của bản cài đăng nhập registry bằng thông tin IdP ghi lúc enrollment (`<ENROLLMENT_KEY_PATH>.registry.json`), lấy digest của từng image theo tag, kiểm chữ ký cosign trên chính digest đó, lấy file bundle của phiên bản, backup MongoDB và Postgres, chạy `compose.release.yaml` theo digest, rồi lùi về phiên bản (hoặc bản build tại chỗ) trước nếu stack không lên.
 
 ### 7. Chuyển tenant đang chạy trên hoandat
 

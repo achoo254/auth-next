@@ -53,6 +53,8 @@ export interface TenantDocument {
 	/** Self-hosted: when its install enrolled, and with which key. */
 	enrolledAt?: Date;
 	installKey?: InstallKey;
+	/** SHA-256 of the install's release pull token (pull-tokens.ts); absent: no pulls. */
+	pullTokenHash?: string;
 	suspendedAt?: Date;
 	suspendedReason?: string;
 	/**

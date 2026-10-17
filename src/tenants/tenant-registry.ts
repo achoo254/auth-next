@@ -104,6 +104,18 @@ export class TenantRegistry extends TenantLifecycle {
 		await this.tenants.updateOne({ _id: id }, { $inc: { configVersion: 1 } });
 	}
 
+	/**
+	 * Keeps the hash of a self-hosted tenant's new release pull token, which
+	 * replaces the previous one; only while the tenant is self-hosted.
+	 */
+	async setPullTokenHash(id: string, hash: string): Promise<boolean> {
+		const result = await this.tenants.updateOne(
+			{ _id: id, status: "self_hosted" },
+			{ $set: { pullTokenHash: hash } },
+		);
+		return result.matchedCount === 1;
+	}
+
 	/** Replaces the certificate state; undefined removes it (certificates gone). */
 	async setCertificate(
 		id: string,

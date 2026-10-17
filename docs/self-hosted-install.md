@@ -41,6 +41,18 @@ docker compose logs auth | grep -i enroll
 curl -s https://auth.<domain>/.well-known/openid-configuration | head -c 200
 ```
 
+## Cập nhật
+
+Bản phát hành do workflow `selfhosted-release` của hoandat-auth đẩy lên GHCR và ký; bản cài tải qua gateway (`https://auth.hoandat.com/v2`) bằng token tải nhận lúc enrollment, chỉ khi operator chạy:
+
+```bash
+cd deploy/self-hosted
+./update.sh          # phiên bản mới nhất
+./update.sh 1.2.0    # một phiên bản cụ thể
+```
+
+Script kiểm chữ ký cosign của từng image trên đúng digest sẽ chạy, lấy file bundle của phiên bản, backup MongoDB và Postgres vào `data/backups/<giờ>/`, chạy phiên bản mới theo digest (`release.env`, `compose.release.yaml`) và tự lùi về bản trước nếu stack không lên. Lần đầu chạy, bản cài chuyển từ image build tại chỗ (`init.sh`) sang image phát hành.
+
 ## Bên trong bundle
 
 | Thành phần | Nguồn | Ghi chú |
@@ -51,4 +63,4 @@ curl -s https://auth.<domain>/.well-known/openid-configuration | head -c 200
 | `mongo`, `postgres` | `mongo:7` (replica set một node), `postgres:16-alpine` | Không mở cổng ra ngoài. |
 | `certbot` | `certbot/dns-cloudflare`, `certbot/run.sh` | Một chứng chỉ cho mọi host, kể cả wildcard; nginx đọc theo SNI và tự reload 12 giờ một lần. |
 
-Chưa có: media của Chat (`MEDIA_PUBLIC_URL` không đặt, tải tệp tắt), Telegram, Web Push. Cập nhật phiên bản là phase 04 (kênh phát hành có chữ ký).
+Chưa có: media của Chat (`MEDIA_PUBLIC_URL` không đặt, tải tệp tắt), Telegram, Web Push.

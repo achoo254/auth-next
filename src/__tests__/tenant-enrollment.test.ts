@@ -4,7 +4,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { Writable } from "node:stream";
 import express from "express";
-import { decodeJwt, exportJWK, generateKeyPair } from "jose";
+import { decodeJwt, exportJWK, generateKeyPair, importJWK } from "jose";
 import type { Db } from "mongodb";
 import {
 	afterAll,
@@ -37,6 +37,7 @@ import {
 import { createInstallEnrollment } from "../tenants/install-enrollment.js";
 import { claimTxtName } from "../tenants/ownership-records.js";
 import { isPublicAddress } from "../tenants/public-address.js";
+import { hashPullToken } from "../tenants/pull-tokens.js";
 import { SecretKeyring } from "../tenants/secret-keyring.js";
 import type { Tenancy } from "../tenants/tenancy.js";
 import { TenantClaims } from "../tenants/tenant-claims.js";
@@ -157,7 +158,7 @@ async function enrollingTenant(domain = DOMAIN): Promise<TenantDocument> {
 async function startInstall(
 	bundle: string,
 	keyName = "install-key.json",
-	onEnrolled?: () => Promise<void>,
+	onEnrolled?: (answer: unknown) => Promise<void>,
 ) {
 	const bundlePath = join(dir, `bundle-${keyName}`);
 	await writeFile(bundlePath, bundle);
@@ -180,6 +181,13 @@ async function startInstall(
 		install,
 		close: () => new Promise((resolve) => server.close(resolve)),
 	};
+}
+
+/** The public half of an install's key file, as it sends it when redeeming. */
+async function readInstallPublicKey(path: string) {
+	const stored: unknown = JSON.parse(await readFile(path, "utf8"));
+	const { kty, crv, x, y } = Object(stored) as Record<string, string>;
+	return importJWK({ kty, crv, x, y }, "ES256");
 }
 
 function bundleFor(tenant: TenantDocument): Promise<string> {
@@ -269,6 +277,43 @@ describe("an expired bundle", () => {
 });
 
 describe("redeeming a bundle", () => {
+	it("gives the install a pull token, keeps only its hash, and replaces it on a new redemption", async () => {
+		const tenant = await enrollingTenant();
+		const bundle = await bundleFor(tenant);
+		const answers: unknown[] = [];
+		const { install, close: stop } = await startInstall(
+			bundle,
+			"pull.json",
+			async (answer) => {
+				answers.push(answer);
+			},
+		);
+		const registry = new TenantRegistry(db);
+		try {
+			expect(await install.redeem()).toBe(true);
+			const first = (await registry.findById(tenant._id))?.pullTokenHash;
+			expect(first).toMatch(/^[a-f0-9]{64}$/);
+			const key = await exportJWK(
+				await readInstallPublicKey(join(dir, "pull.json")),
+			);
+			const again = await redeemEnrollment(tenancy(), {
+				bundle,
+				installKey: key,
+			});
+			if (!again.ok) throw new Error(again.error);
+			expect(again.pullToken).toMatch(/^hpt_[A-Za-z0-9_-]{43}$/);
+			const second = (await registry.findById(tenant._id))?.pullTokenHash;
+			expect(second).toBe(hashPullToken(again.pullToken));
+			expect(second).not.toBe(first);
+			expect(JSON.stringify(await registry.findById(tenant._id))).not.toContain(
+				again.pullToken,
+			);
+		} finally {
+			await stop();
+		}
+		expect(answers).toHaveLength(1);
+	});
+
 	it("makes the tenant self-hosted with the install's key, once", async () => {
 		const tenant = await enrollingTenant();
 		const { install, close: stop } = await startInstall(

@@ -55,8 +55,8 @@ export interface InstallEnrollmentOptions {
 	readonly fetch?: typeof fetch;
 	/** The gateway's signing keys; default its published JWKS. */
 	readonly gatewayKeys?: JWTVerifyGetKey;
-	/** Called once the gateway confirmed the enrollment. */
-	readonly onEnrolled?: () => Promise<void>;
+	/** Called with the gateway's answer once it confirmed the enrollment. */
+	readonly onEnrolled?: (answer: unknown) => Promise<void>;
 }
 
 export interface InstallEnrollment {
@@ -156,13 +156,13 @@ export async function createInstallEnrollment(
 				body: JSON.stringify({ bundle, install_key: publicKey }),
 			},
 		);
+		const body: unknown = await response.json().catch(() => undefined);
 		if (response.ok) {
 			enrolled = true;
-			await options.onEnrolled?.();
+			await options.onEnrolled?.(body);
 			logger.info({ domain: options.domain }, "Enrolled at the gateway");
 			return true;
 		}
-		const body: unknown = await response.json().catch(() => undefined);
 		const error =
 			typeof body === "object" && body !== null
 				? String(Reflect.get(body, "error"))
