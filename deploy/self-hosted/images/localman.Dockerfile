@@ -1,16 +1,15 @@
 # syntax=docker/dockerfile:1
 # Localman (dashboard API + mock runtime, and the web app nginx serves) for a
 # self-hosted install (ADR 0007). Context: a checkout of localman-next. The
-# web app inlines its IdP origin at build time, so the image is per domain.
+# web app reads its domain at run time (GET /api/v1/tenant; the build's IdP
+# is only the first render's default), so the image serves any domain.
 
 FROM node:22-alpine AS build
-ARG DOMAIN
-RUN test -n "$DOMAIN" && npm install --global pnpm@11.9.0 && npm cache clean --force
+RUN npm install --global pnpm@11.9.0 && npm cache clean --force
 WORKDIR /src
 COPY . .
 RUN pnpm install --frozen-lockfile
-ENV VITE_API_BASE_URL="" \
-	VITE_IDP_ORIGIN="https://auth.${DOMAIN}"
+ENV VITE_API_BASE_URL=""
 RUN VITE_FEATURES="$(grep -v '^#' infra/localman/released-features | tr -d ' \t' | sed '/^$/d' | paste -sd, -)" \
 	pnpm --filter @localman/api --filter @localman/web build
 # Runtime dependencies from the workspace lockfile, then the bundle on top

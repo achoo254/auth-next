@@ -1,12 +1,11 @@
 # syntax=docker/dockerfile:1
 # nginx of a self-hosted install (ADR 0007): the apps' own tenant server
-# blocks (assemble.sh) and the web apps built for this domain. Context:
+# blocks (assemble.sh) and the web apps; the same image for every domain. Context:
 # deploy/self-hosted/nginx; named contexts (compose additional_contexts):
 #   auth-src, localman-src, chat-src  the three checkouts
 #   localman-app, chat-app            the built app images (web and CSP)
 
 FROM alpine:3.22 AS config
-ARG DOMAIN
 RUN apk add --no-cache bash
 COPY --from=auth-src infra/nginx /src/auth/infra/nginx
 COPY --from=localman-src infra/localman/nginx /src/localman/infra/localman/nginx
@@ -15,7 +14,7 @@ COPY --from=chat-src infra/chat/nginx /src/chat/infra/chat/nginx
 COPY --from=chat-src infra/chat/render-tenants-nginx.sh /src/chat/infra/chat/render-tenants-nginx.sh
 COPY --from=localman-app /app/csp-script-hashes /src/csp-script-hashes
 COPY assemble.sh localman-internal.inc /assemble/
-RUN bash /assemble/assemble.sh /src/auth /src/localman /src/chat /src/csp-script-hashes "$DOMAIN" /out
+RUN bash /assemble/assemble.sh /src/auth /src/localman /src/chat /src/csp-script-hashes /out
 
 FROM nginx:1.27-alpine AS runtime
 # The images' default site would answer any Host on port 80.

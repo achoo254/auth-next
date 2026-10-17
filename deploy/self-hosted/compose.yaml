@@ -21,8 +21,6 @@ services:
     build:
       context: ./nginx
       dockerfile: ../images/nginx.Dockerfile
-      args:
-        DOMAIN: ${DOMAIN:?set DOMAIN in .env}
       additional_contexts:
         auth-src: ../..
         localman-src: ${LOCALMAN_SRC:?set LOCALMAN_SRC in .env}
@@ -38,7 +36,7 @@ services:
     # The apps call each other's public names (OIDC discovery, audit
     # delivery): straight to this nginx, with the real certificate.
     extra_hosts:
-      - "auth.${DOMAIN}:127.0.0.1"
+      - "auth.${DOMAIN:?set DOMAIN in .env}:127.0.0.1"
       - "chat.${DOMAIN}:127.0.0.1"
       - "localman.${DOMAIN}:127.0.0.1"
       - "tunnel.${DOMAIN}:127.0.0.1"
@@ -116,8 +114,6 @@ services:
     build:
       context: ${LOCALMAN_SRC}
       dockerfile: ${SELFHOSTED_DIR:?run init.sh}/images/localman.Dockerfile
-      args:
-        DOMAIN: ${DOMAIN}
     env_file: ./data/env/localman.env
     depends_on:
       nginx:
@@ -144,8 +140,6 @@ services:
     build: &chat-build
       context: ${CHAT_SRC}
       dockerfile: ${SELFHOSTED_DIR}/images/chat.Dockerfile
-      args:
-        DOMAIN: ${DOMAIN}
     command: ["-role", "migrate"]
     env_file: ./data/env/chat.env
     depends_on:
