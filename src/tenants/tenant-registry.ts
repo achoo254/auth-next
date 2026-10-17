@@ -104,6 +104,31 @@ export class TenantRegistry extends TenantLifecycle {
 		await this.tenants.updateOne({ _id: id }, { $inc: { configVersion: 1 } });
 	}
 
+	/**
+	 * `active` to `migrating`: the domain stops being served here while its
+	 * data is exported to the owner's install (ADR 0007 §7).
+	 */
+	async startMigration(id: string): Promise<boolean> {
+		return this.moveStatus(id, "active", "migrating");
+	}
+
+	/** Back to `active`, while the install has not enrolled yet. */
+	async cancelMigration(id: string): Promise<boolean> {
+		return this.moveStatus(id, "migrating", "active");
+	}
+
+	private async moveStatus(
+		id: string,
+		from: TenantDocument["status"],
+		to: TenantDocument["status"],
+	): Promise<boolean> {
+		const result = await this.tenants.updateOne(
+			{ _id: id, status: from },
+			{ $set: { status: to }, $inc: { configVersion: 1 } },
+		);
+		return result.modifiedCount === 1;
+	}
+
 	/** Replaces the certificate state; undefined removes it (certificates gone). */
 	async setCertificate(
 		id: string,

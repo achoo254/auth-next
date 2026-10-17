@@ -53,6 +53,7 @@ const STATUS_KEYS: Readonly<Record<string, MessageKey>> = {
 	suspended: "claim.tenants.suspended",
 	enrolling: "claim.tenants.enrolling",
 	self_hosted: "claim.tenants.selfHosted",
+	migrating: "claim.tenants.migrating",
 };
 
 function pendingClaim(view: ClaimView, claim: ClaimDocument): SafeHtml {
@@ -68,26 +69,34 @@ ${dnsRecords(i18n, claim, view.serviceIp, view.wrongRecords)}
 }
 
 /**
- * What the owner can do with a tenant from here: open its /admin, or, for
- * a self-hosted one still enrolling, download the bundle its install needs.
+ * What the owner can do with a tenant from here: open its /admin; download
+ * the bundle its install needs while it waits for one (self-hosted claim or
+ * a move); start moving an active one to its own servers, or cancel the
+ * move (ADR 0007 §7, offered with the self-hosted mode).
  */
 function tenantAction(view: ClaimView, tenant: TenantDocument): SafeHtml {
 	const { i18n } = view.page;
 	const form = (action: string, label: string, dataId: string): SafeHtml =>
 		html`<form method="post" action="/claim/tenants/${tenant._id}/${action}" class="inline-form">${csrfField(view.csrf)}${submitButton(label, { variant: "secondary", dataId })}</form>`;
-	if (tenant.status === "enrolling") {
-		return form(
-			"enrollment",
-			i18n.t("claim.tenants.bundle"),
-			`tenant-bundle-${tenant.domain}`,
-		);
+	const bundle = form(
+		"enrollment",
+		i18n.t("claim.tenants.bundle"),
+		`tenant-bundle-${tenant.domain}`,
+	);
+	if (tenant.status === "enrolling") return bundle;
+	if (tenant.status === "migrating") {
+		return html`${bundle}${form("migration/cancel", i18n.t("claim.tenants.cancelMigration"), `tenant-cancel-migration-${tenant.domain}`)}`;
 	}
 	if (tenant.status === "suspended" || isSelfHosted(tenant)) return html``;
-	return form(
+	const admin = form(
 		"admin",
 		i18n.t("claim.tenants.admin"),
 		`tenant-admin-${tenant.domain}`,
 	);
+	if (tenant.status !== "active" || !view.hostings.includes("self")) {
+		return admin;
+	}
+	return html`${admin}<div class="inline-form"><p class="help">${i18n.t("claim.tenants.migrateHelp")}</p>${form("migration", i18n.t("claim.tenants.migrate"), `tenant-migrate-${tenant.domain}`)}</div>`;
 }
 
 function ownedTenant(view: ClaimView, tenant: TenantDocument): SafeHtml {

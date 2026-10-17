@@ -42,6 +42,12 @@ export const viTenants: Translation<typeof enTenants> = {
 	"claim.tenants.enrolling": "Đã xác minh: chờ bản cài trên máy chủ của bạn",
 	"claim.tenants.selfHosted": "Chạy trên máy chủ của bạn",
 	"claim.tenants.bundle": "Tải gói cài đặt",
+	"claim.tenants.migrating":
+		"Đang chuyển sang máy chủ của bạn: không phục vụ ở đây cho tới khi bản cài nhận domain",
+	"claim.tenants.migrate": "Chuyển sang máy chủ của bạn",
+	"claim.tenants.migrateHelp":
+		"Domain ngừng phục vụ ở đây ngay khi bấm, cho tới khi bản cài trên máy chủ của bạn nhận dữ liệu và domain. Huỷ được trước lúc đó.",
+	"claim.tenants.cancelMigration": "Huỷ chuyển",
 	"claim.tenants.admin": "Mở trang quản trị",
 	"claim.notice.started":
 		"Đã bắt đầu nhận domain. Hãy thêm các bản ghi DNS bên dưới.",
@@ -49,6 +55,10 @@ export const viTenants: Translation<typeof enTenants> = {
 		"Đã nhận domain. Mở trang quản trị để thêm đăng nhập bằng Google hoặc GitHub.",
 	"claim.notice.verifiedSelf":
 		"Đã xác minh domain. Bước tiếp theo là cài đặt trên máy chủ của bạn.",
+	"claim.notice.migrating":
+		"Đã bắt đầu chuyển. Tải gói cài đặt, cài trên máy chủ của bạn rồi nhận dữ liệu theo hướng dẫn.",
+	"claim.notice.migrationCancelled":
+		"Đã huỷ chuyển. Domain được phục vụ ở đây như trước.",
 	"claim.error.invalidDomain": "Đây không phải domain có thể nhận ở đây.",
 	"claim.error.taken":
 		"Domain này, hoặc một domain cha hay con của nó, đã được dùng.",

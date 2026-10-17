@@ -211,3 +211,74 @@ describe("re-checking a self-hosted tenant", () => {
 		expect(await registry.findById(tenant._id)).toBeUndefined();
 	});
 });
+
+describe("moving an active tenant to its owner's servers", () => {
+	async function activeTenant(): Promise<TenantDocument> {
+		const tenant: TenantDocument = {
+			_id: newTenantId(),
+			domain: DOMAIN,
+			displayName: DOMAIN,
+			status: "active",
+			owner: ALICE,
+			claimTxt: "hoandat-auth-claim=moving",
+			createdAt: new Date(),
+			claimedAt: new Date(),
+			activatedAt: new Date(),
+		};
+		await new TenantRegistry(db).insert(tenant);
+		txt.set(claimTxtName(DOMAIN), tenant.claimTxt ?? "");
+		return tenant;
+	}
+
+	it("starts only from active, stops serving, and cancels back to active", async () => {
+		const tenant = await activeTenant();
+		const registry = new TenantRegistry(db);
+		expect(await registry.cancelMigration(tenant._id)).toBe(false);
+		expect(await registry.startMigration(tenant._id)).toBe(true);
+		expect(await registry.startMigration(tenant._id)).toBe(false);
+		expect(await registry.countServing()).toBe(0);
+		expect(await registry.cancelMigration(tenant._id)).toBe(true);
+		expect((await registry.findById(tenant._id))?.status).toBe("active");
+	});
+
+	it("is checked by TXT only while moving, and never removed for a missing TXT", async () => {
+		const tenant = await activeTenant();
+		const registry = new TenantRegistry(db);
+		await registry.startMigration(tenant._id);
+		txt.delete(claimTxtName(DOMAIN));
+		for (let round = 0; round < SUSPEND_AFTER_FAILURES + 1; round += 1) {
+			await db
+				.collection<TenantDocument>("tenants")
+				.updateOne({ _id: tenant._id }, { $unset: { ownershipCheckedAt: "" } });
+			await checkAllOwnership({
+				registry,
+				resolver,
+				logger: createLogger("silent"),
+				onSuspended: () => {
+					throw new Error("a moving tenant is never suspended");
+				},
+			});
+		}
+		expect((await registry.findById(tenant._id))?.status).toBe("migrating");
+		expect(addressLookups).toEqual([]);
+	});
+
+	it("still counts towards the tenants one account may hold", async () => {
+		const registry = new TenantRegistry(db);
+		const first = await activeTenant();
+		await registry.startMigration(first._id);
+		await registry.insert({
+			_id: newTenantId(),
+			domain: "two.example.org",
+			displayName: "two",
+			status: "active",
+			owner: ALICE,
+			createdAt: new Date(),
+		});
+		const result = await startClaim(tenancy(), {
+			domain: "three.example.org",
+			...by,
+		});
+		expect(result).toEqual({ ok: false, error: "too-many-tenants" });
+	});
+});

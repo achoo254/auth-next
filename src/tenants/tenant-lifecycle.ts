@@ -29,7 +29,11 @@ export class TenantLifecycle {
 						$or: [
 							{
 								status: {
-									$in: [...SERVING_STATUSES, ...SELF_HOSTED_STATUSES],
+									$in: [
+										...SERVING_STATUSES,
+										...SELF_HOSTED_STATUSES,
+										"migrating",
+									],
 								},
 							},
 							{ status: "suspended", suspendedReason: "ownership" },
@@ -139,15 +143,15 @@ export class TenantLifecycle {
 	}
 
 	/**
-	 * `enrolling` to `self_hosted` with the install's key, only if still
-	 * enrolling: of two installs redeeming at once, one wins.
+	 * `enrolling` (or `migrating`) to `self_hosted` with the install's key,
+	 * only if still so: of two installs redeeming at once, one wins.
 	 */
 	async completeEnrollment(
 		id: string,
 		installKey: InstallKey,
 	): Promise<boolean> {
 		const result = await this.tenants.updateOne(
-			{ _id: id, status: "enrolling" },
+			{ _id: id, status: { $in: ["enrolling", "migrating"] } },
 			{
 				$set: { status: "self_hosted", enrolledAt: new Date(), installKey },
 				$inc: { configVersion: 1 },

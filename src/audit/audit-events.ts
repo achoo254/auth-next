@@ -48,6 +48,9 @@ export type AuditEventData = {
 	/** The owner changed a setting (never its value). */
 	"tenant.configured": { readonly setting: TenantSetting };
 	"tenant.suspended": { readonly reason: string };
+	/** The owner started moving an active tenant to its own servers, or cancelled it. */
+	"tenant.migrating": { readonly domain: string };
+	"tenant.migration_cancelled": { readonly domain: string };
 	/** A self-hosted tenant's install enrolled: it now runs on its owner's servers. */
 	"tenant.self_hosted": { readonly domain: string };
 	/** A self-hosted tenant's entry was removed (TXT gone, never enrolled). */

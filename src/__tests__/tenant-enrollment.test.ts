@@ -421,6 +421,25 @@ describe("redeeming a bundle", () => {
 		expect(await installEnrollmentFrom(env, logger)).toBeUndefined();
 	});
 
+	it("enrolls a tenant moving from this service like a self-hosted claim", async () => {
+		const tenant = await enrollingTenant();
+		await db
+			.collection<TenantDocument>("tenants")
+			.updateOne({ _id: tenant._id }, { $set: { status: "migrating" } });
+		const { install, close: stop } = await startInstall(
+			await bundleFor(tenant),
+			"moving.json",
+		);
+		try {
+			expect(await install.redeem()).toBe(true);
+		} finally {
+			await stop();
+		}
+		expect((await new TenantRegistry(db).findById(tenant._id))?.status).toBe(
+			"self_hosted",
+		);
+	});
+
 	it("does not start an install with a bundle for another domain", async () => {
 		const tenant = await enrollingTenant("other.example.org");
 		await expect(

@@ -41,12 +41,22 @@ export const enTenants = {
 		"Verified: waiting for the install on your servers",
 	"claim.tenants.selfHosted": "Runs on your own servers",
 	"claim.tenants.bundle": "Download setup bundle",
+	"claim.tenants.migrating":
+		"Moving to your own servers: not served here until your install takes the domain",
+	"claim.tenants.migrate": "Move to your own servers",
+	"claim.tenants.migrateHelp":
+		"The domain stops being served here at once, until the install on your servers takes its data and the domain. You can cancel until then.",
+	"claim.tenants.cancelMigration": "Cancel the move",
 	"claim.tenants.admin": "Open admin",
 	"claim.notice.started": "Claim started. Add the DNS records below.",
 	"claim.notice.verified":
 		"Domain claimed. Open admin to add Google or GitHub sign-in.",
 	"claim.notice.verifiedSelf":
 		"Domain verified. Next, set it up on your own servers.",
+	"claim.notice.migrating":
+		"The move has started. Download the setup bundle, install it on your servers, then take your data as the guide says.",
+	"claim.notice.migrationCancelled":
+		"The move is cancelled. The domain is served here as before.",
 	"claim.error.invalidDomain": "That is not a domain that can be claimed here.",
 	"claim.error.taken":
 		"This domain, or one above or below it, is already in use.",

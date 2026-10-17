@@ -6,7 +6,9 @@ import { parse } from "tldts";
  * once it has an owner and a sign-in provider, and is suspended when its
  * ownership no longer checks out. A self-hosted one (ADR 0007) is
  * `enrolling` once its TXT is proven, then `self_hosted` once its own
- * install has enrolled: it never serves anything here.
+ * install has enrolled: it never serves anything here. An active tenant
+ * moving to its own servers is `migrating` (nothing served here, its data
+ * kept for the export) until its install enrolls.
  */
 export type TenantStatus =
 	| "pending_claim"
@@ -14,7 +16,8 @@ export type TenantStatus =
 	| "active"
 	| "suspended"
 	| "enrolling"
-	| "self_hosted";
+	| "self_hosted"
+	| "migrating";
 
 /** Where a tenant runs: on this service, or on its owner's servers (ADR 0007). */
 export type TenantHosting = "hoandat" | "self";

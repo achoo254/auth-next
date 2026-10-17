@@ -40,7 +40,7 @@ async function checkTenant(
 	deps: OwnershipCheckDependencies,
 ): Promise<OwnershipResult> {
 	if (!tenant.claimTxt) return "txt";
-	if (isSelfHosted(tenant)) {
+	if (isSelfHosted(tenant) || tenant.status === "migrating") {
 		return checkClaimTxt(tenant.domain, tenant.claimTxt, deps.resolver);
 	}
 	if (!deps.serviceIp) return "unknown";
@@ -103,6 +103,8 @@ export async function checkAllOwnership(
 			tenant._id,
 			result === "ok",
 		);
+		// A moving tenant waits for its install whatever DNS says meanwhile.
+		if (tenant.status === "migrating") continue;
 		if (result !== "ok" && failures >= SUSPEND_AFTER_FAILURES) {
 			if (isSelfHosted(tenant)) {
 				if (await deps.registry.removeSelfHosted(tenant._id)) {

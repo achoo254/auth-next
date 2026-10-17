@@ -54,7 +54,8 @@ export function createEnrollmentRouter(
 					portal.account,
 					routeParam(req, "tenantId"),
 				);
-				if (!owned || owned.tenant.status !== "enrolling") {
+				const waiting = ["enrolling", "migrating"];
+				if (!owned || !waiting.includes(owned.tenant.status)) {
 					res.redirect(303, `${CLAIM_PATH}?error=not-found`);
 					return;
 				}

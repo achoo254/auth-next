@@ -27,6 +27,41 @@ export async function purgeTenantData(db: Db, tenantId: string): Promise<void> {
 	}
 }
 
+/** Documents of `tenantId` per collection, its sealed secrets included. */
+export async function countTenantData(
+	db: Db,
+	tenantId: string,
+): Promise<{ readonly collection: string; readonly count: number }[]> {
+	const counts = [];
+	for (const name of [...TENANT_COLLECTIONS, TENANT_SECRETS_COLLECTION]) {
+		counts.push({
+			collection: name,
+			count: await db.collection(name).countDocuments({ tenantId }),
+		});
+	}
+	return counts;
+}
+
+/**
+ * Gives `to` every document of `from` (a tenant moved into an install,
+ * whose own tenant is the primary one: ADR 0007 §7). Its secrets are not
+ * among them: the install keeps those in its own files.
+ */
+export async function retagTenantData(
+	db: Db,
+	from: string,
+	to: string,
+): Promise<{ readonly collection: string; readonly count: number }[]> {
+	const counts = [];
+	for (const name of TENANT_COLLECTIONS) {
+		const result = await db
+			.collection(name)
+			.updateMany({ tenantId: from }, { $set: { tenantId: to } });
+		counts.push({ collection: name, count: result.modifiedCount });
+	}
+	return counts;
+}
+
 export interface BackfillCount {
 	readonly collection: string;
 	/** Documents without `tenantId` before this run. */

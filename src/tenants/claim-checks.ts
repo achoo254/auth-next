@@ -18,7 +18,11 @@ import type { TenantHosting } from "./tenant.js";
  */
 export const MAX_TENANTS_PER_ACCOUNT = 2;
 
-const HOLDING_STATUSES = [...SERVING_STATUSES, ...SELF_HOSTED_STATUSES];
+const HOLDING_STATUSES = [
+	...SERVING_STATUSES,
+	...SELF_HOSTED_STATUSES,
+	"migrating" as const,
+];
 
 /** True when the account's identities already own the most tenants allowed. */
 export async function ownsTooMany(

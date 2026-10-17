@@ -41,10 +41,19 @@ export const zhTenants: Translation<typeof enTenants> = {
 	"claim.tenants.enrolling": "已验证：等待你服务器上的安装",
 	"claim.tenants.selfHosted": "运行在你自己的服务器上",
 	"claim.tenants.bundle": "下载安装包",
+	"claim.tenants.migrating":
+		"正在迁移到你的服务器：在你的安装接管域名之前，这里不提供服务",
+	"claim.tenants.migrate": "迁移到你的服务器",
+	"claim.tenants.migrateHelp":
+		"点击后这里立即停止为该域名提供服务，直到你服务器上的安装接管数据和域名。在此之前可以取消。",
+	"claim.tenants.cancelMigration": "取消迁移",
 	"claim.tenants.admin": "打开管理页",
 	"claim.notice.started": "已开始认领。请添加下方的 DNS 记录。",
 	"claim.notice.verified": "域名已认领。打开管理页添加 Google 或 GitHub 登录。",
 	"claim.notice.verifiedSelf": "域名已验证。下一步是在你自己的服务器上安装。",
+	"claim.notice.migrating":
+		"迁移已开始。请下载安装包，在你的服务器上安装，然后按指南导入数据。",
+	"claim.notice.migrationCancelled": "已取消迁移。该域名照常在这里提供服务。",
 	"claim.error.invalidDomain": "该域名无法在此认领。",
 	"claim.error.taken": "该域名或其上级、下级域名已被使用。",
 	"claim.error.tooManyPending":

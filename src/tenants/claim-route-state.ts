@@ -27,6 +27,8 @@ export const CLAIM_NOTICES: Readonly<Record<string, MessageKey>> = {
 	started: "claim.notice.started",
 	verified: "claim.notice.verified",
 	"verified-self": "claim.notice.verifiedSelf",
+	migrating: "claim.notice.migrating",
+	"migration-cancelled": "claim.notice.migrationCancelled",
 };
 
 /** The identities linked to an account: who could own a claimed domain. */

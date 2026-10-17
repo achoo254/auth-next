@@ -76,7 +76,7 @@ export async function redeemEnrollment(
 			? { ok: true, tenantId: tenant._id }
 			: { ok: false, error: "not-enrolling" };
 	}
-	if (tenant.status !== "enrolling")
+	if (tenant.status !== "enrolling" && tenant.status !== "migrating")
 		return { ok: false, error: "not-enrolling" };
 	const txt = await checkClaimTxt(
 		tenant.domain,
