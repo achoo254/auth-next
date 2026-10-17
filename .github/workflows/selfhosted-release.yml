@@ -1,11 +1,10 @@
 # Release of the self-hosted bundle (ADR 0007, docs/self-hosted-install.md):
-# six images, the same for every domain, pushed to GHCR (private, like the
-# repositories) and signed keyless by this workflow, which update.sh checks
+# six images, the same for every domain, pushed to GHCR (public) and
+# signed keyless by this workflow, which update.sh checks
 # on every install. Run by hand with the release version and the commits of
-# localman-next and chat-next it ships.
-#
-# Needs the repository secret SELFHOSTED_SOURCES_TOKEN: a fine-grained
-# token with read access to the contents of localman-next and chat-next.
+# localman-next and chat-next it ships (public repositories, read with the
+# workflow's own token). A package GHCR creates on the first push may be
+# private: make each selfhosted-* package public once, in its settings.
 name: selfhosted-release
 
 on:
@@ -50,14 +49,12 @@ jobs:
         with:
           repository: ${{ github.repository_owner }}/localman-next
           ref: ${{ inputs.localman_ref }}
-          token: ${{ secrets.SELFHOSTED_SOURCES_TOKEN }}
           path: sources/localman-next
 
       - uses: actions/checkout@v4
         with:
           repository: ${{ github.repository_owner }}/chat-next
           ref: ${{ inputs.chat_ref }}
-          token: ${{ secrets.SELFHOSTED_SOURCES_TOKEN }}
           path: sources/chat-next
 
       - uses: docker/setup-buildx-action@v3
