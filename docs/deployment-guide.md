@@ -75,7 +75,7 @@ Nhận domain (`/claim` trên issuer chính) mở khi có `SERVICE_IPV4`; thêm:
 | `CLAIM_BLOCKED_DOMAINS` | domain không ai được nhận (kèm mọi domain dưới nó), cách bằng dấu phẩy; mặc định `inetdev.io.vn`. Đặt mọi domain khác đang phục vụ trên máy. Domain của tenant chính luôn bị chặn |
 | `CLAIM_MIN_AVAILABLE_MB` | không nhận domain mới khi `MemAvailable` dưới ngưỡng này, mặc định 300 |
 | `PROVISIONER_PUBLIC_KEY_PATH` | PEM public key RSA của provisioner (phase 04); thiếu thì owner chưa lưu được token Cloudflare |
-| `SELF_HOSTED_CLAIMS` | `true` thì `/claim` có thêm chế độ tự host (ADR 0007): chỉ xác minh TXT, tenant ở trạng thái `enrolling`, không có runtime, chứng chỉ hay block nginx trên máy này; mặc định `false`. Chưa bật trên production cho tới khi có bundle cài đặt |
+| `SELF_HOSTED_CLAIMS` | `true` thì `/claim` có thêm chế độ tự host (ADR 0007): chỉ xác minh TXT, tenant ở trạng thái `enrolling`, không có runtime, chứng chỉ hay block nginx trên máy này; mặc định `false`. Production: bật từ 17/10/2026 22:56 (`.env` cũ ở `.env.bak-261017-225624`), cùng bundle 0.2.0 |
 
 Bản cài tự host (không phải production của hoandat.com) đổi gói enrollment khi đặt đủ ba biến: `ENROLLMENT_GATEWAY` (issuer của gateway, ví dụ `https://auth.hoandat.com`), `ENROLLMENT_BUNDLE_PATH` (tệp gói owner tải từ `/claim`), `ENROLLMENT_KEY_PATH` (khoá của bản cài, tự sinh lần đầu với mode 600; giữ tệp này qua các lần khởi động lại). `ISSUER` phải là `https://auth.<domain>` và `TENANT_DOMAIN` là domain trong gói, nếu không bản cài không khởi động. Bản cài thử đổi gói một giây sau khi chạy rồi thử lại mỗi phút cho tới khi gateway kết luận; gateway phải gọi được `https://auth.<domain>/.well-known/hoandat-enrollment`.
 
