@@ -1,11 +1,21 @@
-import { mkdtemp, rm, stat, writeFile } from "node:fs/promises";
+import { mkdtemp, readFile, rm, stat, writeFile } from "node:fs/promises";
 import type { AddressInfo } from "node:net";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { Writable } from "node:stream";
 import express from "express";
-import { exportJWK, generateKeyPair } from "jose";
+import { decodeJwt, exportJWK, generateKeyPair } from "jose";
 import type { Db } from "mongodb";
-import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
+import {
+	afterAll,
+	afterEach,
+	beforeAll,
+	beforeEach,
+	describe,
+	expect,
+	it,
+	vi,
+} from "vitest";
 import { createLogger } from "../logger.js";
 import { generateSigningJwk } from "../oidc/jwks.js";
 import {
@@ -44,7 +54,19 @@ const GATEWAY = "https://auth.hoandat.com";
 const DOMAIN = "own.example.org";
 const ALICE = { provider: "google" as const, providerId: "g-alice" };
 const gatewayJwks = { keys: [await generateSigningJwk()] };
-const logger = createLogger("silent");
+/** Every log line of both sides, to prove no bundle, key or nonce is in them. */
+const logLines: string[] = [];
+const logger = createLogger(
+	"debug",
+	new Writable({
+		write(chunk: Buffer, _encoding, done) {
+			logLines.push(chunk.toString("utf8"));
+			done();
+		},
+	}),
+);
+/** Nonces the gateway sent in its challenges. */
+const nonces: string[] = [];
 
 let db: Db;
 let close: () => Promise<void>;
@@ -84,6 +106,7 @@ function tenancy(): Tenancy {
 		signingJwks: gatewayJwks,
 		// The install's real challenge endpoint, over loopback in this test.
 		fetchChallenge: async (_domain, nonce) => {
+			nonces.push(nonce);
 			if (!installOrigin) return undefined;
 			const url = `${installOrigin}${ENROLLMENT_CHALLENGE_PATH}?nonce=${nonce}`;
 			const response = await fetch(url);
@@ -165,9 +188,15 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
+	logLines.length = 0;
+	nonces.length = 0;
 	txt = new Map();
 	installOrigin = undefined;
 	await db.collection("tenants").deleteMany({});
+});
+
+afterEach(() => {
+	vi.useRealTimers();
 });
 
 afterAll(async () => {
@@ -202,6 +231,30 @@ describe("enrollment bundle", () => {
 			}),
 		).toBeUndefined();
 		expect(bundle).not.toContain(tenant.claimTxt ?? "-");
+	});
+});
+
+describe("an expired bundle", () => {
+	it("is refused by the install and by the gateway", async () => {
+		const tenant = await enrollingTenant();
+		const bundle = await bundleFor(tenant);
+		vi.useFakeTimers({ toFake: ["Date"] });
+		vi.setSystemTime(Date.now() + 24 * 60 * 60 * 1000 + 60_000);
+		expect(
+			await verifyEnrollmentBundle(bundle, localBundleKeys(gatewayJwks), {
+				issuer: GATEWAY,
+			}),
+		).toBeUndefined();
+		await expect(startInstall(bundle, "late.json")).rejects.toThrow(
+			/no valid bundle/,
+		);
+		const installKey = await exportJWK(
+			(await generateKeyPair("ES256")).publicKey,
+		);
+		expect(await redeemEnrollment(tenancy(), { bundle, installKey })).toEqual({
+			ok: false,
+			error: "invalid-bundle",
+		});
 	});
 });
 
@@ -290,6 +343,39 @@ describe("redeeming a bundle", () => {
 			ok: false,
 			error: "not-enrolling",
 		});
+	});
+
+	it("never writes the bundle, the install's key or a nonce to logs or audit", async () => {
+		const tenant = await enrollingTenant();
+		const bundle = await bundleFor(tenant);
+		const { install, close: stop } = await startInstall(bundle, "quiet.json");
+		try {
+			// A refused attempt first (TXT gone), then the enrollment.
+			txt.delete(claimTxtName(DOMAIN));
+			expect(await install.redeem()).toBe(false);
+			txt.set(claimTxtName(DOMAIN), tenant.claimTxt ?? "");
+			expect(await install.redeem()).toBe(true);
+		} finally {
+			await stop();
+		}
+		const key: unknown = JSON.parse(
+			await readFile(join(dir, "quiet.json"), "utf8"),
+		);
+		const privatePart = String(Reflect.get(Object(key), "d"));
+		const jti = String(decodeJwt(bundle).jti);
+		const audit = JSON.stringify(
+			await db
+				.collection("audit_outbox")
+				.find({ tenantId: tenant._id })
+				.toArray(),
+		);
+		expect(audit).toContain("tenant.self_hosted");
+		expect(nonces.length).toBeGreaterThan(0);
+		expect(logLines.length).toBeGreaterThan(0);
+		for (const secret of [bundle, jti, privatePart, ...nonces]) {
+			expect(audit).not.toContain(secret);
+			for (const line of logLines) expect(line).not.toContain(secret);
+		}
 	});
 
 	it("does not start an install with a bundle for another domain", async () => {
