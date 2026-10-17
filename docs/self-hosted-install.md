@@ -4,7 +4,7 @@ Hướng dẫn cho chủ một domain đã chọn **tự host** ở `/claim` (AD
 
 Bundle nằm ở `deploy/self-hosted/` của repo này và build image từ mã nguồn của ba repo: hoandat-auth, localman-next, chat-next.
 
-> **Trạng thái (17/10/2026):** bundle đã viết và kiểm từng phần (cấu hình nginx lắp từ ba repo qua `nginx -t` và thử hành vi, script qua shellcheck), nhưng **chưa chạy trọn trên một máy thật**. Nghiệm thu đầu-cuối là việc của phase 03/06 trong `plans/dattqh/261017-0735-self-hosted-tenant/`.
+> **Trạng thái (17/10/2026):** đã build và chạy trọn trên box LAB 183 (Docker 29.7, 2 nhân, 4 GB RAM) với chứng chỉ tự ký: cả bốn app lên, đăng nhập đi tới Google, audit tới Localman qua loopback, không dòng lỗi nào trong log. Chưa chạy ở nơi có IP công khai: chứng chỉ Let's Encrypt thật, đổi gói với gateway thật, đăng nhập Google/GitHub trọn vẹn và Turnstile thật còn chờ một VM công khai và domain thử (`plans/dattqh/261017-0735-self-hosted-tenant/`).
 
 ## Trách nhiệm
 
