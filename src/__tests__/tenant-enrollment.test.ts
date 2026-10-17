@@ -16,6 +16,7 @@ import {
 	it,
 	vi,
 } from "vitest";
+import { parseEnv } from "../config/env.js";
 import { createLogger } from "../logger.js";
 import { generateSigningJwk } from "../oidc/jwks.js";
 import {
@@ -29,6 +30,10 @@ import {
 	parseInstallKey,
 	redeemEnrollment,
 } from "../tenants/enrollment-redeem.js";
+import {
+	enrolledMarkerPath,
+	installEnrollmentFrom,
+} from "../tenants/install-enrollment-env.js";
 import { createInstallEnrollment } from "../tenants/install-enrollment.js";
 import { claimTxtName } from "../tenants/ownership-records.js";
 import { isPublicAddress } from "../tenants/public-address.js";
@@ -149,7 +154,11 @@ async function enrollingTenant(domain = DOMAIN): Promise<TenantDocument> {
 }
 
 /** An install of DOMAIN with `bundle`, listening on a loopback port. */
-async function startInstall(bundle: string, keyName = "install-key.json") {
+async function startInstall(
+	bundle: string,
+	keyName = "install-key.json",
+	onEnrolled?: () => Promise<void>,
+) {
 	const bundlePath = join(dir, `bundle-${keyName}`);
 	await writeFile(bundlePath, bundle);
 	const install = await createInstallEnrollment({
@@ -161,6 +170,7 @@ async function startInstall(bundle: string, keyName = "install-key.json") {
 		logger,
 		fetch: toGateway,
 		gatewayKeys: localBundleKeys(gatewayJwks),
+		onEnrolled,
 	});
 	const app = express().use(install.router);
 	const server = app.listen(0, "127.0.0.1");
@@ -376,6 +386,39 @@ describe("redeeming a bundle", () => {
 			expect(audit).not.toContain(secret);
 			for (const line of logLines) expect(line).not.toContain(secret);
 		}
+	});
+
+	it("remembers the enrollment, so later starts skip it (the bundle may expire)", async () => {
+		const tenant = await enrollingTenant();
+		const enrolled = vi.fn(async () => undefined);
+		const { install, close: stop } = await startInstall(
+			await bundleFor(tenant),
+			"remember.json",
+			enrolled,
+		);
+		try {
+			expect(await install.redeem()).toBe(true);
+		} finally {
+			await stop();
+		}
+		expect(enrolled).toHaveBeenCalledTimes(1);
+		const keyPath = join(dir, "remember.json");
+		await writeFile(enrolledMarkerPath(keyPath), "done\n");
+		const env = parseEnv({
+			ISSUER: selfHostedIssuer(DOMAIN),
+			TENANT_DOMAIN: DOMAIN,
+			MONGO_URL: "mongodb://127.0.0.1:27017/auth",
+			SIGNING_KEYS_PATH: "unused.json",
+			COOKIE_KEYS: "k".repeat(32),
+			LOCALMAN_WEB_CLIENT_SECRET: "l".repeat(32),
+			TUNELO_WEB_CLIENT_SECRET: "t".repeat(32),
+			CHAT_WEB_CLIENT_SECRET: "c".repeat(32),
+			ENROLLMENT_GATEWAY: GATEWAY,
+			// Gone and never read: the marker ends enrollment for good.
+			ENROLLMENT_BUNDLE_PATH: join(dir, "missing-bundle.jwt"),
+			ENROLLMENT_KEY_PATH: keyPath,
+		});
+		expect(await installEnrollmentFrom(env, logger)).toBeUndefined();
 	});
 
 	it("does not start an install with a bundle for another domain", async () => {

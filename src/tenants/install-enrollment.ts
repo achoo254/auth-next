@@ -55,6 +55,8 @@ export interface InstallEnrollmentOptions {
 	readonly fetch?: typeof fetch;
 	/** The gateway's signing keys; default its published JWKS. */
 	readonly gatewayKeys?: JWTVerifyGetKey;
+	/** Called once the gateway confirmed the enrollment. */
+	readonly onEnrolled?: () => Promise<void>;
 }
 
 export interface InstallEnrollment {
@@ -156,6 +158,7 @@ export async function createInstallEnrollment(
 		);
 		if (response.ok) {
 			enrolled = true;
+			await options.onEnrolled?.();
 			logger.info({ domain: options.domain }, "Enrolled at the gateway");
 			return true;
 		}
