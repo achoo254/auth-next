@@ -14,10 +14,10 @@ on:
         description: Release version (x.y.z)
         required: true
       localman_ref:
-        description: Commit or tag of localman-next
+        description: Full commit SHA (40 characters) or tag of localman-next
         required: true
       chat_ref:
-        description: Commit or tag of chat-next
+        description: Full commit SHA (40 characters) or tag of chat-next
         required: true
 
 permissions:
@@ -39,9 +39,18 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 90
     steps:
-      - name: Check the version
+      - name: Check the inputs
+        env:
+          LOCALMAN_REF: ${{ inputs.localman_ref }}
+          CHAT_REF: ${{ inputs.chat_ref }}
         run: |
           [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "version must be x.y.z"; exit 1; }
+          # actions/checkout takes a short SHA for a branch name.
+          for ref in "$LOCALMAN_REF" "$CHAT_REF"; do
+            if [[ "$ref" =~ ^[0-9a-f]{7,39}$ ]]; then
+              echo "use the full 40-character commit SHA, not $ref"; exit 1
+            fi
+          done
 
       - uses: actions/checkout@v4
 
