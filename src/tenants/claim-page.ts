@@ -1,7 +1,7 @@
 import { accountCard, emptyState } from "../account-portal/account-card.js";
 import { accountIcon } from "../account-portal/account-icons.js";
 import { UPSTREAM_LABELS } from "../accounts/upstream-client.js";
-import { DOMAIN_GUIDE_PATH } from "../guide/domain-guide-page.js";
+import { DOMAIN_GUIDE_PATH } from "../guide/domain-guide-link.js";
 import type { MessageKey } from "../i18n/dictionaries.js";
 import {
 	alertBox,

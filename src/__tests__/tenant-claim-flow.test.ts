@@ -214,6 +214,21 @@ describe("claiming a domain", () => {
 		expect(html).toContain('data-id="admin-claim-link"');
 		expect(html).not.toContain('data-id="admin-save-name"');
 	});
+
+	it("links the domain guide in the topbar of the primary tenant only", async () => {
+		const guideLink = /<a class="topbar-link" href="\/guide\/domain"/;
+		expect(await claimPage()).toMatch(guideLink);
+		const apps = await fetchAs(
+			server.origin,
+			new URL(server.origin).host,
+			"/apps",
+		);
+		expect(await apps.text()).toMatch(guideLink);
+		const privacy = await new HostClient(AUTH).request("/privacy");
+		const html = await privacy.text();
+		expect(html).toContain('data-id="nav-home"');
+		expect(html).not.toContain('data-id="nav-guide"');
+	});
 });
 
 describe("tenant admin", () => {

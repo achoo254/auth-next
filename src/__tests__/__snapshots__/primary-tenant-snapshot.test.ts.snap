@@ -45,8 +45,8 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <a class="btn btn-secondary" href="#how-sign-in-works" data-id="apps-how">How sign-in works</a>
 </div>
 </div>
-<div class="apps-hero-art"><svg class="hub" viewBox="0 0 544 300" role="img" aria-label="Your hoandat account, reached with Google or GitHub, signs you in to Localman, Localman MCP, Tunelo CLI, Tunelo, Chat, and Scribe." data-id="apps-hub">
-<path class="hub-line" d="M132 110 C164 110 164 150 196 150"/><path class="hub-flow tone-primary" d="M132 110 C164 110 164 150 196 150"/><path class="hub-line" d="M132 190 C164 190 164 150 196 150"/><path class="hub-flow tone-primary" d="M132 190 C164 190 164 150 196 150"/><path class="hub-line" d="M324 150 C358 150 358 25 392 25"/><path class="hub-flow tone-violet" d="M324 150 C358 150 358 25 392 25"/><path class="hub-line" d="M324 150 C358 150 358 75 392 75"/><path class="hub-flow tone-cyan" d="M324 150 C358 150 358 75 392 75"/><path class="hub-line" d="M324 150 C358 150 358 125 392 125"/><path class="hub-flow tone-green" d="M324 150 C358 150 358 125 392 125"/><path class="hub-line" d="M324 150 C358 150 358 175 392 175"/><path class="hub-flow tone-amber" d="M324 150 C358 150 358 175 392 175"/><path class="hub-line" d="M324 150 C358 150 358 225 392 225"/><path class="hub-flow tone-blue" d="M324 150 C358 150 358 225 392 225"/><path class="hub-line" d="M324 150 C358 150 358 275 392 275"/><path class="hub-flow tone-red" d="M324 150 C358 150 358 275 392 275"/>
+<div class="apps-hero-art"><svg class="hub" viewBox="0 0 544 300" role="img" aria-label="Your hoandat account, reached with Google or GitHub, signs you in to Localman, Tunelo, Chat, and Scribe." data-id="apps-hub">
+<path class="hub-line" d="M132 110 C164 110 164 150 196 150"/><path class="hub-flow tone-primary" d="M132 110 C164 110 164 150 196 150"/><path class="hub-line" d="M132 190 C164 190 164 150 196 150"/><path class="hub-flow tone-primary" d="M132 190 C164 190 164 150 196 150"/><path class="hub-line" d="M324 150 C358 150 358 38 392 38"/><path class="hub-flow tone-violet" d="M324 150 C358 150 358 38 392 38"/><path class="hub-line" d="M324 150 C358 150 358 113 392 113"/><path class="hub-flow tone-amber" d="M324 150 C358 150 358 113 392 113"/><path class="hub-line" d="M324 150 C358 150 358 188 392 188"/><path class="hub-flow tone-blue" d="M324 150 C358 150 358 188 392 188"/><path class="hub-line" d="M324 150 C358 150 358 263 392 263"/><path class="hub-flow tone-red" d="M324 150 C358 150 358 263 392 263"/>
 <g class="hub-node">
 <rect x="8" y="90" width="124" height="40" rx="10"/>
 <svg x="20" y="102" width="16" height="16" viewBox="0 0 24 24"><path class="hub-mark" d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"/></svg>
@@ -62,35 +62,25 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <text class="hub-text hub-sub" x="260" y="168" text-anchor="middle">ISSUER_HOST</text>
 </g>
 <g class="hub-node tone-violet">
-<rect x="392" y="5" width="148" height="40" rx="10"/>
-<rect class="hub-chip" x="398" y="11" width="28" height="28" rx="7"/>
-<svg class="icon" x="404" y="17" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M8 4H7a2 2 0 0 0-2 2v4l-2 2 2 2v4a2 2 0 0 0 2 2h1M16 4h1a2 2 0 0 1 2 2v4l2 2-2 2v4a2 2 0 0 1-2 2h-1"/><circle cx="12" cy="12" r="1.5"/></svg>
-<text class="hub-text hub-app" x="434" y="30">Localman</text>
-</g><g class="hub-node tone-cyan">
-<rect x="392" y="55" width="148" height="40" rx="10"/>
-<rect class="hub-chip" x="398" y="61" width="28" height="28" rx="7"/>
-<svg class="icon" x="404" y="67" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M9 3v4M15 3v4M7 7h10v4a5 5 0 0 1-10 0V7zM12 16v5"/></svg>
-<text class="hub-text hub-app" x="434" y="80">Localman MCP</text>
-</g><g class="hub-node tone-green">
-<rect x="392" y="105" width="148" height="40" rx="10"/>
-<rect class="hub-chip" x="398" y="111" width="28" height="28" rx="7"/>
-<svg class="icon" x="404" y="117" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9l3 3-3 3M13 15h4"/></svg>
-<text class="hub-text hub-app" x="434" y="130">Tunelo CLI</text>
+<rect x="392" y="18" width="148" height="40" rx="10"/>
+<rect class="hub-chip" x="398" y="24" width="28" height="28" rx="7"/>
+<svg class="icon" x="404" y="30" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M8 4H7a2 2 0 0 0-2 2v4l-2 2 2 2v4a2 2 0 0 0 2 2h1M16 4h1a2 2 0 0 1 2 2v4l2 2-2 2v4a2 2 0 0 1-2 2h-1"/><circle cx="12" cy="12" r="1.5"/></svg>
+<text class="hub-text hub-app" x="434" y="43">Localman</text>
 </g><g class="hub-node tone-amber">
-<rect x="392" y="155" width="148" height="40" rx="10"/>
-<rect class="hub-chip" x="398" y="161" width="28" height="28" rx="7"/>
-<svg class="icon" x="404" y="167" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 20V12a9 9 0 0 1 18 0v8M7 20v-8a5 5 0 0 1 10 0v8M3 20h18"/></svg>
-<text class="hub-text hub-app" x="434" y="180">Tunelo</text>
+<rect x="392" y="93" width="148" height="40" rx="10"/>
+<rect class="hub-chip" x="398" y="99" width="28" height="28" rx="7"/>
+<svg class="icon" x="404" y="105" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 20V12a9 9 0 0 1 18 0v8M7 20v-8a5 5 0 0 1 10 0v8M3 20h18"/></svg>
+<text class="hub-text hub-app" x="434" y="118">Tunelo</text>
 </g><g class="hub-node tone-blue">
-<rect x="392" y="205" width="148" height="40" rx="10"/>
-<rect class="hub-chip" x="398" y="211" width="28" height="28" rx="7"/>
-<svg class="icon" x="404" y="217" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/><path d="M8.5 12h.01M12 12h.01M15.5 12h.01"/></svg>
-<text class="hub-text hub-app" x="434" y="230">Chat</text>
+<rect x="392" y="168" width="148" height="40" rx="10"/>
+<rect class="hub-chip" x="398" y="174" width="28" height="28" rx="7"/>
+<svg class="icon" x="404" y="180" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/><path d="M8.5 12h.01M12 12h.01M15.5 12h.01"/></svg>
+<text class="hub-text hub-app" x="434" y="193">Chat</text>
 </g><g class="hub-node tone-red">
-<rect x="392" y="255" width="148" height="40" rx="10"/>
-<rect class="hub-chip" x="398" y="261" width="28" height="28" rx="7"/>
-<svg class="icon" x="404" y="267" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3M8 21h8"/></svg>
-<text class="hub-text hub-app" x="434" y="280">Scribe</text>
+<rect x="392" y="243" width="148" height="40" rx="10"/>
+<rect class="hub-chip" x="398" y="249" width="28" height="28" rx="7"/>
+<svg class="icon" x="404" y="255" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3M8 21h8"/></svg>
+<text class="hub-text hub-app" x="434" y="268">Scribe</text>
 </g>
 </svg></div>
 </section>
@@ -190,8 +180,8 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <a class="btn btn-secondary" href="#how-sign-in-works" data-id="apps-how">Đăng nhập diễn ra thế nào</a>
 </div>
 </div>
-<div class="apps-hero-art"><svg class="hub" viewBox="0 0 544 300" role="img" aria-label="Tài khoản hoandat, vào bằng Google hoặc GitHub, đăng nhập cho bạn vào Localman, Localman MCP, Tunelo CLI, Tunelo, Chat và Scribe." data-id="apps-hub">
-<path class="hub-line" d="M132 110 C164 110 164 150 196 150"/><path class="hub-flow tone-primary" d="M132 110 C164 110 164 150 196 150"/><path class="hub-line" d="M132 190 C164 190 164 150 196 150"/><path class="hub-flow tone-primary" d="M132 190 C164 190 164 150 196 150"/><path class="hub-line" d="M324 150 C358 150 358 25 392 25"/><path class="hub-flow tone-violet" d="M324 150 C358 150 358 25 392 25"/><path class="hub-line" d="M324 150 C358 150 358 75 392 75"/><path class="hub-flow tone-cyan" d="M324 150 C358 150 358 75 392 75"/><path class="hub-line" d="M324 150 C358 150 358 125 392 125"/><path class="hub-flow tone-green" d="M324 150 C358 150 358 125 392 125"/><path class="hub-line" d="M324 150 C358 150 358 175 392 175"/><path class="hub-flow tone-amber" d="M324 150 C358 150 358 175 392 175"/><path class="hub-line" d="M324 150 C358 150 358 225 392 225"/><path class="hub-flow tone-blue" d="M324 150 C358 150 358 225 392 225"/><path class="hub-line" d="M324 150 C358 150 358 275 392 275"/><path class="hub-flow tone-red" d="M324 150 C358 150 358 275 392 275"/>
+<div class="apps-hero-art"><svg class="hub" viewBox="0 0 544 300" role="img" aria-label="Tài khoản hoandat, vào bằng Google hoặc GitHub, đăng nhập cho bạn vào Localman, Tunelo, Chat và Scribe." data-id="apps-hub">
+<path class="hub-line" d="M132 110 C164 110 164 150 196 150"/><path class="hub-flow tone-primary" d="M132 110 C164 110 164 150 196 150"/><path class="hub-line" d="M132 190 C164 190 164 150 196 150"/><path class="hub-flow tone-primary" d="M132 190 C164 190 164 150 196 150"/><path class="hub-line" d="M324 150 C358 150 358 38 392 38"/><path class="hub-flow tone-violet" d="M324 150 C358 150 358 38 392 38"/><path class="hub-line" d="M324 150 C358 150 358 113 392 113"/><path class="hub-flow tone-amber" d="M324 150 C358 150 358 113 392 113"/><path class="hub-line" d="M324 150 C358 150 358 188 392 188"/><path class="hub-flow tone-blue" d="M324 150 C358 150 358 188 392 188"/><path class="hub-line" d="M324 150 C358 150 358 263 392 263"/><path class="hub-flow tone-red" d="M324 150 C358 150 358 263 392 263"/>
 <g class="hub-node">
 <rect x="8" y="90" width="124" height="40" rx="10"/>
 <svg x="20" y="102" width="16" height="16" viewBox="0 0 24 24"><path class="hub-mark" d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"/></svg>
@@ -207,35 +197,25 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <text class="hub-text hub-sub" x="260" y="168" text-anchor="middle">ISSUER_HOST</text>
 </g>
 <g class="hub-node tone-violet">
-<rect x="392" y="5" width="148" height="40" rx="10"/>
-<rect class="hub-chip" x="398" y="11" width="28" height="28" rx="7"/>
-<svg class="icon" x="404" y="17" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M8 4H7a2 2 0 0 0-2 2v4l-2 2 2 2v4a2 2 0 0 0 2 2h1M16 4h1a2 2 0 0 1 2 2v4l2 2-2 2v4a2 2 0 0 1-2 2h-1"/><circle cx="12" cy="12" r="1.5"/></svg>
-<text class="hub-text hub-app" x="434" y="30">Localman</text>
-</g><g class="hub-node tone-cyan">
-<rect x="392" y="55" width="148" height="40" rx="10"/>
-<rect class="hub-chip" x="398" y="61" width="28" height="28" rx="7"/>
-<svg class="icon" x="404" y="67" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M9 3v4M15 3v4M7 7h10v4a5 5 0 0 1-10 0V7zM12 16v5"/></svg>
-<text class="hub-text hub-app" x="434" y="80">Localman MCP</text>
-</g><g class="hub-node tone-green">
-<rect x="392" y="105" width="148" height="40" rx="10"/>
-<rect class="hub-chip" x="398" y="111" width="28" height="28" rx="7"/>
-<svg class="icon" x="404" y="117" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9l3 3-3 3M13 15h4"/></svg>
-<text class="hub-text hub-app" x="434" y="130">Tunelo CLI</text>
+<rect x="392" y="18" width="148" height="40" rx="10"/>
+<rect class="hub-chip" x="398" y="24" width="28" height="28" rx="7"/>
+<svg class="icon" x="404" y="30" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M8 4H7a2 2 0 0 0-2 2v4l-2 2 2 2v4a2 2 0 0 0 2 2h1M16 4h1a2 2 0 0 1 2 2v4l2 2-2 2v4a2 2 0 0 1-2 2h-1"/><circle cx="12" cy="12" r="1.5"/></svg>
+<text class="hub-text hub-app" x="434" y="43">Localman</text>
 </g><g class="hub-node tone-amber">
-<rect x="392" y="155" width="148" height="40" rx="10"/>
-<rect class="hub-chip" x="398" y="161" width="28" height="28" rx="7"/>
-<svg class="icon" x="404" y="167" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 20V12a9 9 0 0 1 18 0v8M7 20v-8a5 5 0 0 1 10 0v8M3 20h18"/></svg>
-<text class="hub-text hub-app" x="434" y="180">Tunelo</text>
+<rect x="392" y="93" width="148" height="40" rx="10"/>
+<rect class="hub-chip" x="398" y="99" width="28" height="28" rx="7"/>
+<svg class="icon" x="404" y="105" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 20V12a9 9 0 0 1 18 0v8M7 20v-8a5 5 0 0 1 10 0v8M3 20h18"/></svg>
+<text class="hub-text hub-app" x="434" y="118">Tunelo</text>
 </g><g class="hub-node tone-blue">
-<rect x="392" y="205" width="148" height="40" rx="10"/>
-<rect class="hub-chip" x="398" y="211" width="28" height="28" rx="7"/>
-<svg class="icon" x="404" y="217" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/><path d="M8.5 12h.01M12 12h.01M15.5 12h.01"/></svg>
-<text class="hub-text hub-app" x="434" y="230">Chat</text>
+<rect x="392" y="168" width="148" height="40" rx="10"/>
+<rect class="hub-chip" x="398" y="174" width="28" height="28" rx="7"/>
+<svg class="icon" x="404" y="180" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/><path d="M8.5 12h.01M12 12h.01M15.5 12h.01"/></svg>
+<text class="hub-text hub-app" x="434" y="193">Chat</text>
 </g><g class="hub-node tone-red">
-<rect x="392" y="255" width="148" height="40" rx="10"/>
-<rect class="hub-chip" x="398" y="261" width="28" height="28" rx="7"/>
-<svg class="icon" x="404" y="267" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3M8 21h8"/></svg>
-<text class="hub-text hub-app" x="434" y="280">Scribe</text>
+<rect x="392" y="243" width="148" height="40" rx="10"/>
+<rect class="hub-chip" x="398" y="249" width="28" height="28" rx="7"/>
+<svg class="icon" x="404" y="255" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3M8 21h8"/></svg>
+<text class="hub-text hub-app" x="434" y="268">Scribe</text>
 </g>
 </svg></div>
 </section>
@@ -335,8 +315,8 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <a class="btn btn-secondary" href="#how-sign-in-works" data-id="apps-how">登录如何进行</a>
 </div>
 </div>
-<div class="apps-hero-art"><svg class="hub" viewBox="0 0 544 300" role="img" aria-label="通过 Google 或 GitHub 进入你的 hoandat 账号，即可登录 Localman、Localman MCP、Tunelo CLI、Tunelo、Chat和Scribe。" data-id="apps-hub">
-<path class="hub-line" d="M132 110 C164 110 164 150 196 150"/><path class="hub-flow tone-primary" d="M132 110 C164 110 164 150 196 150"/><path class="hub-line" d="M132 190 C164 190 164 150 196 150"/><path class="hub-flow tone-primary" d="M132 190 C164 190 164 150 196 150"/><path class="hub-line" d="M324 150 C358 150 358 25 392 25"/><path class="hub-flow tone-violet" d="M324 150 C358 150 358 25 392 25"/><path class="hub-line" d="M324 150 C358 150 358 75 392 75"/><path class="hub-flow tone-cyan" d="M324 150 C358 150 358 75 392 75"/><path class="hub-line" d="M324 150 C358 150 358 125 392 125"/><path class="hub-flow tone-green" d="M324 150 C358 150 358 125 392 125"/><path class="hub-line" d="M324 150 C358 150 358 175 392 175"/><path class="hub-flow tone-amber" d="M324 150 C358 150 358 175 392 175"/><path class="hub-line" d="M324 150 C358 150 358 225 392 225"/><path class="hub-flow tone-blue" d="M324 150 C358 150 358 225 392 225"/><path class="hub-line" d="M324 150 C358 150 358 275 392 275"/><path class="hub-flow tone-red" d="M324 150 C358 150 358 275 392 275"/>
+<div class="apps-hero-art"><svg class="hub" viewBox="0 0 544 300" role="img" aria-label="通过 Google 或 GitHub 进入你的 hoandat 账号，即可登录 Localman、Tunelo、Chat和Scribe。" data-id="apps-hub">
+<path class="hub-line" d="M132 110 C164 110 164 150 196 150"/><path class="hub-flow tone-primary" d="M132 110 C164 110 164 150 196 150"/><path class="hub-line" d="M132 190 C164 190 164 150 196 150"/><path class="hub-flow tone-primary" d="M132 190 C164 190 164 150 196 150"/><path class="hub-line" d="M324 150 C358 150 358 38 392 38"/><path class="hub-flow tone-violet" d="M324 150 C358 150 358 38 392 38"/><path class="hub-line" d="M324 150 C358 150 358 113 392 113"/><path class="hub-flow tone-amber" d="M324 150 C358 150 358 113 392 113"/><path class="hub-line" d="M324 150 C358 150 358 188 392 188"/><path class="hub-flow tone-blue" d="M324 150 C358 150 358 188 392 188"/><path class="hub-line" d="M324 150 C358 150 358 263 392 263"/><path class="hub-flow tone-red" d="M324 150 C358 150 358 263 392 263"/>
 <g class="hub-node">
 <rect x="8" y="90" width="124" height="40" rx="10"/>
 <svg x="20" y="102" width="16" height="16" viewBox="0 0 24 24"><path class="hub-mark" d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"/></svg>
@@ -352,35 +332,25 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <text class="hub-text hub-sub" x="260" y="168" text-anchor="middle">ISSUER_HOST</text>
 </g>
 <g class="hub-node tone-violet">
-<rect x="392" y="5" width="148" height="40" rx="10"/>
-<rect class="hub-chip" x="398" y="11" width="28" height="28" rx="7"/>
-<svg class="icon" x="404" y="17" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M8 4H7a2 2 0 0 0-2 2v4l-2 2 2 2v4a2 2 0 0 0 2 2h1M16 4h1a2 2 0 0 1 2 2v4l2 2-2 2v4a2 2 0 0 1-2 2h-1"/><circle cx="12" cy="12" r="1.5"/></svg>
-<text class="hub-text hub-app" x="434" y="30">Localman</text>
-</g><g class="hub-node tone-cyan">
-<rect x="392" y="55" width="148" height="40" rx="10"/>
-<rect class="hub-chip" x="398" y="61" width="28" height="28" rx="7"/>
-<svg class="icon" x="404" y="67" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M9 3v4M15 3v4M7 7h10v4a5 5 0 0 1-10 0V7zM12 16v5"/></svg>
-<text class="hub-text hub-app" x="434" y="80">Localman MCP</text>
-</g><g class="hub-node tone-green">
-<rect x="392" y="105" width="148" height="40" rx="10"/>
-<rect class="hub-chip" x="398" y="111" width="28" height="28" rx="7"/>
-<svg class="icon" x="404" y="117" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9l3 3-3 3M13 15h4"/></svg>
-<text class="hub-text hub-app" x="434" y="130">Tunelo CLI</text>
+<rect x="392" y="18" width="148" height="40" rx="10"/>
+<rect class="hub-chip" x="398" y="24" width="28" height="28" rx="7"/>
+<svg class="icon" x="404" y="30" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M8 4H7a2 2 0 0 0-2 2v4l-2 2 2 2v4a2 2 0 0 0 2 2h1M16 4h1a2 2 0 0 1 2 2v4l2 2-2 2v4a2 2 0 0 1-2 2h-1"/><circle cx="12" cy="12" r="1.5"/></svg>
+<text class="hub-text hub-app" x="434" y="43">Localman</text>
 </g><g class="hub-node tone-amber">
-<rect x="392" y="155" width="148" height="40" rx="10"/>
-<rect class="hub-chip" x="398" y="161" width="28" height="28" rx="7"/>
-<svg class="icon" x="404" y="167" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 20V12a9 9 0 0 1 18 0v8M7 20v-8a5 5 0 0 1 10 0v8M3 20h18"/></svg>
-<text class="hub-text hub-app" x="434" y="180">Tunelo</text>
+<rect x="392" y="93" width="148" height="40" rx="10"/>
+<rect class="hub-chip" x="398" y="99" width="28" height="28" rx="7"/>
+<svg class="icon" x="404" y="105" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 20V12a9 9 0 0 1 18 0v8M7 20v-8a5 5 0 0 1 10 0v8M3 20h18"/></svg>
+<text class="hub-text hub-app" x="434" y="118">Tunelo</text>
 </g><g class="hub-node tone-blue">
-<rect x="392" y="205" width="148" height="40" rx="10"/>
-<rect class="hub-chip" x="398" y="211" width="28" height="28" rx="7"/>
-<svg class="icon" x="404" y="217" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/><path d="M8.5 12h.01M12 12h.01M15.5 12h.01"/></svg>
-<text class="hub-text hub-app" x="434" y="230">Chat</text>
+<rect x="392" y="168" width="148" height="40" rx="10"/>
+<rect class="hub-chip" x="398" y="174" width="28" height="28" rx="7"/>
+<svg class="icon" x="404" y="180" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/><path d="M8.5 12h.01M12 12h.01M15.5 12h.01"/></svg>
+<text class="hub-text hub-app" x="434" y="193">Chat</text>
 </g><g class="hub-node tone-red">
-<rect x="392" y="255" width="148" height="40" rx="10"/>
-<rect class="hub-chip" x="398" y="261" width="28" height="28" rx="7"/>
-<svg class="icon" x="404" y="267" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3M8 21h8"/></svg>
-<text class="hub-text hub-app" x="434" y="280">Scribe</text>
+<rect x="392" y="243" width="148" height="40" rx="10"/>
+<rect class="hub-chip" x="398" y="249" width="28" height="28" rx="7"/>
+<svg class="icon" x="404" y="255" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3M8 21h8"/></svg>
+<text class="hub-text hub-app" x="434" y="268">Scribe</text>
 </g>
 </svg></div>
 </section>
@@ -1255,6 +1225,7 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in en 
   "inactive.body": "Sign-in at {host} is not set up yet.",
   "inactive.title": "Not set up yet",
   "layout.brand": "Account",
+  "layout.guide": "Guide",
   "layout.home": "Home",
   "layout.language": "Language",
   "layout.nav": "Site",
@@ -1670,6 +1641,7 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in vi 
   "inactive.body": "Đăng nhập tại {host} chưa được thiết lập.",
   "inactive.title": "Chưa thiết lập",
   "layout.brand": "Tài khoản",
+  "layout.guide": "Hướng dẫn",
   "layout.home": "Trang chủ",
   "layout.language": "Ngôn ngữ",
   "layout.nav": "Điều hướng",
@@ -2085,6 +2057,7 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in zh-
   "inactive.body": "{host} 的登录尚未设置。",
   "inactive.title": "尚未设置",
   "layout.brand": "账号",
+  "layout.guide": "指南",
   "layout.home": "首页",
   "layout.language": "语言",
   "layout.nav": "站点导航",

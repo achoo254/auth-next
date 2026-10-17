@@ -3,9 +3,8 @@ import { pageTitle } from "../ui/components.js";
 import { type SafeHtml, html } from "../ui/html.js";
 import { renderPage } from "../ui/layout.js";
 import { type PageContext, pageContext } from "../ui/page-context.js";
+import { DOMAIN_GUIDE_PATH } from "./domain-guide-link.js";
 import { type Block, type Figure, SECTIONS } from "./domain-guide-sections.js";
-
-export const DOMAIN_GUIDE_PATH = "/guide/domain";
 
 function imageSrc(figure: Figure, page: PageContext): string {
 	return "own" in figure.image

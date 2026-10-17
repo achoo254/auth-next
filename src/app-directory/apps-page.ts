@@ -26,6 +26,12 @@ const TRUST: readonly MessageKey[] = [
 
 const CHECK = html`<svg class="icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12l4 4 10-10"/></svg>`;
 
+/**
+ * The diagram draws the main apps only: Localman MCP and Tunelo CLI are
+ * other ways into Localman and Tunelo, listed below with how to sign in.
+ */
+const isMainApp = (app: ListedApp): boolean => app.kind === "apps.kind.web";
+
 function hero(
 	tenant: AppDirectoryTenant,
 	i18n: Translator,
@@ -42,7 +48,7 @@ function hero(
 <a class="btn btn-secondary" href="#${STEPS_ANCHOR}" data-id="apps-how">${i18n.t("apps.cta.how")}</a>
 </div>
 </div>
-<div class="apps-hero-art">${hubDiagram(i18n, apps, new URL(tenant.issuer).host)}</div>
+<div class="apps-hero-art">${hubDiagram(i18n, apps.filter(isMainApp), new URL(tenant.issuer).host)}</div>
 </section>`;
 }
 

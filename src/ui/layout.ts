@@ -1,4 +1,6 @@
 import { stylesheetHref } from "../assets.js";
+import { DOMAIN_GUIDE_PATH } from "../guide/domain-guide-link.js";
+import type { MessageKey } from "../i18n/dictionaries.js";
 import { LOCALES, LOCALE_NAMES } from "../i18n/locales.js";
 import { type HtmlValue, type SafeHtml, html } from "./html.js";
 import type { PageContext } from "./page-context.js";
@@ -17,7 +19,8 @@ export interface PageOptions {
 	/** Extra stylesheets of static/css by file name, after app.css (one page's own styles). */
 	readonly stylesheets?: readonly string[];
 	/**
-	 * Home and Account links in the topbar (default true). Off on /admin,
+	 * Home and Account links in the topbar, plus the domain guide where it is
+	 * served (default true). Off on /admin,
 	 * which a tenant serves before it has a home page or accounts.
 	 */
 	readonly nav?: boolean;
@@ -51,15 +54,35 @@ function languageSwitcher(page: PageContext): SafeHtml {
 	)}</nav>`;
 }
 
-const NAV_LINKS = [
-	{ href: "/apps", key: "layout.home", dataId: "nav-home" },
-	{ href: "/account", key: "layout.brand", dataId: "nav-account" },
-] as const;
+interface NavLink {
+	readonly href: string;
+	readonly key: MessageKey;
+	readonly dataId: string;
+}
+
+const HOME_LINK: NavLink = {
+	href: "/apps",
+	key: "layout.home",
+	dataId: "nav-home",
+};
+const GUIDE_LINK: NavLink = {
+	href: DOMAIN_GUIDE_PATH,
+	key: "layout.guide",
+	dataId: "nav-guide",
+};
+const ACCOUNT_LINK: NavLink = {
+	href: "/account",
+	key: "layout.brand",
+	dataId: "nav-account",
+};
 
 /** The page's own link is marked current; /account/... counts as Account. */
 function topbarNav(page: PageContext): SafeHtml {
 	const path = page.path.split("?")[0] ?? "";
-	return html`<nav class="topbar-nav" aria-label="${page.i18n.t("layout.nav")}">${NAV_LINKS.map(
+	const links = page.domainGuide
+		? [HOME_LINK, GUIDE_LINK, ACCOUNT_LINK]
+		: [HOME_LINK, ACCOUNT_LINK];
+	return html`<nav class="topbar-nav" aria-label="${page.i18n.t("layout.nav")}">${links.map(
 		(link) =>
 			html`<a class="topbar-link" href="${link.href}"${
 				path === link.href || path.startsWith(`${link.href}/`)

@@ -3,6 +3,7 @@ import { createAccountRouter } from "./account-portal/account-routes.js";
 import { createAppsRouter } from "./app-directory/apps-page.js";
 import { createAssetsRouter } from "./assets.js";
 import type { Env } from "./config/env.js";
+import { offerDomainGuide } from "./guide/domain-guide-link.js";
 import { createDomainGuideRouter } from "./guide/domain-guide-page.js";
 import { createErrorHandler } from "./http/error-handler.js";
 import {
@@ -64,6 +65,7 @@ export function createTenantApp(options: TenantAppOptions): Express {
 	app.use("/assets", createAssetsRouter());
 	const { tenancy } = services;
 	if (tenancy && tenant.id === PRIMARY_TENANT_ID) {
+		app.use(offerDomainGuide);
 		app.use(createClaimRouter(services, tenancy));
 		app.use(createDomainGuideRouter(new URL(tenant.issuer).host, CLAIM_PATH));
 	}

@@ -1,6 +1,6 @@
 import { type Request, type Response, Router } from "express";
 import type { UpstreamProvider } from "../accounts/user-model.js";
-import { DOMAIN_GUIDE_PATH } from "../guide/domain-guide-page.js";
+import { DOMAIN_GUIDE_PATH } from "../guide/domain-guide-link.js";
 import {
 	formRateLimit,
 	formValue,

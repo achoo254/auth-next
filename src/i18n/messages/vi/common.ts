@@ -14,6 +14,7 @@ export const viCommon: Translation<typeof enCommon> = {
 	"layout.language": "Ngôn ngữ",
 	"layout.nav": "Điều hướng",
 	"layout.home": "Trang chủ",
+	"layout.guide": "Hướng dẫn",
 	"client.external": "Ứng dụng bên ngoài",
 	"client.quoted": "“{name}”",
 	"client.externalNamed": "{name} (ứng dụng bên ngoài)",

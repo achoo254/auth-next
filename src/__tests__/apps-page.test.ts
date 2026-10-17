@@ -33,25 +33,17 @@ describe("app list page", () => {
 		expect(html).not.toContain('data-id="app-open-localman-mcp"');
 	});
 
-	it("draws the hub with the issuer's host and every listed app", () => {
+	it("draws the hub with the issuer's host and the main apps only", () => {
 		const html = renderAppsPage(STAGING, testPage("en", "/apps"));
 		const hub = html.slice(html.indexOf('data-id="apps-hub"'));
 		expect(hub).toContain(">auth.staging.example</text>");
-		for (const name of [
-			"Google",
-			"GitHub",
-			"Localman",
-			"Localman MCP",
-			"Tunelo CLI",
-			"Tunelo",
-			"Chat",
-		]) {
+		for (const name of ["Google", "GitHub", "Localman", "Tunelo", "Chat"]) {
 			expect(hub).toContain(`>${name}</text>`);
 		}
+		expect(hub).not.toContain(">Localman MCP</text>");
+		expect(hub).not.toContain(">Tunelo CLI</text>");
 		expect(html).toContain('role="img"');
-		expect(html).toContain(
-			"signs you in to Localman, Localman MCP, Tunelo CLI, Tunelo, and Chat.",
-		);
+		expect(html).toContain("signs you in to Localman, Tunelo, and Chat.");
 	});
 
 	it("lists chat only for the primary tenant, the one with a chat host", () => {
@@ -62,9 +54,7 @@ describe("app list page", () => {
 		expect(html).not.toContain('data-id="app-chat-web"');
 		expect(html).not.toContain("https://chat.staging.example");
 		expect(html).not.toContain(">Chat</text>");
-		expect(html).toContain(
-			"signs you in to Localman, Localman MCP, Tunelo CLI, and Tunelo.",
-		);
+		expect(html).toContain("signs you in to Localman and Tunelo.");
 	});
 
 	it("lists Scribe for the primary tenant once its client is configured", () => {
@@ -75,7 +65,7 @@ describe("app list page", () => {
 		expect(html).toContain(`href="${scribe}"`);
 		expect(html).toContain(">Scribe</text>");
 		expect(html).toContain(
-			"signs you in to Localman, Localman MCP, Tunelo CLI, Tunelo, Chat, and Scribe.",
+			"signs you in to Localman, Tunelo, Chat, and Scribe.",
 		);
 		const vi = renderAppsPage(withScribe, testPage("vi", "/apps"));
 		expect(vi).toContain("Ghi âm và chuyển thành bản chép lời");

@@ -14,6 +14,7 @@ export const zhCommon: Translation<typeof enCommon> = {
 	"layout.language": "语言",
 	"layout.nav": "站点导航",
 	"layout.home": "首页",
+	"layout.guide": "指南",
 	"client.external": "外部应用",
 	"client.quoted": "“{name}”",
 	"client.externalNamed": "{name}（外部应用）",
