@@ -2,9 +2,9 @@
 # Prepares a self-hosted install (ADR 0007) from .env: generates its
 # secrets once (kept in data/secrets/generated.env, mode 600, reused on
 # every later run), writes each app's env file under data/env, copies the
-# enrollment bundle, builds the images, and creates the IdP's signing and
-# enrollment keys with the IdP's own image. Prints no secret. Re-run it
-# after changing .env; generated secrets never change.
+# enrollment bundle, builds the images, and creates the IdP's signing,
+# enrollment and migration keys with the IdP's own image. Prints no
+# secret. Re-run it after changing .env; generated secrets never change.
 #   ./init.sh
 set -euo pipefail
 cd "$(dirname "$0")"
@@ -119,6 +119,11 @@ ENROLLMENT_GATEWAY=$GATEWAY
 ENROLLMENT_BUNDLE_PATH=/run/secrets/hoandat-auth/enrollment.jwt
 ENROLLMENT_KEY_PATH=/run/secrets/hoandat-auth/enrollment-key.json
 EOF
+# The bot of a tenant moved from hoandat (migrate/import-tenant.sh).
+for name in TELEGRAM_BOT_TOKEN TELEGRAM_BOT_USERNAME TELEGRAM_WEBHOOK_SECRET; do
+	value="$(setting "$name")"
+	if [ -n "$value" ]; then printf '%s=%s\n' "$name" "$value" >>data/env/auth.env; fi
+done
 
 cat >data/env/localman.env <<EOF
 NODE_ENV=production
@@ -183,5 +188,17 @@ if [ ! -f data/secrets/auth/enrollment-key.json ]; then
 		const { privateKey } = await generateKeyPair("ES256", { extractable: true });
 		writeFileSync("/out/enrollment-key.json", JSON.stringify(await exportJWK(privateKey)), { mode: 0o600, flag: "wx" });'
 	echo "init: created the install's enrollment key"
+fi
+# Moving a tenant that runs on hoandat here (ADR 0007 §7): its secrets
+# are sealed to the public half, which goes to hoandat's operators.
+if [ ! -f data/secrets/migration-key.json ]; then
+	docker run --rm --user "$(id -u):$(id -g)" --entrypoint node \
+		-v "$(pwd)/data/secrets:/out" selfhosted-auth --input-type=module -e '
+		import { writeFileSync } from "node:fs";
+		import { exportJWK, generateKeyPair } from "jose";
+		const { publicKey, privateKey } = await generateKeyPair("ECDH-ES+A256KW", { crv: "P-256", extractable: true });
+		writeFileSync("/out/migration-key.json", JSON.stringify(await exportJWK(privateKey)), { mode: 0o600, flag: "wx" });
+		writeFileSync("/out/migration-key.pub.json", JSON.stringify(await exportJWK(publicKey)), { mode: 0o644, flag: "wx" });'
+	echo "init: created the install's migration key (data/secrets/migration-key.pub.json)"
 fi
 echo "init: done; start with: docker compose up -d"

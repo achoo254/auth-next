@@ -92,6 +92,21 @@ describe("a moving tenant's secrets", () => {
 		expect(JSON.stringify(opened)).not.toContain("dns-token-value");
 	});
 
+	it("carry the session key of the tenant's Chat, and no other app setting", async () => {
+		const { publicJwk, privateJwk } = await installKeys();
+		const sealed = await sealTenantSecrets(secrets, TENANT, publicJwk, {
+			CHAT_SESSION_KEY_PREVIOUS: "chat-session-key-value",
+		});
+		expect(sealed).not.toContain("chat-session-key-value");
+		const opened = await openTenantSecrets(sealed, privateJwk);
+		expect(opened.settings.CHAT_SESSION_KEY_PREVIOUS).toBe(
+			"chat-session-key-value",
+		);
+		await expect(
+			sealTenantSecrets(secrets, TENANT, publicJwk, { MONGO_URL: "x" }),
+		).rejects.toThrow(/not a setting that moves/);
+	});
+
 	it("open only with the install's own key, unchanged", async () => {
 		const install = await installKeys();
 		const other = await installKeys();

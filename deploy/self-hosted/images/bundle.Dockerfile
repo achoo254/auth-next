@@ -7,5 +7,6 @@ COPY compose.yaml compose.release.yaml init.sh update.sh .env.example /bundle/
 COPY certbot /bundle/certbot
 COPY nginx /bundle/nginx
 COPY images /bundle/images
+COPY migrate /bundle/migrate
 # Never run: update.sh only creates a container to copy /bundle out.
 CMD ["/bundle"]

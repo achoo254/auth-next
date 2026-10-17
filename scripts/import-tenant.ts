@@ -11,12 +11,16 @@
  * counts and names, never a value.
  */
 import { readFile, writeFile } from "node:fs/promises";
+import { ACCOUNTS_COLLECTION } from "../src/accounts/user-model.js";
 import { parseEnv } from "../src/config/env.js";
 import { connectMongo } from "../src/db/connect-mongo.js";
 import { createLogger } from "../src/logger.js";
 import { PRIMARY_TENANT_ID } from "../src/tenants/env-tenant.js";
 import { openTenantSecrets } from "../src/tenants/migration-secrets.js";
-import { retagTenantData } from "../src/tenants/tenant-collections.js";
+import {
+	countTenantData,
+	retagTenantData,
+} from "../src/tenants/tenant-collections.js";
 
 async function main(): Promise<void> {
 	const [sealedPath, keyPath, signingOut, settingsOut] = process.argv.slice(2);
@@ -39,20 +43,28 @@ async function main(): Promise<void> {
 			`the secrets are for ${moved.domain}, this install serves ${env.TENANT_DOMAIN}`,
 		);
 	}
-	await writeFile(
-		signingOut,
-		`${JSON.stringify(moved.signingKeys, null, 2)}\n`,
-		{ mode: 0o600 },
-	);
-	const settings = Object.entries(moved.settings).map(
-		([name, value]) => `${name}=${value}`,
-	);
-	await writeFile(settingsOut, `${settings.join("\n")}\n`, { mode: 0o600 });
-	process.stdout.write(
-		`Signing keys: ${moved.signingKeys.keys.length}; settings: ${Object.keys(moved.settings).join(", ") || "none"}\n`,
-	);
 	const connection = await connectMongo(env.MONGO_URL, createLogger("warn"));
 	try {
+		const accounts = (
+			await countTenantData(connection.db, PRIMARY_TENANT_ID)
+		).find(({ collection }) => collection === ACCOUNTS_COLLECTION);
+		if (accounts && accounts.count > 0) {
+			throw new Error(
+				`this install already has ${accounts.count} accounts; import into a fresh one`,
+			);
+		}
+		await writeFile(
+			signingOut,
+			`${JSON.stringify(moved.signingKeys, null, 2)}\n`,
+			{ mode: 0o600 },
+		);
+		const settings = Object.entries(moved.settings).map(
+			([name, value]) => `${name}=${value}`,
+		);
+		await writeFile(settingsOut, `${settings.join("\n")}\n`, { mode: 0o600 });
+		process.stdout.write(
+			`Signing keys: ${moved.signingKeys.keys.length}; settings: ${Object.keys(moved.settings).join(", ") || "none"}\n`,
+		);
 		const counts = await retagTenantData(
 			connection.db,
 			moved.tenantId,

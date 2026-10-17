@@ -87,6 +87,18 @@ Bản cài tự host (không phải production của hoandat.com) đổi gói en
 
 **nginx:** block của host nào cũng có `location /internal { return 404; }` (đã có trong `infra/nginx/auth.hoandat.com.conf`); API nội bộ không bao giờ được proxy.
 
+## Chuyển tenant tự host (ADR 0007 §7)
+
+Tenant `active` mà owner đã bấm chuyển (`migrating`) và đã cài bản tự host theo `docs/self-hosted-install.md`. Script nằm trong `/var/www/hoandat-auth/deploy/self-hosted/migrate/` (`infra/deploy.sh` đồng bộ thư mục này). Trên server, root, trong `/var/www/hoandat-auth`, sau khi backup ba database (`infra/backup-auth-db.sh`, backup của Localman và chat):
+
+```bash
+bash deploy/self-hosted/migrate/export-tenant.sh <domain> <migration-key.pub.json của bản cài> /root/move-<domain>
+```
+
+Script tìm chat của tenant theo `TENANT_DOMAIN` trong `/opt/chat/tenants/*.env`, niêm phong secret của IdP cùng `SESSION_KEY` của chat cho khoá của bản cài, dừng `chat-api-<id>`, rồi ghi `idp/` (mongodump theo `tenantId`, danh sách collection giữ bằng test `tenant-move-script`), `localman/` (`export-tenant.mjs` của Localman), `tunelo/`, `chat.sql` (`migrate/export-chat.sh`; bảng chat lạ thì dừng, phân loại ở `migrate/chat-tables.sh`). Cần `mongodump`, `psql`, `python3`. Chép thư mục sang bản cài qua SSH (`rsync -a`), xoá bản trên server khi owner nhập xong. Huỷ trước khi owner trỏ bản ghi A: `pm2 start chat-api-<id>` và owner bấm **Huỷ chuyển**.
+
+Sau 14 ngày `self_hosted`: `bash deploy/self-hosted/migrate/purge-tenant.sh <domain>` (chỉ đếm), rồi thêm `--confirm` để xoá document IdP, Localman, Tunelo, hàng chat và cuối cùng secret của tenant; xong thì `pm2 delete chat-api-<id>` và xoá `/opt/chat/tenants/<id>.env`.
+
 ## Provisioner chứng chỉ của tenant (ADR 0006)
 
 Chứng chỉ của tenant do provisioner cấp (root, systemd timer 5 phút), không phải IdP. Mỗi tenant hai chứng chỉ trong config-dir riêng `/etc/letsencrypt-tenants` (tài khoản ACME riêng, không đụng chứng chỉ của hoandat): `<d>` (`auth.`, `chat.`, `localman.`, `tunnel.`; DNS-01 khi owner có token Cloudflare, để host Proxied ở mọi chế độ SSL vẫn cấp được, không có token thì HTTP-01 qua webroot `/var/lib/hoandat-tenant-acme`) và `wildcard.<d>` (DNS-01 bằng token Cloudflare của owner: `*.localman.`, `*.tunnel.`). Token chỉ nằm trong `/etc/hoandat-tenant-provisioner/credentials/<d>.ini` (600, ngoài cây chứng chỉ), không bao giờ trong argv hay log. Gia hạn: `hoandat-tenant-certbot-renew.timer` (máy chỉ có `certbot-renew.timer` cho `/etc/letsencrypt`); hai unit dùng chung `flock /etc/letsencrypt-tenants/.lock`. nginx đọc chứng chỉ theo SNI lúc bắt tay (`ssl_certificate` có biến) bằng user worker, nên `live/` và `archive/` cho nhóm của nginx đọc (750/640), `accounts/` giữ 700; chứng chỉ mới hay gia hạn không cần reload. Provisioner chạy từ bản copy root-owned `/usr/local/lib/hoandat-tenant-provisioner/` (bundle đủ dependency), không bao giờ từ cây code của IdP.

@@ -61,12 +61,30 @@ function settingsOf(
 	return settings;
 }
 
-/** Opens a tenant's secrets here and seals them to its install's public key. */
+/**
+ * Secrets of the tenant's other apps that travel with the IdP's: Chat's
+ * session key (its bots' webhook secrets are sealed with it), opened on
+ * the install as the previous key and sealed again there.
+ */
+export const MOVED_APP_SETTINGS: ReadonlySet<string> = new Set([
+	"CHAT_SESSION_KEY_PREVIOUS",
+]);
+
+/**
+ * Opens a tenant's secrets here and seals them to its install's public
+ * key, with `appSettings` (only names of `MOVED_APP_SETTINGS`).
+ */
 export async function sealTenantSecrets(
 	secrets: TenantSecrets,
 	tenant: { readonly id: string; readonly domain: string },
 	installPublicKey: unknown,
+	appSettings: Readonly<Record<string, string>> = {},
 ): Promise<string> {
+	for (const name of Object.keys(appSettings)) {
+		if (!MOVED_APP_SETTINGS.has(name)) {
+			throw new Error(`${name} is not a setting that moves`);
+		}
+	}
 	const jwk = parseInstallKey(installPublicKey);
 	if (!jwk) throw new Error("not an install's public key (EC P-256)");
 	const signing = await secrets.get(tenant.id, "signing-keys");
@@ -75,11 +93,14 @@ export async function sealTenantSecrets(
 		tenantId: tenant.id,
 		domain: tenant.domain,
 		signingKeys: JSON.parse(signing) as unknown,
-		settings: settingsOf(
-			parseJson(await secrets.get(tenant.id, "google")),
-			parseJson(await secrets.get(tenant.id, "github")),
-			parseJson(await secrets.get(tenant.id, "telegram")),
-		),
+		settings: {
+			...settingsOf(
+				parseJson(await secrets.get(tenant.id, "google")),
+				parseJson(await secrets.get(tenant.id, "github")),
+				parseJson(await secrets.get(tenant.id, "telegram")),
+			),
+			...appSettings,
+		},
 	};
 	return new CompactEncrypt(new TextEncoder().encode(JSON.stringify(payload)))
 		.setProtectedHeader({ alg: ALG, enc: ENC, cty: MIGRATION_SECRETS_TYPE })

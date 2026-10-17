@@ -17,9 +17,11 @@ echo "== build"
 pnpm build
 
 echo "== sync release files (no owner/group: files land owned by the remote root)"
-rsync -rlptz --delete -e "$SSH" \
+# --relative keeps deploy/self-hosted/migrate (moving a tenant to its own
+# install, run on the server) at that path; the others are top-level.
+rsync -rlptzR --delete -e "$SSH" \
 	--exclude .env --exclude secrets/ --exclude node_modules/ --exclude backups/ \
-	dist static infra package.json pnpm-lock.yaml pnpm-workspace.yaml \
+	dist static infra package.json pnpm-lock.yaml pnpm-workspace.yaml deploy/self-hosted/migrate \
 	"$SSH_TARGET:$REMOTE_DIR/"
 
 echo "== install runtime dependencies, create indexes, restart"

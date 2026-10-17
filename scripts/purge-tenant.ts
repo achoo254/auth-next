@@ -40,6 +40,7 @@ async function main(): Promise<number> {
 				`${domain} moved less than 14 days ago; ${days} day(s) left`,
 			);
 		}
+		process.stdout.write(`tenant: ${tenant._id}\n`);
 		const counts = await countTenantData(connection.db, tenant._id);
 		for (const { collection, count } of counts) {
 			process.stdout.write(`${collection}: ${count}\n`);
