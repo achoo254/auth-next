@@ -51,7 +51,7 @@ cd deploy/self-hosted
 ./update.sh 1.2.0    # một phiên bản cụ thể
 ```
 
-Script kiểm chữ ký cosign của từng image trên đúng digest sẽ chạy (image không do workflow phát hành ký thì từ chối), lấy file bundle của phiên bản, backup MongoDB và Postgres vào `data/backups/<giờ>/`, chạy phiên bản mới theo digest (`release.env`, `compose.release.yaml`) và tự lùi về bản trước nếu stack không lên. Lần đầu chạy, bản cài chuyển từ image build tại chỗ (`init.sh`) sang image phát hành.
+Script kiểm chữ ký cosign của từng image trên đúng digest sẽ chạy (image không do workflow phát hành ký thì từ chối), lấy file bundle của phiên bản, backup MongoDB và Postgres vào `data/backups/<giờ>/`, chạy phiên bản mới theo digest (`release.env`, `compose.release.yaml`) và tự lùi về bản trước nếu stack không lên. Lần đầu chạy, bản cài chuyển từ image build tại chỗ (`init.sh`) sang image phát hành. Chỉnh sửa riêng của máy (cổng, biến thêm) đặt trong `compose.override.yaml`: `update.sh` nạp nó sau các file của bundle.
 
 ## Bên trong bundle
 

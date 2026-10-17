@@ -96,10 +96,14 @@ box="$(docker create "$REGISTRY/selfhosted-bundle@$bundle_digest")"
 docker cp "$box:/bundle/." .
 docker rm "$box" >/dev/null
 
-C=(docker compose -f compose.yaml -f compose.release.yaml --env-file .env)
+# The operator's own changes (ports, extra settings) in compose.override.yaml,
+# as Docker Compose does when no file is named.
+LOCAL=()
+if [ -f compose.override.yaml ]; then LOCAL=(-f compose.override.yaml); fi
+C=(docker compose -f compose.yaml -f compose.release.yaml "${LOCAL[@]}" --env-file .env)
 # The base file alone reaches the running databases in either mode (local
 # builds after init.sh, or a release).
-BASE=(docker compose -f compose.yaml --env-file .env)
+BASE=(docker compose -f compose.yaml "${LOCAL[@]}" --env-file .env)
 # Backups of both databases before anything changes, and how it ran.
 stamp="$(date +%Y%m%d-%H%M%S)"
 mkdir -p "data/backups/$stamp"
