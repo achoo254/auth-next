@@ -8,12 +8,21 @@ export const enTenants = {
 		"Link a Google or GitHub account to your account first: the domain's owner is that account.",
 	"claim.form.domain": "Domain",
 	"claim.form.domainHelp": "For example example.com or dev.example.com.",
+	"claim.hosting.label": "Where it runs",
+	"claim.hosting.hoandat": "On {brand}'s servers",
+	"claim.hosting.hoandatHelp":
+		"Nothing to install. Data lives on {brand}'s servers, kept apart per domain.",
+	"claim.hosting.self": "On your own servers",
+	"claim.hosting.selfHelp":
+		"{brand} only verifies the domain and issues the setup bundle. After that every request and all data stay on your servers; backups, updates and security are yours.",
 	"claim.form.owner": "Owner",
 	"claim.form.ownerOption": "{provider} account {name}",
 	"claim.form.submit": "Start claim",
 	"claim.pending.title": "Waiting for DNS: {domain}",
 	"claim.pending.lead":
 		"Add these records at your DNS provider, then check. DNS only is the simplest and works for everything. Proxied through Cloudflare also works with the zone's SSL mode on Full (strict); Flexible breaks Chat's real-time connection.",
+	"claim.pending.leadSelf":
+		"Add this TXT record at your DNS provider, then check. The domain's hosts point at your own servers, not here.",
 	"claim.records.hint":
 		"Click a name or value to select all of it, then copy it into your DNS provider.",
 	"claim.records.type": "Type",
@@ -28,10 +37,15 @@ export const enTenants = {
 	"claim.tenants.claimed": "Claimed: add a sign-in provider",
 	"claim.tenants.active": "Active",
 	"claim.tenants.suspended": "Suspended",
+	"claim.tenants.enrolling":
+		"Verified: waiting for the install on your servers",
+	"claim.tenants.selfHosted": "Runs on your own servers",
 	"claim.tenants.admin": "Open admin",
 	"claim.notice.started": "Claim started. Add the DNS records below.",
 	"claim.notice.verified":
 		"Domain claimed. Open admin to add Google or GitHub sign-in.",
+	"claim.notice.verifiedSelf":
+		"Domain verified. Next, set it up on your own servers.",
 	"claim.error.invalidDomain": "That is not a domain that can be claimed here.",
 	"claim.error.taken":
 		"This domain, or one above or below it, is already in use.",

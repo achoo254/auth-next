@@ -267,6 +267,12 @@ button {
 }
 .btn-block {
 	width: 100%;
+	/* a full-width label (an email, a long name) wraps instead of widening the card */
+	white-space: normal;
+	overflow-wrap: anywhere;
+	text-align: center;
+	line-height: 1.3;
+	padding-block: var(--space-2);
 }
 @media (pointer: coarse) {
 	.btn {
@@ -370,6 +376,38 @@ button {
 .help code {
 	font-size: 12px;
 	color: var(--c-text);
+}
+/* a few exclusive options, each a bordered row with its own help */
+.choice-list {
+	display: grid;
+	gap: var(--space-2);
+	/* a fieldset is min-content wide by default: let it shrink with the card */
+	min-width: 0;
+	border: 0;
+	padding: 0;
+	margin: 0;
+}
+.choice-list legend {
+	margin-bottom: var(--space-2);
+}
+.choice {
+	display: flex;
+	align-items: flex-start;
+	gap: var(--space-2);
+	padding: var(--space-3);
+	border: 1px solid var(--c-border-subtle);
+	border-radius: var(--radius-sm);
+	cursor: pointer;
+}
+.choice:has(input:checked) {
+	border-color: var(--c-primary);
+}
+.choice input {
+	margin-top: 3px;
+	accent-color: var(--c-primary);
+}
+.choice .help {
+	display: block;
 }
 .input {
 	width: 100%;

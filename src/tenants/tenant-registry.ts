@@ -9,11 +9,13 @@ import {
 import { TenantLifecycle } from "./tenant-lifecycle.js";
 
 export {
+	SELF_HOSTED_STATUSES,
 	SERVING_STATUSES,
 	TENANTS_COLLECTION,
 	type TenantCertificate,
 	type TenantDocument,
 	type TenantOwner,
+	isSelfHosted,
 	newTenantId,
 } from "./tenant-document.js";
 

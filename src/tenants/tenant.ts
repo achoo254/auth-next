@@ -4,9 +4,20 @@ import { parse } from "tldts";
 /**
  * Lifecycle of a tenant: a domain is claimed (TXT proven), becomes active
  * once it has an owner and a sign-in provider, and is suspended when its
- * ownership no longer checks out.
+ * ownership no longer checks out. A self-hosted one (ADR 0007) is
+ * `enrolling` once its TXT is proven, then `self_hosted` once its own
+ * install has enrolled: it never serves anything here.
  */
-export type TenantStatus = "pending_claim" | "claimed" | "active" | "suspended";
+export type TenantStatus =
+	| "pending_claim"
+	| "claimed"
+	| "active"
+	| "suspended"
+	| "enrolling"
+	| "self_hosted";
+
+/** Where a tenant runs: on this service, or on its owner's servers (ADR 0007). */
+export type TenantHosting = "hoandat" | "self";
 
 /**
  * One claimed domain and everything served under it: `auth.<domain>`

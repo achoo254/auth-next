@@ -62,6 +62,7 @@ function tenancy(overrides: Partial<Tenancy> = {}): Tenancy {
 		),
 		resolver: resolver(),
 		serviceIp: IP,
+		selfHostedClaims: false,
 		maxActive: 3,
 		minAvailableMemoryMb: 300,
 		blockedDomains: ["hoandat.com", "inetdev.io.vn"],

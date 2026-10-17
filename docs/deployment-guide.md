@@ -75,6 +75,7 @@ Nhận domain (`/claim` trên issuer chính) mở khi có `SERVICE_IPV4`; thêm:
 | `CLAIM_BLOCKED_DOMAINS` | domain không ai được nhận (kèm mọi domain dưới nó), cách bằng dấu phẩy; mặc định `inetdev.io.vn`. Đặt mọi domain khác đang phục vụ trên máy. Domain của tenant chính luôn bị chặn |
 | `CLAIM_MIN_AVAILABLE_MB` | không nhận domain mới khi `MemAvailable` dưới ngưỡng này, mặc định 300 |
 | `PROVISIONER_PUBLIC_KEY_PATH` | PEM public key RSA của provisioner (phase 04); thiếu thì owner chưa lưu được token Cloudflare |
+| `SELF_HOSTED_CLAIMS` | `true` thì `/claim` có thêm chế độ tự host (ADR 0007): chỉ xác minh TXT, tenant ở trạng thái `enrolling`, không có runtime, chứng chỉ hay block nginx trên máy này; mặc định `false`. Chưa bật trên production cho tới khi có bundle cài đặt |
 
 **Trạng thái production (13/10/2026):** đã đặt `TENANT_SECRETS_KEY` (`k1`), `APP_CLIENT_SECRET_KEY`, `INTERNAL_API_CREDENTIALS` (ba vai), `PROVISIONER_PUBLIC_KEY_PATH`, `SERVICE_IPV4=103.72.98.65` (`/claim` mở), `CLAIM_BLOCKED_DOMAINS=inet.vn,hoandat.io.vn` (`inetdev.io.vn` gỡ khỏi danh sách để chủ máy dùng làm tenant nghiệm thu). Khoá của `localman-web`/`tunelo-web` đã chép vào `.env` của Localman và Tunelo. Tenant đầu tiên: `inetdev.io.vn` (`ten_u_bsz0wGr2TR7Huk`, owner là danh tính Google của chủ máy, đăng nhập bằng GitHub OAuth App riêng của tenant), `active`.
 

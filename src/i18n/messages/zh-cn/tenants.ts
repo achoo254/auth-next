@@ -10,12 +10,21 @@ export const zhTenants: Translation<typeof enTenants> = {
 		"请先将 Google 或 GitHub 账号关联到你的账号：域名的所有者就是该账号。",
 	"claim.form.domain": "域名",
 	"claim.form.domainHelp": "例如 example.com 或 dev.example.com。",
+	"claim.hosting.label": "运行位置",
+	"claim.hosting.hoandat": "在 {brand} 的服务器上",
+	"claim.hosting.hoandatHelp":
+		"无需安装。数据存放在 {brand} 的服务器上，按域名隔离。",
+	"claim.hosting.self": "在你自己的服务器上",
+	"claim.hosting.selfHelp":
+		"{brand} 只验证域名并提供安装包。之后所有请求和数据都在你的服务器上；备份、更新和安全由你负责。",
 	"claim.form.owner": "所有者",
 	"claim.form.ownerOption": "{provider} 账号 {name}",
 	"claim.form.submit": "开始认领",
 	"claim.pending.title": "等待 DNS：{domain}",
 	"claim.pending.lead":
 		"在你的 DNS 服务商处添加以下记录，然后检查。仅 DNS 最简单，所有功能都可用。经 Cloudflare 代理也可以，但区域的 SSL 模式须为 Full (strict)；Flexible 会破坏 Chat 的实时连接。",
+	"claim.pending.leadSelf":
+		"在 DNS 服务商处添加这条 TXT 记录，然后点击检查。域名的各主机指向你自己的服务器，而不是这里。",
 	"claim.records.hint": "点击名称或内容即可全选，然后复制到 DNS 服务商。",
 	"claim.records.type": "类型",
 	"claim.records.name": "名称",
@@ -29,9 +38,12 @@ export const zhTenants: Translation<typeof enTenants> = {
 	"claim.tenants.claimed": "已认领：请添加登录方式",
 	"claim.tenants.active": "已启用",
 	"claim.tenants.suspended": "已暂停",
+	"claim.tenants.enrolling": "已验证：等待你服务器上的安装",
+	"claim.tenants.selfHosted": "运行在你自己的服务器上",
 	"claim.tenants.admin": "打开管理页",
 	"claim.notice.started": "已开始认领。请添加下方的 DNS 记录。",
 	"claim.notice.verified": "域名已认领。打开管理页添加 Google 或 GitHub 登录。",
+	"claim.notice.verifiedSelf": "域名已验证。下一步是在你自己的服务器上安装。",
 	"claim.error.invalidDomain": "该域名无法在此认领。",
 	"claim.error.taken": "该域名或其上级、下级域名已被使用。",
 	"claim.error.tooManyPending":

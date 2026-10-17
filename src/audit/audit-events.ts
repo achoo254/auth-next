@@ -1,4 +1,5 @@
 import type { UpstreamProvider } from "../accounts/user-model.js";
+import type { TenantHosting } from "../tenants/tenant.js";
 
 /** Ways to reach or vouch for an account that can be linked and unlinked. */
 export type LinkedMethod = UpstreamProvider | "telegram";
@@ -40,10 +41,15 @@ export type AuditEventData = {
 		readonly clientId?: string;
 	};
 	/** A domain became a tenant; `sub` is the owner's identity (`google:<id>`). */
-	"tenant.claimed": { readonly domain: string };
+	"tenant.claimed": {
+		readonly domain: string;
+		readonly hosting: TenantHosting;
+	};
 	/** The owner changed a setting (never its value). */
 	"tenant.configured": { readonly setting: TenantSetting };
 	"tenant.suspended": { readonly reason: string };
+	/** A self-hosted tenant's entry was removed (TXT gone, never enrolled). */
+	"tenant.released": { readonly reason: string };
 	/** RP-initiated logout at the IdP: everywhere, or only from one app. */
 	"session.logout": {
 		readonly scope: "all" | "client";

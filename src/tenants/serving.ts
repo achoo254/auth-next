@@ -143,7 +143,7 @@ export async function createServing(
 			: undefined;
 
 	const maintenance =
-		runtimes && env.SERVICE_IPV4
+		runtimes && (env.SERVICE_IPV4 || env.SELF_HOSTED_CLAIMS)
 			? createTenantMaintenance({
 					db,
 					registry,

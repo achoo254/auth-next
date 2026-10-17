@@ -78,3 +78,34 @@ test("claim a domain: TXT and A records, then open its admin", async ({
 		),
 	);
 });
+
+test("claim a domain to host it yourself: TXT only, then wait for the install", async ({
+	page,
+}) => {
+	const user = newUser();
+	const domain = `${user.username.replace(/_/g, "-")}-own.example.org`;
+	await signUpViaAccountPage(page, user);
+
+	await page.goto("/claim");
+	await page.locator('[data-id="input-domain"]').fill(domain);
+	await page.locator('[data-id="claim-hosting-self"]').check();
+	await page.locator('[data-id="claim-start-google"]').click();
+	await expect(page.locator('[data-id="alert-success"]')).toContainText(
+		"Đã bắt đầu nhận domain",
+	);
+	// Only the TXT record: the hosts will point at the owner's servers.
+	await expect(page.locator('[data-id="claim-record-auth"]')).toHaveCount(0);
+	const txt =
+		(await page.locator('[data-id="claim-txt-value"]').textContent()) ?? "";
+	await setDns([[`TXT _auth-claim.${domain}`, [txt]]]);
+	await page.locator('[data-id^="claim-verify-"]').click();
+	await expect(page.locator('[data-id="alert-success"]')).toContainText(
+		"Đã xác minh domain",
+	);
+	await expect(
+		page.locator(`[data-id="tenant-status-${domain}"]`),
+	).toContainText("chờ bản cài");
+	await expect(page.locator(`[data-id="tenant-admin-${domain}"]`)).toHaveCount(
+		0,
+	);
+});

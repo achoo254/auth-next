@@ -87,6 +87,7 @@ const env = parseEnv({
 	TENANT_SECRETS_KEY: `e2e:${randomBytes(32).toString("base64")}`,
 	APP_CLIENT_SECRET_KEY: randomBytes(32).toString("base64url"),
 	SERVICE_IPV4: E2E_SERVICE_IP,
+	SELF_HOSTED_CLAIMS: "true",
 	LOG_LEVEL: process.env.E2E_LOG_LEVEL ?? "warn",
 	...FAKE_UPSTREAM_ENV,
 });

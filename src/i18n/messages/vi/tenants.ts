@@ -10,12 +10,21 @@ export const viTenants: Translation<typeof enTenants> = {
 		"Hãy liên kết một tài khoản Google hoặc GitHub với tài khoản của bạn trước: chủ của domain là tài khoản đó.",
 	"claim.form.domain": "Domain",
 	"claim.form.domainHelp": "Ví dụ example.com hoặc dev.example.com.",
+	"claim.hosting.label": "Chạy ở đâu",
+	"claim.hosting.hoandat": "Trên máy chủ của {brand}",
+	"claim.hosting.hoandatHelp":
+		"Không cần cài gì. Dữ liệu nằm trên máy chủ của {brand}, tách riêng theo domain.",
+	"claim.hosting.self": "Trên máy chủ của bạn",
+	"claim.hosting.selfHelp":
+		"{brand} chỉ xác minh domain và cấp gói cài đặt. Sau đó mọi request và dữ liệu nằm trên máy chủ của bạn; bạn tự lo backup, cập nhật và bảo mật.",
 	"claim.form.owner": "Chủ sở hữu",
 	"claim.form.ownerOption": "Tài khoản {provider} {name}",
 	"claim.form.submit": "Bắt đầu nhận domain",
 	"claim.pending.title": "Đang chờ DNS: {domain}",
 	"claim.pending.lead":
 		"Thêm các bản ghi này ở nhà cung cấp DNS rồi bấm kiểm tra. Chỉ DNS là đơn giản nhất và mọi thứ đều chạy. Bật proxy Cloudflare cũng được nếu SSL của zone để Full (strict); Flexible làm hỏng kết nối thời gian thực của Chat.",
+	"claim.pending.leadSelf":
+		"Thêm bản ghi TXT này ở nhà cung cấp DNS rồi bấm kiểm tra. Các host của domain trỏ về máy chủ của bạn, không trỏ về đây.",
 	"claim.records.hint":
 		"Bấm vào tên hoặc giá trị để chọn cả ô, rồi copy sang nhà cung cấp DNS.",
 	"claim.records.type": "Loại",
@@ -30,11 +39,15 @@ export const viTenants: Translation<typeof enTenants> = {
 	"claim.tenants.claimed": "Đã nhận: hãy thêm cách đăng nhập",
 	"claim.tenants.active": "Đang hoạt động",
 	"claim.tenants.suspended": "Tạm đình chỉ",
+	"claim.tenants.enrolling": "Đã xác minh: chờ bản cài trên máy chủ của bạn",
+	"claim.tenants.selfHosted": "Chạy trên máy chủ của bạn",
 	"claim.tenants.admin": "Mở trang quản trị",
 	"claim.notice.started":
 		"Đã bắt đầu nhận domain. Hãy thêm các bản ghi DNS bên dưới.",
 	"claim.notice.verified":
 		"Đã nhận domain. Mở trang quản trị để thêm đăng nhập bằng Google hoặc GitHub.",
+	"claim.notice.verifiedSelf":
+		"Đã xác minh domain. Bước tiếp theo là cài đặt trên máy chủ của bạn.",
 	"claim.error.invalidDomain": "Đây không phải domain có thể nhận ở đây.",
 	"claim.error.taken":
 		"Domain này, hoặc một domain cha hay con của nó, đã được dùng.",

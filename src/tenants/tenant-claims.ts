@@ -2,6 +2,7 @@ import { randomBytes } from "node:crypto";
 import type { Collection, Db } from "mongodb";
 import { claimTxtName } from "./ownership-records.js";
 import type { TenantOwner } from "./tenant-registry.js";
+import type { TenantHosting } from "./tenant.js";
 
 /** How long a started claim waits for its DNS records. */
 export const CLAIM_TTL_MS = 24 * 60 * 60 * 1000;
@@ -24,6 +25,8 @@ export interface ClaimDocument {
 	accountId: string;
 	/** Value expected at `_auth-claim.<domain>`: bound to this claim. */
 	txt: string;
+	/** Where the tenant will run; absent (claims started before ADR 0007) is `hoandat`. */
+	hosting?: TenantHosting;
 	createdAt: Date;
 	expiresAt: Date;
 }
@@ -49,6 +52,7 @@ export class TenantClaims {
 		readonly domain: string;
 		readonly owner: TenantOwner;
 		readonly accountId: string;
+		readonly hosting: TenantHosting;
 	}): Promise<ClaimDocument> {
 		const now = new Date();
 		const claim: ClaimDocument = {

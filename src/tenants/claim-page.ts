@@ -14,10 +14,14 @@ import { type SafeHtml, html } from "../ui/html.js";
 import { renderPage } from "../ui/layout.js";
 import type { PageContext } from "../ui/page-context.js";
 import type { WrongRecords } from "./claim-dns-feedback.js";
-import { APP_HOST_KEYS } from "./ownership-records.js";
-import { type ClaimDocument, claimRecord } from "./tenant-claims.js";
-import type { TenantDocument, TenantOwner } from "./tenant-registry.js";
-import { appHostsFor } from "./tenant.js";
+import { dnsRecords, hostingChoice } from "./claim-records.js";
+import type { ClaimDocument } from "./tenant-claims.js";
+import {
+	type TenantDocument,
+	type TenantOwner,
+	isSelfHosted,
+} from "./tenant-registry.js";
+import type { TenantHosting } from "./tenant.js";
 
 /** One identity the signed-in account could claim with. */
 export interface ClaimIdentity extends TenantOwner {
@@ -29,7 +33,8 @@ export interface ClaimView {
 	readonly host: string;
 	readonly page: PageContext;
 	readonly csrf: string;
-	readonly open: boolean;
+	/** Where new tenants can run; none closes claims. */
+	readonly hostings: readonly TenantHosting[];
 	readonly serviceIp?: string;
 	readonly identities: readonly ClaimIdentity[];
 	readonly claims: readonly ClaimDocument[];
@@ -46,50 +51,16 @@ const STATUS_KEYS: Readonly<Record<string, MessageKey>> = {
 	claimed: "claim.tenants.claimed",
 	active: "claim.tenants.active",
 	suspended: "claim.tenants.suspended",
+	enrolling: "claim.tenants.enrolling",
+	self_hosted: "claim.tenants.selfHosted",
 };
-
-/** A host name that wraps only after its dots (`<wbr>` copies as nothing). */
-function hostName(name: string): SafeHtml {
-	const labels = name.split(".");
-	return html`${labels.map((label, index) =>
-		index < labels.length - 1 ? html`${label}.<wbr>` : html`${label}`,
-	)}`;
-}
-
-/**
- * The records to add, one row each in the order of a DNS provider's form
- * (type, name, content, proxy). One click selects a whole name or value.
- */
-function dnsRecords(view: ClaimView, claim: ClaimDocument): SafeHtml {
-	const { i18n } = view.page;
-	const txt = claimRecord(claim);
-	const hosts = appHostsFor(claim.domain);
-	const ip = view.serviceIp ?? "";
-	const wrong =
-		view.wrongRecords?.claimId === claim._id ? view.wrongRecords.hosts : [];
-	const proxy = i18n.t("claim.records.proxyChoice");
-	const wrongBadge = html` <span class="badge badge-warning">${i18n.t("claim.records.wrong")}</span>`;
-	return html`<div class="dns-records" data-id="claim-records">
-<table>
-<caption class="help">${i18n.t("claim.records.hint")}</caption>
-<thead><tr><th scope="col">${i18n.t("claim.records.type")}</th><th scope="col">${i18n.t("claim.records.name")}</th><th scope="col">${i18n.t("claim.records.content")}</th><th scope="col">${i18n.t("claim.records.proxy")}</th></tr></thead>
-<tbody>
-<tr><td>TXT</td><td><code class="copyable host" data-id="claim-txt-name">${hostName(txt.name)}</code></td><td><code class="copyable" data-id="claim-txt-value">${txt.value}</code></td><td></td></tr>
-${APP_HOST_KEYS.map(
-	(key) =>
-		html`<tr data-id="claim-record-${key}"><td>A</td><td><code class="copyable host">${hostName(hosts[key])}</code></td><td><code class="copyable host">${ip}</code></td><td>${proxy}${wrong.includes(key) ? wrongBadge : ""}</td></tr>`,
-)}
-</tbody>
-</table>
-</div>`;
-}
 
 function pendingClaim(view: ClaimView, claim: ClaimDocument): SafeHtml {
 	const { i18n } = view.page;
 	return html`<li class="item-row claim-pending" data-id="claim-${claim._id}"><div>
 <p><b>${i18n.t("claim.pending.title", { domain: claim.domain })}</b></p>
-<p class="help">${i18n.t("claim.pending.lead")}</p>
-${dnsRecords(view, claim)}
+<p class="help">${i18n.t(claim.hosting === "self" ? "claim.pending.leadSelf" : "claim.pending.lead")}</p>
+${dnsRecords(i18n, claim, view.serviceIp, view.wrongRecords)}
 <p class="help">${i18n.t("claim.pending.expires", { date: i18n.date(claim.expiresAt) })}</p>
 </div>
 <form method="post" action="/claim/${claim._id}/verify" class="inline-form">${csrfField(view.csrf)}${submitButton(i18n.t("claim.pending.verify"), { dataId: `claim-verify-${claim._id}` })}</form>
@@ -103,19 +74,20 @@ function ownedTenant(view: ClaimView, tenant: TenantDocument): SafeHtml {
 <p><b>${tenant.domain}</b></p>
 ${status ? html`<p class="help" data-id="tenant-status-${tenant.domain}">${i18n.t(status)}</p>` : ""}
 </div>
-${tenant.status === "suspended" ? "" : html`<form method="post" action="/claim/tenants/${tenant._id}/admin" class="inline-form">${csrfField(view.csrf)}${submitButton(i18n.t("claim.tenants.admin"), { variant: "secondary", dataId: `tenant-admin-${tenant.domain}` })}</form>`}
+${tenant.status === "suspended" || isSelfHosted(tenant) ? "" : html`<form method="post" action="/claim/tenants/${tenant._id}/admin" class="inline-form">${csrfField(view.csrf)}${submitButton(i18n.t("claim.tenants.admin"), { variant: "secondary", dataId: `tenant-admin-${tenant.domain}` })}</form>`}
 </li>`;
 }
 
 function claimForm(view: ClaimView): SafeHtml {
 	const { i18n } = view.page;
-	if (!view.open)
+	if (view.hostings.length === 0)
 		return html`<p class="help" data-id="claim-closed">${i18n.t("claim.unavailable")}</p>`;
 	if (view.identities.length === 0) {
 		return html`<p class="help" data-id="claim-no-identity">${i18n.t("claim.noIdentity")}</p>`;
 	}
 	return html`<form method="post" action="/claim" class="auth-form" data-id="claim-form">${csrfField(view.csrf)}
 ${inputField({ name: "domain", label: i18n.t("claim.form.domain"), help: i18n.t("claim.form.domainHelp"), autocomplete: "off", maxlength: 253 })}
+${hostingChoice(i18n, view.hostings)}
 <p class="label">${i18n.t("claim.form.owner")}</p>
 ${view.identities.map((identity) =>
 	submitButton(

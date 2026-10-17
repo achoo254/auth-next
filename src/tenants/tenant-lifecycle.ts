@@ -1,5 +1,6 @@
 import type { Collection, Db } from "mongodb";
 import {
+	SELF_HOSTED_STATUSES,
 	SERVING_STATUSES,
 	TENANTS_COLLECTION,
 	type TenantDocument,
@@ -17,7 +18,7 @@ export class TenantLifecycle {
 		this.tenants = db.collection<TenantDocument>(TENANTS_COLLECTION);
 	}
 
-	/** Serving tenants whose ownership was last checked before `before`. */
+	/** Tenants (serving or self-hosted) whose ownership was last checked before `before`. */
 	listDueForOwnershipCheck(before: Date): Promise<TenantDocument[]> {
 		return this.tenants
 			.find({
@@ -25,7 +26,11 @@ export class TenantLifecycle {
 				$and: [
 					{
 						$or: [
-							{ status: { $in: [...SERVING_STATUSES] } },
+							{
+								status: {
+									$in: [...SERVING_STATUSES, ...SELF_HOSTED_STATUSES],
+								},
+							},
 							{ status: "suspended", suspendedReason: "ownership" },
 						],
 					},
@@ -108,6 +113,42 @@ export class TenantLifecycle {
 			_id: id,
 			status: "suspended",
 			suspendedReason: "not-activated",
+		});
+		return result.deletedCount === 1;
+	}
+
+	/**
+	 * Deletes self-hosted tenants still `enrolling` since before `before`:
+	 * their install never enrolled, and nothing of them lives here but the
+	 * registry entry. Returns them, which frees their domains.
+	 */
+	async expireEnrolling(before: Date): Promise<TenantDocument[]> {
+		const stale = await this.tenants
+			.find({ status: "enrolling", claimedAt: { $lt: before } })
+			.limit(50)
+			.toArray();
+		const expired: TenantDocument[] = [];
+		for (const tenant of stale) {
+			// Enrolled meanwhile: not expired.
+			if (await this.deleteInStatus(tenant._id, ["enrolling"])) {
+				expired.push(tenant);
+			}
+		}
+		return expired;
+	}
+
+	/** Deletes a self-hosted tenant's entry (its TXT is gone); frees the domain. */
+	removeSelfHosted(id: string): Promise<boolean> {
+		return this.deleteInStatus(id, SELF_HOSTED_STATUSES);
+	}
+
+	private async deleteInStatus(
+		id: string,
+		statuses: readonly TenantDocument["status"][],
+	): Promise<boolean> {
+		const result = await this.tenants.deleteOne({
+			_id: id,
+			status: { $in: [...statuses] },
 		});
 		return result.deletedCount === 1;
 	}

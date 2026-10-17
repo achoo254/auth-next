@@ -1,6 +1,15 @@
 import type { Logger } from "../logger.js";
-import { type OwnershipResolver, checkOwnership } from "./ownership-records.js";
-import type { TenantDocument, TenantRegistry } from "./tenant-registry.js";
+import {
+	type OwnershipResolver,
+	type OwnershipResult,
+	checkClaimTxt,
+	checkOwnership,
+} from "./ownership-records.js";
+import {
+	type TenantDocument,
+	type TenantRegistry,
+	isSelfHosted,
+} from "./tenant-registry.js";
 
 /** Failed checks in a row that suspend a tenant (DNS hiccups are forgiven). */
 export const SUSPEND_AFTER_FAILURES = 3;
@@ -8,29 +17,49 @@ export const SUSPEND_AFTER_FAILURES = 3;
 export interface OwnershipCheckDependencies {
 	readonly registry: TenantRegistry;
 	readonly resolver: OwnershipResolver;
-	readonly serviceIp: string;
+	/** Absent: tenants hosted here cannot be checked (nothing to point at). */
+	readonly serviceIp?: string;
 	readonly logger: Logger;
 	/** Called once a tenant is suspended (drops its runtime). */
 	readonly onSuspended: (tenant: TenantDocument) => void;
+	/** Called once a self-hosted tenant lost its TXT and was removed. */
+	readonly onReleased?: (tenant: TenantDocument) => void;
 	/** Called once a suspended tenant is restored. */
 	readonly onRestored?: (tenant: TenantDocument) => void;
 }
 
-/**
- * Re-checks every serving tenant's ownership. A domain that changed hands
- * (TXT gone) or no longer points here fails; after several failures in a
- * row the tenant is suspended: no pages, no tokens, no certificate work.
- */
 /** How often each tenant is re-checked. */
 export const OWNERSHIP_CHECK_EVERY_MS = 6 * 60 * 60 * 1000;
+
+/**
+ * One tenant's check: the TXT only for a self-hosted tenant (its hosts run
+ * elsewhere), else the TXT and every host pointing here.
+ */
+async function checkTenant(
+	tenant: TenantDocument,
+	deps: OwnershipCheckDependencies,
+): Promise<OwnershipResult> {
+	if (!tenant.claimTxt) return "txt";
+	if (isSelfHosted(tenant)) {
+		return checkClaimTxt(tenant.domain, tenant.claimTxt, deps.resolver);
+	}
+	if (!deps.serviceIp) return "unknown";
+	return checkOwnership(
+		tenant.domain,
+		tenant.claimTxt,
+		deps.serviceIp,
+		deps.resolver,
+	);
+}
 
 /**
  * Re-checks tenants not checked for OWNERSHIP_CHECK_EVERY_MS. A domain that
  * changed hands (TXT gone) or no longer points here fails; after several
  * definite failures in a row the tenant is suspended: no pages, no tokens,
- * no certificate work. A resolver that cannot answer proves nothing, and a
- * round where every tenant fails looks like a local DNS fault, so nobody
- * is suspended by it.
+ * no certificate work. A self-hosted tenant has nothing here to suspend:
+ * its record is removed instead, and the domain can be claimed again. A
+ * resolver that cannot answer proves nothing, and a round where every
+ * tenant fails looks like a local DNS fault, so nobody is suspended by it.
  */
 export async function checkAllOwnership(
 	deps: OwnershipCheckDependencies,
@@ -41,14 +70,7 @@ export async function checkAllOwnership(
 	const results = await Promise.all(
 		due.map(async (tenant) => ({
 			tenant,
-			result: tenant.claimTxt
-				? await checkOwnership(
-						tenant.domain,
-						tenant.claimTxt,
-						deps.serviceIp,
-						deps.resolver,
-					)
-				: ("txt" as const),
+			result: await checkTenant(tenant, deps),
 		})),
 	);
 	const failed = results.filter(
@@ -82,6 +104,16 @@ export async function checkAllOwnership(
 			result === "ok",
 		);
 		if (result !== "ok" && failures >= SUSPEND_AFTER_FAILURES) {
+			if (isSelfHosted(tenant)) {
+				if (await deps.registry.removeSelfHosted(tenant._id)) {
+					deps.onReleased?.(tenant);
+					deps.logger.warn(
+						{ tenantId: tenant._id, domain: tenant.domain, failures },
+						"Self-hosted tenant removed: its claim TXT record is gone",
+					);
+				}
+				continue;
+			}
 			await deps.registry.update(tenant._id, {
 				status: "suspended",
 				suspendedAt: new Date(),

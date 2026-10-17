@@ -119,14 +119,40 @@ export async function checkOwnership(
 		.result;
 }
 
+/** True when `_auth-claim.<domain>` holds `expectedTxt`; throws DnsUnavailable. */
+async function txtHolds(
+	domain: string,
+	expectedTxt: string,
+	resolver: OwnershipResolver,
+): Promise<boolean> {
+	const txt = await lookup(() => resolver.resolveTxt(claimTxtName(domain)));
+	return txt.some((chunks) => chunks.join("") === expectedTxt);
+}
+
+/**
+ * The whole proof for a self-hosted tenant (ADR 0007): the claim TXT value
+ * only. Its hosts run elsewhere, so their A records are never looked up.
+ */
+export async function checkClaimTxt(
+	domain: string,
+	expectedTxt: string,
+	resolver: OwnershipResolver,
+): Promise<Exclude<OwnershipResult, "address">> {
+	try {
+		return (await txtHolds(domain, expectedTxt, resolver)) ? "ok" : "txt";
+	} catch (error) {
+		if (error instanceof DnsUnavailable) return "unknown";
+		throw error;
+	}
+}
+
 async function checkRecords(
 	domain: string,
 	expectedTxt: string,
 	serviceIp: string,
 	resolver: OwnershipResolver,
 ): Promise<OwnershipCheck> {
-	const txt = await lookup(() => resolver.resolveTxt(claimTxtName(domain)));
-	if (!txt.some((chunks) => chunks.join("") === expectedTxt)) {
+	if (!(await txtHolds(domain, expectedTxt, resolver))) {
 		return { result: "txt", wrongHosts: [] };
 	}
 	const hosts = appHostsFor(domain);

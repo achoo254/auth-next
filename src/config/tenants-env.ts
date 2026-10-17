@@ -29,6 +29,14 @@ export const tenantsEnvShape = {
 	SERVICE_IPV4: z.ipv4().optional(),
 	/** PEM file of the provisioner's RSA public key (DNS tokens are sealed to it). */
 	PROVISIONER_PUBLIC_KEY_PATH: z.string().min(1).optional(),
+	/**
+	 * Offers the self-hosted mode on /claim (ADR 0007): the domain proves
+	 * ownership by TXT only and runs on the owner's own servers.
+	 */
+	SELF_HOSTED_CLAIMS: z
+		.enum(["true", "false"], { error: "must be true or false" })
+		.default("false")
+		.transform((value) => value === "true"),
 	/** No new claims while the machine has less memory available than this. */
 	CLAIM_MIN_AVAILABLE_MB: z.coerce.number().int().min(0).default(300),
 	/**

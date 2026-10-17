@@ -25,6 +25,8 @@ export interface Tenancy {
 	readonly resolver: OwnershipResolver;
 	/** SERVICE_IPV4: claims are closed without it (nothing to point DNS at). */
 	readonly serviceIp?: string;
+	/** SELF_HOSTED_CLAIMS: /claim offers the self-hosted mode (ADR 0007). */
+	readonly selfHostedClaims: boolean;
 	readonly maxActive: number;
 	readonly minAvailableMemoryMb: number;
 	/** Domains (and everything under them) nobody may claim. */
@@ -81,6 +83,7 @@ export async function createTenancy(
 		secrets: stores.secrets,
 		resolver: SYSTEM_RESOLVER,
 		serviceIp: env.SERVICE_IPV4,
+		selfHostedClaims: env.SELF_HOSTED_CLAIMS,
 		maxActive: env.TENANT_MAX_ACTIVE,
 		minAvailableMemoryMb: env.CLAIM_MIN_AVAILABLE_MB,
 		// The primary domain and everything around it is never a tenant.

@@ -55,3 +55,16 @@ export function newTenantId(): string {
 
 /** Statuses that count against TENANT_MAX_ACTIVE and serve pages. */
 export const SERVING_STATUSES: readonly TenantStatus[] = ["claimed", "active"];
+
+/**
+ * Statuses of a self-hosted tenant (ADR 0007): no runtime, certificate or
+ * nginx block here, and only its TXT record is ever checked.
+ */
+export const SELF_HOSTED_STATUSES: readonly TenantStatus[] = [
+	"enrolling",
+	"self_hosted",
+];
+
+export function isSelfHosted(tenant: Pick<TenantDocument, "status">): boolean {
+	return SELF_HOSTED_STATUSES.includes(tenant.status);
+}
