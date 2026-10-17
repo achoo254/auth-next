@@ -123,8 +123,8 @@ healthy() {
 cp "$NEXT" release.env.next
 mv release.env.next release.env
 "${C[@]}" --env-file release.env pull nginx auth localman tunelo chat-migrate chat
-"${C[@]}" --env-file release.env up -d --remove-orphans nginx auth localman tunelo chat
-if healthy; then
+# A failed start (a port taken, a bad image) goes back like an unhealthy one.
+if "${C[@]}" --env-file release.env up -d --remove-orphans nginx auth localman tunelo chat && healthy; then
 	echo "update: running $VERSION"
 	exit 0
 fi

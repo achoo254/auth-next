@@ -78,6 +78,20 @@ export const zhGuide: Translation<typeof enGuide> = {
 		"Localman：https://localman.<domain>；mock 在 https://<secret>.localman.<domain>；MCP 在 https://localman.<domain>/mcp。",
 	"guide.users.tunelo":
 		"Tunelo：CLI 1.8.0 或更高版本（npm install -g tunelo@latest），然后运行 tunelo login --server https://tunnel.<domain>。",
+	"guide.self.title": "在你自己的服务器上运行域名",
+	"guide.self.body":
+		"当 {claim} 提供该选项时，在第 1 步选择“在你自己的服务器上”。只需添加 TXT 记录；各主机指向你的服务器，而不是这里。域名验证后，下载安装包（24 小时内有效）并按照{installGuide}操作。你的服务器与 {brand} 完成一次设置，之后不再经过 {brandDomain}。",
+	"guide.self.server":
+		"一台装有 Docker Compose 的 Linux 服务器，有公网 IPv4，开放 80、443 端口和 Tunelo 的 TCP 端口范围，约 4 GB 可用内存。",
+	"guide.self.cloudflare":
+		"DNS 托管在 Cloudflare，并有可编辑该区域的 API 令牌：*.localman. 和 *.tunnel. 的通配符证书通过 DNS 验证。",
+	"guide.self.apps":
+		"你自己的 Google 或 GitHub 登录应用，以及用于 localman.<domain> 的 Cloudflare Turnstile 小组件。",
+	"guide.self.duty":
+		"{brand} 不负责备份、更新、安全修补或监控你的服务器：这些由你负责。请保留 TXT 记录，以免他人在此认领该域名。",
+	"guide.self.move":
+		"迁移已在此运行的域名：在“你的域名”中点击“迁移到你的服务器”。域名立即停止在此提供服务，数据保留；“取消迁移”可恢复服务。先安装安装包，但暂不将 A 记录指向你的服务器，并把安装的迁移公钥发给运维人员。运维人员导出该域名的账户、项目、变量、隧道密钥和消息，只有你的服务器能打开；在那里导入后，再将 A 记录指向它。已签发的令牌仍可使用；用户需重新登录 Localman 和 Chat 一次。",
+	"guide.self.installGuide": "安装指南",
 	"guide.keep.title": "保留或移除域名",
 	"guide.keep.body":
 		"只要 TXT 记录还在、各记录仍指向服务器，域名就归你所有。要移除：删除 TXT 记录或联系运营者；其证书、令牌和所有数据都会被删除，域名可重新认领。",

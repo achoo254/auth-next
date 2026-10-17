@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import { testPage } from "../__tests__/helpers/test-page.js";
 import { LOCALES } from "../i18n/locales.js";
 import { renderDomainGuide } from "./domain-guide-page.js";
+import { SELF_HOSTED_INSTALL_GUIDE } from "./domain-guide-self-hosted.js";
 
 const STATIC = "static";
 
@@ -42,5 +43,26 @@ describe("/guide/domain", () => {
 			(match) => match[1],
 		);
 		expect(figures).toEqual(figures.map((_, index) => String(index + 1)));
+	});
+
+	it("explains running on your own server only where /claim offers it", () => {
+		const hosted = renderDomainGuide(
+			"auth.example.test",
+			"/claim",
+			testPage("en"),
+		);
+		expect(hosted).not.toContain('id="self-hosted"');
+		const page = renderDomainGuide(
+			"auth.example.test",
+			"/claim",
+			testPage("en"),
+			true,
+		);
+		expect(page).toContain('id="self-hosted"');
+		expect(page).toContain(`href="${SELF_HOSTED_INSTALL_GUIDE}"`);
+		// Before keeping or removing the domain, the last step.
+		expect(page.indexOf('id="self-hosted"')).toBeLessThan(
+			page.indexOf('id="keep"'),
+		);
 	});
 });

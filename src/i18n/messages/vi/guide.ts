@@ -81,6 +81,20 @@ export const viGuide: Translation<typeof enGuide> = {
 		"Localman: https://localman.<domain>; mock ở https://<secret>.localman.<domain>; MCP ở https://localman.<domain>/mcp.",
 	"guide.users.tunelo":
 		"Tunelo: CLI 1.8.0 trở lên (npm install -g tunelo@latest), rồi tunelo login --server https://tunnel.<domain>.",
+	"guide.self.title": "Chạy domain trên máy chủ của bạn",
+	"guide.self.body":
+		"Khi {claim} có lựa chọn này, chọn Trên máy chủ của bạn ở bước 1. Bạn chỉ thêm bản ghi TXT; các host trỏ về máy chủ của bạn, không trỏ về đây. Domain xác minh xong thì tải gói cài đặt (hạn 24 giờ) và làm theo {installGuide}. Máy chủ của bạn hoàn tất thiết lập với {brand} một lần, sau đó không gì đi qua {brandDomain} nữa.",
+	"guide.self.server":
+		"Một máy Linux có Docker Compose, IPv4 công khai, mở cổng 80, 443 và dải cổng TCP của Tunelo, khoảng 4 GB RAM trống.",
+	"guide.self.cloudflare":
+		"DNS trên Cloudflare kèm API token sửa được zone: chứng chỉ wildcard của *.localman. và *.tunnel. chứng minh qua DNS.",
+	"guide.self.apps":
+		"App đăng nhập Google hoặc GitHub của riêng bạn, và một widget Cloudflare Turnstile cho localman.<domain>.",
+	"guide.self.duty":
+		"{brand} không backup, không cập nhật, không vá bảo mật và không giám sát máy chủ của bạn: các việc đó do bạn lo. Giữ bản ghi TXT để không ai nhận lại domain ở đây.",
+	"guide.self.move":
+		"Chuyển một domain đang chạy ở đây: trong mục Domain của bạn, bấm Chuyển sang máy chủ của bạn. Domain ngừng phục vụ ở đây ngay, dữ liệu được giữ; Huỷ chuyển cho nó chạy lại. Cài gói nhưng chưa trỏ bản ghi A về máy chủ của bạn, rồi gửi khoá chuyển công khai của bản cài cho người vận hành. Người vận hành xuất tài khoản, project, biến, khoá tunnel và tin nhắn của domain, chỉ máy chủ của bạn mở được; nhập chúng ở đó rồi trỏ bản ghi A về máy chủ của bạn. Token đã cấp vẫn dùng được; người dùng đăng nhập lại Localman và Chat một lần.",
+	"guide.self.installGuide": "hướng dẫn cài đặt",
 	"guide.keep.title": "Giữ hoặc gỡ domain",
 	"guide.keep.body":
 		"Domain còn là của bạn khi bản ghi TXT còn và các bản ghi trỏ về máy chủ. Muốn gỡ: xoá bản ghi TXT hoặc nhờ người vận hành; chứng chỉ, token và mọi dữ liệu của domain bị xoá, domain nhận lại được từ đầu.",

@@ -109,6 +109,15 @@ bắt tay TLS được; các trang chính vẫn chạy.
 - Bot Telegram (tuỳ chọn, trang quản trị): cho người dùng liên kết chat để nhận thông báo bảo
   mật; tạo bot bằng @BotFather.
 
+## Chạy trên máy chủ của bạn (ADR 0007)
+
+Chỉ có khi `/claim` có lựa chọn "Trên máy chủ của bạn" (`SELF_HOSTED_CLAIMS`); trang `/guide/domain` cũng chỉ hiện mục này khi đó.
+
+- Chọn "Trên máy chủ của bạn" ở bước 1: chỉ thêm bản ghi TXT, các host trỏ về máy của owner. Xác minh xong thì tải gói cài đặt (hạn 24 giờ) và cài theo [`self-hosted-install.md`](self-hosted-install.md). Bản cài đổi gói với gateway một lần, sau đó không gì đi qua hoandat.com.
+- Cần máy Linux có Docker Compose, IPv4 công khai, cổng 80, 443 và dải TCP của Tunelo, khoảng 4 GB RAM trống; DNS trên Cloudflare kèm API token; OAuth app Google/GitHub riêng và widget Turnstile cho `localman.<domain>`.
+- hoandat.com không backup, cập nhật, vá hay giám sát bản cài. Giữ bản ghi TXT.
+- Chuyển domain đang chạy ở đây: bấm "Chuyển sang máy chủ của bạn" (domain ngừng phục vụ ở đây ngay, dữ liệu giữ; "Huỷ chuyển" cho chạy lại), cài gói nhưng chưa trỏ bản ghi A, gửi khoá chuyển công khai cho người vận hành, nhập dữ liệu, rồi trỏ bản ghi A. Chi tiết: mục "Chuyển tenant đang chạy trên hoandat sang đây" của `self-hosted-install.md`.
+
 ## Gỡ domain
 
 Gỡ bản ghi TXT (tenant bị đình chỉ sau 3 lần kiểm sai) hoặc nhờ người vận hành gỡ tenant:

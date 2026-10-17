@@ -73,7 +73,13 @@ export function createTenantApp(options: TenantAppOptions): Express {
 		app.use(createClaimRouter(services, tenancy));
 		app.use(createEnrollmentRouter(services, tenancy));
 		app.use(createMigrationRouter(services, tenancy));
-		app.use(createDomainGuideRouter(new URL(tenant.issuer).host, CLAIM_PATH));
+		app.use(
+			createDomainGuideRouter(
+				new URL(tenant.issuer).host,
+				CLAIM_PATH,
+				tenancy.selfHostedClaims,
+			),
+		);
 	}
 	if (tenancy && tenant.id !== PRIMARY_TENANT_ID) {
 		app.use(createAdminRouter(services, tenancy));

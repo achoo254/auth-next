@@ -57,13 +57,13 @@ Script kiểm chữ ký cosign của từng image trên đúng digest sẽ chạ
 
 Domain đang chạy trên hoandat (ADR 0007 §7) chuyển sang bản cài mà giữ tài khoản, project, biến bí mật, API key Tunelo, tin nhắn và khoá ký (token đã cấp vẫn dùng được). Người dùng đăng nhập lại Localman và Chat một lần; client MCP của Localman cấp quyền lại.
 
-1. Ở `/claim` của gateway, bấm **Chuyển sang máy chủ của bạn** (đăng nhập lại gần đây). Tenant vẫn chạy trên hoandat; nút **Huỷ chuyển** đưa nó về như cũ cho tới khi bản cài đổi gói.
+1. Chuẩn bị máy (mục "Cần chuẩn bị") trước, vì từ bước sau domain ngừng chạy: ở `/claim` của gateway, bấm **Chuyển sang máy chủ của bạn** (đăng nhập lại gần đây). Đăng nhập, Localman, Tunelo và Chat của domain thôi phục vụ trên hoandat ngay, dữ liệu giữ nguyên; nút **Huỷ chuyển** cho nó chạy lại như cũ cho tới khi bản cài đổi gói.
 2. Tải gói enrollment và cài như mục "Cài", nhưng **chưa trỏ bản ghi A** (chứng chỉ cấp bằng DNS-01 nên không cần). Không ai đăng nhập vào bản cài trước khi nhập.
-3. Gửi `data/secrets/migration-key.pub.json` (khoá công khai) cho operator của hoandat; operator chạy `migrate/export-tenant.sh` (mục "Chuyển tenant tự host" của `docs/deployment-guide.md`) và chép thư mục kết quả sang máy này qua SSH. Từ lúc export, chat của tenant trên hoandat dừng.
+3. Gửi `data/secrets/migration-key.pub.json` (khoá công khai) cho operator của hoandat; operator chạy `migrate/export-tenant.sh` (mục "Chuyển tenant tự host" của `docs/deployment-guide.md`) và chép thư mục kết quả sang máy này qua SSH.
 4. Trong `deploy/self-hosted`: `bash migrate/import-tenant.sh <thư-mục>`. Script backup hai database vào `data/backups/<giờ>/`, dừng app, nhập dữ liệu, đặt khoá ký của tenant, ghi OAuth app và bot của tenant vào `.env` (đè giá trị đã điền), niêm phong lại secret, rồi chạy lại app. Bản cài phải mới (chưa có tài khoản hay user chat) và cùng phiên bản chat với hoandat (`chat.sql` ghi số schema).
 5. Trỏ bản ghi A về máy này. Bản cài đổi gói trong vòng một phút; `/claim` của gateway chuyển sang "Chạy trên máy chủ của bạn" và hoandat thôi phục vụ domain. Xoá thư mục đã nhập.
 
-Lùi trước bước 5: bỏ bản cài, bấm **Huỷ chuyển** (chat trên hoandat chạy lại khi operator bật lại). Sau bước 5, hoandat giữ dữ liệu cũ 14 ngày rồi xoá.
+Thời gian ngừng: từ lúc bấm chuyển tới lúc bản ghi A mới có hiệu lực. Lùi trước bước 5: bỏ bản cài, bấm **Huỷ chuyển** (Chat trên hoandat chạy lại khi operator bật lại process đã dừng lúc export). Sau bước 5, hoandat giữ dữ liệu cũ 14 ngày rồi xoá.
 
 ## Bên trong bundle
 

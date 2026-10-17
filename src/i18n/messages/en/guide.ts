@@ -79,6 +79,20 @@ export const enGuide = {
 		"Localman: https://localman.<domain>; mocks at https://<secret>.localman.<domain>; MCP at https://localman.<domain>/mcp.",
 	"guide.users.tunelo":
 		"Tunelo: CLI 1.8.0 or later (npm install -g tunelo@latest), then tunelo login --server https://tunnel.<domain>.",
+	"guide.self.title": "Running the domain on your own server",
+	"guide.self.body":
+		"When {claim} offers it, choose On your own servers in step 1. You only add the TXT record; the hosts point at your server, not here. Once the domain is verified, download the setup bundle (valid for 24 hours) and follow {installGuide}. Your server then completes the setup with {brand} once, and nothing goes through {brandDomain} afterwards.",
+	"guide.self.server":
+		"A Linux server with Docker Compose, a public IPv4, ports 80 and 443 and Tunelo's TCP ports open, and about 4 GB of free memory.",
+	"guide.self.cloudflare":
+		"DNS on Cloudflare with an API token that edits the zone: the wildcard certificates of *.localman. and *.tunnel. are proven through DNS.",
+	"guide.self.apps":
+		"Your own Google or GitHub sign-in app, and a Cloudflare Turnstile widget for localman.<domain>.",
+	"guide.self.duty":
+		"{brand} does not back up, update, patch or watch your server: that is up to you. Keep the TXT record so nobody else can claim the domain here.",
+	"guide.self.move":
+		"Moving a domain that already runs here: in Your domains, press Move to your own servers. The domain stops being served here at once, its data kept; Cancel the move serves it again. Install the bundle without pointing the A records at your server yet, and send the operator your install's migration public key. The operator exports the domain's accounts, projects, variables, tunnel keys and messages for your server only; import them there, then point the A records at it. Tokens already issued keep working; people sign in to Localman and Chat again once.",
+	"guide.self.installGuide": "the install guide",
 	"guide.keep.title": "Keeping or removing the domain",
 	"guide.keep.body":
 		"The domain stays yours while the TXT record stays and the records point at the server. To remove it, delete the TXT record or ask the operator: its certificates, token and all its data are deleted, and the domain can be claimed again.",
