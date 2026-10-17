@@ -14,8 +14,8 @@ COPY --from=localman-src infra/tunelo/nginx-tenants.conf /src/localman/infra/tun
 COPY --from=chat-src infra/chat/nginx /src/chat/infra/chat/nginx
 COPY --from=chat-src infra/chat/render-tenants-nginx.sh /src/chat/infra/chat/render-tenants-nginx.sh
 COPY --from=localman-app /app/csp-script-hashes /src/csp-script-hashes
-COPY assemble.sh /assemble.sh
-RUN bash /assemble.sh /src/auth /src/localman /src/chat /src/csp-script-hashes "$DOMAIN" /out
+COPY assemble.sh localman-internal.inc /assemble/
+RUN bash /assemble/assemble.sh /src/auth /src/localman /src/chat /src/csp-script-hashes "$DOMAIN" /out
 
 FROM nginx:1.27-alpine AS runtime
 # The images' default site would answer any Host on port 80.

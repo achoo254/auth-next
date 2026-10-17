@@ -1,9 +1,11 @@
 # syntax=docker/dockerfile:1
 # Chat (Go API with realtime and bots, and the web app nginx serves) for a
 # self-hosted install (ADR 0007). Context: a checkout of chat-next. The web
-# app and the server embed brand.config.json, whose primary tenant becomes
-# this install's domain before `pnpm brand:gen`; app ids and the URL scheme
-# stay, so one mobile and desktop app serves every tenant.
+# app reads brand.config.json at build time, whose primary tenant becomes
+# this install's domain; app ids and the URL scheme stay, so one mobile and
+# desktop app serves every tenant. `pnpm brand:gen` is not run: what it
+# writes (icons, manifests, the server's names) does not depend on the
+# domain and is committed, and it needs a browser to draw the icons.
 
 FROM node:22-alpine AS web
 ARG DOMAIN
@@ -16,7 +18,6 @@ RUN node -e ' \
 	brand.primaryTenant = { domain: process.env.DOMAIN, issuer: `https://auth.${process.env.DOMAIN}` }; \
 	fs.writeFileSync("brand.config.json", `${JSON.stringify(brand, null, 2)}\n`);' \
 	&& pnpm install --frozen-lockfile \
-	&& pnpm brand:gen \
 	&& pnpm --filter @app/web build
 
 FROM golang:1.26-alpine AS server

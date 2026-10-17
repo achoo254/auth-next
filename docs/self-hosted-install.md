@@ -16,6 +16,7 @@ hoandat không backup, không cập nhật, không vá bảo mật và không gi
 - Domain đã nhận ở `/claim` chế độ tự host (tenant ở trạng thái "chờ bản cài"), và gói enrollment tải từ nút **Tải gói cài đặt** (hạn 24 giờ; hết hạn thì tải gói mới).
 - Zone DNS của domain ở Cloudflare và một API token có quyền sửa DNS zone đó: chứng chỉ wildcard của `*.localman.` và `*.tunnel.` cần DNS-01.
 - Bản ghi A (DNS only) trỏ về IP của máy: `auth.`, `chat.`, `localman.`, `*.localman.`, `tunnel.`, `*.tunnel.`. Giữ bản ghi TXT `_auth-claim.<domain>`: gateway kiểm nó định kỳ để không ai nhận lại domain.
+- Một widget Cloudflare Turnstile cho `localman.<domain>` (site key và secret key): Localman không khởi động ở production nếu thiếu, kể cả với key thử nghiệm của Cloudflare.
 - OAuth app Google và/hoặc GitHub của chính chủ domain, callback `https://auth.<domain>/oauth/google/callback`, `https://auth.<domain>/oauth/github/callback`.
 - Bản checkout sạch của localman-next và chat-next (một bản phát hành, không có sửa đổi cục bộ).
 
@@ -50,4 +51,4 @@ curl -s https://auth.<domain>/.well-known/openid-configuration | head -c 200
 | `mongo`, `postgres` | `mongo:7` (replica set một node), `postgres:16-alpine` | Không mở cổng ra ngoài. |
 | `certbot` | `certbot/dns-cloudflare`, `certbot/run.sh` | Một chứng chỉ cho mọi host, kể cả wildcard; nginx đọc theo SNI và tự reload 12 giờ một lần. |
 
-Chưa có: media của Chat (`MEDIA_PUBLIC_URL` không đặt, tải tệp tắt), Telegram, Web Push, Turnstile. Cập nhật phiên bản là phase 04 (kênh phát hành có chữ ký).
+Chưa có: media của Chat (`MEDIA_PUBLIC_URL` không đặt, tải tệp tắt), Telegram, Web Push. Cập nhật phiên bản là phase 04 (kênh phát hành có chữ ký).

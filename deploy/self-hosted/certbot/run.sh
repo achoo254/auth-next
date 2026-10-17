@@ -8,6 +8,17 @@
 set -eu
 : "${DOMAIN:?DOMAIN is required}" "${ACME_EMAIL:?ACME_EMAIL is required}"
 CREDENTIALS=/run/secrets/cloudflare.ini
+# nginx's workers read the certificate at handshake (a path with a
+# variable), as user nginx of the nginx image: its group gets read access.
+NGINX_GID=101
+
+readable_by_nginx() {
+	for dir in /etc/letsencrypt/live /etc/letsencrypt/archive; do
+		[ -d "$dir" ] || continue
+		chgrp -R "$NGINX_GID" "$dir"
+		chmod -R g+rX,o-rwx "$dir"
+	done
+}
 
 if [ ! -e "/etc/letsencrypt/live/$DOMAIN/fullchain.pem" ]; then
 	certbot certonly --non-interactive --agree-tos --email "$ACME_EMAIL" \
@@ -19,8 +30,10 @@ if [ ! -e "/etc/letsencrypt/live/$DOMAIN/fullchain.pem" ]; then
 		-d "tunnel.$DOMAIN" -d "*.tunnel.$DOMAIN"
 fi
 ln -sfn "$DOMAIN" "/etc/letsencrypt/live/wildcard.$DOMAIN"
+readable_by_nginx
 
 while :; do
 	sleep 12h
 	certbot renew --quiet --dns-cloudflare-credentials "$CREDENTIALS" || true
+	readable_by_nginx
 done
