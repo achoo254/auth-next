@@ -17,7 +17,10 @@ KEY=data/secrets/migration-key.json
 die() { echo "import-tenant: $*" >&2; exit 1; }
 moved() { sed -n "s/^$1=//p" "$DIR/move.env"; }
 [ -f "$KEY" ] || die "no $KEY: run init.sh"
-for file in move.env idp-secrets.jwe chat.sql; do [ -f "$DIR/$file" ] || die "no $DIR/$file"; done
+for file in move.env idp-secrets.jwe; do [ -f "$DIR/$file" ] || die "no $DIR/$file"; done
+# No chat.sql: the tenant had no chat on hoandat; this install's starts empty.
+CHAT_SQL=""
+if [ -f "$DIR/chat.sql" ]; then CHAT_SQL="$DIR/chat.sql"; fi
 DOMAIN="$(moved domain)"
 TENANT_ID="$(moved tenant)"
 [[ "$TENANT_ID" =~ ^ten_[A-Za-z0-9_-]+$ ]] || die "no tenant in $DIR/move.env"
@@ -48,13 +51,15 @@ restore_mongo() {
 		sh "$source" "$to"
 }
 
-schema="$("${C[@]}" exec -T postgres psql -U chat -d chat -XAt -c "SELECT max(version_id) FROM goose_db_version")"
-[ "$(head -n 1 "$DIR/chat.sql")" = "-- chat schema $schema" ] || die "chat.sql is of another chat version than this install ($schema)"
-# Chat makes its own assistant bot at every start: a fresh install has that
-# one user only. The moved tenant brings its own assistant, which replaces it.
-OWN_ASSISTANT="SELECT user_id FROM bots WHERE is_system"
-users="$("${C[@]}" exec -T postgres psql -U chat -d chat -XAt -c "SELECT count(*) FROM users WHERE id NOT IN ($OWN_ASSISTANT)")"
-[ "$users" = 0 ] || die "this install's chat already has $users users; import into a fresh install"
+if [ -n "$CHAT_SQL" ]; then
+	schema="$("${C[@]}" exec -T postgres psql -U chat -d chat -XAt -c "SELECT max(version_id) FROM goose_db_version")"
+	[ "$(head -n 1 "$CHAT_SQL")" = "-- chat schema $schema" ] || die "chat.sql is of another chat version than this install ($schema)"
+	# Chat makes its own assistant bot at every start: a fresh install has that
+	# one user only. The moved tenant brings its own assistant, which replaces it.
+	OWN_ASSISTANT="SELECT user_id FROM bots WHERE is_system"
+	users="$("${C[@]}" exec -T postgres psql -U chat -d chat -XAt -c "SELECT count(*) FROM users WHERE id NOT IN ($OWN_ASSISTANT)")"
+	[ "$users" = 0 ] || die "this install's chat already has $users users; import into a fresh install"
+fi
 
 stamp="$(date +%Y%m%d-%H%M%S)"
 mkdir -p "data/backups/$stamp"
@@ -94,10 +99,14 @@ restore_mongo "$DIR/tunelo" tunelo
 		print(name + ': ' + result.modifiedCount);
 	}"
 
-echo "== chat"
-"${C[@]}" exec -T postgres psql -U chat -d chat -X -q -v ON_ERROR_STOP=1 -c "DELETE FROM users WHERE id IN ($OWN_ASSISTANT)"
-"${C[@]}" exec -T postgres psql -U chat -d chat -X -q <"$DIR/chat.sql"
-"${C[@]}" exec -T postgres psql -U chat -d chat -XAt -c "SELECT 'users: ' || count(*) FROM users UNION ALL SELECT 'chats: ' || count(*) FROM chats"
+if [ -n "$CHAT_SQL" ]; then
+	echo "== chat"
+	"${C[@]}" exec -T postgres psql -U chat -d chat -X -q -v ON_ERROR_STOP=1 -c "DELETE FROM users WHERE id IN ($OWN_ASSISTANT)"
+	"${C[@]}" exec -T postgres psql -U chat -d chat -X -q <"$CHAT_SQL"
+	"${C[@]}" exec -T postgres psql -U chat -d chat -XAt -c "SELECT 'users: ' || count(*) FROM users UNION ALL SELECT 'chats: ' || count(*) FROM chats"
+else
+	echo "== chat: none moved"
+fi
 if [ -n "$SESSION_KEY_PREVIOUS" ]; then
 	set_line data/env/chat.env SESSION_KEY_PREVIOUS "$SESSION_KEY_PREVIOUS"
 	"${C[@]}" run --rm --no-deps chat -role reseal
