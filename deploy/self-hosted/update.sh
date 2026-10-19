@@ -3,6 +3,7 @@
 # runs it; nothing comes from hoandat unasked.
 #   ./update.sh            the newest release
 #   ./update.sh 1.2.0      that release
+#   ./update.sh --fetch [1.2.0]   only verify and pull it, for init.sh --release
 # Pulls the public release images from GHCR, verifies every image's cosign
 # signature (made by hoandat-auth's release workflow) on the exact digest
 # it will run, takes
@@ -56,6 +57,8 @@ bundle_tags() {
 	rm -f "$headers"
 }
 
+FETCH_ONLY=""
+if [ "${1:-}" = --fetch ]; then FETCH_ONLY=1; shift; fi
 VERSION="${1:-}"
 if [ -z "$VERSION" ]; then
 	VERSION="$(bundle_tags | grep -oE '"[0-9]+\.[0-9]+\.[0-9]+"' | tr -d '"' | sort -V | tail -n 1)"
@@ -89,6 +92,16 @@ for image in "${IMAGES[@]}" bundle; do
 	echo "$name=$digest" >>"$NEXT"
 done
 
+# A new install (init.sh --release): the images and release.env only; the
+# first ./update.sh then starts it.
+if [ -n "$FETCH_ONLY" ]; then
+	cp "$NEXT" release.env
+	C=(docker compose -f compose.yaml -f compose.release.yaml --env-file .env --env-file release.env)
+	"${C[@]}" pull -q nginx auth localman tunelo chat-migrate chat
+	echo "update: fetched $VERSION"
+	exit 0
+fi
+
 # The release's bundle files over this folder's; data/ and .env stay.
 bundle_digest="$(sed -n 's/^BUNDLE_DIGEST=//p' "$NEXT")"
 docker pull -q "$REGISTRY/selfhosted-bundle@$bundle_digest" >/dev/null
@@ -104,13 +117,20 @@ C=(docker compose -f compose.yaml -f compose.release.yaml "${LOCAL[@]}" --env-fi
 # The base file alone reaches the running databases in either mode (local
 # builds after init.sh, or a release).
 BASE=(docker compose -f compose.yaml "${LOCAL[@]}" --env-file .env)
-# Backups of both databases before anything changes, and how it ran.
+# Backups of both databases before anything changes, and how it ran. A new
+# install's databases have never run: nothing to back up.
 stamp="$(date +%Y%m%d-%H%M%S)"
 mkdir -p "data/backups/$stamp"
-"${BASE[@]}" exec -T mongo mongodump --archive --gzip >"data/backups/$stamp/mongo.archive.gz"
-"${BASE[@]}" exec -T postgres pg_dump -U chat -Fc chat >"data/backups/$stamp/chat.pgdump"
-if [ -f release.env ]; then cp release.env "data/backups/$stamp/release.env"; fi
-echo "update: backed up to data/backups/$stamp"
+FIRST_START=""
+if [ -z "$("${BASE[@]}" ps -q mongo)" ]; then FIRST_START=1; fi
+if [ -n "$FIRST_START" ]; then
+	echo "update: first start, nothing to back up"
+else
+	"${BASE[@]}" exec -T mongo mongodump --archive --gzip >"data/backups/$stamp/mongo.archive.gz"
+	"${BASE[@]}" exec -T postgres pg_dump -U chat -Fc chat >"data/backups/$stamp/chat.pgdump"
+	if [ -f release.env ]; then cp release.env "data/backups/$stamp/release.env"; fi
+	echo "update: backed up to data/backups/$stamp"
+fi
 
 healthy() {
 	sleep 30
@@ -129,7 +149,9 @@ if "${C[@]}" --env-file release.env up -d --remove-orphans nginx auth localman t
 	exit 0
 fi
 echo "update: $VERSION did not come up healthy" >&2
-if [ -f "data/backups/$stamp/release.env" ]; then
+if [ -n "$FIRST_START" ]; then
+	echo "update: nothing to go back to; see docker compose logs" >&2
+elif [ -f "data/backups/$stamp/release.env" ]; then
 	cp "data/backups/$stamp/release.env" release.env
 	"${C[@]}" --env-file release.env up -d --remove-orphans nginx auth localman tunelo chat
 	echo "update: back on $(sed -n 's/^RELEASE_VERSION=//p' release.env); data backups in data/backups/$stamp" >&2

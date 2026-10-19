@@ -12,22 +12,26 @@ hoandat không backup, không cập nhật, không vá bảo mật và không gi
 
 ## Cần chuẩn bị
 
-- Một máy Linux có Docker Engine và Docker Compose v2.17 trở lên (dùng `additional_contexts` dạng `service:`), IPv4 công khai, cổng 80, 443 và dải cổng TCP của Tunelo mở. Build cả bốn app cần khoảng 4 GB RAM trống.
+- Một máy Linux có Docker Engine và Docker Compose v2.17 trở lên, IPv4 công khai, cổng 80, 443 và dải cổng TCP của Tunelo mở. Cài từ bản phát hành (`init.sh --release`) chỉ cần khoảng 1 GB RAM (stack chạy khoảng 0,5 GB, đo 19/10/2026; thêm swap nếu máy 1 GB); build tại chỗ cả bốn app cần khoảng 4 GB.
 - Domain đã nhận ở `/claim` chế độ tự host (tenant ở trạng thái "chờ bản cài"), và gói enrollment tải từ nút **Tải gói cài đặt** (hạn 24 giờ; hết hạn thì tải gói mới).
 - Zone DNS của domain ở Cloudflare và một API token có quyền sửa DNS zone đó: chứng chỉ wildcard của `*.localman.` và `*.tunnel.` cần DNS-01.
 - Bản ghi A (DNS only) trỏ về IP của máy: `auth.`, `chat.`, `localman.`, `*.localman.`, `tunnel.`, `*.tunnel.`. Giữ bản ghi TXT `_auth-claim.<domain>`: gateway kiểm nó định kỳ để không ai nhận lại domain.
 - Một widget Cloudflare Turnstile cho `localman.<domain>` (site key và secret key): Localman không khởi động ở production nếu thiếu, kể cả với key thử nghiệm của Cloudflare.
 - OAuth app Google và/hoặc GitHub của chính chủ domain, callback `https://auth.<domain>/oauth/google/callback`, `https://auth.<domain>/oauth/github/callback`.
-- Bản checkout sạch của localman-next và chat-next (một bản phát hành, không có sửa đổi cục bộ).
+- Chỉ khi build tại chỗ: bản checkout sạch của localman-next và chat-next (`LOCALMAN_SRC`, `CHAT_SRC` trong `.env`).
 
 ## Cài
+
+Từ bản phát hành đã ký (khuyên dùng; không cần mã nguồn, không build):
 
 ```bash
 cd deploy/self-hosted
 cp .env.example .env && chmod 600 .env   # điền DOMAIN, ENROLLMENT_BUNDLE, token, OAuth...
-./init.sh                                # sinh secret, env của từng app, build image, tạo khoá
-docker compose up -d
+./init.sh --release                      # sinh secret và env, kéo và kiểm chữ ký image mới nhất, tạo khoá
+./update.sh                              # lần đầu: khởi động bản đó (chưa có gì để backup)
 ```
+
+Hoặc build tại chỗ từ mã nguồn: `./init.sh` rồi `docker compose up -d`.
 
 `init.sh` chạy lại được bất cứ lúc nào sau khi sửa `.env`: secret đã sinh (`data/secrets/generated.env`) không bao giờ đổi. Nó không in secret nào.
 

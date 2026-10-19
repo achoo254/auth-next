@@ -23,8 +23,8 @@ services:
       dockerfile: ../images/nginx.Dockerfile
       additional_contexts:
         auth-src: ../..
-        localman-src: ${LOCALMAN_SRC:?set LOCALMAN_SRC in .env}
-        chat-src: ${CHAT_SRC:?set CHAT_SRC in .env}
+        localman-src: ${LOCALMAN_SRC:-.}
+        chat-src: ${CHAT_SRC:-.}
         localman-app: service:localman
         chat-app: service:chat
     restart: unless-stopped
@@ -112,7 +112,7 @@ services:
   localman:
     <<: *app
     build:
-      context: ${LOCALMAN_SRC}
+      context: ${LOCALMAN_SRC:-.}
       dockerfile: ${SELFHOSTED_DIR:?run init.sh}/images/localman.Dockerfile
     env_file: ./data/env/localman.env
     depends_on:
@@ -125,7 +125,7 @@ services:
   tunelo:
     <<: *app
     build:
-      context: ${LOCALMAN_SRC}
+      context: ${LOCALMAN_SRC:-.}
       dockerfile: ${SELFHOSTED_DIR:?run init.sh}/images/tunelo.Dockerfile
     env_file: ./data/env/tunelo.env
     depends_on:
@@ -138,7 +138,7 @@ services:
   chat-migrate:
     image: selfhosted-chat
     build: &chat-build
-      context: ${CHAT_SRC}
+      context: ${CHAT_SRC:-.}
       dockerfile: ${SELFHOSTED_DIR}/images/chat.Dockerfile
     command: ["-role", "migrate"]
     env_file: ./data/env/chat.env

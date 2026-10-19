@@ -5,10 +5,13 @@
 # enrollment bundle, builds the images, and creates the IdP's signing,
 # enrollment and migration keys with the IdP's own image. Prints no
 # secret. Re-run it after changing .env; generated secrets never change.
-#   ./init.sh
+#   ./init.sh                      builds the images from LOCALMAN_SRC, CHAT_SRC (about 4 GB RAM)
+#   ./init.sh --release [x.y.z]    pulls the signed release images instead (no build, no sources)
 set -euo pipefail
 cd "$(dirname "$0")"
 umask 077
+RELEASE=""
+if [ "${1:-}" = --release ]; then RELEASE="${2:-latest}"; fi
 
 [ -f .env ] || { echo "init: copy .env.example to .env and fill it in" >&2; exit 1; }
 
@@ -29,8 +32,10 @@ DISPLAY_NAME="$(setting DISPLAY_NAME)"
 DISPLAY_NAME="${DISPLAY_NAME:-$DOMAIN}"
 GATEWAY="$(require GATEWAY)"
 BUNDLE="$(require ENROLLMENT_BUNDLE)"
-require LOCALMAN_SRC >/dev/null
-require CHAT_SRC >/dev/null
+if [ -z "$RELEASE" ]; then
+	require LOCALMAN_SRC >/dev/null
+	require CHAT_SRC >/dev/null
+fi
 require ACME_EMAIL >/dev/null
 CLOUDFLARE_DNS_TOKEN="$(require CLOUDFLARE_DNS_TOKEN)"
 GOOGLE_CLIENT_ID="$(setting GOOGLE_CLIENT_ID)"
@@ -173,10 +178,16 @@ fi
 echo "init: wrote data/env/{auth,localman,tunelo,chat}.env"
 
 # Images, then the IdP's keys made by the IdP's own image as this user.
-docker compose build
+AUTH_IMAGE=selfhosted-auth
+if [ -n "$RELEASE" ]; then
+	if [ "$RELEASE" = latest ]; then bash update.sh --fetch; else bash update.sh --fetch "$RELEASE"; fi
+	AUTH_IMAGE="$(sed -n 's/^RELEASE_REGISTRY=//p' release.env)/selfhosted-auth@$(sed -n 's/^AUTH_DIGEST=//p' release.env)"
+else
+	docker compose build
+fi
 run_auth() {
 	docker run --rm --user "$(id -u):$(id -g)" --entrypoint node \
-		-v "$(pwd)/data/secrets/auth:/out" selfhosted-auth "$@"
+		-v "$(pwd)/data/secrets/auth:/out" "$AUTH_IMAGE" "$@"
 }
 if [ ! -f data/secrets/auth/signing-keys.json ]; then
 	run_auth dist/generate-signing-key.mjs /out/signing-keys.json
@@ -193,7 +204,7 @@ fi
 # are sealed to the public half, which goes to hoandat's operators.
 if [ ! -f data/secrets/migration-key.json ]; then
 	docker run --rm --user "$(id -u):$(id -g)" --entrypoint node \
-		-v "$(pwd)/data/secrets:/out" selfhosted-auth --input-type=module -e '
+		-v "$(pwd)/data/secrets:/out" "$AUTH_IMAGE" --input-type=module -e '
 		import { writeFileSync } from "node:fs";
 		import { exportJWK, generateKeyPair } from "jose";
 		const { publicKey, privateKey } = await generateKeyPair("ECDH-ES+A256KW", { crv: "P-256", extractable: true });
@@ -201,4 +212,8 @@ if [ ! -f data/secrets/migration-key.json ]; then
 		writeFileSync("/out/migration-key.pub.json", JSON.stringify(await exportJWK(publicKey)), { mode: 0o644, flag: "wx" });'
 	echo "init: created the install's migration key (data/secrets/migration-key.pub.json)"
 fi
-echo "init: done; start with: docker compose up -d"
+if [ -n "$RELEASE" ]; then
+	echo "init: done; start with: ./update.sh $(sed -n 's/^RELEASE_VERSION=//p' release.env)"
+else
+	echo "init: done; start with: docker compose up -d"
+fi
