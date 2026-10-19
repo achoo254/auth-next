@@ -1,7 +1,7 @@
 ---
 phase: 5
 title: "Chuyển tenant đang chạy trên hoandat"
-status: in-progress
+status: done
 priority: P2
 effort: "XL"
 dependencies: [2, 3]

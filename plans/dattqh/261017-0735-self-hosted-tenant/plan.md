@@ -1,7 +1,7 @@
 ---
 title: "Tenant tự host: hoandat chỉ là gateway khi setup"
 description: "Chủ domain chọn tự host lúc nhận domain; hoandat xác minh TXT, cấp gói enrollment, rồi rời khỏi mọi đường đi của request và dữ liệu."
-status: in-progress
+status: completed
 priority: P2
 effort: "XL (6 phase: 2×XL, 2×L, 2×M)"
 branch: "main"
@@ -47,10 +47,10 @@ Thêm chế độ "tự host" cho tenant (ADR [0007](../../../docs/decisions/000
 |---|---|---|---|---|---|
 | 01 | [Sổ tenant: chế độ tự host, nhận chỉ bằng TXT](./phase-01-self-hosted-claim.md) | hoandat-auth | L | — | done |
 | 02 | [Gói enrollment và đổi gói](./phase-02-enrollment-bundle.md) | hoandat-auth | M | 01 | done |
-| 03 | [Bundle compose bốn app](./phase-03-compose-bundle.md) | hoandat-auth, localman-next, chat-next | XL | 02 | pending |
+| 03 | [Bundle compose bốn app](./phase-03-compose-bundle.md) | hoandat-auth, localman-next, chat-next | XL | 02 | done (nghiệm thu 19/10/2026, xem phase 06) |
 | 04 | [Kênh phát hành có chữ ký](./phase-04-signed-release-channel.md) | cả ba | L | 03 | done |
-| 05 | [Chuyển tenant đang chạy trên hoandat](./phase-05-migrate-existing-tenant.md) | cả ba | XL | 02, 03 | code xong, chờ thử với tenant thật |
-| 06 | [Nghiệm thu đầu-cuối và tài liệu](./phase-06-acceptance-and-docs.md) | cả ba | M | 04, 05 | pending |
+| 05 | [Chuyển tenant đang chạy trên hoandat](./phase-05-migrate-existing-tenant.md) | cả ba | XL | 02, 03 | done (nghiệm thu 19/10/2026, xem phase 06) |
+| 06 | [Nghiệm thu đầu-cuối và tài liệu](./phase-06-acceptance-and-docs.md) | cả ba | M | 04, 05 | done (nghiệm thu 19/10/2026, xem phase 06) |
 
 ```mermaid
 flowchart LR
@@ -70,3 +70,7 @@ Phase 01 và 02 deploy được lên production độc lập: trang claim chỉ 
 - Khoá ký rời .65 ở phase 05: truyền niêm phong, một lần, huỷ bản trên .65; sai bước thì tenant mất khoá hoặc khoá tồn tại ở hai nơi.
 - Wildcard cần DNS-01 trên máy của tenant: bundle phụ thuộc token DNS do tenant giữ; zone không ở Cloudflare thì chưa hỗ trợ.
 - Bundle và kênh phát hành là việc duy trì lâu dài; phiên bản của bốn app phải khớp nhau trong mỗi bản phát hành.
+
+## Kết thúc (19/10/2026)
+
+Nghiệm thu: diễn tập chuyển `inetdev.io.vn` (lab, rồi huỷ) và chuyển trọn `hoandat.io.vn` sang VM công khai 1 GB cài bằng `init.sh --release` (bản 0.3.1; bản sửa vào 0.3.2). Việc theo lịch: purge `hoandat.io.vn` trên .65 từ 02/11/2026 (`migrate/purge-tenant.sh`). Chưa thử trên domain thật: nhận mới ở chế độ tự host (đường TXT) — có test tích hợp và e2e.

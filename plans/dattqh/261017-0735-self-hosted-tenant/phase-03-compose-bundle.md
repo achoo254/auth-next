@@ -1,7 +1,7 @@
 ---
 phase: 3
 title: "Bundle compose bốn app"
-status: in-progress
+status: done
 priority: P2
 effort: "XL"
 dependencies: [2]

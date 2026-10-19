@@ -1,7 +1,7 @@
 ---
 phase: 6
 title: "Nghiệm thu đầu-cuối và tài liệu"
-status: in-progress
+status: done
 priority: P2
 effort: "M"
 dependencies: [4, 5]
