@@ -1,7 +1,7 @@
 ---
 title: "Đưa app chat vào IdP: client, host theo tenant, API nội bộ"
 description: "IdP nhận app chat (chat.hoandat.com, chat.<domain>) là app first-party thứ ba sau Localman và Tunelo: client web và native, host chat theo tenant, vai chat ở API nội bộ, hạn mức refresh cho backend chat."
-status: in-progress
+status: completed
 priority: P1
 effort: "L (4 phase: 2×L, 2×M)"
 branch: "main"
@@ -77,7 +77,7 @@ Nguồn yêu cầu là plan của app chat: `chat-next/plans/dattqh/261013-0448-
 | 01 | [Client chat và mô hình tenant](./phase-01-chat-clients-and-tenant-model.md) | L | — | done (commit `0c0020d`, nhánh `feat/chat-app-clients`) |
 | 02 | [Host chat theo tenant, API nội bộ, chứng chỉ](./phase-02-chat-hosts-internal-api-certs.md) | L | 01 | done: phần còn lại bị ADR 0006 thay (xem dưới) |
 | 03 | [Hạn mức refresh, `/account`, `/apps`, tài liệu](./phase-03-refresh-limit-account-apps-docs.md) | M | 01 | done trừ bucket loopback (hoãn, xem dưới) |
-| 04 | [Triển khai và nghiệm thu với app chat](./phase-04-deploy-and-acceptance.md) | M | 02, 03; app chat có Phase 2 chạy trên staging | pending |
+| 04 | [Triển khai và nghiệm thu với app chat](./phase-04-deploy-and-acceptance.md) | M | 02, 03; app chat có Phase 2 chạy trên staging | done: deploy `84c169d` 2026-10-19 ([biên bản](../reports/deploy-261019-1430-chat-account-devices.md)) |
 
 ## Đối chiếu với code (2026-10-19)
 

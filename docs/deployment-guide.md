@@ -141,7 +141,7 @@ for c in chat-web chat-mobile chat-desktop; do
 done
 ```
 
-**Trạng thái production (15/10/2026):** đã đặt `CHAT_WEB_URL`, `CHAT_WEB_CLIENT_SECRET` (chưa đặt `CHAT_MOBILE_REDIRECT_URI`, dùng mặc định); `/opt/chat/.env` có `OIDC_ISSUER`, `OIDC_CLIENT_ID`, `OIDC_CLIENT_SECRET`; cả ba client có trên IdP (build 14/10/2026 15:57). API nội bộ chưa có vai `chat` (`InternalRole` trong `src/tenants/internal-auth.ts` chỉ có `localman`, `tunelo`, `provisioner`).
+**Trạng thái production (15/10/2026):** đã đặt `CHAT_WEB_URL`, `CHAT_WEB_CLIENT_SECRET` (chưa đặt `CHAT_MOBILE_REDIRECT_URI`, dùng mặc định); `/opt/chat/.env` có `OIDC_ISSUER`, `OIDC_CLIENT_ID`, `OIDC_CLIENT_SECRET`; cả ba client có trên IdP (build 14/10/2026 15:57). API nội bộ chưa có vai `chat` (`InternalRole` trong `src/tenants/internal-auth.ts` chỉ có `localman`, `tunelo`, `provisioner`). 19/10/2026: deploy `84c169d` (`/account` liệt kê từng máy `chat-mobile`, `chat-desktop`), backup trước đó `auth-20261019-143353`.
 
 ## Client của app Scribe
 

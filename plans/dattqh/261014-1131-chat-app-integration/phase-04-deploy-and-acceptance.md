@@ -1,7 +1,7 @@
 ---
 phase: 4
 title: "Triển khai và nghiệm thu với app chat"
-status: pending
+status: completed
 priority: P1
 effort: "M"
 dependencies: [2, 3]
@@ -38,3 +38,7 @@ dependencies: [2, 3]
 - Tắt chat ở `/admin` của tenant sổ.
 - Triển khai lại commit trước. Client chat biến khỏi discovery; Localman và Tunelo không đổi.
 - Trường `apps.chat.enabled` còn lại trong document vô hại vì code cũ không đọc nó.
+
+## Kết quả (2026-10-19)
+
+Ba client chat chạy trên prod từ 15/10, `chat.inetdev.io.vn` nghiệm thu 16/10 (plan chat). Phần còn lại, `/account` liệt kê từng máy (`84c169d`), deploy 2026-10-19: [biên bản](../reports/deploy-261019-1430-chat-account-devices.md). Các bước về bật chat theo tenant và vai `chat` trên đây không còn áp dụng (xem `plan.md`, mục "Đối chiếu với code").
