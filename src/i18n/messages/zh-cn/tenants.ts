@@ -86,6 +86,8 @@ export const zhTenants: Translation<typeof enTenants> = {
 	"admin.oauth.googlePrivacy": "Google 还要求提供隐私政策 URL：{url}",
 	"admin.oauth.clientId": "Client ID",
 	"admin.oauth.clientSecret": "Client secret",
+	"admin.oauth.on": "已开启：用户可以使用 {provider} 登录。",
+	"admin.oauth.off": "未开启。可选：添加后用户也能使用 {provider} 登录。",
 	"admin.oauth.configured": "已配置，client ID 为 {clientId}。",
 	"admin.oauth.remove": "移除",
 	"admin.dns.title": "Cloudflare DNS 令牌",

@@ -98,6 +98,9 @@ export const viTenants: Translation<typeof enTenants> = {
 		"Google còn yêu cầu URL chính sách quyền riêng tư: {url}",
 	"admin.oauth.clientId": "Client ID",
 	"admin.oauth.clientSecret": "Client secret",
+	"admin.oauth.on": "Đang bật: người dùng đăng nhập được bằng {provider}.",
+	"admin.oauth.off":
+		"Đang tắt. Tuỳ chọn: thêm để người dùng đăng nhập được bằng cả {provider}.",
 	"admin.oauth.configured": "Đã cấu hình, client ID {clientId}.",
 	"admin.oauth.remove": "Gỡ",
 	"admin.dns.title": "Token DNS Cloudflare",

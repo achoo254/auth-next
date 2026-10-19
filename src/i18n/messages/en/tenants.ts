@@ -96,6 +96,9 @@ export const enTenants = {
 		"Google also asks for a privacy policy URL: {url}",
 	"admin.oauth.clientId": "Client ID",
 	"admin.oauth.clientSecret": "Client secret",
+	"admin.oauth.on": "On: people sign in with {provider}.",
+	"admin.oauth.off":
+		"Off. Optional: add it so people can also sign in with {provider}.",
 	"admin.oauth.configured": "Configured, client ID {clientId}.",
 	"admin.oauth.remove": "Remove",
 	"admin.dns.title": "Cloudflare DNS token",

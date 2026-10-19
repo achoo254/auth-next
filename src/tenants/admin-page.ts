@@ -82,6 +82,18 @@ ${inputField({ name: "displayName", label: i18n.t("admin.name.title"), value: vi
 ${submitButton(i18n.t("admin.save"), { dataId: "admin-save-name" })}</form>`;
 }
 
+/** Whether people sign in with `provider` here, or why not yet. */
+function providerStatus(view: AdminView, provider: UpstreamProvider): string {
+	const { i18n } = view.page;
+	const label = UPSTREAM_LABELS[provider];
+	if (view.oauth[provider])
+		return i18n.t("admin.oauth.on", { provider: label });
+	if (view.tenant.status === "active") {
+		return i18n.t("admin.oauth.off", { provider: label });
+	}
+	return i18n.t("admin.status.claimed");
+}
+
 function oauthForm(view: AdminView, provider: UpstreamProvider): SafeHtml {
 	const { i18n } = view.page;
 	const label = UPSTREAM_LABELS[provider];
@@ -135,7 +147,7 @@ export function renderAdminPage(view: AdminView): string {
 				title: i18n.t("admin.oauth.title", {
 					provider: UPSTREAM_LABELS[provider],
 				}),
-				description: i18n.t("admin.status.claimed"),
+				description: providerStatus(view, provider),
 				body: oauthForm(view, provider),
 			}),
 		),
