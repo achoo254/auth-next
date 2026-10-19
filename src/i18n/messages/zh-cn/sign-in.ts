@@ -10,12 +10,12 @@ export const zhSignIn: Translation<typeof enSignIn> = {
 	"login.with": "使用 {provider} 登录",
 	"login.noProvider":
 		"Google 和 GitHub 登录暂时关闭，因此目前无法登录或注册。请稍后重试。",
-	"login.firstTime": "首次使用 Google 或 GitHub 登录将创建新的 {brand} 账号。",
+	"login.firstTime": "首次使用以上任一方式登录将创建新的 {brand} 账号。",
 	"login.cancel": "取消登录",
 	"signup.title": "创建 {brand} 账号",
 	"signup.pageTitle": "注册",
 	"signup.subtitle":
-		"一个账号通用于 Localman 和 Tunelo。使用 Google 或 GitHub 注册：{brand} 不使用密码，也不发送邮件。",
+		"一个账号通用于 Localman 和 Tunelo。使用以下任一账号注册：{brand} 不使用密码，也不发送邮件。",
 	"signup.with": "使用 {provider} 注册",
 	"signup.haveAccount": "已有账号？{link}",
 	"username.title": "选择用户名",

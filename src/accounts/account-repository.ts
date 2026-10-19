@@ -86,6 +86,28 @@ export class AccountRepository implements AccountStore {
 		);
 	}
 
+	/**
+	 * Drops the stored revocation token of a provider link, once the
+	 * provider said it no longer works (Apple: consent revoked, account
+	 * deleted). The link itself stays: only the person unlinks. Returns
+	 * whether an account had one.
+	 */
+	async forgetRevocationToken(
+		provider: UpstreamProvider,
+		providerId: string,
+	): Promise<boolean> {
+		const field = `providerDetails.${provider}.revocationToken`;
+		const result = await this.accounts.updateOne(
+			{
+				[`providers.${provider}`]: providerId,
+				[field]: { $exists: true },
+				...this.scope,
+			},
+			{ $unset: { [field]: "" } },
+		);
+		return result.modifiedCount > 0;
+	}
+
 	/** Username and email are normalised here, whatever the caller passed. */
 	async create(input: NewAccount): Promise<AccountDocument> {
 		const account: AccountDocument = {

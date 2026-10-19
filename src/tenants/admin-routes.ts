@@ -1,5 +1,8 @@
 import { type Request, type Response, Router } from "express";
-import type { UpstreamProvider } from "../accounts/user-model.js";
+import {
+	TENANT_OAUTH_PROVIDERS,
+	type TenantOAuthProvider,
+} from "../accounts/user-model.js";
 import { DOMAIN_GUIDE_PATH } from "../guide/domain-guide-link.js";
 import {
 	formRateLimit,
@@ -96,8 +99,8 @@ export function createAdminRouter(
 				return;
 			}
 			const result = queryValue(req, "result");
-			const oauth: Partial<Record<UpstreamProvider, string>> = {};
-			for (const provider of ["google", "github"] as const) {
+			const oauth: Partial<Record<TenantOAuthProvider, string>> = {};
+			for (const provider of TENANT_OAUTH_PROVIDERS) {
 				const app = parseOAuthApp(
 					await tenancy.secrets.get(tenantId, provider),
 				);

@@ -16,7 +16,9 @@ import { clientLabel } from "./client-label.js";
 
 /**
  * "Sign in with Google" style buttons, each with its provider's mark, or
- * the unavailable notice when none is configured (the only ways in).
+ * the unavailable notice when none is configured (the only ways in). The
+ * Apple button follows Apple's guidelines: solid, black on light pages and
+ * white on dark ones, the same size as the others and listed first.
  */
 export function upstreamButtons(
 	i18n: Translator,
@@ -29,7 +31,7 @@ export function upstreamButtons(
 	}
 	return html`<div class="oauth">${providers.map(
 		(provider) =>
-			html`<a class="btn btn-secondary btn-block btn-provider" href="/interaction/${uid}/upstream/${provider}" data-id="upstream-${provider}">${providerLogo(provider)}<span>${i18n.t(verb, { provider: UPSTREAM_LABELS[provider] })}</span></a>`,
+			html`<a class="btn ${provider === "apple" ? "btn-apple" : "btn-secondary"} btn-block btn-provider" href="/interaction/${uid}/upstream/${provider}" data-id="upstream-${provider}">${providerLogo(provider)}<span>${i18n.t(verb, { provider: UPSTREAM_LABELS[provider] })}</span></a>`,
 	)}</div>`;
 }
 

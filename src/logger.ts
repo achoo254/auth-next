@@ -26,6 +26,7 @@ const REDACT_PATHS = [
 	"*.client_secret",
 	"*.access_token",
 	"*.refresh_token",
+	"*.revocationToken",
 	"*.id_token",
 	"*.code",
 	"*.device_code",

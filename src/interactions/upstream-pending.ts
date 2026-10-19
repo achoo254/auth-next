@@ -12,7 +12,7 @@ import {
 const PENDING_TTL_SECONDS = 10 * 60;
 
 /**
- * A Google/GitHub profile waiting for the rest of its interaction (the
+ * A provider profile waiting for the rest of its interaction (the
  * username of a new account). Keyed by interaction uid; only the browser that
  * holds that interaction's cookie can reach the pages that read it.
  */
@@ -28,6 +28,7 @@ export async function savePendingUpstream(
 	if (profile.verifiedEmail) data.verifiedEmail = profile.verifiedEmail;
 	if (profile.name) data.name = profile.name;
 	if (profile.picture) data.picture = profile.picture;
+	if (profile.revocationToken) data.revocationToken = profile.revocationToken;
 	await services.tokens.put("upstream-pending", uid, data, PENDING_TTL_SECONDS);
 }
 
@@ -43,6 +44,7 @@ function toProfile(
 		verifiedEmail: data.verifiedEmail,
 		name: data.name,
 		picture: data.picture,
+		revocationToken: data.revocationToken,
 	};
 }
 

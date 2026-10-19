@@ -4,6 +4,7 @@ import {
 	PRIVATE_USE_REDIRECT,
 } from "../oidc/chat-clients.js";
 import { normalizeTenantDomain } from "../tenants/tenant.js";
+import { appleEnvShape, checkAppleGroup } from "./apple-env.js";
 import {
 	checkIntegrationGroups,
 	integrationEnvShape,
@@ -135,11 +136,13 @@ const envSchema = z
 			.enum(["fatal", "error", "warn", "info", "debug", "trace", "silent"])
 			.default("info"),
 		...integrationEnvShape,
+		...appleEnvShape,
 		...tenantsEnvShape,
 		...scribeEnvShape,
 	})
 	.superRefine((env, ctx) => {
 		checkIntegrationGroups(env, ctx);
+		checkAppleGroup(env, ctx);
 		checkTenantsGroup(env, ctx);
 		checkScribeDevGroup(env, ctx);
 		if (env.NODE_ENV !== "production") return;

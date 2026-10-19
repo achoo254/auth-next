@@ -13,6 +13,7 @@ const NOTICES: Readonly<Record<string, Notice>> = {
 	profile: { tone: "success", text: "notice.profile" },
 	"linked-google": { tone: "success", text: "notice.linkedGoogle" },
 	"linked-github": { tone: "success", text: "notice.linkedGithub" },
+	"linked-apple": { tone: "success", text: "notice.linkedApple" },
 	unlinked: { tone: "success", text: "notice.unlinked" },
 	"last-method": { tone: "error", text: "notice.lastMethod" },
 	"telegram-unlinked": { tone: "success", text: "notice.telegramUnlinked" },

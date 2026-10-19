@@ -17,6 +17,8 @@ export type AccountTokenKind = "telegram-link" | "upstream-link-state";
 /** Tokens not tied to an account (yet): OAuth sign-in state, a pending profile. */
 export type FreeTokenKind =
 	| "upstream-state"
+	/** A provider's form_post answer, until the same-site GET that reads it. */
+	| "upstream-form-post"
 	| "upstream-pending"
 	/** Opens a tenant's /admin for its owner; issued by the primary tenant. */
 	| "tenant-admin-handoff";

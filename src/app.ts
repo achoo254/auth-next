@@ -15,7 +15,7 @@ import {
 import { createDispatcher } from "./http/tenant-dispatcher.js";
 import { createLanguageRouter } from "./i18n/language-route.js";
 import { createInteractionRouter } from "./interactions/interaction-router.js";
-import { createUpstreamCallbackRouter } from "./interactions/upstream-start.js";
+import { createUpstreamCallbackRouter } from "./interactions/upstream-callback.js";
 import { createPrivacyRouter } from "./legal/privacy-page.js";
 import { INTERACTION_PATH } from "./oidc/provider.js";
 import type { AppServices } from "./services.js";

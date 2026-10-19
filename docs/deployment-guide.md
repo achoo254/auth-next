@@ -160,6 +160,7 @@ Kiểm từ ngoài (cùng cách như chat): `for c in scribe-web scribe-mobile s
 
 ## Tuỳ chọn bật sau
 
+- Sign in with Apple (ADR 0008): code có sẵn, **chưa bật** (19/10/2026, chờ Apple duyệt tài khoản developer). Bật theo [`sign-in-with-apple.md`](sign-in-with-apple.md): khoá `.p8` ở `/var/www/hoandat-auth/secrets/apple-signin-key.p8` (600), bốn biến `APPLE_*` + `APPLE_PRIMARY_APP_ID` trong `.env`.
 - Google/GitHub (đã bật 2026-10-09): GitHub OAuth App "hoandat · Tài khoản" (owner `achoo254`, app id 3916221); Google Cloud project `hoandat-auth`, Google Auth Platform ở trạng thái "In production" (External), web client `auth.hoandat.com`. Callback lần lượt `https://auth.hoandat.com/oauth/github/callback` và `/oauth/google/callback`. Google bắt buộc link chính sách quyền riêng tư `https://auth.hoandat.com/privacy` trước khi publish.
 - Telegram (đã bật 2026-10-09 với `@auth_hoandat_bot`): `TELEGRAM_BOT_TOKEN`, `TELEGRAM_BOT_USERNAME`, `TELEGRAM_WEBHOOK_SECRET` nằm trong `.env`; webhook `https://auth.hoandat.com/telegram/webhook` đặt bằng `setWebhook` với `secret_token` và `allowed_updates=["message","callback_query"]`. Khi xoay token: cập nhật `.env`, restart, đặt lại webhook.
 - Audit sang Localman: điền `AUDIT_EVENTS_URL`, `AUDIT_CLIENT_ID`, `AUDIT_CLIENT_SECRET` khi Localman có endpoint.

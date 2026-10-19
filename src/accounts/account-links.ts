@@ -6,13 +6,14 @@ import type { TenantFilter } from "../tenants/tenant-data.js";
 import { type ProviderLink, providerDetail } from "./provider-link.js";
 import {
 	type AccountDocument,
+	UPSTREAM_PROVIDERS,
 	type UpstreamProvider,
 	normalizeEmail,
 } from "./user-model.js";
 import { type GuardedWrite, writeWithVersion } from "./versioned-write.js";
 
 /**
- * Changes to who vouches for an account and how to reach it: Google/GitHub
+ * Changes to who vouches for an account and how to reach it: provider
  * links, the Telegram chat, and handing an unverified email to its proven
  * owner. Reached as `AccountRepository.links`.
  */
@@ -74,9 +75,9 @@ export class AccountLinks {
 
 	/**
 	 * Unlinks a provider unless it is the last way to sign in: the write
-	 * requires the other provider to be linked, so racing unlinks cannot
+	 * requires another provider to be linked, so racing unlinks cannot
 	 * leave an account without any login method. The email stays verified
-	 * only if the other linked provider verified the same address. The new
+	 * only if another linked provider verified the same address. The new
 	 * `emailVerifiedBy` is computed from a read, so the write is conditioned
 	 * on the version of that read (or on `expectedVersion`, if given).
 	 */
@@ -91,16 +92,16 @@ export class AccountLinks {
 		if (expectedVersion !== undefined && readVersion !== expectedVersion) {
 			return { applied: false, stale: true };
 		}
-		const other = provider === "google" ? "github" : "google";
-		const otherVouches =
-			current.providers[other] !== undefined &&
-			current.email !== undefined &&
-			current.providerDetails?.[other]?.email === current.email;
+		const others = UPSTREAM_PROVIDERS.filter((name) => name !== provider);
+		const voucher = others.find(
+			(other) =>
+				current.providers[other] !== undefined &&
+				current.email !== undefined &&
+				current.providerDetails?.[other]?.email === current.email,
+		);
 		const emailVerifiedBy =
 			current.emailVerifiedBy === provider
-				? otherVouches
-					? other
-					: null
+				? (voucher ?? null)
 				: current.emailVerifiedBy;
 		const write = writeWithVersion(
 			this.accounts,
@@ -109,7 +110,9 @@ export class AccountLinks {
 			readVersion,
 			{
 				[`providers.${provider}`]: { $type: "string" },
-				[`providers.${other}`]: { $type: "string" },
+				$or: others.map((other) => ({
+					[`providers.${other}`]: { $type: "string" },
+				})),
 			},
 			{
 				$unset: {

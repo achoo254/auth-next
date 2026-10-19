@@ -6,10 +6,10 @@ import {
 } from "./user-model.js";
 import type { GuardedWrite } from "./versioned-write.js";
 
-/** What Google or GitHub told us about the person signing in. */
+/** What Google, GitHub or Apple told us about the person signing in. */
 export interface UpstreamProfile {
 	readonly provider: UpstreamProvider;
-	/** Google `sub` or GitHub numeric id, as a string. */
+	/** Google/Apple `sub` or GitHub numeric id, as a string. */
 	readonly providerId: string;
 	/** Only set when the provider marks it verified. */
 	readonly verifiedEmail?: string;
@@ -17,6 +17,11 @@ export interface UpstreamProfile {
 	readonly login?: string;
 	readonly name?: string;
 	readonly picture?: string;
+	/**
+	 * Apple refresh token: stored with the link only to revoke the
+	 * authorization at Apple when it is unlinked. Never logged.
+	 */
+	readonly revocationToken?: string;
 }
 
 export type UpstreamLoginDecision =

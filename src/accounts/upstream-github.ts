@@ -78,6 +78,7 @@ export function createGithubUpstream(
 
 	return {
 		provider: "github",
+		responseMode: "query",
 		async authorizationUrl(checks) {
 			return client.buildAuthorizationUrl(config, {
 				redirect_uri: redirectUri,

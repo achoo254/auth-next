@@ -1,5 +1,5 @@
 import type { AccountDocument } from "../accounts/user-model.js";
-import { UPSTREAM_PROVIDERS } from "../accounts/user-model.js";
+import { TENANT_OAUTH_PROVIDERS } from "../accounts/user-model.js";
 import type { MessageKey } from "../i18n/dictionaries.js";
 import { offersHosting } from "./claim-checks.js";
 import type { ClaimIdentity } from "./claim-page.js";
@@ -31,9 +31,12 @@ export const CLAIM_NOTICES: Readonly<Record<string, MessageKey>> = {
 	"migration-cancelled": "claim.notice.migrationCancelled",
 };
 
-/** The identities linked to an account: who could own a claimed domain. */
+/**
+ * The identities linked to an account that could own a claimed domain:
+ * Google and GitHub only, the providers a tenant's own sign-in offers.
+ */
 export function identitiesOf(account: AccountDocument): ClaimIdentity[] {
-	return UPSTREAM_PROVIDERS.flatMap((provider) => {
+	return TENANT_OAUTH_PROVIDERS.flatMap((provider) => {
 		const providerId = account.providers[provider];
 		if (!providerId) return [];
 		const detail = account.providerDetails?.[provider];

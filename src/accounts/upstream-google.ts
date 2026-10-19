@@ -45,6 +45,7 @@ export function createGoogleUpstream(
 	);
 	return {
 		provider: "google",
+		responseMode: "query",
 		async authorizationUrl(checks) {
 			return client.buildAuthorizationUrl(config, {
 				redirect_uri: redirectUri,

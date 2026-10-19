@@ -1,6 +1,6 @@
 import { randomBytes } from "node:crypto";
-import type { UpstreamProvider } from "../accounts/user-model.js";
-import { UPSTREAM_PROVIDERS } from "../accounts/user-model.js";
+import type { TenantOAuthProvider } from "../accounts/user-model.js";
+import { TENANT_OAUTH_PROVIDERS } from "../accounts/user-model.js";
 import type { TenantSetting } from "../audit/audit-events.js";
 import { AuditOutbox } from "../audit/audit-outbox.js";
 import { ownerSubject } from "./claim-service.js";
@@ -24,13 +24,13 @@ export type SettingResult =
 export async function configuredProviders(
 	tenancy: Tenancy,
 	tenantId: string,
-): Promise<UpstreamProvider[]> {
+): Promise<TenantOAuthProvider[]> {
 	const present = await Promise.all(
-		UPSTREAM_PROVIDERS.map((provider) =>
+		TENANT_OAUTH_PROVIDERS.map((provider) =>
 			tenancy.secrets.has(tenantId, provider),
 		),
 	);
-	return UPSTREAM_PROVIDERS.filter((_, index) => present[index]);
+	return TENANT_OAUTH_PROVIDERS.filter((_, index) => present[index]);
 }
 
 /**
@@ -78,7 +78,7 @@ export async function saveDisplayName(
 export async function saveOAuthApp(
 	tenancy: Tenancy,
 	tenant: TenantDocument,
-	provider: UpstreamProvider,
+	provider: TenantOAuthProvider,
 	clientId: string,
 	clientSecret: string,
 ): Promise<SettingResult> {
@@ -98,7 +98,7 @@ export async function saveOAuthApp(
 export async function removeOAuthApp(
 	tenancy: Tenancy,
 	tenant: TenantDocument,
-	provider: UpstreamProvider,
+	provider: TenantOAuthProvider,
 ): Promise<SettingResult> {
 	const providers = await configuredProviders(tenancy, tenant._id);
 	const others = providers.filter((name) => name !== provider);

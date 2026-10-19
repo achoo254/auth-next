@@ -8,6 +8,7 @@ export const viAccountActions: Translation<typeof enAccountActions> = {
 	"notice.profile": "Đã lưu hồ sơ.",
 	"notice.linkedGoogle": "Đã liên kết Google.",
 	"notice.linkedGithub": "Đã liên kết GitHub.",
+	"notice.linkedApple": "Đã liên kết Apple.",
 	"notice.unlinked": "Đã huỷ liên kết.",
 	"notice.lastMethod":
 		"Không huỷ được: đây là cách đăng nhập cuối cùng của tài khoản. Liên kết Google hoặc GitHub còn lại trước.",

@@ -9,12 +9,12 @@ export const enSignIn = {
 	"login.noProvider":
 		"Sign-in with Google and GitHub is turned off for now, so you can't sign in or sign up. Try again later.",
 	"login.firstTime":
-		"Signing in with Google or GitHub for the first time creates a new {brand} account.",
+		"Signing in with one of these for the first time creates a new {brand} account.",
 	"login.cancel": "Cancel sign-in",
 	"signup.title": "Create your {brand} account",
 	"signup.pageTitle": "Sign up",
 	"signup.subtitle":
-		"One account for Localman and Tunelo. Sign up with Google or GitHub: {brand} uses no passwords and sends no email.",
+		"One account for Localman and Tunelo. Sign up with one of the accounts below: {brand} uses no passwords and sends no email.",
 	"signup.with": "Sign up with {provider}",
 	"signup.haveAccount": "Already have an account? {link}",
 	"username.title": "Choose a username",

@@ -1,6 +1,6 @@
 # Hướng dẫn tích hợp với `auth.hoandat.com`
 
-Tài liệu cho Localman web, Localman MCP, Tunelo CLI, Tunelo web và Localman (nhận audit). Quyết định phía IdP: [ADR 0001](decisions/0001-own-oidc-idp.md), [ADR 0002](decisions/0002-accounts-and-login-pages.md), [ADR 0003](decisions/0003-token-exchange-and-audit-outbox.md), [ADR 0004](decisions/0004-upstream-only-sign-in.md) (chỉ đăng nhập bằng Google/GitHub).
+Tài liệu cho Localman web, Localman MCP, Tunelo CLI, Tunelo web và Localman (nhận audit). Quyết định phía IdP: [ADR 0001](decisions/0001-own-oidc-idp.md), [ADR 0002](decisions/0002-accounts-and-login-pages.md), [ADR 0003](decisions/0003-token-exchange-and-audit-outbox.md), [ADR 0004](decisions/0004-upstream-only-sign-in.md) (chỉ đăng nhập bằng Google/GitHub), [ADR 0008](decisions/0008-sign-in-with-apple.md) (thêm Apple).
 
 ## 1. Endpoint: luôn lấy từ discovery
 
@@ -142,7 +142,7 @@ const url = oidc.buildAuthorizationUrl(config, {
 |---|---|---|
 | `openid` | `sub` | ID token, userinfo |
 | `profile` | `preferred_username`, `name`, `picture`, `telegram_linked` | userinfo |
-| `email` | `email`, `email_verified` (`true` chỉ khi Google/GitHub xác minh) | userinfo |
+| `email` | `email`, `email_verified` (`true` chỉ khi Google/GitHub/Apple xác minh). Người đăng nhập bằng Apple có thể có email chuyển tiếp `…@privaterelay.appleid.com` (đã xác minh, chuyển tới hộp thư thật; app muốn gửi mail tới đó phải đăng ký domain gửi ở Apple) | userinfo |
 | `telegram` (chỉ `localman-web`) | `telegram_chat_id` (chuỗi), `telegram_username` (không có `@`, có thể thiếu) | **chỉ userinfo**, và chỉ khi đã liên kết |
 
 Với code flow, ID token chỉ có `sub` (kèm `sid`, `auth_time`); claim của `profile` và `email` **không** nằm trong ID token (oidc-provider giữ `conformIdTokenClaims` mặc định). Client lấy hồ sơ bằng `userinfo_endpoint` với access token vừa nhận và kiểm `sub` của userinfo khớp ID token (Scribe từng đọc `email` trong ID token và từ chối mọi lần đăng nhập, 16/10/2026).

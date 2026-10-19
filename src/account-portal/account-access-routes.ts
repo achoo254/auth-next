@@ -10,11 +10,12 @@ import type { AppServices } from "../services.js";
 import { forgetDeviceGrants } from "./device-grants.js";
 import { revokeGrant } from "./grant-directory.js";
 import type { PortalHandler } from "./portal-session.js";
+import { revokeUnlinked } from "./revoke-unlinked.js";
 import { revokeSession } from "./session-directory.js";
 
 /**
  * /account actions that grant or take away access: link and unlink
- * Google/GitHub, sign out one session or one Tunelo device. Removing an
+ * Google/GitHub/Apple, sign out one session or one Tunelo device. Removing an
  * app's access asks first (account-confirm-routes.ts).
  */
 export function registerAccessRoutes(
@@ -61,6 +62,7 @@ export function registerAccessRoutes(
 				account._id,
 				name,
 			);
+			if (write.applied) await revokeUnlinked(services, account, name);
 			res.redirect(
 				303,
 				`/account?notice=${write.applied ? "unlinked" : "last-method"}`,

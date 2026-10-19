@@ -11,12 +11,12 @@ export const viSignIn: Translation<typeof enSignIn> = {
 	"login.noProvider":
 		"Đăng nhập bằng Google và GitHub đang tạm tắt, nên chưa đăng nhập hay đăng ký được. Thử lại sau.",
 	"login.firstTime":
-		"Lần đầu đăng nhập bằng Google hoặc GitHub sẽ tạo tài khoản {brand} mới.",
+		"Lần đầu đăng nhập bằng một trong các cách trên sẽ tạo tài khoản {brand} mới.",
 	"login.cancel": "Huỷ đăng nhập",
 	"signup.title": "Tạo tài khoản {brand}",
 	"signup.pageTitle": "Đăng ký",
 	"signup.subtitle":
-		"Dùng chung cho Localman và Tunelo. Đăng ký bằng Google hoặc GitHub; {brand} không dùng mật khẩu và không gửi email.",
+		"Dùng chung cho Localman và Tunelo. Đăng ký bằng một trong các tài khoản dưới đây; {brand} không dùng mật khẩu và không gửi email.",
 	"signup.with": "Đăng ký với {provider}",
 	"signup.haveAccount": "Đã có tài khoản? {link}",
 	"username.title": "Chọn username",

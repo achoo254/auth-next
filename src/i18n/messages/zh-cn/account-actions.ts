@@ -7,6 +7,7 @@ export const zhAccountActions: Translation<typeof enAccountActions> = {
 	"notice.profile": "已保存个人资料。",
 	"notice.linkedGoogle": "已关联 Google。",
 	"notice.linkedGithub": "已关联 GitHub。",
+	"notice.linkedApple": "已关联 Apple。",
 	"notice.unlinked": "已取消关联。",
 	"notice.lastMethod":
 		"无法取消关联：这是账号最后一种登录方式。请先关联 Google 或 GitHub 中的另一个。",

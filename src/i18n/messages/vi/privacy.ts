@@ -4,14 +4,14 @@ import type { Translation } from "../translation.js";
 export const viPrivacy: Translation<typeof enPrivacy> = {
 	"privacy.title": "Chính sách quyền riêng tư",
 	"privacy.subtitle":
-		"Áp dụng cho dịch vụ đăng nhập auth.{brandDomain}. Cập nhật ngày 09/10/2026.",
+		"Áp dụng cho dịch vụ đăng nhập auth.{brandDomain}. Cập nhật ngày 19/10/2026.",
 	"privacy.stored.title": "Dữ liệu được lưu",
 	"privacy.stored.profile":
 		"Tên đăng nhập, địa chỉ email, tên hiển thị và ảnh đại diện.",
 	"privacy.stored.noPassword":
 		"Dịch vụ không dùng mật khẩu. Tài khoản tạo trước khi bỏ mật khẩu có thể vẫn còn bản băm argon2id của mật khẩu và mã khôi phục cũ; chúng không còn được dùng để đăng nhập.",
 	"privacy.stored.providers":
-		"Khi bạn đăng nhập bằng Google hoặc GitHub: mã định danh tài khoản ở nhà cung cấp, email đã xác minh, tên và ảnh đại diện mà nhà cung cấp trả về.",
+		"Khi bạn đăng nhập bằng Google, GitHub hoặc Apple: mã định danh tài khoản ở nhà cung cấp, email đã xác minh, tên và ảnh đại diện mà nhà cung cấp trả về. Với Apple, email có thể là địa chỉ chuyển tiếp riêng tư do bạn chọn chia sẻ, và một mã được giữ lại chỉ để thu hồi liên kết ở Apple khi bạn gỡ nó.",
 	"privacy.stored.telegram":
 		"Khi bạn liên kết Telegram: mã chat và tên người dùng Telegram.",
 	"privacy.stored.sessions":
@@ -26,7 +26,7 @@ export const viPrivacy: Translation<typeof enPrivacy> = {
 		"Thông tin hồ sơ chỉ được cấp cho các ứng dụng do cùng chủ sở hữu vận hành (Localman, Tunelo) hoặc ứng dụng bạn đã đồng ý cấp quyền, trong phạm vi bạn đồng ý. Không chia sẻ cho bên thứ ba nào khác.",
 	"privacy.rights.title": "Quyền của bạn",
 	"privacy.rights.body":
-		"Tại trang {account}, bạn xem và sửa hồ sơ, gỡ liên kết Google, GitHub hoặc Telegram, thu hồi phiên và ứng dụng đã cấp quyền. Để xoá tài khoản, liên hệ {email}.",
+		"Tại trang {account}, bạn xem và sửa hồ sơ, gỡ liên kết Google, GitHub, Apple hoặc Telegram, thu hồi phiên và ứng dụng đã cấp quyền. Để xoá tài khoản, liên hệ {email}.",
 	"privacy.storage.title": "Lưu trữ",
 	"privacy.storage.body":
 		"Dữ liệu nằm trên máy chủ tại Việt Nam do chủ sở hữu dịch vụ quản lý, có sao lưu hằng ngày giữ 14 ngày.",

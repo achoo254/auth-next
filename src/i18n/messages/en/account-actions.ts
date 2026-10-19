@@ -6,6 +6,7 @@ export const enAccountActions = {
 	"notice.profile": "Profile saved.",
 	"notice.linkedGoogle": "Linked Google.",
 	"notice.linkedGithub": "Linked GitHub.",
+	"notice.linkedApple": "Linked Apple.",
 	"notice.unlinked": "Unlinked.",
 	"notice.lastMethod":
 		"Couldn't unlink: it's your account's last way to sign in. Link the other of Google or GitHub first.",

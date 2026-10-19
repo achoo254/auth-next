@@ -4,8 +4,8 @@ import {
 	UPSTREAM_LABELS,
 	upstreamCallbackPath,
 } from "../accounts/upstream-client.js";
-import type { UpstreamProvider } from "../accounts/user-model.js";
-import { UPSTREAM_PROVIDERS } from "../accounts/user-model.js";
+import type { TenantOAuthProvider } from "../accounts/user-model.js";
+import { TENANT_OAUTH_PROVIDERS } from "../accounts/user-model.js";
 import type { MessageKey } from "../i18n/dictionaries.js";
 import { PRIVACY_PATH } from "../legal/privacy-page.js";
 import {
@@ -29,7 +29,7 @@ export interface AdminView {
 	/** The step-by-step guide, on the primary tenant (absolute URL). */
 	readonly guideUrl: string;
 	/** Client ids of the configured OAuth apps (never their secrets). */
-	readonly oauth: Readonly<Partial<Record<UpstreamProvider, string>>>;
+	readonly oauth: Readonly<Partial<Record<TenantOAuthProvider, string>>>;
 	readonly dnsConfigured: boolean;
 	readonly dnsAvailable: boolean;
 	readonly telegramUsername?: string;
@@ -83,7 +83,10 @@ ${submitButton(i18n.t("admin.save"), { dataId: "admin-save-name" })}</form>`;
 }
 
 /** Whether people sign in with `provider` here, or why not yet. */
-function providerStatus(view: AdminView, provider: UpstreamProvider): string {
+function providerStatus(
+	view: AdminView,
+	provider: TenantOAuthProvider,
+): string {
 	const { i18n } = view.page;
 	const label = UPSTREAM_LABELS[provider];
 	if (view.oauth[provider])
@@ -94,7 +97,7 @@ function providerStatus(view: AdminView, provider: UpstreamProvider): string {
 	return i18n.t("admin.status.claimed");
 }
 
-function oauthForm(view: AdminView, provider: UpstreamProvider): SafeHtml {
+function oauthForm(view: AdminView, provider: TenantOAuthProvider): SafeHtml {
 	const { i18n } = view.page;
 	const label = UPSTREAM_LABELS[provider];
 	const callback = `${issuerOf(view.tenant)}${upstreamCallbackPath(provider)}`;
@@ -140,7 +143,7 @@ export function renderAdminPage(view: AdminView): string {
 			description: i18n.t("admin.name.help"),
 			body: nameForm(view),
 		}),
-		...UPSTREAM_PROVIDERS.map((provider) =>
+		...TENANT_OAUTH_PROVIDERS.map((provider) =>
 			accountCard({
 				id: `admin-${provider}`,
 				icon: accountIcon("signIn"),

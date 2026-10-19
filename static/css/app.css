@@ -742,3 +742,16 @@ button {
 	font-size: 13px;
 	color: var(--c-text-muted);
 }
+/*
+ * Sign in with Apple (Apple Human Interface Guidelines): a solid button,
+ * black with white text on light pages, white with black text on dark
+ * ones. --c-text / --c-surface swap exactly that way between themes.
+ */
+.btn-apple {
+	background: var(--c-text);
+	border-color: var(--c-text);
+	color: var(--c-surface);
+}
+.btn-apple:hover {
+	background: color-mix(in srgb, var(--c-text) 88%, var(--c-surface));
+}
