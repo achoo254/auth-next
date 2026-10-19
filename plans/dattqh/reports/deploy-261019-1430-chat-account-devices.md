@@ -21,11 +21,12 @@ Khi build từ thư mục tạm, `pnpm build` dừng ở bước kiểm dependen
 - `chat.hoandat.com` và `localman.hoandat.com` trả 200.
 - `.env` prod không có biến `APPLE_*` (chưa bật Apple).
 
-## Chưa kiểm được trong phiên
+## Kiểm bằng trình duyệt của user (14:41)
 
-- Đăng nhập thật ở Localman và Chat cần tài khoản Google/GitHub của người dùng.
-- `/account` với hai máy Chat thật: test `chat-clients-flow.test.ts` đã kiểm trên CI, chưa kiểm trên prod.
-- Số restart của `hoandat-auth` 15 phút sau deploy.
+- `localman.hoandat.com` và `chat.hoandat.com` (web) đã đăng nhập.
+- `/account` có mục "Devices" mới (13 máy): các dòng `Tunelo CLI · <tên máy>` như cũ, và `Scribe · unknown machine` là grant `scribe-mobile` tạo trước bản này, giờ thành một dòng thiết bị riêng. Mục "Authorized apps" vẫn có Chat (web), Localman, Scribe và client MCP.
+- Chưa có dòng `chat-mobile`/`chat-desktop` vì chưa máy nào đăng nhập bằng app Chat native.
+- `hoandat-auth`: online, restart vẫn 56 (không tăng sau deploy), RAM 126 MB, log lỗi trống.
 
 ## Rollback
 
