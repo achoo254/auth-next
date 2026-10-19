@@ -105,7 +105,7 @@ if [ -n "$SESSION_KEY_PREVIOUS" ]; then
 	mv data/env/chat.env.tmp data/env/chat.env
 fi
 
-"${C[@]}" up -d nginx auth localman tunelo chat
+"${C[@]}" up -d certbot nginx auth localman tunelo chat
 echo "import-tenant: $DOMAIN is in; data backups in data/backups/$stamp."
 echo "Point the A records of auth., localman., tunnel., chat. and *.localman., *.tunnel. of $DOMAIN at this server;"
 echo "the install then completes its enrollment and hoandat stops serving the tenant. Delete $DIR."

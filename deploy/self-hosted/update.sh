@@ -97,7 +97,7 @@ done
 if [ -n "$FETCH_ONLY" ]; then
 	cp "$NEXT" release.env
 	C=(docker compose -f compose.yaml -f compose.release.yaml --env-file .env --env-file release.env)
-	"${C[@]}" pull -q nginx auth localman tunelo chat-migrate chat
+	"${C[@]}" pull -q certbot nginx auth localman tunelo chat-migrate chat
 	echo "update: fetched $VERSION"
 	exit 0
 fi
@@ -142,9 +142,9 @@ healthy() {
 
 cp "$NEXT" release.env.next
 mv release.env.next release.env
-"${C[@]}" --env-file release.env pull nginx auth localman tunelo chat-migrate chat
+"${C[@]}" --env-file release.env pull certbot nginx auth localman tunelo chat-migrate chat
 # A failed start (a port taken, a bad image) goes back like an unhealthy one.
-if "${C[@]}" --env-file release.env up -d --remove-orphans nginx auth localman tunelo chat && healthy; then
+if "${C[@]}" --env-file release.env up -d --remove-orphans certbot nginx auth localman tunelo chat && healthy; then
 	echo "update: running $VERSION"
 	exit 0
 fi
@@ -153,12 +153,12 @@ if [ -n "$FIRST_START" ]; then
 	echo "update: nothing to go back to; see docker compose logs" >&2
 elif [ -f "data/backups/$stamp/release.env" ]; then
 	cp "data/backups/$stamp/release.env" release.env
-	"${C[@]}" --env-file release.env up -d --remove-orphans nginx auth localman tunelo chat
+	"${C[@]}" --env-file release.env up -d --remove-orphans certbot nginx auth localman tunelo chat
 	echo "update: back on $(sed -n 's/^RELEASE_VERSION=//p' release.env); data backups in data/backups/$stamp" >&2
 else
 	# It ran local builds (init.sh) before this release.
 	rm -f release.env
-	"${BASE[@]}" up -d --remove-orphans nginx auth localman tunelo chat
+	"${BASE[@]}" up -d --remove-orphans certbot nginx auth localman tunelo chat
 	echo "update: back on the local builds; data backups in data/backups/$stamp" >&2
 fi
 exit 1
