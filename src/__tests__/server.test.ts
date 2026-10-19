@@ -72,7 +72,7 @@ describe("App list", () => {
 		expect(response.status).toBe(200);
 		expect(response.headers.get("cache-control")).toBe("private, no-cache");
 		const body = await response.text();
-		expect(body).toContain("One account for every hoandat app");
+		expect(body).toContain("One account for every Auth Next app");
 		expect(body).toMatch(/href="\/assets\/css\/apps\.css\?v=[0-9a-f]{12}"/);
 		for (const name of ["Localman", "Localman MCP", "Tunelo CLI", "Tunelo"]) {
 			expect(body).toContain(`class="app-card-name">${name}</h3>`);

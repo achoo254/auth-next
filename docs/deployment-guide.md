@@ -49,7 +49,7 @@ Bản đầu tiên có tenant deploy theo thứ tự này (lệnh trên server c
 3. Khi khởi động, server tự gắn `tenantId` cho document cũ, gỡ chỉ mục unique toàn cục cũ và chỉ phục vụ khi không còn document nào chưa gắn (log `Tagged pre-tenant documents`, `Dropped single-tenant indexes`). Kiểm lại bằng `node --env-file=.env dist/backfill-tenant-id.mjs --dry-run`: mọi dòng phải `0 untagged`.
 4. Kiểm: Localman và Tunelo đăng nhập, refresh, token exchange; `node --env-file=.env dist/seed-clients.mjs`; số restart pm2 trước và 15 phút sau.
 
-`.env` production không cần thêm gì: `TENANT_DOMAIN` mặc định `hoandat.com`, `TENANT_DISPLAY_NAME` mặc định `hoandat`. Nếu `.env` đã đặt `TENANT_DOMAIN` khác thì audience đổi ngay khi deploy: kiểm trước bằng `grep -c '^TENANT_' .env` (phải ra 0).
+`.env` production không cần thêm gì: `TENANT_DOMAIN` mặc định `hoandat.com`, `TENANT_DISPLAY_NAME` mặc định `Auth Next` (tên sản phẩm; hoandat.com chỉ là một tenant, từ 19/10/2026, trước đó `hoandat`). Nếu `.env` đã đặt `TENANT_DOMAIN` khác thì audience đổi ngay khi deploy: kiểm trước bằng `grep -c '^TENANT_' .env` (phải ra 0).
 
 Lùi trước khi có tenant thứ hai: deploy lại commit trước (code cũ tạo lại chỉ mục toàn cục, vẫn đúng khi chỉ có một tenant). Sau khi có tenant thứ hai chỉ sửa tiến hoặc tạm `suspended` tenant mới (ADR 0006 mục 4): code cũ không tạo lại được chỉ mục unique toàn cục và sẽ crash-loop.
 

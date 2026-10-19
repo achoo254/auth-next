@@ -11,7 +11,7 @@ export const enSignIn = {
 	"login.firstTime":
 		"Signing in with Google or GitHub for the first time creates a new {brand} account.",
 	"login.cancel": "Cancel sign-in",
-	"signup.title": "Create a {brand} account",
+	"signup.title": "Create your {brand} account",
 	"signup.pageTitle": "Sign up",
 	"signup.subtitle":
 		"One account for Localman and Tunelo. Sign up with Google or GitHub: {brand} uses no passwords and sends no email.",
@@ -19,7 +19,7 @@ export const enSignIn = {
 	"signup.haveAccount": "Already have an account? {link}",
 	"username.title": "Choose a username",
 	"username.subtitle":
-		"Create a {brand} account with {provider} for {email} (verified).",
+		"Create your {brand} account with {provider} for {email} (verified).",
 	"username.reclaimWarning":
 		"This email belongs to another {brand} account that nobody has verified. If that account is yours and it is linked to another Google or GitHub account, {link} and link {provider} on your account page. If you continue, the email moves to the new account; the other account keeps its other ways to sign in.",
 	"username.reclaimLink": "sign in that way",
@@ -44,7 +44,7 @@ export const enSignIn = {
 		"This account has no verified email, so it can't be used to sign in to {brand}.",
 	"upstream.rejected.disabled": "This {brand} account is locked.",
 	"upstream.rejected.otherProviderAccount":
-		"This email belongs to a {brand} account linked to a different account at the same provider. Sign in with that linked account.",
+		"This email belongs to an account at {brand} linked to a different account at the same provider. Sign in with that linked account.",
 	"upstream.rejected.other": "Couldn't sign in.",
 	"logout.title": "Sign out",
 	"logout.byApp": "{app} wants to sign you out of your {brand} account.",

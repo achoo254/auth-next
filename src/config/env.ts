@@ -84,8 +84,11 @@ const envSchema = z
 				}
 				return domain;
 			}),
-		/** Brand of the primary tenant, shown in pages and messages. */
-		TENANT_DISPLAY_NAME: z.string().trim().min(1).max(40).default("hoandat"),
+		/**
+		 * Brand of the primary tenant, shown in pages and messages: by default
+		 * the product name, since hoandat.com is one tenant like the others.
+		 */
+		TENANT_DISPLAY_NAME: z.string().trim().min(1).max(40).default("Auth Next"),
 		LOCALMAN_WEB_URL: httpUrl.default("https://localman.hoandat.com"),
 		LOCALMAN_WEB_CLIENT_SECRET: secret,
 		TUNELO_WEB_URL: httpUrl.default("https://tunnel.hoandat.com"),

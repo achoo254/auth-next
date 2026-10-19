@@ -25,19 +25,19 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="referrer" content="no-referrer">
 <meta name="robots" content="noindex">
-<title>One account for every hoandat app · hoandat</title>
+<title>One account for every Auth Next app · Auth Next</title>
 <link rel="stylesheet" href="/assets/fonts/inter/400.css"><link rel="stylesheet" href="/assets/fonts/inter/500.css"><link rel="stylesheet" href="/assets/fonts/inter/600.css"><link rel="stylesheet" href="/assets/fonts/jetbrains-mono/400.css"><link rel="stylesheet" href="/assets/fonts/jetbrains-mono/600.css"><link rel="stylesheet" href="/assets/fonts/jetbrains-mono/700.css">
 <link rel="stylesheet" href="/assets/css/tokens.css?v=HASH"><link rel="stylesheet" href="/assets/css/app.css?v=HASH"><link rel="stylesheet" href="/assets/css/apps.css?v=HASH">
 </head>
 <body>
 <header class="topbar"><div class="topbar-inner container">
-<a class="idp-brand" href="/apps" data-id="idp-brand"><span><b>hoandat</b><span class="idp-brand-suffix"> · Account</span></span> <span class="badge badge-neutral hide-sm">ISSUER_HOST</span></a>
+<a class="idp-brand" href="/apps" data-id="idp-brand"><span><b>Auth Next</b><span class="idp-brand-suffix"> · Account</span></span> <span class="badge badge-neutral hide-sm">ISSUER_HOST</span></a>
 <nav class="topbar-nav" aria-label="Site"><a class="topbar-link" href="/apps" aria-current="page" data-id="nav-home">Home</a><a class="topbar-link" href="/account" data-id="nav-account">Account</a></nav>
 </div></header>
 <main class="page container portal"><section class="apps-hero" data-id="apps-hero">
 <div class="apps-hero-text">
-<p class="apps-eyebrow">hoandat sign-in</p>
-<h1 class="apps-title">One account for every hoandat app</h1>
+<p class="apps-eyebrow">Auth Next sign-in</p>
+<h1 class="apps-title">One account for every Auth Next app</h1>
 <p class="apps-lead">Sign in once with Google or GitHub and use the same account in every app below.</p>
 <ul class="apps-trust"><li><svg class="icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12l4 4 10-10"/></svg><span>Sign in with Google or GitHub</span></li><li><svg class="icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12l4 4 10-10"/></svg><span>No password to create or remember</span></li><li><svg class="icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12l4 4 10-10"/></svg><span>You choose which apps get access</span></li></ul>
 <div class="apps-actions">
@@ -45,8 +45,8 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <a class="btn btn-secondary" href="#how-sign-in-works" data-id="apps-how">How sign-in works</a>
 </div>
 </div>
-<div class="apps-hero-art"><svg class="hub" viewBox="0 0 544 300" role="img" aria-label="Your hoandat account, reached with Google or GitHub, signs you in to Localman, Tunelo, Chat, and Scribe." data-id="apps-hub">
-<path class="hub-line" d="M132 110 C164 110 164 150 196 150"/><path class="hub-flow tone-primary" d="M132 110 C164 110 164 150 196 150"/><path class="hub-line" d="M132 190 C164 190 164 150 196 150"/><path class="hub-flow tone-primary" d="M132 190 C164 190 164 150 196 150"/><path class="hub-line" d="M324 150 C358 150 358 38 392 38"/><path class="hub-flow tone-violet" d="M324 150 C358 150 358 38 392 38"/><path class="hub-line" d="M324 150 C358 150 358 113 392 113"/><path class="hub-flow tone-amber" d="M324 150 C358 150 358 113 392 113"/><path class="hub-line" d="M324 150 C358 150 358 188 392 188"/><path class="hub-flow tone-blue" d="M324 150 C358 150 358 188 392 188"/><path class="hub-line" d="M324 150 C358 150 358 263 392 263"/><path class="hub-flow tone-red" d="M324 150 C358 150 358 263 392 263"/>
+<div class="apps-hero-art"><svg class="hub" viewBox="0 0 544 300" role="img" aria-label="Your Auth Next account, reached with Google or GitHub, signs you in to Localman, Tunelo, Chat, and Scribe." data-id="apps-hub">
+<path class="hub-line" d="M132 110 C162 110 162 150 192 150"/><path class="hub-flow tone-primary" d="M132 110 C162 110 162 150 192 150"/><path class="hub-line" d="M132 190 C162 190 162 150 192 150"/><path class="hub-flow tone-primary" d="M132 190 C162 190 162 150 192 150"/><path class="hub-line" d="M328 150 C360 150 360 38 392 38"/><path class="hub-flow tone-violet" d="M328 150 C360 150 360 38 392 38"/><path class="hub-line" d="M328 150 C360 150 360 113 392 113"/><path class="hub-flow tone-amber" d="M328 150 C360 150 360 113 392 113"/><path class="hub-line" d="M328 150 C360 150 360 188 392 188"/><path class="hub-flow tone-blue" d="M328 150 C360 150 360 188 392 188"/><path class="hub-line" d="M328 150 C360 150 360 263 392 263"/><path class="hub-flow tone-red" d="M328 150 C360 150 360 263 392 263"/>
 <g class="hub-node">
 <rect x="8" y="90" width="124" height="40" rx="10"/>
 <svg x="20" y="102" width="16" height="16" viewBox="0 0 24 24"><path class="hub-mark" d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"/></svg>
@@ -57,8 +57,8 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <text class="hub-text" x="46" y="195">GitHub</text>
 </g>
 <g class="hub-node hub-core">
-<rect x="196" y="110" width="128" height="80" rx="16"/>
-<text class="hub-text hub-brand" x="260" y="148" text-anchor="middle">hoandat</text>
+<rect x="192" y="110" width="136" height="80" rx="16"/>
+<text class="hub-text hub-brand" x="260" y="148" text-anchor="middle">Auth Next</text>
 <text class="hub-text hub-sub" x="260" y="168" text-anchor="middle">ISSUER_HOST</text>
 </g>
 <g class="hub-node tone-violet">
@@ -144,7 +144,7 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 </section>
 <section class="apps-section" id="how-sign-in-works" aria-labelledby="apps-steps-title" data-id="apps-steps">
 <h2 class="apps-section-title" id="apps-steps-title">How sign-in works</h2>
-<ol class="apps-steps"><li class="apps-step"><span class="apps-step-number" aria-hidden="true">1</span><div><h3 class="apps-step-title">Pick an app</h3><p class="apps-step-body">Choose Sign in on its site, or run <code class="mono">tunelo login</code> in a terminal.</p></div></li><li class="apps-step"><span class="apps-step-number" aria-hidden="true">2</span><div><h3 class="apps-step-title">Continue with Google or GitHub</h3><p class="apps-step-body">The account you linked signs you in. The first time, you pick a username.</p></div></li><li class="apps-step"><span class="apps-step-number" aria-hidden="true">3</span><div><h3 class="apps-step-title">You are back in the app</h3><p class="apps-step-body">Apps from outside hoandat, such as AI tools, ask for your approval first.</p></div></li></ol>
+<ol class="apps-steps"><li class="apps-step"><span class="apps-step-number" aria-hidden="true">1</span><div><h3 class="apps-step-title">Pick an app</h3><p class="apps-step-body">Choose Sign in on its site, or run <code class="mono">tunelo login</code> in a terminal.</p></div></li><li class="apps-step"><span class="apps-step-number" aria-hidden="true">2</span><div><h3 class="apps-step-title">Continue with Google or GitHub</h3><p class="apps-step-body">The account you linked signs you in. The first time, you pick a username.</p></div></li><li class="apps-step"><span class="apps-step-number" aria-hidden="true">3</span><div><h3 class="apps-step-title">You are back in the app</h3><p class="apps-step-body">Apps from outside Auth Next, such as AI tools, ask for your approval first.</p></div></li></ol>
 </section>
 <p class="apps-manage" data-id="apps-manage">To see or remove the apps that can access your account, open <a class="link" href="/account">Account</a>.</p></main>
 <footer class="page-foot container"><nav class="lang-switch" aria-label="Language" data-id="lang-switch"><a class="lang-option" href="/lang?set=en&amp;return=%2Fapps" lang="en" hreflang="en" aria-current="true" data-id="lang-en">English</a><a class="lang-option" href="/lang?set=zh-CN&amp;return=%2Fapps" lang="zh-CN" hreflang="zh-CN" data-id="lang-zh-CN">中文</a><a class="lang-option" href="/lang?set=vi&amp;return=%2Fapps" lang="vi" hreflang="vi" data-id="lang-vi">Tiếng Việt</a></nav></footer>
@@ -160,19 +160,19 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="referrer" content="no-referrer">
 <meta name="robots" content="noindex">
-<title>Một tài khoản cho mọi ứng dụng hoandat · hoandat</title>
+<title>Một tài khoản cho mọi ứng dụng Auth Next · Auth Next</title>
 <link rel="stylesheet" href="/assets/fonts/inter/400.css"><link rel="stylesheet" href="/assets/fonts/inter/500.css"><link rel="stylesheet" href="/assets/fonts/inter/600.css"><link rel="stylesheet" href="/assets/fonts/jetbrains-mono/400.css"><link rel="stylesheet" href="/assets/fonts/jetbrains-mono/600.css"><link rel="stylesheet" href="/assets/fonts/jetbrains-mono/700.css">
 <link rel="stylesheet" href="/assets/css/tokens.css?v=HASH"><link rel="stylesheet" href="/assets/css/app.css?v=HASH"><link rel="stylesheet" href="/assets/css/apps.css?v=HASH">
 </head>
 <body>
 <header class="topbar"><div class="topbar-inner container">
-<a class="idp-brand" href="/apps" data-id="idp-brand"><span><b>hoandat</b><span class="idp-brand-suffix"> · Tài khoản</span></span> <span class="badge badge-neutral hide-sm">ISSUER_HOST</span></a>
+<a class="idp-brand" href="/apps" data-id="idp-brand"><span><b>Auth Next</b><span class="idp-brand-suffix"> · Tài khoản</span></span> <span class="badge badge-neutral hide-sm">ISSUER_HOST</span></a>
 <nav class="topbar-nav" aria-label="Điều hướng"><a class="topbar-link" href="/apps" aria-current="page" data-id="nav-home">Trang chủ</a><a class="topbar-link" href="/account" data-id="nav-account">Tài khoản</a></nav>
 </div></header>
 <main class="page container portal"><section class="apps-hero" data-id="apps-hero">
 <div class="apps-hero-text">
-<p class="apps-eyebrow">Đăng nhập hoandat</p>
-<h1 class="apps-title">Một tài khoản cho mọi ứng dụng hoandat</h1>
+<p class="apps-eyebrow">Đăng nhập Auth Next</p>
+<h1 class="apps-title">Một tài khoản cho mọi ứng dụng Auth Next</h1>
 <p class="apps-lead">Đăng nhập một lần bằng Google hoặc GitHub, rồi dùng cùng tài khoản đó trong mọi ứng dụng bên dưới.</p>
 <ul class="apps-trust"><li><svg class="icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12l4 4 10-10"/></svg><span>Đăng nhập bằng Google hoặc GitHub</span></li><li><svg class="icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12l4 4 10-10"/></svg><span>Không phải tạo hay nhớ mật khẩu</span></li><li><svg class="icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12l4 4 10-10"/></svg><span>Bạn chọn ứng dụng nào được quyền truy cập</span></li></ul>
 <div class="apps-actions">
@@ -180,8 +180,8 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <a class="btn btn-secondary" href="#how-sign-in-works" data-id="apps-how">Đăng nhập diễn ra thế nào</a>
 </div>
 </div>
-<div class="apps-hero-art"><svg class="hub" viewBox="0 0 544 300" role="img" aria-label="Tài khoản hoandat, vào bằng Google hoặc GitHub, đăng nhập cho bạn vào Localman, Tunelo, Chat và Scribe." data-id="apps-hub">
-<path class="hub-line" d="M132 110 C164 110 164 150 196 150"/><path class="hub-flow tone-primary" d="M132 110 C164 110 164 150 196 150"/><path class="hub-line" d="M132 190 C164 190 164 150 196 150"/><path class="hub-flow tone-primary" d="M132 190 C164 190 164 150 196 150"/><path class="hub-line" d="M324 150 C358 150 358 38 392 38"/><path class="hub-flow tone-violet" d="M324 150 C358 150 358 38 392 38"/><path class="hub-line" d="M324 150 C358 150 358 113 392 113"/><path class="hub-flow tone-amber" d="M324 150 C358 150 358 113 392 113"/><path class="hub-line" d="M324 150 C358 150 358 188 392 188"/><path class="hub-flow tone-blue" d="M324 150 C358 150 358 188 392 188"/><path class="hub-line" d="M324 150 C358 150 358 263 392 263"/><path class="hub-flow tone-red" d="M324 150 C358 150 358 263 392 263"/>
+<div class="apps-hero-art"><svg class="hub" viewBox="0 0 544 300" role="img" aria-label="Tài khoản Auth Next, vào bằng Google hoặc GitHub, đăng nhập cho bạn vào Localman, Tunelo, Chat và Scribe." data-id="apps-hub">
+<path class="hub-line" d="M132 110 C162 110 162 150 192 150"/><path class="hub-flow tone-primary" d="M132 110 C162 110 162 150 192 150"/><path class="hub-line" d="M132 190 C162 190 162 150 192 150"/><path class="hub-flow tone-primary" d="M132 190 C162 190 162 150 192 150"/><path class="hub-line" d="M328 150 C360 150 360 38 392 38"/><path class="hub-flow tone-violet" d="M328 150 C360 150 360 38 392 38"/><path class="hub-line" d="M328 150 C360 150 360 113 392 113"/><path class="hub-flow tone-amber" d="M328 150 C360 150 360 113 392 113"/><path class="hub-line" d="M328 150 C360 150 360 188 392 188"/><path class="hub-flow tone-blue" d="M328 150 C360 150 360 188 392 188"/><path class="hub-line" d="M328 150 C360 150 360 263 392 263"/><path class="hub-flow tone-red" d="M328 150 C360 150 360 263 392 263"/>
 <g class="hub-node">
 <rect x="8" y="90" width="124" height="40" rx="10"/>
 <svg x="20" y="102" width="16" height="16" viewBox="0 0 24 24"><path class="hub-mark" d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"/></svg>
@@ -192,8 +192,8 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <text class="hub-text" x="46" y="195">GitHub</text>
 </g>
 <g class="hub-node hub-core">
-<rect x="196" y="110" width="128" height="80" rx="16"/>
-<text class="hub-text hub-brand" x="260" y="148" text-anchor="middle">hoandat</text>
+<rect x="192" y="110" width="136" height="80" rx="16"/>
+<text class="hub-text hub-brand" x="260" y="148" text-anchor="middle">Auth Next</text>
 <text class="hub-text hub-sub" x="260" y="168" text-anchor="middle">ISSUER_HOST</text>
 </g>
 <g class="hub-node tone-violet">
@@ -279,7 +279,7 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 </section>
 <section class="apps-section" id="how-sign-in-works" aria-labelledby="apps-steps-title" data-id="apps-steps">
 <h2 class="apps-section-title" id="apps-steps-title">Đăng nhập diễn ra thế nào</h2>
-<ol class="apps-steps"><li class="apps-step"><span class="apps-step-number" aria-hidden="true">1</span><div><h3 class="apps-step-title">Chọn một ứng dụng</h3><p class="apps-step-body">Chọn Đăng nhập trên trang của nó, hoặc chạy <code class="mono">tunelo login</code> trong terminal.</p></div></li><li class="apps-step"><span class="apps-step-number" aria-hidden="true">2</span><div><h3 class="apps-step-title">Tiếp tục với Google hoặc GitHub</h3><p class="apps-step-body">Tài khoản bạn đã liên kết sẽ đăng nhập cho bạn. Lần đầu, bạn chọn một tên đăng nhập.</p></div></li><li class="apps-step"><span class="apps-step-number" aria-hidden="true">3</span><div><h3 class="apps-step-title">Quay lại ứng dụng</h3><p class="apps-step-body">Ứng dụng bên ngoài hoandat, như công cụ AI, sẽ hỏi bạn đồng ý trước.</p></div></li></ol>
+<ol class="apps-steps"><li class="apps-step"><span class="apps-step-number" aria-hidden="true">1</span><div><h3 class="apps-step-title">Chọn một ứng dụng</h3><p class="apps-step-body">Chọn Đăng nhập trên trang của nó, hoặc chạy <code class="mono">tunelo login</code> trong terminal.</p></div></li><li class="apps-step"><span class="apps-step-number" aria-hidden="true">2</span><div><h3 class="apps-step-title">Tiếp tục với Google hoặc GitHub</h3><p class="apps-step-body">Tài khoản bạn đã liên kết sẽ đăng nhập cho bạn. Lần đầu, bạn chọn một tên đăng nhập.</p></div></li><li class="apps-step"><span class="apps-step-number" aria-hidden="true">3</span><div><h3 class="apps-step-title">Quay lại ứng dụng</h3><p class="apps-step-body">Ứng dụng bên ngoài Auth Next, như công cụ AI, sẽ hỏi bạn đồng ý trước.</p></div></li></ol>
 </section>
 <p class="apps-manage" data-id="apps-manage">Để xem hoặc gỡ các ứng dụng đang có quyền vào tài khoản, mở trang <a class="link" href="/account">Tài khoản</a>.</p></main>
 <footer class="page-foot container"><nav class="lang-switch" aria-label="Ngôn ngữ" data-id="lang-switch"><a class="lang-option" href="/lang?set=en&amp;return=%2Fapps" lang="en" hreflang="en" data-id="lang-en">English</a><a class="lang-option" href="/lang?set=zh-CN&amp;return=%2Fapps" lang="zh-CN" hreflang="zh-CN" data-id="lang-zh-CN">中文</a><a class="lang-option" href="/lang?set=vi&amp;return=%2Fapps" lang="vi" hreflang="vi" aria-current="true" data-id="lang-vi">Tiếng Việt</a></nav></footer>
@@ -295,19 +295,19 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="referrer" content="no-referrer">
 <meta name="robots" content="noindex">
-<title>一个账号，通用所有 hoandat 应用 · hoandat</title>
+<title>一个账号，通用所有 Auth Next 应用 · Auth Next</title>
 <link rel="stylesheet" href="/assets/fonts/inter/400.css"><link rel="stylesheet" href="/assets/fonts/inter/500.css"><link rel="stylesheet" href="/assets/fonts/inter/600.css"><link rel="stylesheet" href="/assets/fonts/jetbrains-mono/400.css"><link rel="stylesheet" href="/assets/fonts/jetbrains-mono/600.css"><link rel="stylesheet" href="/assets/fonts/jetbrains-mono/700.css">
 <link rel="stylesheet" href="/assets/css/tokens.css?v=HASH"><link rel="stylesheet" href="/assets/css/app.css?v=HASH"><link rel="stylesheet" href="/assets/css/apps.css?v=HASH">
 </head>
 <body>
 <header class="topbar"><div class="topbar-inner container">
-<a class="idp-brand" href="/apps" data-id="idp-brand"><span><b>hoandat</b><span class="idp-brand-suffix"> · 账号</span></span> <span class="badge badge-neutral hide-sm">ISSUER_HOST</span></a>
+<a class="idp-brand" href="/apps" data-id="idp-brand"><span><b>Auth Next</b><span class="idp-brand-suffix"> · 账号</span></span> <span class="badge badge-neutral hide-sm">ISSUER_HOST</span></a>
 <nav class="topbar-nav" aria-label="站点导航"><a class="topbar-link" href="/apps" aria-current="page" data-id="nav-home">首页</a><a class="topbar-link" href="/account" data-id="nav-account">账号</a></nav>
 </div></header>
 <main class="page container portal"><section class="apps-hero" data-id="apps-hero">
 <div class="apps-hero-text">
-<p class="apps-eyebrow">hoandat 登录</p>
-<h1 class="apps-title">一个账号，通用所有 hoandat 应用</h1>
+<p class="apps-eyebrow">Auth Next 登录</p>
+<h1 class="apps-title">一个账号，通用所有 Auth Next 应用</h1>
 <p class="apps-lead">用 Google 或 GitHub 登录一次，即可在下方所有应用中使用同一个账号。</p>
 <ul class="apps-trust"><li><svg class="icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12l4 4 10-10"/></svg><span>使用 Google 或 GitHub 登录</span></li><li><svg class="icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12l4 4 10-10"/></svg><span>无需创建或记住密码</span></li><li><svg class="icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12l4 4 10-10"/></svg><span>由你决定哪些应用可以访问</span></li></ul>
 <div class="apps-actions">
@@ -315,8 +315,8 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <a class="btn btn-secondary" href="#how-sign-in-works" data-id="apps-how">登录如何进行</a>
 </div>
 </div>
-<div class="apps-hero-art"><svg class="hub" viewBox="0 0 544 300" role="img" aria-label="通过 Google 或 GitHub 进入你的 hoandat 账号，即可登录 Localman、Tunelo、Chat和Scribe。" data-id="apps-hub">
-<path class="hub-line" d="M132 110 C164 110 164 150 196 150"/><path class="hub-flow tone-primary" d="M132 110 C164 110 164 150 196 150"/><path class="hub-line" d="M132 190 C164 190 164 150 196 150"/><path class="hub-flow tone-primary" d="M132 190 C164 190 164 150 196 150"/><path class="hub-line" d="M324 150 C358 150 358 38 392 38"/><path class="hub-flow tone-violet" d="M324 150 C358 150 358 38 392 38"/><path class="hub-line" d="M324 150 C358 150 358 113 392 113"/><path class="hub-flow tone-amber" d="M324 150 C358 150 358 113 392 113"/><path class="hub-line" d="M324 150 C358 150 358 188 392 188"/><path class="hub-flow tone-blue" d="M324 150 C358 150 358 188 392 188"/><path class="hub-line" d="M324 150 C358 150 358 263 392 263"/><path class="hub-flow tone-red" d="M324 150 C358 150 358 263 392 263"/>
+<div class="apps-hero-art"><svg class="hub" viewBox="0 0 544 300" role="img" aria-label="通过 Google 或 GitHub 进入你的 Auth Next 账号，即可登录 Localman、Tunelo、Chat和Scribe。" data-id="apps-hub">
+<path class="hub-line" d="M132 110 C162 110 162 150 192 150"/><path class="hub-flow tone-primary" d="M132 110 C162 110 162 150 192 150"/><path class="hub-line" d="M132 190 C162 190 162 150 192 150"/><path class="hub-flow tone-primary" d="M132 190 C162 190 162 150 192 150"/><path class="hub-line" d="M328 150 C360 150 360 38 392 38"/><path class="hub-flow tone-violet" d="M328 150 C360 150 360 38 392 38"/><path class="hub-line" d="M328 150 C360 150 360 113 392 113"/><path class="hub-flow tone-amber" d="M328 150 C360 150 360 113 392 113"/><path class="hub-line" d="M328 150 C360 150 360 188 392 188"/><path class="hub-flow tone-blue" d="M328 150 C360 150 360 188 392 188"/><path class="hub-line" d="M328 150 C360 150 360 263 392 263"/><path class="hub-flow tone-red" d="M328 150 C360 150 360 263 392 263"/>
 <g class="hub-node">
 <rect x="8" y="90" width="124" height="40" rx="10"/>
 <svg x="20" y="102" width="16" height="16" viewBox="0 0 24 24"><path class="hub-mark" d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"/></svg>
@@ -327,8 +327,8 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <text class="hub-text" x="46" y="195">GitHub</text>
 </g>
 <g class="hub-node hub-core">
-<rect x="196" y="110" width="128" height="80" rx="16"/>
-<text class="hub-text hub-brand" x="260" y="148" text-anchor="middle">hoandat</text>
+<rect x="192" y="110" width="136" height="80" rx="16"/>
+<text class="hub-text hub-brand" x="260" y="148" text-anchor="middle">Auth Next</text>
 <text class="hub-text hub-sub" x="260" y="168" text-anchor="middle">ISSUER_HOST</text>
 </g>
 <g class="hub-node tone-violet">
@@ -414,7 +414,7 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 </section>
 <section class="apps-section" id="how-sign-in-works" aria-labelledby="apps-steps-title" data-id="apps-steps">
 <h2 class="apps-section-title" id="apps-steps-title">登录流程</h2>
-<ol class="apps-steps"><li class="apps-step"><span class="apps-step-number" aria-hidden="true">1</span><div><h3 class="apps-step-title">选择一个应用</h3><p class="apps-step-body">在它的网站上选择登录，或在终端运行 <code class="mono">tunelo login</code>。</p></div></li><li class="apps-step"><span class="apps-step-number" aria-hidden="true">2</span><div><h3 class="apps-step-title">使用 Google 或 GitHub 继续</h3><p class="apps-step-body">你关联的账号会为你登录。第一次登录时需选择用户名。</p></div></li><li class="apps-step"><span class="apps-step-number" aria-hidden="true">3</span><div><h3 class="apps-step-title">回到应用</h3><p class="apps-step-body">来自 hoandat 以外的应用（例如 AI 工具）会先请求你的同意。</p></div></li></ol>
+<ol class="apps-steps"><li class="apps-step"><span class="apps-step-number" aria-hidden="true">1</span><div><h3 class="apps-step-title">选择一个应用</h3><p class="apps-step-body">在它的网站上选择登录，或在终端运行 <code class="mono">tunelo login</code>。</p></div></li><li class="apps-step"><span class="apps-step-number" aria-hidden="true">2</span><div><h3 class="apps-step-title">使用 Google 或 GitHub 继续</h3><p class="apps-step-body">你关联的账号会为你登录。第一次登录时需选择用户名。</p></div></li><li class="apps-step"><span class="apps-step-number" aria-hidden="true">3</span><div><h3 class="apps-step-title">回到应用</h3><p class="apps-step-body">来自 Auth Next 以外的应用（例如 AI 工具）会先请求你的同意。</p></div></li></ol>
 </section>
 <p class="apps-manage" data-id="apps-manage">如需查看或移除可以访问你账号的应用，请打开<a class="link" href="/account">账号</a>页面。</p></main>
 <footer class="page-foot container"><nav class="lang-switch" aria-label="语言" data-id="lang-switch"><a class="lang-option" href="/lang?set=en&amp;return=%2Fapps" lang="en" hreflang="en" data-id="lang-en">English</a><a class="lang-option" href="/lang?set=zh-CN&amp;return=%2Fapps" lang="zh-CN" hreflang="zh-CN" aria-current="true" data-id="lang-zh-CN">中文</a><a class="lang-option" href="/lang?set=vi&amp;return=%2Fapps" lang="vi" hreflang="vi" data-id="lang-vi">Tiếng Việt</a></nav></footer>
@@ -430,13 +430,13 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /privacy the same w
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="referrer" content="no-referrer">
 <meta name="robots" content="noindex">
-<title>Privacy policy · hoandat</title>
+<title>Privacy policy · Auth Next</title>
 <link rel="stylesheet" href="/assets/fonts/inter/400.css"><link rel="stylesheet" href="/assets/fonts/inter/500.css"><link rel="stylesheet" href="/assets/fonts/inter/600.css"><link rel="stylesheet" href="/assets/fonts/jetbrains-mono/400.css"><link rel="stylesheet" href="/assets/fonts/jetbrains-mono/600.css"><link rel="stylesheet" href="/assets/fonts/jetbrains-mono/700.css">
 <link rel="stylesheet" href="/assets/css/tokens.css?v=HASH"><link rel="stylesheet" href="/assets/css/app.css?v=HASH">
 </head>
 <body>
 <header class="topbar"><div class="topbar-inner container">
-<a class="idp-brand" href="/apps" data-id="idp-brand"><span><b>hoandat</b><span class="idp-brand-suffix"> · Account</span></span> <span class="badge badge-neutral hide-sm">ISSUER_HOST</span></a>
+<a class="idp-brand" href="/apps" data-id="idp-brand"><span><b>Auth Next</b><span class="idp-brand-suffix"> · Account</span></span> <span class="badge badge-neutral hide-sm">ISSUER_HOST</span></a>
 <nav class="topbar-nav" aria-label="Site"><a class="topbar-link" href="/apps" data-id="nav-home">Home</a><a class="topbar-link" href="/account" data-id="nav-account">Account</a></nav>
 </div></header>
 <main class="page container auth">
@@ -469,13 +469,13 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /privacy the same w
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="referrer" content="no-referrer">
 <meta name="robots" content="noindex">
-<title>Chính sách quyền riêng tư · hoandat</title>
+<title>Chính sách quyền riêng tư · Auth Next</title>
 <link rel="stylesheet" href="/assets/fonts/inter/400.css"><link rel="stylesheet" href="/assets/fonts/inter/500.css"><link rel="stylesheet" href="/assets/fonts/inter/600.css"><link rel="stylesheet" href="/assets/fonts/jetbrains-mono/400.css"><link rel="stylesheet" href="/assets/fonts/jetbrains-mono/600.css"><link rel="stylesheet" href="/assets/fonts/jetbrains-mono/700.css">
 <link rel="stylesheet" href="/assets/css/tokens.css?v=HASH"><link rel="stylesheet" href="/assets/css/app.css?v=HASH">
 </head>
 <body>
 <header class="topbar"><div class="topbar-inner container">
-<a class="idp-brand" href="/apps" data-id="idp-brand"><span><b>hoandat</b><span class="idp-brand-suffix"> · Tài khoản</span></span> <span class="badge badge-neutral hide-sm">ISSUER_HOST</span></a>
+<a class="idp-brand" href="/apps" data-id="idp-brand"><span><b>Auth Next</b><span class="idp-brand-suffix"> · Tài khoản</span></span> <span class="badge badge-neutral hide-sm">ISSUER_HOST</span></a>
 <nav class="topbar-nav" aria-label="Điều hướng"><a class="topbar-link" href="/apps" data-id="nav-home">Trang chủ</a><a class="topbar-link" href="/account" data-id="nav-account">Tài khoản</a></nav>
 </div></header>
 <main class="page container auth">
@@ -508,13 +508,13 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /privacy the same w
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="referrer" content="no-referrer">
 <meta name="robots" content="noindex">
-<title>隐私政策 · hoandat</title>
+<title>隐私政策 · Auth Next</title>
 <link rel="stylesheet" href="/assets/fonts/inter/400.css"><link rel="stylesheet" href="/assets/fonts/inter/500.css"><link rel="stylesheet" href="/assets/fonts/inter/600.css"><link rel="stylesheet" href="/assets/fonts/jetbrains-mono/400.css"><link rel="stylesheet" href="/assets/fonts/jetbrains-mono/600.css"><link rel="stylesheet" href="/assets/fonts/jetbrains-mono/700.css">
 <link rel="stylesheet" href="/assets/css/tokens.css?v=HASH"><link rel="stylesheet" href="/assets/css/app.css?v=HASH">
 </head>
 <body>
 <header class="topbar"><div class="topbar-inner container">
-<a class="idp-brand" href="/apps" data-id="idp-brand"><span><b>hoandat</b><span class="idp-brand-suffix"> · 账号</span></span> <span class="badge badge-neutral hide-sm">ISSUER_HOST</span></a>
+<a class="idp-brand" href="/apps" data-id="idp-brand"><span><b>Auth Next</b><span class="idp-brand-suffix"> · 账号</span></span> <span class="badge badge-neutral hide-sm">ISSUER_HOST</span></a>
 <nav class="topbar-nav" aria-label="站点导航"><a class="topbar-link" href="/apps" data-id="nav-home">首页</a><a class="topbar-link" href="/account" data-id="nav-account">账号</a></nav>
 </div></header>
 <main class="page container auth">
@@ -738,7 +738,7 @@ exports[`primary tenant (hoandat.com) is unchanged > serves the same static clie
     "application_type": "web",
     "backchannel_logout_session_required": false,
     "client_id": "hoandat-account",
-    "client_name": "Tài khoản hoandat",
+    "client_name": "Tài khoản Auth Next",
     "dpop_bound_access_tokens": false,
     "grant_types": [
       "authorization_code",
@@ -948,7 +948,7 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in en 
   "account.profile.title": "Profile",
   "account.sessions.browser": "Browser",
   "account.sessions.browserOn": "{browser} on {system}",
-  "account.sessions.description": "Browsers signed in to your hoandat account.",
+  "account.sessions.description": "Browsers signed in to your Auth Next account.",
   "account.sessions.empty": "No open sessions.",
   "account.sessions.signOut": "Sign out session",
   "account.sessions.signOutOthers": "Sign out every other session",
@@ -982,7 +982,7 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in en 
   "account.telegram.statusOff": "off",
   "account.telegram.title": "Telegram",
   "account.telegram.unlink": "Unlink Telegram",
-  "account.title": "hoandat account",
+  "account.title": "Auth Next account",
   "admin.certificate.failed": "Certificates: the last attempt failed ({error}); next try {date}.",
   "admin.certificate.issued": "Certificates: issued {date}.",
   "admin.certificate.pending": "Certificates: being issued.",
@@ -1027,8 +1027,8 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in en 
   "apps.chatWeb.signIn": "Choose Sign in on the site.",
   "apps.cta.account": "Manage your account",
   "apps.cta.how": "How sign-in works",
-  "apps.diagram.label": "Your hoandat account, reached with Google or GitHub, signs you in to {apps}.",
-  "apps.eyebrow": "hoandat sign-in",
+  "apps.diagram.label": "Your Auth Next account, reached with Google or GitHub, signs you in to {apps}.",
+  "apps.eyebrow": "Auth Next sign-in",
   "apps.kind.cli": "Command line",
   "apps.kind.mcp": "MCP server",
   "apps.kind.web": "Web app",
@@ -1042,7 +1042,7 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in en 
   "apps.scribeWeb.description": "Record audio and turn it into searchable, editable transcripts.",
   "apps.scribeWeb.signIn": "Choose Sign in on the site.",
   "apps.signInLabel": "How to sign in",
-  "apps.steps.back.body": "Apps from outside hoandat, such as AI tools, ask for your approval first.",
+  "apps.steps.back.body": "Apps from outside Auth Next, such as AI tools, ask for your approval first.",
   "apps.steps.back.title": "You are back in the app",
   "apps.steps.choose.body": "Choose Sign in on its site, or run {command} in a terminal.",
   "apps.steps.choose.title": "Pick an app",
@@ -1050,7 +1050,7 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in en 
   "apps.steps.provider.title": "Continue with Google or GitHub",
   "apps.steps.title": "How sign-in works",
   "apps.subtitle": "Sign in once with Google or GitHub and use the same account in every app below.",
-  "apps.title": "One account for every hoandat app",
+  "apps.title": "One account for every Auth Next app",
   "apps.trust.control": "You choose which apps get access",
   "apps.trust.noPassword": "No password to create or remember",
   "apps.trust.providers": "Sign in with Google or GitHub",
@@ -1058,18 +1058,18 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in en 
   "apps.tuneloCli.signIn": "Run {command} in a terminal, then enter the code it shows at {device}.",
   "apps.tuneloWeb.description": "Your tunnels in the browser.",
   "apps.tuneloWeb.signIn": "Choose Sign in on the site.",
-  "bot.link.ask": "Link this Telegram chat to hoandat account @{username}? Only confirm if you just opened the link from your account page yourself.",
+  "bot.link.ask": "Link this Telegram chat to Auth Next account @{username}? Only confirm if you just opened the link from your account page yourself.",
   "bot.link.confirm": "Confirm link",
-  "bot.link.done": "Linked Telegram to hoandat account @{username}. You'll get your account's security notices here.",
+  "bot.link.done": "Linked Telegram to Auth Next account @{username}. You'll get your account's security notices here.",
   "bot.link.doneShort": "Linked",
-  "bot.link.expired": "This link has expired or was already used. Create a new one on your hoandat account page.",
+  "bot.link.expired": "This link has expired or was already used. Create a new one on your Auth Next account page.",
   "bot.link.expiredShort": "Link expired",
-  "bot.link.moved": "hoandat account @{username} moved its link to another Telegram chat. This chat won't get notices anymore.",
-  "bot.link.otherAccount": "This Telegram chat is already linked to another hoandat account. Unlink it there first.",
+  "bot.link.moved": "Auth Next account @{username} moved its link to another Telegram chat. This chat won't get notices anymore.",
+  "bot.link.otherAccount": "This Telegram chat is already linked to another Auth Next account. Unlink it there first.",
   "bot.link.otherAccountShort": "Chat linked to another account",
-  "bot.notice.emailReclaimed": "Email {email} was removed from hoandat account @{username} because its owner verified it with {provider}. You can still sign in with the Google or GitHub account linked to that account.",
-  "bot.notice.providerLinked": "hoandat account @{username} was just linked to {provider}. If this wasn't you, unlink it on your account page.",
-  "bot.start.howTo": "To link this chat, open your hoandat account page and press “{button}”. A link expires after 10 minutes and works only once.",
+  "bot.notice.emailReclaimed": "Email {email} was removed from Auth Next account @{username} because its owner verified it with {provider}. You can still sign in with the Google or GitHub account linked to that account.",
+  "bot.notice.providerLinked": "Auth Next account @{username} was just linked to {provider}. If this wasn't you, unlink it on your account page.",
+  "bot.start.howTo": "To link this chat, open your Auth Next account page and press “{button}”. A link expires after 10 minutes and works only once.",
   "claim.error.capacity": "This server cannot take another domain right now. Try again later.",
   "claim.error.dnsAddress": "The records marked “Not yet” do not point to {ip} (DNS only) or to Cloudflare's proxy. Fix them and check again; DNS changes can take a few minutes.",
   "claim.error.dnsTxt": "The TXT record is missing or has another value. DNS changes can take a few minutes.",
@@ -1085,12 +1085,12 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in en 
   "claim.form.ownerOption": "{provider} account {name}",
   "claim.form.submit": "Start claim",
   "claim.guideLink": "Step-by-step guide with screenshots",
-  "claim.hosting.hoandat": "On hoandat's servers",
-  "claim.hosting.hoandatHelp": "Nothing to install. Data lives on hoandat's servers, kept apart per domain.",
+  "claim.hosting.hoandat": "On Auth Next's servers",
+  "claim.hosting.hoandatHelp": "Nothing to install. Data lives on Auth Next's servers, kept apart per domain.",
   "claim.hosting.label": "Where it runs",
   "claim.hosting.self": "On your own servers",
-  "claim.hosting.selfHelp": "hoandat only verifies the domain and issues the setup bundle. After that every request and all data stay on your servers; backups, updates and security are yours.",
-  "claim.lead": "Run hoandat sign-in, Chat, Localman and Tunelo on a domain you control: auth., chat., localman. and tunnel. under it, with their own accounts.",
+  "claim.hosting.selfHelp": "Auth Next only verifies the domain and issues the setup bundle. After that every request and all data stay on your servers; backups, updates and security are yours.",
+  "claim.lead": "Run Auth Next sign-in, Chat, Localman and Tunelo on a domain you control: auth., chat., localman. and tunnel. under it, with their own accounts.",
   "claim.noIdentity": "Link a Google or GitHub account to your account first: the domain's owner is that account.",
   "claim.notice.migrating": "The move has started. Download the setup bundle, install it on your servers, then take your data as the guide says.",
   "claim.notice.migrationCancelled": "The move is cancelled. The domain is served here as before.",
@@ -1136,21 +1136,21 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in en 
   "common.unknown": "unknown",
   "confirm.app.canNow": "It can currently:",
   "confirm.app.effect": "Its sign-ins and tokens stop working, and it must ask you again to get access. Access tokens it already holds expire within 15 minutes.",
-  "confirm.app.lead": "{app} will no longer be able to use your hoandat account.",
+  "confirm.app.lead": "{app} will no longer be able to use your Auth Next account.",
   "confirm.app.title": "Remove app access?",
   "confirm.sessions.effect": "Apps signed in through those browsers, such as Localman and Tunelo on the web, are signed out too. Tunelo devices stay signed in.",
-  "confirm.sessions.lead": "Every browser below is signed out of your hoandat account. This browser stays signed in.",
+  "confirm.sessions.lead": "Every browser below is signed out of your Auth Next account. This browser stays signed in.",
   "confirm.sessions.title": "Sign out every other session?",
   "consent.allow": "Allow",
   "consent.credentialsWarning": "Lets the app create new access keys and secrets for you. Only allow apps you trust.",
   "consent.deny": "Deny",
-  "consent.externalNotice": "External app, not published by hoandat.com. The app chose its own name and hoandat doesn't check who is behind it. Only allow it if you just connected it yourself (for example a coding agent using MCP).",
+  "consent.externalNotice": "External app, not published by hoandat.com. The app chose its own name and Auth Next doesn't check who is behind it. Only allow it if you just connected it yourself (for example a coding agent using MCP).",
   "consent.lookalikeWarning": "This app's name looks like a hoandat.com product, but it isn't one, and it sends you back to a website rather than to your own machine. Only allow it if you recognize the address above as the app you just connected yourself; otherwise, deny.",
   "consent.pageTitle": "Allow access",
   "consent.redirect": "After you allow it, you go back to {host} with a code the app exchanges for tokens.",
   "consent.revokeHint": "You can remove this access any time on your account page.",
-  "consent.titleExternal": "Allow an external app to use your hoandat account",
-  "consent.titleForApp": "Allow {app} to use your hoandat account",
+  "consent.titleExternal": "Allow an external app to use your Auth Next account",
+  "consent.titleForApp": "Allow {app} to use your Auth Next account",
   "consent.willBeAbleTo": "The app will be able to:",
   "device.approve.code": "Code: {code}",
   "device.approve.ip": "requested from IP {ip}",
@@ -1211,9 +1211,9 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in en 
   "guide.prepare.oauth": "A Google Cloud or GitHub account, to create the sign-in app of your domain (step 5).",
   "guide.prepare.title": "Before you start",
   "guide.self.apps": "Your own Google or GitHub sign-in app, and a Cloudflare Turnstile widget for localman.<domain>.",
-  "guide.self.body": "When {claim} offers it, choose On your own servers in step 1. You only add the TXT record; the hosts point at your server, not here. Once the domain is verified, download the setup bundle (valid for 24 hours) and follow {installGuide}. Your server then completes the setup with hoandat once, and nothing goes through hoandat.com afterwards.",
+  "guide.self.body": "When {claim} offers it, choose On your own servers in step 1. You only add the TXT record; the hosts point at your server, not here. Once the domain is verified, download the setup bundle (valid for 24 hours) and follow {installGuide}. Your server then completes the setup with Auth Next once, and nothing goes through hoandat.com afterwards.",
   "guide.self.cloudflare": "DNS on Cloudflare with an API token that edits the zone: the wildcard certificates of *.localman. and *.tunnel. are proven through DNS.",
-  "guide.self.duty": "hoandat does not back up, update, patch or watch your server: that is up to you. Keep the TXT record so nobody else can claim the domain here.",
+  "guide.self.duty": "Auth Next does not back up, update, patch or watch your server: that is up to you. Keep the TXT record so nobody else can claim the domain here.",
   "guide.self.installGuide": "the install guide",
   "guide.self.move": "Moving a domain that already runs here: in Your domains, press Move to your own servers. The domain stops being served here at once, its data kept; Cancel the move serves it again. Install the bundle without pointing the A records at your server yet, and send the operator your install's migration public key. The operator exports the domain's accounts, projects, variables, tunnel keys and messages for your server only; import them there, then point the A records at it. Tokens already issued keep working; people sign in to Localman and Chat again once.",
   "guide.self.server": "A Linux server with Docker Compose, a public IPv4, ports 80 and 443 and Tunelo's TCP ports open, and about 4 GB of free memory.",
@@ -1255,20 +1255,20 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in en 
   "layout.nav": "Site",
   "login.cancel": "Cancel sign-in",
   "login.continueTo": "To continue to {app}.",
-  "login.firstTime": "Signing in with Google or GitHub for the first time creates a new hoandat account.",
+  "login.firstTime": "Signing in with Google or GitHub for the first time creates a new Auth Next account.",
   "login.forDevice": "Sign in to approve a device.",
   "login.noProvider": "Sign-in with Google and GitHub is turned off for now, so you can't sign in or sign up. Try again later.",
-  "login.tagline": "One hoandat account for Localman and Tunelo.",
+  "login.tagline": "One Auth Next account for Localman and Tunelo.",
   "login.title": "Sign in",
   "login.titleForApp": "Sign in to continue to {app}",
   "login.with": "Sign in with {provider}",
-  "logout.byApp": "{app} wants to sign you out of your hoandat account.",
+  "logout.byApp": "{app} wants to sign you out of your Auth Next account.",
   "logout.confirm": "Sign out",
-  "logout.done": "You signed out of your hoandat account in this browser.",
+  "logout.done": "You signed out of your Auth Next account in this browser.",
   "logout.doneTitle": "Signed out",
   "logout.help": "Signing out here also signs you out of Localman and Tunelo on the web in this browser.",
   "logout.keep": "No, stay signed in",
-  "logout.question": "Sign out of your hoandat account in this browser?",
+  "logout.question": "Sign out of your Auth Next account in this browser?",
   "logout.signInAgain": "Sign in again",
   "logout.title": "Sign out",
   "notice.appRevoked": "Removed the app's access.",
@@ -1319,7 +1319,7 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in en 
   "scope.mockRead": "See the Localman mock projects you can access, with their resources, schemas and data",
   "scope.mockWrite": "Create, edit and delete mock projects and resources on Localman, generate or reset data",
   "scope.offlineAccess": "Stay signed in while you're not using the app (up to 30 days)",
-  "scope.openid": "Know who you are (your hoandat account ID)",
+  "scope.openid": "Know who you are (your Auth Next account ID)",
   "scope.profile": "See your name, username and profile picture",
   "scope.telegram": "Send notices to the Telegram chat you linked",
   "scope.tunnelsOpen": "Open new tunnels with your account",
@@ -1327,32 +1327,32 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in en 
   "scope.unknown": "Permission “{scope}”",
   "signup.haveAccount": "Already have an account? {link}",
   "signup.pageTitle": "Sign up",
-  "signup.subtitle": "One account for Localman and Tunelo. Sign up with Google or GitHub: hoandat uses no passwords and sends no email.",
-  "signup.title": "Create a hoandat account",
+  "signup.subtitle": "One account for Localman and Tunelo. Sign up with Google or GitHub: Auth Next uses no passwords and sends no email.",
+  "signup.title": "Create your Auth Next account",
   "signup.with": "Sign up with {provider}",
   "telegram.commandLabel": "Link command",
   "telegram.once": "The link works once. After the bot says the chat is linked, reload your account page.",
   "telegram.open": "Open Telegram",
   "telegram.orSend": "Or send this command to the bot {bot}:",
-  "telegram.subtitle": "Open the hoandat bot in Telegram, press Start, then press “{button}” within 10 minutes.",
+  "telegram.subtitle": "Open the Auth Next bot in Telegram, press Start, then press “{button}” within 10 minutes.",
   "telegram.title": "Link Telegram",
   "upstream.expired": "The {provider} sign-in has expired. Start again.",
   "upstream.failed": "Couldn't sign in with {provider}. Try again in a few minutes.",
   "upstream.link.alreadyLinked": "Your account is already linked to a different {provider} account. Unlink that one first.",
-  "upstream.link.ownedByOther": "This {provider} account is already linked to another hoandat account.",
-  "upstream.rejected.disabled": "This hoandat account is locked.",
-  "upstream.rejected.noVerifiedEmail": "This account has no verified email, so it can't be used to sign in to hoandat.",
+  "upstream.link.ownedByOther": "This {provider} account is already linked to another Auth Next account.",
+  "upstream.rejected.disabled": "This Auth Next account is locked.",
+  "upstream.rejected.noVerifiedEmail": "This account has no verified email, so it can't be used to sign in to Auth Next.",
   "upstream.rejected.other": "Couldn't sign in.",
-  "upstream.rejected.otherProviderAccount": "This email belongs to a hoandat account linked to a different account at the same provider. Sign in with that linked account.",
+  "upstream.rejected.otherProviderAccount": "This email belongs to an account at Auth Next linked to a different account at the same provider. Sign in with that linked account.",
   "username.back": "Back to sign-in",
   "username.emailTaken": "This email was just used for another account. Sign in with that account instead.",
   "username.help": "3–30 characters: lowercase letters, digits and underscores. Others invite you by this username.",
   "username.invalid": "A username needs 3–30 characters: lowercase letters, digits or underscores.",
   "username.label": "Username",
   "username.reclaimLink": "sign in that way",
-  "username.reclaimWarning": "This email belongs to another hoandat account that nobody has verified. If that account is yours and it is linked to another Google or GitHub account, {link} and link {provider} on your account page. If you continue, the email moves to the new account; the other account keeps its other ways to sign in.",
+  "username.reclaimWarning": "This email belongs to another Auth Next account that nobody has verified. If that account is yours and it is linked to another Google or GitHub account, {link} and link {provider} on your account page. If you continue, the email moves to the new account; the other account keeps its other ways to sign in.",
   "username.submit": "Create account",
-  "username.subtitle": "Create a hoandat account with {provider} for {email} (verified).",
+  "username.subtitle": "Create your Auth Next account with {provider} for {email} (verified).",
   "username.taken": "This username is taken. Choose another one.",
   "username.title": "Choose a username",
 }
@@ -1388,7 +1388,7 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in vi 
   "account.profile.title": "Hồ sơ",
   "account.sessions.browser": "Trình duyệt",
   "account.sessions.browserOn": "{browser} trên {system}",
-  "account.sessions.description": "Các trình duyệt đang đăng nhập tài khoản hoandat của bạn.",
+  "account.sessions.description": "Các trình duyệt đang đăng nhập tài khoản Auth Next của bạn.",
   "account.sessions.empty": "Không có phiên nào.",
   "account.sessions.signOut": "Đăng xuất phiên",
   "account.sessions.signOutOthers": "Đăng xuất mọi phiên khác",
@@ -1398,7 +1398,7 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in vi 
   "account.sessions.title": "Phiên đang mở",
   "account.sessions.unknownBrowser": "Trình duyệt không rõ",
   "account.sessions.unknownSystem": "hệ điều hành không rõ",
-  "account.signIn.description": "hoandat không dùng mật khẩu: bạn đăng nhập bằng Google hoặc GitHub. Liên kết cả hai để vẫn vào được tài khoản khi mất một cách.",
+  "account.signIn.description": "Auth Next không dùng mật khẩu: bạn đăng nhập bằng Google hoặc GitHub. Liên kết cả hai để vẫn vào được tài khoản khi mất một cách.",
   "account.signIn.empty": "Đăng nhập bằng Google và GitHub đang tạm tắt.",
   "account.signIn.link": "Liên kết {provider}",
   "account.signIn.linked": "Đã liên kết ({identity})",
@@ -1422,7 +1422,7 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in vi 
   "account.telegram.statusOff": "đang tắt",
   "account.telegram.title": "Telegram",
   "account.telegram.unlink": "Huỷ liên kết Telegram",
-  "account.title": "Tài khoản hoandat",
+  "account.title": "Tài khoản Auth Next",
   "admin.certificate.failed": "Chứng chỉ: lần cấp gần nhất lỗi ({error}); thử lại lúc {date}.",
   "admin.certificate.issued": "Chứng chỉ: đã cấp lúc {date}.",
   "admin.certificate.pending": "Chứng chỉ: đang cấp.",
@@ -1467,8 +1467,8 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in vi 
   "apps.chatWeb.signIn": "Chọn Đăng nhập trên trang.",
   "apps.cta.account": "Quản lý tài khoản",
   "apps.cta.how": "Đăng nhập diễn ra thế nào",
-  "apps.diagram.label": "Tài khoản hoandat, vào bằng Google hoặc GitHub, đăng nhập cho bạn vào {apps}.",
-  "apps.eyebrow": "Đăng nhập hoandat",
+  "apps.diagram.label": "Tài khoản Auth Next, vào bằng Google hoặc GitHub, đăng nhập cho bạn vào {apps}.",
+  "apps.eyebrow": "Đăng nhập Auth Next",
   "apps.kind.cli": "Dòng lệnh",
   "apps.kind.mcp": "MCP server",
   "apps.kind.web": "Ứng dụng web",
@@ -1482,7 +1482,7 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in vi 
   "apps.scribeWeb.description": "Ghi âm và chuyển thành bản chép lời để tìm kiếm, chỉnh sửa.",
   "apps.scribeWeb.signIn": "Chọn Đăng nhập trên trang.",
   "apps.signInLabel": "Cách đăng nhập",
-  "apps.steps.back.body": "Ứng dụng bên ngoài hoandat, như công cụ AI, sẽ hỏi bạn đồng ý trước.",
+  "apps.steps.back.body": "Ứng dụng bên ngoài Auth Next, như công cụ AI, sẽ hỏi bạn đồng ý trước.",
   "apps.steps.back.title": "Quay lại ứng dụng",
   "apps.steps.choose.body": "Chọn Đăng nhập trên trang của nó, hoặc chạy {command} trong terminal.",
   "apps.steps.choose.title": "Chọn một ứng dụng",
@@ -1490,7 +1490,7 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in vi 
   "apps.steps.provider.title": "Tiếp tục với Google hoặc GitHub",
   "apps.steps.title": "Đăng nhập diễn ra thế nào",
   "apps.subtitle": "Đăng nhập một lần bằng Google hoặc GitHub, rồi dùng cùng tài khoản đó trong mọi ứng dụng bên dưới.",
-  "apps.title": "Một tài khoản cho mọi ứng dụng hoandat",
+  "apps.title": "Một tài khoản cho mọi ứng dụng Auth Next",
   "apps.trust.control": "Bạn chọn ứng dụng nào được quyền truy cập",
   "apps.trust.noPassword": "Không phải tạo hay nhớ mật khẩu",
   "apps.trust.providers": "Đăng nhập bằng Google hoặc GitHub",
@@ -1498,18 +1498,18 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in vi 
   "apps.tuneloCli.signIn": "Chạy {command} trong terminal, rồi nhập mã nó hiện ở {device}.",
   "apps.tuneloWeb.description": "Tunnel của bạn trên trình duyệt.",
   "apps.tuneloWeb.signIn": "Chọn Đăng nhập trên trang.",
-  "bot.link.ask": "Liên kết chat Telegram này với tài khoản hoandat @{username}? Chỉ bấm xác nhận nếu chính bạn vừa mở link từ trang tài khoản.",
+  "bot.link.ask": "Liên kết chat Telegram này với tài khoản Auth Next @{username}? Chỉ bấm xác nhận nếu chính bạn vừa mở link từ trang tài khoản.",
   "bot.link.confirm": "Xác nhận liên kết",
-  "bot.link.done": "Đã liên kết Telegram với tài khoản hoandat @{username}. Bạn sẽ nhận thông báo bảo mật của tài khoản ở đây.",
+  "bot.link.done": "Đã liên kết Telegram với tài khoản Auth Next @{username}. Bạn sẽ nhận thông báo bảo mật của tài khoản ở đây.",
   "bot.link.doneShort": "Đã liên kết",
-  "bot.link.expired": "Link liên kết đã hết hạn hoặc đã được dùng. Tạo link mới ở trang tài khoản hoandat.",
+  "bot.link.expired": "Link liên kết đã hết hạn hoặc đã được dùng. Tạo link mới ở trang tài khoản Auth Next.",
   "bot.link.expiredShort": "Link đã hết hạn",
-  "bot.link.moved": "Tài khoản hoandat @{username} đã chuyển liên kết sang một chat Telegram khác. Chat này sẽ không nhận thông báo nữa.",
-  "bot.link.otherAccount": "Chat Telegram này đã liên kết với một tài khoản hoandat khác. Huỷ liên kết ở tài khoản đó trước.",
+  "bot.link.moved": "Tài khoản Auth Next @{username} đã chuyển liên kết sang một chat Telegram khác. Chat này sẽ không nhận thông báo nữa.",
+  "bot.link.otherAccount": "Chat Telegram này đã liên kết với một tài khoản Auth Next khác. Huỷ liên kết ở tài khoản đó trước.",
   "bot.link.otherAccountShort": "Chat đã liên kết tài khoản khác",
-  "bot.notice.emailReclaimed": "Email {email} đã được gỡ khỏi tài khoản hoandat @{username} vì người sở hữu email đã xác minh nó qua {provider}. Bạn vẫn đăng nhập được bằng Google/GitHub đã liên kết với tài khoản đó.",
-  "bot.notice.providerLinked": "Tài khoản hoandat @{username} vừa được liên kết với {provider}. Nếu không phải bạn, hãy huỷ liên kết ở trang tài khoản.",
-  "bot.start.howTo": "Để liên kết, mở trang tài khoản hoandat và bấm “{button}”. Link cũ hết hạn sau 10 phút và chỉ dùng được một lần.",
+  "bot.notice.emailReclaimed": "Email {email} đã được gỡ khỏi tài khoản Auth Next @{username} vì người sở hữu email đã xác minh nó qua {provider}. Bạn vẫn đăng nhập được bằng Google/GitHub đã liên kết với tài khoản đó.",
+  "bot.notice.providerLinked": "Tài khoản Auth Next @{username} vừa được liên kết với {provider}. Nếu không phải bạn, hãy huỷ liên kết ở trang tài khoản.",
+  "bot.start.howTo": "Để liên kết, mở trang tài khoản Auth Next và bấm “{button}”. Link cũ hết hạn sau 10 phút và chỉ dùng được một lần.",
   "claim.error.capacity": "Máy chủ chưa nhận thêm domain lúc này. Hãy thử lại sau.",
   "claim.error.dnsAddress": "Các bản ghi đánh dấu “Chưa đúng” chưa trỏ tới {ip} (Chỉ DNS) hoặc qua proxy Cloudflare. Sửa rồi kiểm tra lại; thay đổi DNS có thể mất vài phút.",
   "claim.error.dnsTxt": "Không thấy bản ghi TXT hoặc giá trị khác. Thay đổi DNS có thể mất vài phút.",
@@ -1525,12 +1525,12 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in vi 
   "claim.form.ownerOption": "Tài khoản {provider} {name}",
   "claim.form.submit": "Bắt đầu nhận domain",
   "claim.guideLink": "Hướng dẫn từng bước có ảnh chụp màn hình",
-  "claim.hosting.hoandat": "Trên máy chủ của hoandat",
-  "claim.hosting.hoandatHelp": "Không cần cài gì. Dữ liệu nằm trên máy chủ của hoandat, tách riêng theo domain.",
+  "claim.hosting.hoandat": "Trên máy chủ của Auth Next",
+  "claim.hosting.hoandatHelp": "Không cần cài gì. Dữ liệu nằm trên máy chủ của Auth Next, tách riêng theo domain.",
   "claim.hosting.label": "Chạy ở đâu",
   "claim.hosting.self": "Trên máy chủ của bạn",
-  "claim.hosting.selfHelp": "hoandat chỉ xác minh domain và cấp gói cài đặt. Sau đó mọi request và dữ liệu nằm trên máy chủ của bạn; bạn tự lo backup, cập nhật và bảo mật.",
-  "claim.lead": "Chạy đăng nhập hoandat, Chat, Localman và Tunelo trên domain bạn sở hữu: auth., chat., localman. và tunnel. dưới domain đó, với tài khoản riêng.",
+  "claim.hosting.selfHelp": "Auth Next chỉ xác minh domain và cấp gói cài đặt. Sau đó mọi request và dữ liệu nằm trên máy chủ của bạn; bạn tự lo backup, cập nhật và bảo mật.",
+  "claim.lead": "Chạy đăng nhập Auth Next, Chat, Localman và Tunelo trên domain bạn sở hữu: auth., chat., localman. và tunnel. dưới domain đó, với tài khoản riêng.",
   "claim.noIdentity": "Hãy liên kết một tài khoản Google hoặc GitHub với tài khoản của bạn trước: chủ của domain là tài khoản đó.",
   "claim.notice.migrating": "Đã bắt đầu chuyển. Tải gói cài đặt, cài trên máy chủ của bạn rồi nhận dữ liệu theo hướng dẫn.",
   "claim.notice.migrationCancelled": "Đã huỷ chuyển. Domain được phục vụ ở đây như trước.",
@@ -1576,21 +1576,21 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in vi 
   "common.unknown": "không rõ",
   "confirm.app.canNow": "Hiện ứng dụng được:",
   "confirm.app.effect": "Phiên đăng nhập và token của ứng dụng ngừng hoạt động, và nó phải xin lại quyền. Access token nó đang giữ hết hạn trong vòng 15 phút.",
-  "confirm.app.lead": "{app} sẽ không dùng được tài khoản hoandat của bạn nữa.",
+  "confirm.app.lead": "{app} sẽ không dùng được tài khoản Auth Next của bạn nữa.",
   "confirm.app.title": "Gỡ quyền của ứng dụng?",
   "confirm.sessions.effect": "Ứng dụng đăng nhập qua các trình duyệt đó, như Localman và Tunelo bản web, cũng bị đăng xuất. Thiết bị Tunelo vẫn giữ đăng nhập.",
-  "confirm.sessions.lead": "Mọi trình duyệt bên dưới sẽ bị đăng xuất khỏi tài khoản hoandat. Trình duyệt này vẫn giữ đăng nhập.",
+  "confirm.sessions.lead": "Mọi trình duyệt bên dưới sẽ bị đăng xuất khỏi tài khoản Auth Next. Trình duyệt này vẫn giữ đăng nhập.",
   "confirm.sessions.title": "Đăng xuất mọi phiên khác?",
   "consent.allow": "Cho phép",
   "consent.credentialsWarning": "Cho phép tạo khoá truy cập và secret mới thay bạn. Chỉ cấp cho ứng dụng bạn tin tưởng.",
   "consent.deny": "Từ chối",
-  "consent.externalNotice": "Ứng dụng bên ngoài, không do hoandat.com phát hành. Tên ứng dụng do chính nó tự khai và hoandat không kiểm tra ai đứng sau nó; chỉ cho phép nếu chính bạn vừa kết nối nó (ví dụ một coding agent dùng MCP).",
+  "consent.externalNotice": "Ứng dụng bên ngoài, không do hoandat.com phát hành. Tên ứng dụng do chính nó tự khai và Auth Next không kiểm tra ai đứng sau nó; chỉ cho phép nếu chính bạn vừa kết nối nó (ví dụ một coding agent dùng MCP).",
   "consent.lookalikeWarning": "Tên ứng dụng giống sản phẩm của hoandat.com nhưng không phải, và nó chuyển bạn về một website chứ không phải máy của bạn. Chỉ cho phép nếu bạn nhận ra địa chỉ ở trên là của ứng dụng chính bạn vừa kết nối; nếu không, hãy từ chối.",
   "consent.pageTitle": "Cấp quyền",
   "consent.redirect": "Sau khi cho phép, bạn được chuyển về {host} kèm mã để ứng dụng nhận token.",
   "consent.revokeHint": "Bạn có thể thu hồi quyền này bất cứ lúc nào ở trang tài khoản.",
-  "consent.titleExternal": "Cho phép một ứng dụng bên ngoài dùng tài khoản hoandat của bạn",
-  "consent.titleForApp": "Cho phép {app} dùng tài khoản hoandat của bạn",
+  "consent.titleExternal": "Cho phép một ứng dụng bên ngoài dùng tài khoản Auth Next của bạn",
+  "consent.titleForApp": "Cho phép {app} dùng tài khoản Auth Next của bạn",
   "consent.willBeAbleTo": "Ứng dụng sẽ được:",
   "device.approve.code": "Mã: {code}",
   "device.approve.ip": "yêu cầu từ IP {ip}",
@@ -1651,9 +1651,9 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in vi 
   "guide.prepare.oauth": "Một tài khoản Google Cloud hoặc GitHub để tạo app đăng nhập cho domain (bước 5).",
   "guide.prepare.title": "Cần chuẩn bị",
   "guide.self.apps": "App đăng nhập Google hoặc GitHub của riêng bạn, và một widget Cloudflare Turnstile cho localman.<domain>.",
-  "guide.self.body": "Khi {claim} có lựa chọn này, chọn Trên máy chủ của bạn ở bước 1. Bạn chỉ thêm bản ghi TXT; các host trỏ về máy chủ của bạn, không trỏ về đây. Domain xác minh xong thì tải gói cài đặt (hạn 24 giờ) và làm theo {installGuide}. Máy chủ của bạn hoàn tất thiết lập với hoandat một lần, sau đó không gì đi qua hoandat.com nữa.",
+  "guide.self.body": "Khi {claim} có lựa chọn này, chọn Trên máy chủ của bạn ở bước 1. Bạn chỉ thêm bản ghi TXT; các host trỏ về máy chủ của bạn, không trỏ về đây. Domain xác minh xong thì tải gói cài đặt (hạn 24 giờ) và làm theo {installGuide}. Máy chủ của bạn hoàn tất thiết lập với Auth Next một lần, sau đó không gì đi qua hoandat.com nữa.",
   "guide.self.cloudflare": "DNS trên Cloudflare kèm API token sửa được zone: chứng chỉ wildcard của *.localman. và *.tunnel. chứng minh qua DNS.",
-  "guide.self.duty": "hoandat không backup, không cập nhật, không vá bảo mật và không giám sát máy chủ của bạn: các việc đó do bạn lo. Giữ bản ghi TXT để không ai nhận lại domain ở đây.",
+  "guide.self.duty": "Auth Next không backup, không cập nhật, không vá bảo mật và không giám sát máy chủ của bạn: các việc đó do bạn lo. Giữ bản ghi TXT để không ai nhận lại domain ở đây.",
   "guide.self.installGuide": "hướng dẫn cài đặt",
   "guide.self.move": "Chuyển một domain đang chạy ở đây: trong mục Domain của bạn, bấm Chuyển sang máy chủ của bạn. Domain ngừng phục vụ ở đây ngay, dữ liệu được giữ; Huỷ chuyển cho nó chạy lại. Cài gói nhưng chưa trỏ bản ghi A về máy chủ của bạn, rồi gửi khoá chuyển công khai của bản cài cho người vận hành. Người vận hành xuất tài khoản, project, biến, khoá tunnel và tin nhắn của domain, chỉ máy chủ của bạn mở được; nhập chúng ở đó rồi trỏ bản ghi A về máy chủ của bạn. Token đã cấp vẫn dùng được; người dùng đăng nhập lại Localman và Chat một lần.",
   "guide.self.server": "Một máy Linux có Docker Compose, IPv4 công khai, mở cổng 80, 443 và dải cổng TCP của Tunelo, khoảng 4 GB RAM trống.",
@@ -1695,20 +1695,20 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in vi 
   "layout.nav": "Điều hướng",
   "login.cancel": "Huỷ đăng nhập",
   "login.continueTo": "Để tiếp tục tới {app}.",
-  "login.firstTime": "Lần đầu đăng nhập bằng Google hoặc GitHub sẽ tạo tài khoản hoandat mới.",
+  "login.firstTime": "Lần đầu đăng nhập bằng Google hoặc GitHub sẽ tạo tài khoản Auth Next mới.",
   "login.forDevice": "Đăng nhập để duyệt thiết bị.",
   "login.noProvider": "Đăng nhập bằng Google và GitHub đang tạm tắt, nên chưa đăng nhập hay đăng ký được. Thử lại sau.",
-  "login.tagline": "Một tài khoản hoandat cho Localman và Tunelo.",
+  "login.tagline": "Một tài khoản Auth Next cho Localman và Tunelo.",
   "login.title": "Đăng nhập",
   "login.titleForApp": "Đăng nhập để tiếp tục tới {app}",
   "login.with": "Đăng nhập với {provider}",
-  "logout.byApp": "{app} muốn đăng xuất bạn khỏi tài khoản hoandat.",
+  "logout.byApp": "{app} muốn đăng xuất bạn khỏi tài khoản Auth Next.",
   "logout.confirm": "Đăng xuất",
-  "logout.done": "Bạn đã đăng xuất khỏi tài khoản hoandat trên trình duyệt này.",
+  "logout.done": "Bạn đã đăng xuất khỏi tài khoản Auth Next trên trình duyệt này.",
   "logout.doneTitle": "Đã đăng xuất",
   "logout.help": "Đăng xuất ở đây cũng đăng xuất Localman và Tunelo web trên trình duyệt này.",
   "logout.keep": "Không, giữ đăng nhập",
-  "logout.question": "Đăng xuất khỏi tài khoản hoandat trên trình duyệt này?",
+  "logout.question": "Đăng xuất khỏi tài khoản Auth Next trên trình duyệt này?",
   "logout.signInAgain": "Đăng nhập lại",
   "logout.title": "Đăng xuất",
   "notice.appRevoked": "Đã gỡ quyền của ứng dụng.",
@@ -1759,7 +1759,7 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in vi 
   "scope.mockRead": "Xem project mock trên Localman mà bạn có quyền truy cập, gồm resource, schema và dữ liệu",
   "scope.mockWrite": "Tạo, sửa, xoá project và resource mock trên Localman, sinh hoặc reset dữ liệu",
   "scope.offlineAccess": "Giữ đăng nhập khi bạn không mở ứng dụng (tối đa 30 ngày)",
-  "scope.openid": "Biết bạn là ai (mã định danh tài khoản hoandat)",
+  "scope.openid": "Biết bạn là ai (mã định danh tài khoản Auth Next)",
   "scope.profile": "Xem tên, username và ảnh đại diện",
   "scope.telegram": "Gửi thông báo tới chat Telegram bạn đã liên kết",
   "scope.tunnelsOpen": "Mở tunnel mới bằng tài khoản của bạn",
@@ -1767,32 +1767,32 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in vi 
   "scope.unknown": "Quyền “{scope}”",
   "signup.haveAccount": "Đã có tài khoản? {link}",
   "signup.pageTitle": "Đăng ký",
-  "signup.subtitle": "Dùng chung cho Localman và Tunelo. Đăng ký bằng Google hoặc GitHub; hoandat không dùng mật khẩu và không gửi email.",
-  "signup.title": "Tạo tài khoản hoandat",
+  "signup.subtitle": "Dùng chung cho Localman và Tunelo. Đăng ký bằng Google hoặc GitHub; Auth Next không dùng mật khẩu và không gửi email.",
+  "signup.title": "Tạo tài khoản Auth Next",
   "signup.with": "Đăng ký với {provider}",
   "telegram.commandLabel": "Lệnh liên kết",
   "telegram.once": "Link chỉ dùng được một lần. Sau khi bot báo đã liên kết, tải lại trang tài khoản.",
   "telegram.open": "Mở Telegram",
   "telegram.orSend": "Hoặc gửi lệnh sau cho bot {bot}:",
-  "telegram.subtitle": "Mở bot hoandat trên Telegram, bấm Start rồi bấm “{button}” trong 10 phút.",
+  "telegram.subtitle": "Mở bot Auth Next trên Telegram, bấm Start rồi bấm “{button}” trong 10 phút.",
   "telegram.title": "Liên kết Telegram",
   "upstream.expired": "Phiên đăng nhập bằng {provider} đã hết hạn. Thử lại từ đầu.",
   "upstream.failed": "Không đăng nhập được bằng {provider}. Thử lại sau ít phút.",
   "upstream.link.alreadyLinked": "Tài khoản đã liên kết một tài khoản {provider} khác. Huỷ liên kết đó trước.",
-  "upstream.link.ownedByOther": "Tài khoản {provider} này đã liên kết với một tài khoản hoandat khác.",
-  "upstream.rejected.disabled": "Tài khoản hoandat này đã bị khoá.",
-  "upstream.rejected.noVerifiedEmail": "Tài khoản này chưa có email đã xác minh, nên không dùng để đăng nhập hoandat được.",
+  "upstream.link.ownedByOther": "Tài khoản {provider} này đã liên kết với một tài khoản Auth Next khác.",
+  "upstream.rejected.disabled": "Tài khoản Auth Next này đã bị khoá.",
+  "upstream.rejected.noVerifiedEmail": "Tài khoản này chưa có email đã xác minh, nên không dùng để đăng nhập Auth Next được.",
   "upstream.rejected.other": "Không đăng nhập được.",
-  "upstream.rejected.otherProviderAccount": "Email này thuộc một tài khoản hoandat đã liên kết với tài khoản khác của cùng nhà cung cấp. Đăng nhập bằng tài khoản đã liên kết đó.",
+  "upstream.rejected.otherProviderAccount": "Email này thuộc một tài khoản Auth Next đã liên kết với tài khoản khác của cùng nhà cung cấp. Đăng nhập bằng tài khoản đã liên kết đó.",
   "username.back": "Quay lại đăng nhập",
   "username.emailTaken": "Email này vừa được dùng cho một tài khoản khác. Hãy đăng nhập bằng tài khoản đó.",
   "username.help": "3–30 ký tự: chữ thường, số và dấu gạch dưới. Người khác mời bạn bằng username này.",
   "username.invalid": "Username cần 3–30 ký tự gồm chữ thường, số hoặc dấu gạch dưới.",
   "username.label": "Username",
   "username.reclaimLink": "đăng nhập bằng cách đó",
-  "username.reclaimWarning": "Email này đang gắn với một tài khoản hoandat khác nhưng chưa ai xác minh. Nếu đó là tài khoản của bạn và nó đã liên kết Google hoặc GitHub khác, hãy {link} rồi liên kết {provider} ở trang tài khoản. Nếu tiếp tục, email chuyển sang tài khoản mới; tài khoản kia giữ các cách đăng nhập khác của nó.",
+  "username.reclaimWarning": "Email này đang gắn với một tài khoản Auth Next khác nhưng chưa ai xác minh. Nếu đó là tài khoản của bạn và nó đã liên kết Google hoặc GitHub khác, hãy {link} rồi liên kết {provider} ở trang tài khoản. Nếu tiếp tục, email chuyển sang tài khoản mới; tài khoản kia giữ các cách đăng nhập khác của nó.",
   "username.submit": "Tạo tài khoản",
-  "username.subtitle": "Tạo tài khoản hoandat bằng {provider} cho {email} (đã xác minh).",
+  "username.subtitle": "Tạo tài khoản Auth Next bằng {provider} cho {email} (đã xác minh).",
   "username.taken": "Username này đã có người dùng. Chọn username khác.",
   "username.title": "Chọn username",
 }
@@ -1828,7 +1828,7 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in zh-
   "account.profile.title": "个人资料",
   "account.sessions.browser": "浏览器",
   "account.sessions.browserOn": "{system} 上的 {browser}",
-  "account.sessions.description": "已登录你 hoandat 账号的浏览器。",
+  "account.sessions.description": "已登录你 Auth Next 账号的浏览器。",
   "account.sessions.empty": "没有已打开的会话。",
   "account.sessions.signOut": "退出此会话",
   "account.sessions.signOutOthers": "退出其他所有会话",
@@ -1862,7 +1862,7 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in zh-
   "account.telegram.statusOff": "已关闭",
   "account.telegram.title": "Telegram",
   "account.telegram.unlink": "取消关联 Telegram",
-  "account.title": "hoandat 账号",
+  "account.title": "Auth Next 账号",
   "admin.certificate.failed": "证书：上次签发失败（{error}）；将于 {date} 重试。",
   "admin.certificate.issued": "证书：已于 {date} 签发。",
   "admin.certificate.pending": "证书：正在签发。",
@@ -1907,8 +1907,8 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in zh-
   "apps.chatWeb.signIn": "在网站上选择登录。",
   "apps.cta.account": "管理你的账号",
   "apps.cta.how": "登录如何进行",
-  "apps.diagram.label": "通过 Google 或 GitHub 进入你的 hoandat 账号，即可登录 {apps}。",
-  "apps.eyebrow": "hoandat 登录",
+  "apps.diagram.label": "通过 Google 或 GitHub 进入你的 Auth Next 账号，即可登录 {apps}。",
+  "apps.eyebrow": "Auth Next 登录",
   "apps.kind.cli": "命令行",
   "apps.kind.mcp": "MCP 服务器",
   "apps.kind.web": "网页应用",
@@ -1922,7 +1922,7 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in zh-
   "apps.scribeWeb.description": "录音并转写为可搜索、可编辑的文字稿。",
   "apps.scribeWeb.signIn": "在网站上选择登录。",
   "apps.signInLabel": "登录方式",
-  "apps.steps.back.body": "来自 hoandat 以外的应用（例如 AI 工具）会先请求你的同意。",
+  "apps.steps.back.body": "来自 Auth Next 以外的应用（例如 AI 工具）会先请求你的同意。",
   "apps.steps.back.title": "回到应用",
   "apps.steps.choose.body": "在它的网站上选择登录，或在终端运行 {command}。",
   "apps.steps.choose.title": "选择一个应用",
@@ -1930,7 +1930,7 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in zh-
   "apps.steps.provider.title": "使用 Google 或 GitHub 继续",
   "apps.steps.title": "登录流程",
   "apps.subtitle": "用 Google 或 GitHub 登录一次，即可在下方所有应用中使用同一个账号。",
-  "apps.title": "一个账号，通用所有 hoandat 应用",
+  "apps.title": "一个账号，通用所有 Auth Next 应用",
   "apps.trust.control": "由你决定哪些应用可以访问",
   "apps.trust.noPassword": "无需创建或记住密码",
   "apps.trust.providers": "使用 Google 或 GitHub 登录",
@@ -1938,18 +1938,18 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in zh-
   "apps.tuneloCli.signIn": "在终端运行 {command}，然后在 {device} 输入它显示的代码。",
   "apps.tuneloWeb.description": "在浏览器中查看你的隧道。",
   "apps.tuneloWeb.signIn": "在网站上选择登录。",
-  "bot.link.ask": "将此 Telegram 聊天关联到 hoandat 账号 @{username}？只有在你本人刚从账号页面打开该链接时才确认。",
+  "bot.link.ask": "将此 Telegram 聊天关联到 Auth Next 账号 @{username}？只有在你本人刚从账号页面打开该链接时才确认。",
   "bot.link.confirm": "确认关联",
-  "bot.link.done": "已将 Telegram 关联到 hoandat 账号 @{username}。你将在这里收到账号的安全通知。",
+  "bot.link.done": "已将 Telegram 关联到 Auth Next 账号 @{username}。你将在这里收到账号的安全通知。",
   "bot.link.doneShort": "已关联",
-  "bot.link.expired": "该链接已过期或已被使用。请在 hoandat 账号页面创建新链接。",
+  "bot.link.expired": "该链接已过期或已被使用。请在 Auth Next 账号页面创建新链接。",
   "bot.link.expiredShort": "链接已过期",
-  "bot.link.moved": "hoandat 账号 @{username} 已将关联转移到另一个 Telegram 聊天。此聊天将不再收到通知。",
-  "bot.link.otherAccount": "此 Telegram 聊天已关联到另一个 hoandat 账号。请先在该账号中取消关联。",
+  "bot.link.moved": "Auth Next 账号 @{username} 已将关联转移到另一个 Telegram 聊天。此聊天将不再收到通知。",
+  "bot.link.otherAccount": "此 Telegram 聊天已关联到另一个 Auth Next 账号。请先在该账号中取消关联。",
   "bot.link.otherAccountShort": "聊天已关联其他账号",
-  "bot.notice.emailReclaimed": "邮箱 {email} 已从 hoandat 账号 @{username} 中移除，因为该邮箱的所有者已通过 {provider} 验证了它。你仍可使用该账号已关联的 Google 或 GitHub 登录。",
-  "bot.notice.providerLinked": "hoandat 账号 @{username} 刚刚关联了 {provider}。如果不是你本人操作，请在账号页面取消关联。",
-  "bot.start.howTo": "要关联此聊天，请打开你的 hoandat 账号页面并点击“{button}”。链接 10 分钟后过期，且只能使用一次。",
+  "bot.notice.emailReclaimed": "邮箱 {email} 已从 Auth Next 账号 @{username} 中移除，因为该邮箱的所有者已通过 {provider} 验证了它。你仍可使用该账号已关联的 Google 或 GitHub 登录。",
+  "bot.notice.providerLinked": "Auth Next 账号 @{username} 刚刚关联了 {provider}。如果不是你本人操作，请在账号页面取消关联。",
+  "bot.start.howTo": "要关联此聊天，请打开你的 Auth Next 账号页面并点击“{button}”。链接 10 分钟后过期，且只能使用一次。",
   "claim.error.capacity": "此服务器暂时无法接收更多域名，请稍后再试。",
   "claim.error.dnsAddress": "标记为“未正确”的记录尚未指向 {ip}（仅 DNS）或 Cloudflare 代理。修改后再检查；DNS 更改可能需要几分钟。",
   "claim.error.dnsTxt": "未找到 TXT 记录或其值不同。DNS 更改可能需要几分钟。",
@@ -1965,12 +1965,12 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in zh-
   "claim.form.ownerOption": "{provider} 账号 {name}",
   "claim.form.submit": "开始认领",
   "claim.guideLink": "带截图的分步指南",
-  "claim.hosting.hoandat": "在 hoandat 的服务器上",
-  "claim.hosting.hoandatHelp": "无需安装。数据存放在 hoandat 的服务器上，按域名隔离。",
+  "claim.hosting.hoandat": "在 Auth Next 的服务器上",
+  "claim.hosting.hoandatHelp": "无需安装。数据存放在 Auth Next 的服务器上，按域名隔离。",
   "claim.hosting.label": "运行位置",
   "claim.hosting.self": "在你自己的服务器上",
-  "claim.hosting.selfHelp": "hoandat 只验证域名并提供安装包。之后所有请求和数据都在你的服务器上；备份、更新和安全由你负责。",
-  "claim.lead": "在你拥有的域名上运行 hoandat 登录、Chat、Localman 和 Tunelo：其下的 auth.、chat.、localman. 和 tunnel.，并使用独立的账号。",
+  "claim.hosting.selfHelp": "Auth Next 只验证域名并提供安装包。之后所有请求和数据都在你的服务器上；备份、更新和安全由你负责。",
+  "claim.lead": "在你拥有的域名上运行 Auth Next 登录、Chat、Localman 和 Tunelo：其下的 auth.、chat.、localman. 和 tunnel.，并使用独立的账号。",
   "claim.noIdentity": "请先将 Google 或 GitHub 账号关联到你的账号：域名的所有者就是该账号。",
   "claim.notice.migrating": "迁移已开始。请下载安装包，在你的服务器上安装，然后按指南导入数据。",
   "claim.notice.migrationCancelled": "已取消迁移。该域名照常在这里提供服务。",
@@ -2016,21 +2016,21 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in zh-
   "common.unknown": "未知",
   "confirm.app.canNow": "它目前可以：",
   "confirm.app.effect": "它的登录和 token 将失效，需再次征得你同意才能访问。它已持有的 access token 将在 15 分钟内过期。",
-  "confirm.app.lead": "{app} 将无法再使用你的 hoandat 账号。",
+  "confirm.app.lead": "{app} 将无法再使用你的 Auth Next 账号。",
   "confirm.app.title": "移除应用访问权限？",
   "confirm.sessions.effect": "通过这些浏览器登录的应用（例如网页版 Localman 和 Tunelo）也会退出。Tunelo 设备保持登录。",
-  "confirm.sessions.lead": "下面的每个浏览器都会退出你的 hoandat 账号。此浏览器保持登录。",
+  "confirm.sessions.lead": "下面的每个浏览器都会退出你的 Auth Next 账号。此浏览器保持登录。",
   "confirm.sessions.title": "退出其他所有会话？",
   "consent.allow": "允许",
   "consent.credentialsWarning": "允许该应用代你创建新的访问密钥和 secret。只授权给你信任的应用。",
   "consent.deny": "拒绝",
-  "consent.externalNotice": "外部应用，并非由 hoandat.com 发布。应用名称由其自行填写，hoandat 不核实其背后是谁；仅当你刚刚亲自连接它时才允许（例如使用 MCP 的 coding agent）。",
+  "consent.externalNotice": "外部应用，并非由 hoandat.com 发布。应用名称由其自行填写，Auth Next 不核实其背后是谁；仅当你刚刚亲自连接它时才允许（例如使用 MCP 的 coding agent）。",
   "consent.lookalikeWarning": "该应用名称看起来像 hoandat.com 的产品，但并不是，而且它会把你带回一个网站，而不是你自己的电脑。仅当你认出上面的地址属于你刚刚亲自连接的应用时才允许；否则请拒绝。",
   "consent.pageTitle": "授予访问权限",
   "consent.redirect": "允许后，你将返回 {host}，并附带一个代码，应用用它换取 token。",
   "consent.revokeHint": "你可以随时在账号页面撤销此权限。",
-  "consent.titleExternal": "允许外部应用使用你的 hoandat 账号",
-  "consent.titleForApp": "允许 {app} 使用你的 hoandat 账号",
+  "consent.titleExternal": "允许外部应用使用你的 Auth Next 账号",
+  "consent.titleForApp": "允许 {app} 使用你的 Auth Next 账号",
   "consent.willBeAbleTo": "该应用将能够：",
   "device.approve.code": "代码：{code}",
   "device.approve.ip": "请求来自 IP {ip}",
@@ -2091,9 +2091,9 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in zh-
   "guide.prepare.oauth": "一个 Google Cloud 或 GitHub 账号，用于为域名创建登录应用（第 5 步）。",
   "guide.prepare.title": "准备工作",
   "guide.self.apps": "你自己的 Google 或 GitHub 登录应用，以及用于 localman.<domain> 的 Cloudflare Turnstile 小组件。",
-  "guide.self.body": "当 {claim} 提供该选项时，在第 1 步选择“在你自己的服务器上”。只需添加 TXT 记录；各主机指向你的服务器，而不是这里。域名验证后，下载安装包（24 小时内有效）并按照{installGuide}操作。你的服务器与 hoandat 完成一次设置，之后不再经过 hoandat.com。",
+  "guide.self.body": "当 {claim} 提供该选项时，在第 1 步选择“在你自己的服务器上”。只需添加 TXT 记录；各主机指向你的服务器，而不是这里。域名验证后，下载安装包（24 小时内有效）并按照{installGuide}操作。你的服务器与 Auth Next 完成一次设置，之后不再经过 hoandat.com。",
   "guide.self.cloudflare": "DNS 托管在 Cloudflare，并有可编辑该区域的 API 令牌：*.localman. 和 *.tunnel. 的通配符证书通过 DNS 验证。",
-  "guide.self.duty": "hoandat 不负责备份、更新、安全修补或监控你的服务器：这些由你负责。请保留 TXT 记录，以免他人在此认领该域名。",
+  "guide.self.duty": "Auth Next 不负责备份、更新、安全修补或监控你的服务器：这些由你负责。请保留 TXT 记录，以免他人在此认领该域名。",
   "guide.self.installGuide": "安装指南",
   "guide.self.move": "迁移已在此运行的域名：在“你的域名”中点击“迁移到你的服务器”。域名立即停止在此提供服务，数据保留；“取消迁移”可恢复服务。先安装安装包，但暂不将 A 记录指向你的服务器，并把安装的迁移公钥发给运维人员。运维人员导出该域名的账户、项目、变量、隧道密钥和消息，只有你的服务器能打开；在那里导入后，再将 A 记录指向它。已签发的令牌仍可使用；用户需重新登录 Localman 和 Chat 一次。",
   "guide.self.server": "一台装有 Docker Compose 的 Linux 服务器，有公网 IPv4，开放 80、443 端口和 Tunelo 的 TCP 端口范围，约 4 GB 可用内存。",
@@ -2135,20 +2135,20 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in zh-
   "layout.nav": "站点导航",
   "login.cancel": "取消登录",
   "login.continueTo": "以继续使用 {app}。",
-  "login.firstTime": "首次使用 Google 或 GitHub 登录将创建新的 hoandat 账号。",
+  "login.firstTime": "首次使用 Google 或 GitHub 登录将创建新的 Auth Next 账号。",
   "login.forDevice": "登录以批准设备。",
   "login.noProvider": "Google 和 GitHub 登录暂时关闭，因此目前无法登录或注册。请稍后重试。",
-  "login.tagline": "一个 hoandat 账号，通用于 Localman 和 Tunelo。",
+  "login.tagline": "一个 Auth Next 账号，通用于 Localman 和 Tunelo。",
   "login.title": "登录",
   "login.titleForApp": "登录以继续使用 {app}",
   "login.with": "使用 {provider} 登录",
-  "logout.byApp": "{app} 想让你退出 hoandat 账号。",
+  "logout.byApp": "{app} 想让你退出 Auth Next 账号。",
   "logout.confirm": "退出登录",
-  "logout.done": "你已在此浏览器上退出 hoandat 账号。",
+  "logout.done": "你已在此浏览器上退出 Auth Next 账号。",
   "logout.doneTitle": "已退出登录",
   "logout.help": "在这里退出登录，也会在此浏览器上退出网页版 Localman 和 Tunelo。",
   "logout.keep": "不，保持登录",
-  "logout.question": "要在此浏览器上退出 hoandat 账号吗？",
+  "logout.question": "要在此浏览器上退出 Auth Next 账号吗？",
   "logout.signInAgain": "重新登录",
   "logout.title": "退出登录",
   "notice.appRevoked": "已移除该应用的访问权限。",
@@ -2199,7 +2199,7 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in zh-
   "scope.mockRead": "查看你可访问的 Localman mock project，包括 resource、schema 和数据",
   "scope.mockWrite": "在 Localman 上创建、编辑、删除 mock project 和 resource，生成或重置数据",
   "scope.offlineAccess": "在你未打开应用时保持登录（最长 30 天）",
-  "scope.openid": "知道你是谁（你的 hoandat 账号 ID）",
+  "scope.openid": "知道你是谁（你的 Auth Next 账号 ID）",
   "scope.profile": "查看你的姓名、用户名和头像",
   "scope.telegram": "向你关联的 Telegram 聊天发送通知",
   "scope.tunnelsOpen": "使用你的账号打开新的 tunnel",
@@ -2207,32 +2207,32 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in zh-
   "scope.unknown": "权限“{scope}”",
   "signup.haveAccount": "已有账号？{link}",
   "signup.pageTitle": "注册",
-  "signup.subtitle": "一个账号通用于 Localman 和 Tunelo。使用 Google 或 GitHub 注册：hoandat 不使用密码，也不发送邮件。",
-  "signup.title": "创建 hoandat 账号",
+  "signup.subtitle": "一个账号通用于 Localman 和 Tunelo。使用 Google 或 GitHub 注册：Auth Next 不使用密码，也不发送邮件。",
+  "signup.title": "创建 Auth Next 账号",
   "signup.with": "使用 {provider} 注册",
   "telegram.commandLabel": "关联命令",
   "telegram.once": "该链接只能使用一次。bot 提示已关联后，请刷新账号页面。",
   "telegram.open": "打开 Telegram",
   "telegram.orSend": "或者向 bot {bot} 发送以下命令：",
-  "telegram.subtitle": "在 Telegram 中打开 hoandat bot，点击 Start，然后在 10 分钟内点击“{button}”。",
+  "telegram.subtitle": "在 Telegram 中打开 Auth Next bot，点击 Start，然后在 10 分钟内点击“{button}”。",
   "telegram.title": "关联 Telegram",
   "upstream.expired": "{provider} 登录已过期，请重新开始。",
   "upstream.failed": "无法使用 {provider} 登录。请几分钟后重试。",
   "upstream.link.alreadyLinked": "你的账号已关联另一个 {provider} 账号。请先取消那个关联。",
-  "upstream.link.ownedByOther": "此 {provider} 账号已关联到另一个 hoandat 账号。",
-  "upstream.rejected.disabled": "此 hoandat 账号已被锁定。",
-  "upstream.rejected.noVerifiedEmail": "此账号没有已验证的邮箱，无法用于登录 hoandat。",
+  "upstream.link.ownedByOther": "此 {provider} 账号已关联到另一个 Auth Next 账号。",
+  "upstream.rejected.disabled": "此 Auth Next 账号已被锁定。",
+  "upstream.rejected.noVerifiedEmail": "此账号没有已验证的邮箱，无法用于登录 Auth Next。",
   "upstream.rejected.other": "无法登录。",
-  "upstream.rejected.otherProviderAccount": "该邮箱所属的 hoandat 账号已关联同一提供商的另一个账号。请使用已关联的账号登录。",
+  "upstream.rejected.otherProviderAccount": "该邮箱所属的 Auth Next 账号已关联同一提供商的另一个账号。请使用已关联的账号登录。",
   "username.back": "返回登录",
   "username.emailTaken": "该邮箱刚被另一个账号使用。请改用那个账号登录。",
   "username.help": "3–30 个字符：小写字母、数字和下划线。其他人通过此用户名邀请你。",
   "username.invalid": "用户名需为 3–30 个字符，只能包含小写字母、数字或下划线。",
   "username.label": "用户名",
   "username.reclaimLink": "用那种方式登录",
-  "username.reclaimWarning": "此邮箱属于另一个尚未验证邮箱的 hoandat 账号。如果那是你的账号，并且已关联另一个 Google 或 GitHub 账号，请{link}，然后在账号页面关联 {provider}。如果继续，该邮箱将转移到新账号；原账号保留其他登录方式。",
+  "username.reclaimWarning": "此邮箱属于另一个尚未验证邮箱的 Auth Next 账号。如果那是你的账号，并且已关联另一个 Google 或 GitHub 账号，请{link}，然后在账号页面关联 {provider}。如果继续，该邮箱将转移到新账号；原账号保留其他登录方式。",
   "username.submit": "创建账号",
-  "username.subtitle": "使用 {provider} 为 {email}（已验证）创建 hoandat 账号。",
+  "username.subtitle": "使用 {provider} 为 {email}（已验证）创建 Auth Next 账号。",
   "username.taken": "该用户名已被使用，请换一个。",
   "username.title": "选择用户名",
 }

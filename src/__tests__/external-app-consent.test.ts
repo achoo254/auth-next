@@ -136,7 +136,7 @@ describe("consent for an app registered through DCR", () => {
 			`data-id="app-external-${STATIC_CLIENT_IDS.localmanWeb}"`,
 		);
 		expect(account).toContain(
-			'<b>Localman</b> <span class="badge badge-neutral">hoandat</span>',
+			'<b>Localman</b> <span class="badge badge-neutral">Auth Next</span>',
 		);
 	});
 

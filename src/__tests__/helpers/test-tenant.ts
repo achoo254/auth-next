@@ -11,7 +11,7 @@ import type { Tenant } from "../../tenants/tenant.js";
 export const PRIMARY_TEST_TENANT: Tenant = {
 	id: PRIMARY_TENANT_ID,
 	domain: "hoandat.com",
-	displayName: "hoandat",
+	displayName: "Auth Next",
 	issuer: "http://localhost:4500",
 	status: "active",
 	webApps: {

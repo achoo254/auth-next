@@ -14,9 +14,9 @@ test("sign up with Google, consent and return to the client; then sign in again"
 	const page = await first.newPage();
 	const { url, checks } = await mcp.authorizationUrl();
 	await page.goto(url.href);
-	await expect(page).toHaveTitle(/Đăng nhập · hoandat/);
+	await expect(page).toHaveTitle(/Đăng nhập · Auth Next/);
 	await expect(page.locator('[data-id="idp-brand"]')).toContainText(
-		"hoandat · Tài khoản",
+		"Auth Next · Tài khoản",
 	);
 	await signUp(page, user);
 
@@ -26,7 +26,7 @@ test("sign up with Google, consent and return to the client; then sign in again"
 	// is for such names sending the code to a website.
 	await expect(
 		page.getByRole("heading", {
-			name: "Cho phép một ứng dụng bên ngoài dùng tài khoản hoandat của bạn",
+			name: "Cho phép một ứng dụng bên ngoài dùng tài khoản Auth Next của bạn",
 		}),
 	).toBeVisible();
 	await expect(page.locator('[data-id="consent-client-name"]')).toHaveText(
