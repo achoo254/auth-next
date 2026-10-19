@@ -67,6 +67,9 @@ mkdir -p "data/backups/$stamp"
 "${C[@]}" exec -T postgres pg_dump -U chat -Fc chat >"data/backups/$stamp/chat.pgdump"
 echo "import-tenant: backed up to data/backups/$stamp"
 "${C[@]}" stop auth localman tunelo chat
+# The apps run in nginx's network namespace: a new install's nginx may
+# never have started yet.
+"${C[@]}" up -d nginx
 
 echo "== IdP"
 restore_mongo "$DIR/idp" auth
