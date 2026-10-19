@@ -76,4 +76,27 @@ describe("/claim with the self-hosted mode (ADR 0007)", () => {
 		expect(html).toContain('data-id="tenant-status-own.example.org"');
 		expect(html).not.toContain('data-id="tenant-admin-own.example.org"');
 	});
+
+	it("explains moving an active tenant beside its name, buttons kept together", () => {
+		const tenant: TenantDocument = {
+			_id: "ten_2",
+			domain: "live.example.org",
+			displayName: "live",
+			status: "active",
+			owner: ALICE,
+			createdAt: new Date(),
+		};
+		const html = renderClaimPage(view({ tenants: [tenant] }));
+		const row = html.slice(html.indexOf('data-id="tenant-live.example.org"'));
+		const actions = row.slice(row.indexOf('<div class="item-actions">'));
+		// The help sits in the name's column, before the buttons' group.
+		expect(
+			row.indexOf("The domain stops being served here at once"),
+		).toBeLessThan(row.indexOf('<div class="item-actions">'));
+		expect(actions).toContain('data-id="tenant-admin-live.example.org"');
+		expect(actions).toContain('data-id="tenant-migrate-live.example.org"');
+		expect(
+			renderClaimPage(view({ tenants: [tenant], hostings: ["hoandat"] })),
+		).not.toContain('data-id="tenant-migrate-live.example.org"');
+	});
 });

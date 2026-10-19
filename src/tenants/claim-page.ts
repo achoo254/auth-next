@@ -93,20 +93,24 @@ function tenantAction(view: ClaimView, tenant: TenantDocument): SafeHtml {
 		i18n.t("claim.tenants.admin"),
 		`tenant-admin-${tenant.domain}`,
 	);
-	if (tenant.status !== "active" || !view.hostings.includes("self")) {
-		return admin;
-	}
-	return html`${admin}<div class="inline-form"><p class="help">${i18n.t("claim.tenants.migrateHelp")}</p>${form("migration", i18n.t("claim.tenants.migrate"), `tenant-migrate-${tenant.domain}`)}</div>`;
+	if (!offersMove(view, tenant)) return admin;
+	return html`${admin}${form("migration", i18n.t("claim.tenants.migrate"), `tenant-migrate-${tenant.domain}`)}`;
+}
+
+/** An active tenant can move to its own servers where /claim offers them. */
+function offersMove(view: ClaimView, tenant: TenantDocument): boolean {
+	return tenant.status === "active" && view.hostings.includes("self");
 }
 
 function ownedTenant(view: ClaimView, tenant: TenantDocument): SafeHtml {
 	const { i18n } = view.page;
 	const status = STATUS_KEYS[tenant.status];
-	return html`<li class="item-row" data-id="tenant-${tenant.domain}"><div>
+	return html`<li class="item-row tenant-row" data-id="tenant-${tenant.domain}"><div>
 <p><b>${tenant.domain}</b></p>
 ${status ? html`<p class="help" data-id="tenant-status-${tenant.domain}">${i18n.t(status)}</p>` : ""}
+${offersMove(view, tenant) ? html`<p class="help">${i18n.t("claim.tenants.migrateHelp")}</p>` : ""}
 </div>
-${tenantAction(view, tenant)}
+<div class="item-actions">${tenantAction(view, tenant)}</div>
 </li>`;
 }
 

@@ -480,6 +480,21 @@ button {
 .item-row:last-child {
 	border-bottom: 0;
 }
+/* A row's buttons, side by side; they never shrink into the text beside them. */
+.item-row > .item-actions {
+	display: flex;
+	flex-wrap: wrap;
+	flex-shrink: 0;
+	justify-content: flex-end;
+	gap: var(--space-2);
+}
+/* A domain on /claim keeps a readable column; its buttons go below when the card is narrow. */
+.tenant-row {
+	flex-wrap: wrap;
+}
+.tenant-row > div:first-child {
+	flex: 1 1 16rem;
+}
 
 /* language switcher, under every page */
 .page-foot {
@@ -632,7 +647,10 @@ button {
 	}
 	.item-row > .inline-form,
 	.item-row > .btn,
-	.item-row > .inline-form .btn {
+	.item-row > .inline-form .btn,
+	.item-row > .item-actions,
+	.item-actions > .inline-form,
+	.item-actions > .inline-form .btn {
 		width: 100%;
 	}
 }
