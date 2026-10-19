@@ -41,3 +41,16 @@ Chạy đủ sáu tiêu chí nghiệm thu của `plan.md` trên một tenant m�
 - Cổng hoandat-auth: lint, typecheck, tokens sạch; 577/577 test; e2e 11/11.
 
 Còn lại (cần user): deploy IdP và Localman lên .65, bật `SELF_HOSTED_CLAIMS`, VM công khai và domain thử cho bước 1–2; ảnh chụp `pnpm guide:screenshots` khi có trang thật của chế độ tự host.
+
+## Diễn tập chuyển inetdev.io.vn (19/10/2026)
+
+User chọn diễn tập rồi huỷ (Jev 0,63; chờ VM công khai 0,32; chuyển hẳn qua Cloudflare Tunnel 0,05): box lab chỉ có IP nội bộ, chưa có công cụ chuyển ngược.
+
+- Bản cài trên LAB 183 (2 vCPU, 3,9 GB, Docker 29.9 cài lại sau khi box được dọn): hoandat-auth `db36f50`, localman-next `a5b9470`, chat-next `b67371c`, build tại chỗ bằng `init.sh`, chứng chỉ tự ký, enrollment tắt (địa chỉ nội bộ).
+- 09:22 bấm "Move to your own servers" (trình duyệt của owner); `auth.inetdev.io.vn` trả 421 ngay. Backup `auth-20261019-092301`, `localman-20261019-092301` và chat trên .65; `export-tenant.sh` 212 KB: IdP (1 tài khoản, 7 refresh token, 4 grant, 9 phiên), Localman (1 workspace, 1 project, 1 user, 18 audit), Tunelo (1 usage log), chat (2 user, 2 chat, 3 tin nhắn, 1 bot).
+- Import lần đầu dừng ở bước kiểm: bản cài mới luôn có bot trợ lý của chat (`bots.is_system`), nên "chat đã có 1 user". Sửa `import-tenant.sh`: không đếm bot đó, xoá nó trước khi nạp chat; bot của tenant chuyển sang thay vào.
+- Sau import: JWKS của bản cài đúng hai `kid` của inetdev trên prod (`8OxnRF…` ES256, `74mRHW…` RS256); issuer `https://auth.inetdev.io.vn`; trang đăng nhập có GitHub của tenant (OAuth app chuyển qua JWE); Localman nhận tenant `inetdev`; chat 2 user, 1 bot hệ thống, 3 tin nhắn, `server_epoch` 2; reseal chạy với `SESSION_KEY` cũ; log không có lỗi.
+- 09:26 "Cancel the move", `pm2 start chat-api-inetdev`: auth, chat, localman 200, JWKS như cũ, tunnel 200 sau khoảng 10 giây (cache tenant của Tunelo). Số document của inetdev trên prod như trước, audit thêm 2 sự kiện. Ngừng khoảng 4–5 phút.
+- Dọn: thư mục export trên .65, bản sao trên máy dev, toàn bộ bản cài, Docker và swap trên 183.
+
+Chưa thử được (cần VM IP công khai và domain thử): bản cài đổi gói với gateway, đổi bản ghi A, refresh token của client thật dùng tiếp sau khi chuyển, chứng chỉ Let's Encrypt và Turnstile thật.

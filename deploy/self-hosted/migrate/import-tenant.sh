@@ -50,7 +50,10 @@ restore_mongo() {
 
 schema="$("${C[@]}" exec -T postgres psql -U chat -d chat -XAt -c "SELECT max(version_id) FROM goose_db_version")"
 [ "$(head -n 1 "$DIR/chat.sql")" = "-- chat schema $schema" ] || die "chat.sql is of another chat version than this install ($schema)"
-users="$("${C[@]}" exec -T postgres psql -U chat -d chat -XAt -c "SELECT count(*) FROM users")"
+# Chat makes its own assistant bot at every start: a fresh install has that
+# one user only. The moved tenant brings its own assistant, which replaces it.
+OWN_ASSISTANT="SELECT user_id FROM bots WHERE is_system"
+users="$("${C[@]}" exec -T postgres psql -U chat -d chat -XAt -c "SELECT count(*) FROM users WHERE id NOT IN ($OWN_ASSISTANT)")"
 [ "$users" = 0 ] || die "this install's chat already has $users users; import into a fresh install"
 
 stamp="$(date +%Y%m%d-%H%M%S)"
@@ -92,6 +95,7 @@ restore_mongo "$DIR/tunelo" tunelo
 	}"
 
 echo "== chat"
+"${C[@]}" exec -T postgres psql -U chat -d chat -X -q -v ON_ERROR_STOP=1 -c "DELETE FROM users WHERE id IN ($OWN_ASSISTANT)"
 "${C[@]}" exec -T postgres psql -U chat -d chat -X -q <"$DIR/chat.sql"
 "${C[@]}" exec -T postgres psql -U chat -d chat -XAt -c "SELECT 'users: ' || count(*) FROM users UNION ALL SELECT 'chats: ' || count(*) FROM chats"
 if [ -n "$SESSION_KEY_PREVIOUS" ]; then
