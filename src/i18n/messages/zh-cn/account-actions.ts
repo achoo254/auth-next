@@ -25,7 +25,7 @@ export const zhAccountActions: Translation<typeof enAccountActions> = {
 	"confirm.sessions.lead":
 		"下面的每个浏览器都会退出你的 {brand} 账号。此浏览器保持登录。",
 	"confirm.sessions.effect":
-		"通过这些浏览器登录的应用（例如网页版 Localman 和 Tunelo）也会退出。Tunelo 设备保持登录。",
+		"通过这些浏览器登录的应用（例如网页版 Localman 和 Tunelo）也会退出。设备（Tunelo CLI、手机和电脑应用）保持登录。",
 	"telegram.title": "关联 Telegram",
 	"telegram.subtitle":
 		"在 Telegram 中打开 {brand} bot，点击 Start，然后在 10 分钟内点击“{button}”。",

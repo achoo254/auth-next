@@ -1,5 +1,5 @@
 import type { Db } from "mongodb";
-import { GRANT_META_COLLECTION } from "../account-portal/grant-directory.js";
+import { GRANT_META_COLLECTION } from "../account-portal/device-grants.js";
 import { SESSION_META_COLLECTION } from "../account-portal/session-directory.js";
 import { ONE_TIME_TOKENS_COLLECTION } from "../accounts/one-time-tokens.js";
 import { ACCOUNTS_COLLECTION } from "../accounts/user-model.js";

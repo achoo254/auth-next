@@ -1,7 +1,7 @@
 ---
 title: "Đưa app chat vào IdP: client, host theo tenant, API nội bộ"
 description: "IdP nhận app chat (chat.hoandat.com, chat.<domain>) là app first-party thứ ba sau Localman và Tunelo: client web và native, host chat theo tenant, vai chat ở API nội bộ, hạn mức refresh cho backend chat."
-status: pending
+status: in-progress
 priority: P1
 effort: "L (4 phase: 2×L, 2×M)"
 branch: "main"
@@ -75,9 +75,14 @@ Nguồn yêu cầu là plan của app chat: `chat-next/plans/dattqh/261013-0448-
 | # | Phase | Tier | Phụ thuộc | Trạng thái |
 |---|---|---|---|---|
 | 01 | [Client chat và mô hình tenant](./phase-01-chat-clients-and-tenant-model.md) | L | — | done (commit `0c0020d`, nhánh `feat/chat-app-clients`) |
-| 02 | [Host chat theo tenant, API nội bộ, chứng chỉ](./phase-02-chat-hosts-internal-api-certs.md) | L | 01 | pending |
-| 03 | [Hạn mức refresh, `/account`, `/apps`, tài liệu](./phase-03-refresh-limit-account-apps-docs.md) | M | 01 | pending |
+| 02 | [Host chat theo tenant, API nội bộ, chứng chỉ](./phase-02-chat-hosts-internal-api-certs.md) | L | 01 | done: phần còn lại bị ADR 0006 thay (xem dưới) |
+| 03 | [Hạn mức refresh, `/account`, `/apps`, tài liệu](./phase-03-refresh-limit-account-apps-docs.md) | M | 01 | done trừ bucket loopback (hoãn, xem dưới) |
 | 04 | [Triển khai và nghiệm thu với app chat](./phase-04-deploy-and-acceptance.md) | M | 02, 03; app chat có Phase 2 chạy trên staging | pending |
+
+## Đối chiếu với code (2026-10-19)
+
+- Phase 02: host `chat.<d>`, nhãn cấm `chat`, chứng chỉ, nginx và kiểm sở hữu đã có (commit `ecea962`, deploy 16/10), nhưng theo ADR 0006 hiện hành `chat.<d>` là host **bắt buộc** của mọi tenant, không bật theo tenant ở `/admin`. Backend chat chạy một process mỗi tenant với `TENANT_ID`, `OIDC_ISSUER` tĩnh, không gọi `/internal/tenants/lookup`; vai `chat` của API nội bộ chưa có. User quyết 2026-10-19 (Jev 0,97): đóng phần bật chat theo tenant ở `/admin`; chỉ thêm vai `chat` khi backend chat thật sự gọi lookup.
+- Phase 03: `/apps` có Chat ở tenant chính (`e14f8d2`); README và `docs/integration-guide.md` có ba client chat (`045bd02`). `/account` liệt kê và đăng xuất riêng từng máy `chat-mobile`, `chat-desktop` (cả `scribe-mobile`), app gửi được `device_name`: đã làm 2026-10-19, test `chat-clients-flow.test.ts`. Bucket hạn mức `/token` qua loopback: user quyết 2026-10-19 (Jev 1,00) hoãn, làm cùng lúc repo chat đổi sang gọi `127.0.0.1` hoặc khi lượt refresh gần chạm 60 request/phút (backend chat hiện refresh qua issuer HTTPS công khai, tối đa 1 lần/giờ mỗi phiên).
 
 ## Rủi ro chính
 

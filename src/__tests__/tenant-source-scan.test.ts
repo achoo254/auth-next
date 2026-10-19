@@ -18,6 +18,7 @@ const DATA_ACCESS_MODULES = new Set([
 	"src/oidc/sliding-grants.ts",
 	"src/oidc/client-seed.ts",
 	"src/account-portal/grant-directory.ts",
+	"src/account-portal/device-grants.ts",
 	"src/account-portal/session-directory.ts",
 	"src/account-portal/revoke-access.ts",
 	"src/tenants/tenant-collections.ts",

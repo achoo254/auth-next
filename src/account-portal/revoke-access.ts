@@ -1,7 +1,8 @@
 import { collectionNameFor } from "../oidc/mongo-adapter.js";
 import type { AppServices } from "../services.js";
 import { type TenantDb, inTenant } from "../tenants/tenant-data.js";
-import { forgetDeviceGrants, revokeGrant } from "./grant-directory.js";
+import { forgetDeviceGrants } from "./device-grants.js";
+import { revokeGrant } from "./grant-directory.js";
 
 /** Every grant id of an account (optionally of one client); no page limit. */
 export async function grantIdsOf(

@@ -1,6 +1,6 @@
 import type { Db } from "mongodb";
 import type Provider from "oidc-provider";
-import { GRANT_META_COLLECTION } from "./account-portal/grant-directory.js";
+import { GRANT_META_COLLECTION } from "./account-portal/device-grants.js";
 import {
 	SESSION_META_COLLECTION,
 	trackSessions,

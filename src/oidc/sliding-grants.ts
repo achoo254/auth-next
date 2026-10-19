@@ -1,5 +1,5 @@
 import type { KoaContextWithOIDC, RefreshToken } from "oidc-provider";
-import { GRANT_META_COLLECTION } from "../account-portal/grant-directory.js";
+import { GRANT_META_COLLECTION } from "../account-portal/device-grants.js";
 import { type TenantDb, inTenant } from "../tenants/tenant-data.js";
 import { STATIC_CLIENT_IDS, refreshesPerDevice } from "./clients.js";
 import { collectionNameFor } from "./mongo-adapter.js";

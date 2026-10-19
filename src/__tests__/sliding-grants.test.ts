@@ -8,7 +8,7 @@ import {
 	it,
 	vi,
 } from "vitest";
-import { GRANT_META_COLLECTION } from "../account-portal/grant-directory.js";
+import { GRANT_META_COLLECTION } from "../account-portal/device-grants.js";
 import { STATIC_CLIENT_IDS } from "../oidc/clients.js";
 import { collectionNameFor } from "../oidc/mongo-adapter.js";
 import {

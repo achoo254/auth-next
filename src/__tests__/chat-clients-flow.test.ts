@@ -75,6 +75,7 @@ function nativeClient(clientId: string): Promise<client.Configuration> {
 async function authorizationUrl(
 	config: client.Configuration,
 	redirectUri: string,
+	extra: Record<string, string> = {},
 ) {
 	const verifier = client.randomPKCECodeVerifier();
 	const state = client.randomState();
@@ -84,6 +85,7 @@ async function authorizationUrl(
 		state,
 		code_challenge: await client.calculatePKCECodeChallenge(verifier),
 		code_challenge_method: "S256",
+		...extra,
 	});
 	return { url, checks: { pkceCodeVerifier: verifier, expectedState: state } };
 }
@@ -96,8 +98,9 @@ async function nativeSignIn(
 	browser: TestBrowser,
 	config: client.Configuration,
 	redirectUri: string,
+	extra: Record<string, string> = {},
 ) {
-	const { url, checks } = await authorizationUrl(config, redirectUri);
+	const { url, checks } = await authorizationUrl(config, redirectUri, extra);
 	const { response } = await browser.navigate(url, {}, redirectUri);
 	const page = await response.text();
 	const uid = /\/interaction\/([\w-]+)/.exec(response.url)?.[1];
@@ -178,6 +181,53 @@ describe("chat-mobile and chat-desktop", () => {
 		const { tokens } = await nativeSignIn(browser, config, DESKTOP_REDIRECT);
 		expect(tokens.refresh_token).toEqual(expect.any(String));
 		expect(CHAT_DESKTOP_REDIRECT_URI).toBe("http://127.0.0.1/auth/callback");
+	});
+
+	it("lists each signed-in machine at /account and signs it out alone", async () => {
+		const account = await createTestAccount(repositoryOf(idp));
+		const laptop = await signedInBrowser(idp, account);
+		const phone = await signedInBrowser(idp, account);
+		const desktop = await nativeClient(STATIC_CLIENT_IDS.chatDesktop);
+		const mobile = await nativeClient(STATIC_CLIENT_IDS.chatMobile);
+		const onLaptop = await nativeSignIn(laptop, desktop, DESKTOP_REDIRECT, {
+			device_name: "laptop-cua-dat",
+		});
+		const onPhone = await nativeSignIn(
+			phone,
+			mobile,
+			CHAT_MOBILE_REDIRECT_URI,
+			{ device_name: "phone-cua-dat" },
+		);
+
+		const accountPage = await (
+			await laptop.request(`${idp.issuer}/account`)
+		).text();
+		expect(accountPage).toContain("Chat · laptop-cua-dat");
+		expect(accountPage).toContain("Chat · phone-cua-dat");
+		const grantIds = [
+			...accountPage.matchAll(/\/account\/devices\/([\w-]+)\/revoke/g),
+		].map((match) => match[1]);
+		expect(grantIds).toHaveLength(2);
+		// The laptop row comes from the laptop's own grant.
+		const laptopRow = accountPage
+			.split('<li class="item-row"')
+			.find((row) => row.includes("laptop-cua-dat"));
+		const laptopGrant =
+			/\/account\/devices\/([\w-]+)\/revoke/.exec(laptopRow ?? "")?.[1] ?? "";
+		await submitForm(
+			laptop,
+			`${idp.issuer}/account/devices/${laptopGrant}/revoke`,
+			{ csrf: formField(accountPage, "csrf") },
+		);
+
+		await expect(
+			client.refreshTokenGrant(desktop, onLaptop.tokens.refresh_token ?? ""),
+		).rejects.toMatchObject({ error: "invalid_grant" });
+		const refreshed = await client.refreshTokenGrant(
+			mobile,
+			onPhone.tokens.refresh_token ?? "",
+		);
+		expect(refreshed.refresh_token).toEqual(expect.any(String));
 	});
 
 	it("rejects any other redirect", async () => {

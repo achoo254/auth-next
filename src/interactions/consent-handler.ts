@@ -1,5 +1,8 @@
 import type { Request, Response } from "express";
-import { recordDeviceGrant } from "../account-portal/grant-directory.js";
+import {
+	grantsPerDevice,
+	recordDeviceGrant,
+} from "../account-portal/device-grants.js";
 import { auditContext, auditLabel } from "../audit/audit-context.js";
 import { clientIp } from "../http/client-ip.js";
 import { isStaticClientId } from "../oidc/clients.js";
@@ -9,7 +12,7 @@ import { GRANT_IDLE_SECONDS } from "../oidc/sliding-grants.js";
 import type { AppServices } from "../services.js";
 import { sendPage } from "../ui/send-page.js";
 import { renderConsent } from "./consent-page.js";
-import { deviceNameOf } from "./device-info.js";
+import { approvedDevice, deviceCodeOf } from "./device-info.js";
 import { renderDeviceApproval } from "./device-verify-page.js";
 import { requestedScopes, saveConsentGrant } from "./grant-builder.js";
 import {
@@ -38,15 +41,10 @@ function redirectUriOf(
 	return uri ? (URL.parse(uri) ?? undefined) : undefined;
 }
 
-async function deviceCodeOf(services: AppServices, interaction: Interaction) {
-	return interaction.deviceCode
-		? services.provider.DeviceCode.find(interaction.deviceCode)
-		: undefined;
-}
-
 /**
- * Grants consent and resumes. Device logins get their own grant and the
- * machine name is remembered for the account page.
+ * Grants consent and resumes. Per-device approvals (device logins, native
+ * apps) get their own grant and the machine name is remembered for the
+ * account page.
  */
 export async function completeConsent(
 	services: AppServices,
@@ -55,8 +53,9 @@ export async function completeConsent(
 	interaction: Interaction,
 	accountId: string,
 ): Promise<void> {
-	const isDevice = interaction.deviceCode !== undefined;
 	const clientId = interactionClientId(interaction);
+	const isDevice =
+		interaction.deviceCode !== undefined || grantsPerDevice(clientId);
 	let deviceName: string | undefined;
 	const grantId = await saveConsentGrant(
 		services.provider,
@@ -65,22 +64,16 @@ export async function completeConsent(
 		isDevice,
 	);
 	if (isDevice) {
-		const code = await deviceCodeOf(services, interaction);
-		deviceName = deviceNameOf(code?.params, code?.deviceInfo);
+		const device = await approvedDevice(services, req, interaction);
+		deviceName = device.name;
 		await recordDeviceGrant(
 			services,
 			{
 				_id: grantId,
 				accountId,
 				...(deviceName ? { deviceName } : {}),
-				ip:
-					typeof code?.deviceInfo?.ip === "string"
-						? code.deviceInfo.ip
-						: undefined,
-				userAgent:
-					typeof code?.deviceInfo?.ua === "string"
-						? code.deviceInfo.ua
-						: undefined,
+				ip: device.ip,
+				userAgent: device.userAgent,
 			},
 			// Device grants slide on every refresh; the metadata slides with them.
 			GRANT_IDLE_SECONDS,

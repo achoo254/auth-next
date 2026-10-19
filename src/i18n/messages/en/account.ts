@@ -48,8 +48,9 @@ export const enAccount = {
 	"account.sessions.browser": "Browser",
 	"account.sessions.unknownSystem": "unknown system",
 	"account.sessions.browserOn": "{browser} on {system}",
-	"account.devices.title": "Tunelo devices",
-	"account.devices.description": "Machines signed in with the Tunelo CLI.",
+	"account.devices.title": "Devices",
+	"account.devices.description":
+		"Machines signed in with the Tunelo CLI or a phone or desktop app. Each one signs out on its own.",
 	"account.devices.empty": "No machine has signed in with {command} yet.",
 	"account.devices.dates": "Allowed {granted} · expires {expires}",
 	"account.devices.signOut": "Sign out device",

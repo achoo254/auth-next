@@ -17,11 +17,8 @@ import { sendPage } from "../ui/send-page.js";
 import { registerAccessRoutes } from "./account-access-routes.js";
 import { registerConfirmRoutes } from "./account-confirm-routes.js";
 import { renderAccountPage } from "./account-page.js";
-import {
-	listAuthorizedApps,
-	listDeviceGrants,
-	listGrants,
-} from "./grant-directory.js";
+import { listDeviceGrants } from "./device-grants.js";
+import { listAuthorizedApps, listGrants } from "./grant-directory.js";
 import {
 	type PortalHandler,
 	consumePortalReturn,
@@ -71,7 +68,7 @@ export function createAccountRouter(services: AppServices): Router {
 				const grants = await listGrants(services, account._id);
 				const [sessions, devices, apps] = await Promise.all([
 					listSessions(services, account._id),
-					listDeviceGrants(services, grants),
+					listDeviceGrants(services, services.provider, grants),
 					listAuthorizedApps(services.provider, grants),
 					rememberTelegramLocale(services, account, page.i18n.locale),
 				]);

@@ -4,7 +4,7 @@ import { type SafeHtml, html } from "../ui/html.js";
 import { accountCard, emptyState, itemList } from "./account-card.js";
 import { accountIcon } from "./account-icons.js";
 import type { AccountView } from "./account-page.js";
-import type { DeviceGrant } from "./grant-directory.js";
+import type { DeviceGrant } from "./device-grants.js";
 import type { OpenSession } from "./session-directory.js";
 
 /** Confirmation page of "Sign out every other session". */
@@ -93,7 +93,7 @@ function deviceRow(view: AccountView, device: DeviceGrant): SafeHtml {
 		expires: i18n.date(device.expiresAt),
 	});
 	return html`<li class="item-row" data-id="device-${device.grantId}">
-<div><b>${device.deviceName ?? i18n.t("device.unknownName")}</b>
+<div><b>${device.appName} · ${device.deviceName ?? i18n.t("device.unknownName")}</b>
 <p class="help">${dates}</p></div>
 ${actionButton(`/account/devices/${device.grantId}/revoke`, view.csrf, i18n.t("account.devices.signOut"), { dataId: `device-revoke-${device.grantId}` })}
 </li>`;

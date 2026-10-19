@@ -7,7 +7,8 @@ import { auditContext } from "../audit/audit-context.js";
 import { routeParam } from "../http/form.js";
 import { startUpstream } from "../interactions/upstream-start.js";
 import type { AppServices } from "../services.js";
-import { forgetDeviceGrants, revokeGrant } from "./grant-directory.js";
+import { forgetDeviceGrants } from "./device-grants.js";
+import { revokeGrant } from "./grant-directory.js";
 import type { PortalHandler } from "./portal-session.js";
 import { revokeSession } from "./session-directory.js";
 

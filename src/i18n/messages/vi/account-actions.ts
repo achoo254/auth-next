@@ -26,7 +26,7 @@ export const viAccountActions: Translation<typeof enAccountActions> = {
 	"confirm.sessions.lead":
 		"Mọi trình duyệt bên dưới sẽ bị đăng xuất khỏi tài khoản {brand}. Trình duyệt này vẫn giữ đăng nhập.",
 	"confirm.sessions.effect":
-		"Ứng dụng đăng nhập qua các trình duyệt đó, như Localman và Tunelo bản web, cũng bị đăng xuất. Thiết bị Tunelo vẫn giữ đăng nhập.",
+		"Ứng dụng đăng nhập qua các trình duyệt đó, như Localman và Tunelo bản web, cũng bị đăng xuất. Thiết bị (Tunelo CLI, ứng dụng trên điện thoại và máy tính) vẫn giữ đăng nhập.",
 	"telegram.title": "Liên kết Telegram",
 	"telegram.subtitle":
 		"Mở bot {brand} trên Telegram, bấm Start rồi bấm “{button}” trong 10 phút.",

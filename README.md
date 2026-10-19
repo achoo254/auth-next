@@ -86,7 +86,7 @@ Khi request không có `resource`, IdP chỉ gắn audience nếu scope xin có 
 - Revocation: client chỉ thu hồi được token của chính nó.
 - Introspection: client chỉ xem được token của chính mình; riêng `localman-web` và `tunelo-web` xem được mọi token. Token không được phép xem trả `{"active": false}`.
 
-Tunelo CLI nên gửi thêm `device_name=<hostname>` (tối đa 64 ký tự chữ, số, khoảng trắng, `._'()-`) trong request tới `/device/auth`; trang duyệt hiện "Cho phép `tunelo` trên máy <device_name>?" và trang `/account` liệt kê máy theo tên đó. Thiếu thì IdP dùng User-Agent.
+Tunelo CLI nên gửi thêm `device_name=<hostname>` (tối đa 64 ký tự chữ, số, khoảng trắng, `._'()-`) trong request tới `/device/auth`; trang duyệt hiện "Cho phép `tunelo` trên máy <device_name>?" và trang `/account` liệt kê máy theo tên đó. Thiếu thì IdP dùng User-Agent. App native theo thiết bị (`chat-mobile`, `chat-desktop`, `scribe-mobile`) gửi được cùng tham số `device_name` trong authorization request; mỗi lần duyệt là một grant riêng cho máy đó.
 
 Client MCP đăng ký qua `/reg`: redirect chỉ được là `https://…` hoặc `http://localhost`/`http://127.0.0.1`; xin resource khác `/mcp` bị trả `invalid_target`. `client_name` là tên tự khai: chỉ bị từ chối khi rỗng, dài quá 100 ký tự hoặc chứa ký tự điều khiển/bidi; tên chứa `localman`, `tunelo`, `hoandat` (như `Claude Code (localman)`) hay bản nhái vẫn đăng ký được, còn trang consent cảnh báo mạo danh (xem dưới). Client không được khai `logo_uri`, `client_uri`, `policy_uri`, `tos_uri`, `backchannel_logout_uri`, `jwks_uri`, `sector_identifier_uri`. Mỗi IP đăng ký tối đa 20 client mỗi giờ.
 
@@ -102,7 +102,7 @@ Mọi trang là HTML render phía server, không có JavaScript (CSP `script-src
 | `/interaction/:uid` | Đăng nhập và đăng ký bằng Google/GitHub, consent, duyệt thiết bị. Gắn với cookie interaction của `oidc-provider` |
 | `/device` | Nhập mã thiết bị (trang của `oidc-provider` đã thay giao diện) |
 | `/session/end` | Đăng xuất (trang của `oidc-provider` đã thay giao diện) |
-| `/account` | Ba nhóm card: Tài khoản (hồ sơ, cách đăng nhập), Bảo mật (phiên đang mở, thiết bị Tunelo), Kết nối (ứng dụng đã cấp quyền, Telegram) |
+| `/account` | Ba nhóm card: Tài khoản (hồ sơ, cách đăng nhập), Bảo mật (phiên đang mở, thiết bị: Tunelo CLI và app native `chat-mobile`, `chat-desktop`, `scribe-mobile`, mỗi máy một dòng), Kết nối (ứng dụng đã cấp quyền, Telegram) |
 | `/account/apps/:clientId/revoke`, `/account/sessions/revoke-others` | Trang xác nhận (GET) trước khi gỡ quyền ứng dụng hoặc đăng xuất mọi phiên khác; POST cần CSRF và đăng nhập gần đây |
 | `/lang?set=<locale>&return=<path>` | Nút chuyển ngôn ngữ (English, 中文, Tiếng Việt), xem `docs/integration-guide.md` mục 4 |
 | `/oauth/:provider/callback` | Redirect URI đăng ký với Google/GitHub |

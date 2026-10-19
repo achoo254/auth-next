@@ -25,7 +25,7 @@ export const enAccountActions = {
 	"confirm.sessions.lead":
 		"Every browser below is signed out of your {brand} account. This browser stays signed in.",
 	"confirm.sessions.effect":
-		"Apps signed in through those browsers, such as Localman and Tunelo on the web, are signed out too. Tunelo devices stay signed in.",
+		"Apps signed in through those browsers, such as Localman and Tunelo on the web, are signed out too. Devices (the Tunelo CLI, phone and desktop apps) stay signed in.",
 	"telegram.title": "Link Telegram",
 	"telegram.subtitle":
 		"Open the {brand} bot in Telegram, press Start, then press “{button}” within 10 minutes.",

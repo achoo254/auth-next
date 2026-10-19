@@ -16,7 +16,8 @@ import {
 	accountOverview,
 } from "./account-overview.js";
 import { devicesCard, sessionsCard } from "./account-sections.js";
-import type { AuthorizedApp, DeviceGrant } from "./grant-directory.js";
+import type { DeviceGrant } from "./device-grants.js";
+import type { AuthorizedApp } from "./grant-directory.js";
 import { ACCOUNT_NOTICES } from "./notices.js";
 import type { OpenSession } from "./session-directory.js";
 
