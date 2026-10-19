@@ -61,8 +61,8 @@ Redirect URI: `${LOCALMAN_WEB_URL}/auth/callback`, `${TUNELO_WEB_URL}/auth/callb
 |---|---|---|---|
 | `mock:read` | Localman, MCP | có | Xem project mock trên Localman mà bạn có quyền truy cập, gồm resource, schema và dữ liệu |
 | `mock:write` | Localman, MCP | có | Tạo, sửa, xoá project và resource mock trên Localman, sinh hoặc reset dữ liệu |
-| `client:read` | Localman, MCP | có | Xem workspace, collection, request và environment trong API client của Localman mà bạn có quyền truy cập (biến secret luôn bị che) |
-| `client:write` | Localman, MCP | có | Tạo, sửa, xoá, import collection và request, đặt biến environment trong API client của Localman |
+| `client:read` | Localman, MCP | có | Xem workspace và thành viên, collection, request và environment trong API client của Localman mà bạn có quyền truy cập, cùng cách chúng được chia sẻ (biến secret luôn bị che) |
+| `client:write` | Localman, MCP | có | Tạo, sửa, xoá, import collection và request, đặt biến environment và quản lý workspace trong API client của Localman |
 | `client:send` | Localman, MCP | có | Gửi request thay bạn qua proxy của Localman, kể cả tới localhost qua Tunelo (tính vào hạn mức proxy) |
 | `credentials:write` | chỉ MCP | **không** | Tạo token truy cập cá nhân, secret của service account và access key trên Localman; kèm cảnh báo đỏ "Cho phép tạo khoá truy cập và secret mới thay bạn. Chỉ cấp cho ứng dụng bạn tin tưởng." |
 | `tunnels:open` | Tunelo | | Mở tunnel mới bằng tài khoản của bạn |

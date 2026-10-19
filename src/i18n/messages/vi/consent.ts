@@ -30,9 +30,9 @@ export const viConsent: Translation<typeof enConsent> = {
 	"scope.mockWrite":
 		"Tạo, sửa, xoá project và resource mock trên Localman, sinh hoặc reset dữ liệu",
 	"scope.clientRead":
-		"Xem workspace, collection, request và environment trong API client của Localman mà bạn có quyền truy cập (biến secret luôn bị che)",
+		"Xem workspace và thành viên, collection, request và environment trong API client của Localman mà bạn có quyền truy cập, cùng cách chúng được chia sẻ (biến secret luôn bị che)",
 	"scope.clientWrite":
-		"Tạo, sửa, xoá, import collection và request, đặt biến environment trong API client của Localman",
+		"Tạo, sửa, xoá, import collection và request, đặt biến environment và quản lý workspace trong API client của Localman",
 	"scope.clientSend":
 		"Gửi request thay bạn qua proxy của Localman, kể cả tới localhost qua Tunelo (tính vào hạn mức proxy)",
 	"scope.credentialsWrite":

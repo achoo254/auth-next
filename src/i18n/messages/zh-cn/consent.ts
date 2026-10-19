@@ -27,9 +27,9 @@ export const zhConsent: Translation<typeof enConsent> = {
 	"scope.mockWrite":
 		"在 Localman 上创建、编辑、删除 mock project 和 resource，生成或重置数据",
 	"scope.clientRead":
-		"查看你可访问的 Localman API client 中的 workspace、collection、request 和 environment（secret 变量始终隐藏）",
+		"查看你可访问的 Localman API client 中的 workspace 及其成员、collection、request 和 environment，以及它们的共享设置（secret 变量始终隐藏）",
 	"scope.clientWrite":
-		"在 Localman API client 中创建、编辑、删除、导入 collection 和 request，设置 environment 变量",
+		"在 Localman API client 中创建、编辑、删除、导入 collection 和 request，设置 environment 变量并管理 workspace",
 	"scope.clientSend":
 		"通过 Localman proxy 代你发送 request，包括经 Tunelo 发往 localhost（计入 proxy 额度）",
 	"scope.credentialsWrite":

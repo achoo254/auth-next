@@ -27,9 +27,9 @@ export const enConsent = {
 	"scope.mockWrite":
 		"Create, edit and delete mock projects and resources on Localman, generate or reset data",
 	"scope.clientRead":
-		"See workspaces, collections, requests and environments in the Localman API client you can access (secret variables stay masked)",
+		"See workspaces and their members, collections, requests and environments in the Localman API client you can access, and how they are shared (secret variables stay masked)",
 	"scope.clientWrite":
-		"Create, edit, delete and import collections and requests, and set environment variables in the Localman API client",
+		"Create, edit, delete and import collections and requests, set environment variables and manage workspaces in the Localman API client",
 	"scope.clientSend":
 		"Send requests for you through the Localman proxy, including to localhost through Tunelo (counts toward your proxy quota)",
 	"scope.credentialsWrite":
