@@ -290,6 +290,7 @@ Body là Security Event Token (RFC 8417), header `{alg: "ES256", kid, typ: "sece
 | `login.succeeded` | `methods` (amr: `fed`, đăng nhập qua Google/GitHub) |
 | `method.linked`, `method.unlinked` | `method` (`google`, `github`, `telegram`). Liên kết lại sang chat Telegram khác cũng sinh `method.linked`; Localman đọc lại `userinfo` khi nhận sự kiện có `method: "telegram"` |
 | `email.reclaimed` | (tài khoản `sub` mất email chưa xác minh cho chủ đã xác minh) |
+| `account.deleted` | `source` (`web`, `app`). Tài khoản `sub` đã bị xoá vĩnh viễn (ADR 0009): `sub` không bao giờ quay lại; đăng nhập lại cùng Google/GitHub/Apple tạo `sub` mới. App nhận sự kiện nên xoá hoặc ẩn dữ liệu của `sub` theo chính sách của mình |
 | `grant.created` | `clientId`, `kind` (`device`: duyệt máy Tunelo, có `deviceName`; `third-party-app`: consent client MCP). App first-party đăng nhập không sinh sự kiện này |
 | `session.revoked`, `grant.revoked` | `count`, `cause` (`account-page`, `token-revocation`: client thu hồi refresh token ở `revocation_endpoint`), có thể có `clientId` |
 | `session.logout` | `scope` (`all`: đăng xuất khỏi IdP; `client`: chỉ khỏi một app), có thể có `clientId` (RP-initiated logout) |

@@ -25,6 +25,8 @@ export type AuditEventData = {
 	"method.unlinked": { readonly method: LinkedMethod };
 	/** The account lost its unverified email to the email's proven owner. */
 	"email.reclaimed": Record<string, never>;
+	/** The person deleted their account (ADR 0009): nothing of it is left. */
+	"account.deleted": { readonly source: "web" | "app" };
 	/** A Tunelo device was approved or a third-party (MCP) app consented. */
 	"grant.created": {
 		readonly clientId: string;

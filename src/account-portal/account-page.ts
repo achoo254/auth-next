@@ -2,12 +2,14 @@ import type {
 	AccountDocument,
 	UpstreamProvider,
 } from "../accounts/user-model.js";
-import { alertBox } from "../ui/components.js";
+import { actionLink, alertBox } from "../ui/components.js";
 import { type SafeHtml, html } from "../ui/html.js";
 import { renderPage } from "../ui/layout.js";
 import type { PageContext } from "../ui/page-context.js";
-import { accountGroup } from "./account-card.js";
+import { accountCard, accountGroup } from "./account-card.js";
 import { appsCard, telegramCard } from "./account-connection-cards.js";
+import { ACCOUNT_DELETE_PATH } from "./account-delete-page.js";
+import { accountIcon } from "./account-icons.js";
 import { profileCard, signInCard } from "./account-identity-cards.js";
 import {
 	ACCOUNT_SECTIONS,
@@ -32,6 +34,8 @@ export interface AccountView {
 	readonly sessions: readonly OpenSession[];
 	readonly devices: readonly DeviceGrant[];
 	readonly apps: readonly AuthorizedApp[];
+	/** The tenant lets people delete their own account (ADR 0009). */
+	readonly canDelete: boolean;
 	readonly notice?: string;
 }
 
@@ -44,6 +48,21 @@ const CARDS: Readonly<Record<AccountCardId, (view: AccountView) => SafeHtml>> =
 		apps: appsCard,
 		telegram: telegramCard,
 	};
+
+/** Last on the page, outside the groups: the one action with no way back. */
+function deleteCard(view: AccountView): SafeHtml {
+	const { i18n } = view.page;
+	return accountCard({
+		id: "delete",
+		icon: accountIcon("delete"),
+		title: i18n.t("account.delete.title"),
+		description: i18n.t("account.delete.description"),
+		body: actionLink(ACCOUNT_DELETE_PATH, i18n.t("account.delete.open"), {
+			variant: "danger-outline",
+			dataId: "account-delete-open",
+		}),
+	});
+}
 
 function alerts(view: AccountView): SafeHtml {
 	const { i18n } = view.page;
@@ -78,7 +97,7 @@ export function renderAccountPage(view: AccountView): string {
 ${alerts(view)}
 <div class="account-layout">
 ${accountNav(view)}
-<div class="account-sections">${groups}</div>
+<div class="account-sections">${groups}${view.canDelete ? deleteCard(view) : ""}</div>
 </div>`;
 	return renderPage({
 		title: i18n.t("account.pageTitle"),

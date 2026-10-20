@@ -16,6 +16,26 @@ export const enAccountActions = {
 	"notice.deviceRevoked": "Signed out the device.",
 	"notice.appRevoked": "Removed the app's access.",
 	"notice.notFound": "Couldn't find what you wanted to remove.",
+	"notice.deleteMismatch":
+		"The username didn't match. Your account was not deleted.",
+	"confirm.delete.title": "Delete your {brand} account?",
+	"confirm.delete.lead":
+		"Account {username} and everything tied to it at {brand} are deleted right away. This cannot be undone.",
+	"confirm.delete.signOut":
+		"Every session, device and app you allowed is signed out; you can no longer sign in to Localman, Tunelo or Chat with this account.",
+	"confirm.delete.providers":
+		"Your Google, GitHub, Apple and Telegram links are removed. Signing in again later creates a new, different account.",
+	"confirm.delete.appData":
+		"Data you keep inside the apps that use this account (such as Localman projects and Chat messages) is not deleted by this step.",
+	"confirm.delete.owner":
+		"Domains you claimed stay yours: their ownership belongs to your Google or GitHub account, not to this account.",
+	"confirm.delete.securityLog":
+		"The security log keeps only the event type, its time and the account ID; no IP address, browser or device name.",
+	"confirm.delete.typeUsername": "Type {username} to confirm",
+	"confirm.delete.button": "Delete account permanently",
+	"deleted.title": "Account deleted",
+	"deleted.body":
+		"Your {brand} account and the data tied to it have been deleted.",
 	"confirm.app.title": "Remove app access?",
 	"confirm.app.lead":
 		"{app} will no longer be able to use your {brand} account.",

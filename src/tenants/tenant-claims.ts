@@ -96,6 +96,11 @@ export class TenantClaims {
 		);
 	}
 
+	/** The claims an account started; its deletion removes them (ADR 0009). */
+	async removeFor(accountId: string): Promise<number> {
+		return (await this.claims.deleteMany({ accountId })).deletedCount;
+	}
+
 	/** Every claim of a domain ends once someone verified it. */
 	async removeDomain(domain: string): Promise<void> {
 		await this.claims.deleteMany({ domain });

@@ -28,6 +28,10 @@ await build({
 		"export-tenant-secrets": resolve(root, "scripts/export-tenant-secrets.ts"),
 		"import-tenant": resolve(root, "scripts/import-tenant.ts"),
 		"purge-tenant": resolve(root, "scripts/purge-tenant.ts"),
+		"finish-account-deletion": resolve(
+			root,
+			"scripts/finish-account-deletion.ts",
+		),
 	},
 	outdir: distDir,
 	outExtension: { ".js": ".mjs" },

@@ -441,7 +441,7 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /privacy the same w
 </div></header>
 <main class="page container auth">
 <div class="card auth-card auth-card-wide">
-<h1 class="auth-title">Privacy policy</h1><p class="auth-sub">Applies to the sign-in service auth.hoandat.com. Updated 19 October 2026.</p>
+<h1 class="auth-title">Privacy policy</h1><p class="auth-sub">Applies to the sign-in service auth.hoandat.com. Updated 20 October 2026.</p>
 <div class="prose" data-id="privacy-policy">
 <h2>Data we store</h2>
 <ul><li>Username, email address, display name and profile picture.</li><li>The service uses no passwords. Accounts created before passwords were removed may still hold an argon2id hash of the old password and old recovery codes; they are no longer used to sign in.</li><li>When you sign in with Google, GitHub or Apple: your account ID at the provider, and the verified email, name and profile picture the provider returns. With Apple, the email may be a private relay address you chose to share, and a token is kept only to revoke the link at Apple when you remove it.</li><li>When you link Telegram: the chat ID and Telegram username.</li><li>Sign-in sessions, devices and apps you allowed, with when they were used.</li><li>A security log (sign-ins, linking or removing sign-in methods, revoked sessions and access) with IP address and browser; the IP address and browser of events not yet delivered are deleted after 30 days.</li></ul>
@@ -450,7 +450,9 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /privacy the same w
 <h2>Sharing</h2>
 <p>Profile information goes only to apps run by the same owner (Localman, Tunelo) or to apps you allowed, within what you allowed. It is not shared with anyone else.</p>
 <h2>Your rights</h2>
-<p>On your <a href="/account">Account</a> page you can see and edit your profile, unlink Google, GitHub, Apple or Telegram, and sign out sessions and apps you allowed. To delete your account, contact quocdat254@gmail.com.</p>
+<p>On your <a href="/account">Account</a> page you can see and edit your profile, unlink Google, GitHub, Apple or Telegram, and sign out sessions and apps you allowed.</p>
+<p data-id="privacy-delete">You can delete your account yourself on the <a href="/account">Account</a> page (Delete account). It is deleted right away: sessions, devices, links and your profile are removed, and the security log keeps only the event type, its time and the account ID.</p>
+<p>If deleting does not work, contact quocdat254@gmail.com.</p>
 <h2>Storage</h2>
 <p>Data is stored on servers in Vietnam managed by the service owner, with daily backups kept for 14 days.</p>
 </div>
@@ -480,7 +482,7 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /privacy the same w
 </div></header>
 <main class="page container auth">
 <div class="card auth-card auth-card-wide">
-<h1 class="auth-title">Chính sách quyền riêng tư</h1><p class="auth-sub">Áp dụng cho dịch vụ đăng nhập auth.hoandat.com. Cập nhật ngày 19/10/2026.</p>
+<h1 class="auth-title">Chính sách quyền riêng tư</h1><p class="auth-sub">Áp dụng cho dịch vụ đăng nhập auth.hoandat.com. Cập nhật ngày 20/10/2026.</p>
 <div class="prose" data-id="privacy-policy">
 <h2>Dữ liệu được lưu</h2>
 <ul><li>Tên đăng nhập, địa chỉ email, tên hiển thị và ảnh đại diện.</li><li>Dịch vụ không dùng mật khẩu. Tài khoản tạo trước khi bỏ mật khẩu có thể vẫn còn bản băm argon2id của mật khẩu và mã khôi phục cũ; chúng không còn được dùng để đăng nhập.</li><li>Khi bạn đăng nhập bằng Google, GitHub hoặc Apple: mã định danh tài khoản ở nhà cung cấp, email đã xác minh, tên và ảnh đại diện mà nhà cung cấp trả về. Với Apple, email có thể là địa chỉ chuyển tiếp riêng tư do bạn chọn chia sẻ, và một mã được giữ lại chỉ để thu hồi liên kết ở Apple khi bạn gỡ nó.</li><li>Khi bạn liên kết Telegram: mã chat và tên người dùng Telegram.</li><li>Phiên đăng nhập, thiết bị và ứng dụng bạn đã cấp quyền, kèm thời điểm sử dụng.</li><li>Nhật ký bảo mật (đăng nhập, liên kết hoặc gỡ phương thức đăng nhập, thu hồi phiên và quyền) gồm địa chỉ IP và trình duyệt; IP và trình duyệt của sự kiện chưa gửi đi bị xoá sau 30 ngày.</li></ul>
@@ -489,7 +491,9 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /privacy the same w
 <h2>Chia sẻ</h2>
 <p>Thông tin hồ sơ chỉ được cấp cho các ứng dụng do cùng chủ sở hữu vận hành (Localman, Tunelo) hoặc ứng dụng bạn đã đồng ý cấp quyền, trong phạm vi bạn đồng ý. Không chia sẻ cho bên thứ ba nào khác.</p>
 <h2>Quyền của bạn</h2>
-<p>Tại trang <a href="/account">Tài khoản</a>, bạn xem và sửa hồ sơ, gỡ liên kết Google, GitHub, Apple hoặc Telegram, thu hồi phiên và ứng dụng đã cấp quyền. Để xoá tài khoản, liên hệ quocdat254@gmail.com.</p>
+<p>Tại trang <a href="/account">Tài khoản</a>, bạn xem và sửa hồ sơ, gỡ liên kết Google, GitHub, Apple hoặc Telegram, thu hồi phiên và ứng dụng đã cấp quyền.</p>
+<p data-id="privacy-delete">Bạn tự xoá tài khoản tại trang <a href="/account">Tài khoản</a> (mục Xoá tài khoản). Tài khoản bị xoá ngay: phiên, thiết bị, liên kết và hồ sơ bị xoá; nhật ký bảo mật chỉ giữ loại sự kiện, thời điểm và mã tài khoản.</p>
+<p>Nếu không xoá được, liên hệ quocdat254@gmail.com.</p>
 <h2>Lưu trữ</h2>
 <p>Dữ liệu nằm trên máy chủ tại Việt Nam do chủ sở hữu dịch vụ quản lý, có sao lưu hằng ngày giữ 14 ngày.</p>
 </div>
@@ -519,7 +523,7 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /privacy the same w
 </div></header>
 <main class="page container auth">
 <div class="card auth-card auth-card-wide">
-<h1 class="auth-title">隐私政策</h1><p class="auth-sub">适用于登录服务 auth.hoandat.com。更新于 2026年10月19日。</p>
+<h1 class="auth-title">隐私政策</h1><p class="auth-sub">适用于登录服务 auth.hoandat.com。更新于 2026年10月20日。</p>
 <div class="prose" data-id="privacy-policy">
 <h2>我们存储的数据</h2>
 <ul><li>用户名、邮箱地址、显示名称和头像。</li><li>本服务不使用密码。取消密码之前创建的账号可能仍保留旧密码的 argon2id 哈希和旧恢复码；它们已不再用于登录。</li><li>当你使用 Google、GitHub 或 Apple 登录时：你在该提供商处的账号 ID，以及提供商返回的已验证邮箱、姓名和头像。使用 Apple 时，邮箱可能是你选择共享的私密中转地址；我们保留一个令牌，仅用于在你移除关联时向 Apple 撤销授权。</li><li>当你关联 Telegram 时：聊天 ID 和 Telegram 用户名。</li><li>登录会话、设备和你已授权的应用，以及使用时间。</li><li>安全日志（登录、关联或移除登录方式、撤销会话和权限），包含 IP 地址和浏览器；尚未发送的事件的 IP 地址和浏览器信息会在 30 天后删除。</li></ul>
@@ -528,7 +532,9 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /privacy the same w
 <h2>共享</h2>
 <p>个人资料只提供给同一所有者运营的应用（Localman、Tunelo）或你已授权的应用，且仅限你同意的范围。不与任何其他第三方共享。</p>
 <h2>你的权利</h2>
-<p>在<a href="/account">账号</a>页面，你可以查看和编辑个人资料，取消关联 Google、GitHub、Apple 或 Telegram，退出会话并撤销已授权的应用。如需删除账号，请联系 quocdat254@gmail.com。</p>
+<p>在<a href="/account">账号</a>页面，你可以查看和编辑个人资料，取消关联 Google、GitHub、Apple 或 Telegram，退出会话并撤销已授权的应用。</p>
+<p data-id="privacy-delete">你可以在<a href="/account">账号</a>页面（删除账号）自行删除账号。账号会立即删除：会话、设备、关联和个人资料都会被移除，安全日志只保留事件类型、时间和账号 ID。</p>
+<p>如果无法删除，请联系 quocdat254@gmail.com。</p>
 <h2>存储</h2>
 <p>数据存放在越南的服务器上，由服务所有者管理，每日备份并保留 14 天。</p>
 </div>
@@ -926,6 +932,9 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in en 
   "account.apps.remove": "Remove app access",
   "account.apps.title": "Authorized apps",
   "account.callbackFailed": "Couldn't sign in to your account page.",
+  "account.delete.description": "Permanently delete this Auth Next account with its sessions, devices and links.",
+  "account.delete.open": "Delete account…",
+  "account.delete.title": "Delete account",
   "account.devices.dates": "Allowed {granted} · expires {expires}",
   "account.devices.description": "Machines signed in with the Tunelo CLI or a phone or desktop app. Each one signs out on its own.",
   "account.devices.empty": "No machine has signed in with {command} yet.",
@@ -1140,6 +1149,15 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in en 
   "confirm.app.effect": "Its sign-ins and tokens stop working, and it must ask you again to get access. Access tokens it already holds expire within 15 minutes.",
   "confirm.app.lead": "{app} will no longer be able to use your Auth Next account.",
   "confirm.app.title": "Remove app access?",
+  "confirm.delete.appData": "Data you keep inside the apps that use this account (such as Localman projects and Chat messages) is not deleted by this step.",
+  "confirm.delete.button": "Delete account permanently",
+  "confirm.delete.lead": "Account {username} and everything tied to it at Auth Next are deleted right away. This cannot be undone.",
+  "confirm.delete.owner": "Domains you claimed stay yours: their ownership belongs to your Google or GitHub account, not to this account.",
+  "confirm.delete.providers": "Your Google, GitHub, Apple and Telegram links are removed. Signing in again later creates a new, different account.",
+  "confirm.delete.securityLog": "The security log keeps only the event type, its time and the account ID; no IP address, browser or device name.",
+  "confirm.delete.signOut": "Every session, device and app you allowed is signed out; you can no longer sign in to Localman, Tunelo or Chat with this account.",
+  "confirm.delete.title": "Delete your Auth Next account?",
+  "confirm.delete.typeUsername": "Type {username} to confirm",
   "confirm.sessions.effect": "Apps signed in through those browsers, such as Localman and Tunelo on the web, are signed out too. Devices (the Tunelo CLI, phone and desktop apps) stay signed in.",
   "confirm.sessions.lead": "Every browser below is signed out of your Auth Next account. This browser stays signed in.",
   "confirm.sessions.title": "Sign out every other session?",
@@ -1154,6 +1172,8 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in en 
   "consent.titleExternal": "Allow an external app to use your Auth Next account",
   "consent.titleForApp": "Allow {app} to use your Auth Next account",
   "consent.willBeAbleTo": "The app will be able to:",
+  "deleted.body": "Your Auth Next account and the data tied to it have been deleted.",
+  "deleted.title": "Account deleted",
   "device.approve.code": "Code: {code}",
   "device.approve.ip": "requested from IP {ip}",
   "device.approve.question": "Allow {device}?",
@@ -1274,6 +1294,7 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in en 
   "logout.signInAgain": "Sign in again",
   "logout.title": "Sign out",
   "notice.appRevoked": "Removed the app's access.",
+  "notice.deleteMismatch": "The username didn't match. Your account was not deleted.",
   "notice.deviceRevoked": "Signed out the device.",
   "notice.expired": "The form expired. Try again.",
   "notice.lastMethod": "Couldn't unlink: it's your account's last way to sign in. Link the other of Google or GitHub first.",
@@ -1289,7 +1310,10 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in en 
   "notice.unlinked": "Unlinked.",
   "privacy.purpose.body": "Data is used only to authenticate you, keep you signed in, recover your account and detect unusual access. The service sends no email, shows no ads and sells no data.",
   "privacy.purpose.title": "How we use it",
-  "privacy.rights.body": "On your {account} page you can see and edit your profile, unlink Google, GitHub, Apple or Telegram, and sign out sessions and apps you allowed. To delete your account, contact {email}.",
+  "privacy.rights.body": "On your {account} page you can see and edit your profile, unlink Google, GitHub, Apple or Telegram, and sign out sessions and apps you allowed.",
+  "privacy.rights.deleteContact": "To delete your account, contact {email}.",
+  "privacy.rights.deleteHelp": "If deleting does not work, contact {email}.",
+  "privacy.rights.deleteHere": "You can delete your account yourself on the {account} page (Delete account). It is deleted right away: sessions, devices, links and your profile are removed, and the security log keeps only the event type, its time and the account ID.",
   "privacy.rights.title": "Your rights",
   "privacy.sharing.body": "Profile information goes only to apps run by the same owner (Localman, Tunelo) or to apps you allowed, within what you allowed. It is not shared with anyone else.",
   "privacy.sharing.title": "Sharing",
@@ -1302,7 +1326,7 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in en 
   "privacy.stored.sessions": "Sign-in sessions, devices and apps you allowed, with when they were used.",
   "privacy.stored.telegram": "When you link Telegram: the chat ID and Telegram username.",
   "privacy.stored.title": "Data we store",
-  "privacy.subtitle": "Applies to the sign-in service auth.hoandat.com. Updated 19 October 2026.",
+  "privacy.subtitle": "Applies to the sign-in service auth.hoandat.com. Updated 20 October 2026.",
   "privacy.title": "Privacy policy",
   "providerError.accessDenied": "The request was denied.",
   "providerError.invalidClient": "The app asking you to sign in isn't valid.",
@@ -1369,6 +1393,9 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in vi 
   "account.apps.remove": "Gỡ quyền của ứng dụng",
   "account.apps.title": "Ứng dụng đã cấp quyền",
   "account.callbackFailed": "Chưa đăng nhập được vào trang tài khoản.",
+  "account.delete.description": "Xoá vĩnh viễn tài khoản Auth Next này cùng phiên, thiết bị và liên kết của nó.",
+  "account.delete.open": "Xoá tài khoản…",
+  "account.delete.title": "Xoá tài khoản",
   "account.devices.dates": "Cho phép lúc {granted} · hết hạn {expires}",
   "account.devices.description": "Các máy đăng nhập bằng Tunelo CLI hoặc ứng dụng trên điện thoại, máy tính. Mỗi máy đăng xuất riêng.",
   "account.devices.empty": "Chưa có máy nào đăng nhập bằng {command}.",
@@ -1583,6 +1610,15 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in vi 
   "confirm.app.effect": "Phiên đăng nhập và token của ứng dụng ngừng hoạt động, và nó phải xin lại quyền. Access token nó đang giữ hết hạn trong vòng 15 phút.",
   "confirm.app.lead": "{app} sẽ không dùng được tài khoản Auth Next của bạn nữa.",
   "confirm.app.title": "Gỡ quyền của ứng dụng?",
+  "confirm.delete.appData": "Dữ liệu bạn lưu trong các ứng dụng dùng tài khoản này (như project Localman, tin nhắn Chat) không bị xoá ở bước này.",
+  "confirm.delete.button": "Xoá vĩnh viễn tài khoản",
+  "confirm.delete.lead": "Tài khoản {username} và mọi thứ gắn với nó ở Auth Next bị xoá ngay. Không khôi phục được.",
+  "confirm.delete.owner": "Domain bạn đã nhận vẫn là của bạn: quyền sở hữu gắn với tài khoản Google hoặc GitHub, không gắn với tài khoản này.",
+  "confirm.delete.providers": "Liên kết Google, GitHub, Apple và Telegram bị gỡ. Đăng nhập lại sau này sẽ tạo một tài khoản mới, khác tài khoản này.",
+  "confirm.delete.securityLog": "Nhật ký bảo mật chỉ giữ loại sự kiện, thời điểm và mã tài khoản; không còn địa chỉ IP, trình duyệt hay tên thiết bị.",
+  "confirm.delete.signOut": "Mọi phiên, thiết bị và ứng dụng đã cấp quyền bị đăng xuất; bạn không đăng nhập Localman, Tunelo hay Chat bằng tài khoản này được nữa.",
+  "confirm.delete.title": "Xoá tài khoản Auth Next?",
+  "confirm.delete.typeUsername": "Gõ {username} để xác nhận",
   "confirm.sessions.effect": "Ứng dụng đăng nhập qua các trình duyệt đó, như Localman và Tunelo bản web, cũng bị đăng xuất. Thiết bị (Tunelo CLI, ứng dụng trên điện thoại và máy tính) vẫn giữ đăng nhập.",
   "confirm.sessions.lead": "Mọi trình duyệt bên dưới sẽ bị đăng xuất khỏi tài khoản Auth Next. Trình duyệt này vẫn giữ đăng nhập.",
   "confirm.sessions.title": "Đăng xuất mọi phiên khác?",
@@ -1597,6 +1633,8 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in vi 
   "consent.titleExternal": "Cho phép một ứng dụng bên ngoài dùng tài khoản Auth Next của bạn",
   "consent.titleForApp": "Cho phép {app} dùng tài khoản Auth Next của bạn",
   "consent.willBeAbleTo": "Ứng dụng sẽ được:",
+  "deleted.body": "Tài khoản Auth Next của bạn và dữ liệu gắn với nó đã bị xoá.",
+  "deleted.title": "Đã xoá tài khoản",
   "device.approve.code": "Mã: {code}",
   "device.approve.ip": "yêu cầu từ IP {ip}",
   "device.approve.question": "Cho phép {device}?",
@@ -1717,6 +1755,7 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in vi 
   "logout.signInAgain": "Đăng nhập lại",
   "logout.title": "Đăng xuất",
   "notice.appRevoked": "Đã gỡ quyền của ứng dụng.",
+  "notice.deleteMismatch": "Tên đăng nhập không khớp. Tài khoản chưa bị xoá.",
   "notice.deviceRevoked": "Đã đăng xuất thiết bị.",
   "notice.expired": "Biểu mẫu đã hết hạn. Thử lại.",
   "notice.lastMethod": "Không huỷ được: đây là cách đăng nhập cuối cùng của tài khoản. Liên kết Google hoặc GitHub còn lại trước.",
@@ -1732,7 +1771,10 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in vi 
   "notice.unlinked": "Đã huỷ liên kết.",
   "privacy.purpose.body": "Dữ liệu chỉ dùng để xác thực bạn, giữ phiên đăng nhập, khôi phục tài khoản và phát hiện truy cập bất thường. Dịch vụ không gửi email, không hiển thị quảng cáo và không bán dữ liệu.",
   "privacy.purpose.title": "Mục đích sử dụng",
-  "privacy.rights.body": "Tại trang {account}, bạn xem và sửa hồ sơ, gỡ liên kết Google, GitHub, Apple hoặc Telegram, thu hồi phiên và ứng dụng đã cấp quyền. Để xoá tài khoản, liên hệ {email}.",
+  "privacy.rights.body": "Tại trang {account}, bạn xem và sửa hồ sơ, gỡ liên kết Google, GitHub, Apple hoặc Telegram, thu hồi phiên và ứng dụng đã cấp quyền.",
+  "privacy.rights.deleteContact": "Để xoá tài khoản, liên hệ {email}.",
+  "privacy.rights.deleteHelp": "Nếu không xoá được, liên hệ {email}.",
+  "privacy.rights.deleteHere": "Bạn tự xoá tài khoản tại trang {account} (mục Xoá tài khoản). Tài khoản bị xoá ngay: phiên, thiết bị, liên kết và hồ sơ bị xoá; nhật ký bảo mật chỉ giữ loại sự kiện, thời điểm và mã tài khoản.",
   "privacy.rights.title": "Quyền của bạn",
   "privacy.sharing.body": "Thông tin hồ sơ chỉ được cấp cho các ứng dụng do cùng chủ sở hữu vận hành (Localman, Tunelo) hoặc ứng dụng bạn đã đồng ý cấp quyền, trong phạm vi bạn đồng ý. Không chia sẻ cho bên thứ ba nào khác.",
   "privacy.sharing.title": "Chia sẻ",
@@ -1745,7 +1787,7 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in vi 
   "privacy.stored.sessions": "Phiên đăng nhập, thiết bị và ứng dụng bạn đã cấp quyền, kèm thời điểm sử dụng.",
   "privacy.stored.telegram": "Khi bạn liên kết Telegram: mã chat và tên người dùng Telegram.",
   "privacy.stored.title": "Dữ liệu được lưu",
-  "privacy.subtitle": "Áp dụng cho dịch vụ đăng nhập auth.hoandat.com. Cập nhật ngày 19/10/2026.",
+  "privacy.subtitle": "Áp dụng cho dịch vụ đăng nhập auth.hoandat.com. Cập nhật ngày 20/10/2026.",
   "privacy.title": "Chính sách quyền riêng tư",
   "providerError.accessDenied": "Yêu cầu đã bị từ chối.",
   "providerError.invalidClient": "Ứng dụng yêu cầu đăng nhập không hợp lệ.",
@@ -1812,6 +1854,9 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in zh-
   "account.apps.remove": "移除应用访问权限",
   "account.apps.title": "已授权的应用",
   "account.callbackFailed": "无法登录账号页面。",
+  "account.delete.description": "永久删除此 Auth Next 账号及其会话、设备和关联。",
+  "account.delete.open": "删除账号…",
+  "account.delete.title": "删除账号",
   "account.devices.dates": "允许于 {granted} · {expires} 过期",
   "account.devices.description": "通过 Tunelo CLI 或手机、电脑应用登录的机器。每台机器可单独退出。",
   "account.devices.empty": "还没有机器通过 {command} 登录。",
@@ -2026,6 +2071,15 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in zh-
   "confirm.app.effect": "它的登录和 token 将失效，需再次征得你同意才能访问。它已持有的 access token 将在 15 分钟内过期。",
   "confirm.app.lead": "{app} 将无法再使用你的 Auth Next 账号。",
   "confirm.app.title": "移除应用访问权限？",
+  "confirm.delete.appData": "你在使用此账号的应用中保存的数据（如 Localman 项目和 Chat 消息）不会在这一步删除。",
+  "confirm.delete.button": "永久删除账号",
+  "confirm.delete.lead": "账号 {username} 以及它在 Auth Next 的所有关联内容将立即删除，无法恢复。",
+  "confirm.delete.owner": "你认领的域名仍归你所有：所有权属于你的 Google 或 GitHub 账号，而不是此账号。",
+  "confirm.delete.providers": "与 Google、GitHub、Apple 和 Telegram 的关联会被移除。以后再次登录会创建一个新的、不同的账号。",
+  "confirm.delete.securityLog": "安全日志只保留事件类型、时间和账号 ID，不再包含 IP 地址、浏览器或设备名称。",
+  "confirm.delete.signOut": "所有会话、设备和已授权的应用都会退出；你将无法再用此账号登录 Localman、Tunelo 或 Chat。",
+  "confirm.delete.title": "删除你的 Auth Next 账号？",
+  "confirm.delete.typeUsername": "输入 {username} 以确认",
   "confirm.sessions.effect": "通过这些浏览器登录的应用（例如网页版 Localman 和 Tunelo）也会退出。设备（Tunelo CLI、手机和电脑应用）保持登录。",
   "confirm.sessions.lead": "下面的每个浏览器都会退出你的 Auth Next 账号。此浏览器保持登录。",
   "confirm.sessions.title": "退出其他所有会话？",
@@ -2040,6 +2094,8 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in zh-
   "consent.titleExternal": "允许外部应用使用你的 Auth Next 账号",
   "consent.titleForApp": "允许 {app} 使用你的 Auth Next 账号",
   "consent.willBeAbleTo": "该应用将能够：",
+  "deleted.body": "你的 Auth Next 账号及其关联数据已删除。",
+  "deleted.title": "账号已删除",
   "device.approve.code": "代码：{code}",
   "device.approve.ip": "请求来自 IP {ip}",
   "device.approve.question": "允许 {device}？",
@@ -2160,6 +2216,7 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in zh-
   "logout.signInAgain": "重新登录",
   "logout.title": "退出登录",
   "notice.appRevoked": "已移除该应用的访问权限。",
+  "notice.deleteMismatch": "用户名不匹配，账号未被删除。",
   "notice.deviceRevoked": "已退出该设备。",
   "notice.expired": "表单已过期，请重试。",
   "notice.lastMethod": "无法取消关联：这是账号最后一种登录方式。请先关联 Google 或 GitHub 中的另一个。",
@@ -2175,7 +2232,10 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in zh-
   "notice.unlinked": "已取消关联。",
   "privacy.purpose.body": "数据仅用于验证你的身份、保持登录、恢复账号和发现异常访问。本服务不发送邮件、不展示广告，也不出售数据。",
   "privacy.purpose.title": "使用目的",
-  "privacy.rights.body": "在{account}页面，你可以查看和编辑个人资料，取消关联 Google、GitHub、Apple 或 Telegram，退出会话并撤销已授权的应用。如需删除账号，请联系 {email}。",
+  "privacy.rights.body": "在{account}页面，你可以查看和编辑个人资料，取消关联 Google、GitHub、Apple 或 Telegram，退出会话并撤销已授权的应用。",
+  "privacy.rights.deleteContact": "如需删除账号，请联系 {email}。",
+  "privacy.rights.deleteHelp": "如果无法删除，请联系 {email}。",
+  "privacy.rights.deleteHere": "你可以在{account}页面（删除账号）自行删除账号。账号会立即删除：会话、设备、关联和个人资料都会被移除，安全日志只保留事件类型、时间和账号 ID。",
   "privacy.rights.title": "你的权利",
   "privacy.sharing.body": "个人资料只提供给同一所有者运营的应用（Localman、Tunelo）或你已授权的应用，且仅限你同意的范围。不与任何其他第三方共享。",
   "privacy.sharing.title": "共享",
@@ -2188,7 +2248,7 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in zh-
   "privacy.stored.sessions": "登录会话、设备和你已授权的应用，以及使用时间。",
   "privacy.stored.telegram": "当你关联 Telegram 时：聊天 ID 和 Telegram 用户名。",
   "privacy.stored.title": "我们存储的数据",
-  "privacy.subtitle": "适用于登录服务 auth.hoandat.com。更新于 2026年10月19日。",
+  "privacy.subtitle": "适用于登录服务 auth.hoandat.com。更新于 2026年10月20日。",
   "privacy.title": "隐私政策",
   "providerError.accessDenied": "请求已被拒绝。",
   "providerError.invalidClient": "请求登录的应用无效。",

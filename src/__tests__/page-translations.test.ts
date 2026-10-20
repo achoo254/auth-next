@@ -4,6 +4,10 @@ import {
 	renderRevokeOthersConfirm,
 } from "../account-portal/account-confirm-page.js";
 import {
+	renderAccountDeleted,
+	renderDeleteConfirm,
+} from "../account-portal/account-delete-page.js";
+import {
 	type AccountView,
 	renderAccountPage,
 } from "../account-portal/account-page.js";
@@ -54,6 +58,7 @@ function accountView(locale: Locale): AccountView {
 			{ uid: "s-2", loginAt: NOW },
 		],
 		devices: [],
+		canDelete: true,
 		apps: [
 			{
 				clientId: "mcp-1",
@@ -107,7 +112,8 @@ function pages(locale: Locale): Record<string, string> {
 			reclaiming: true,
 		}),
 		error: renderErrorPage({ host: HOST, page, message: "x", code: "c" }),
-		privacy: renderPrivacyPage(HOST, page),
+		privacy: renderPrivacyPage(HOST, page, true),
+		privacyContact: renderPrivacyPage(HOST, page, false),
 		guide: renderDomainGuide(HOST, "/claim", page),
 		apps: renderAppsPage(APP_URLS, page),
 		account: renderAccountPage(view),
@@ -116,6 +122,12 @@ function pages(locale: Locale): Record<string, string> {
 			action: "/account/apps/mcp-1/revoke",
 			app,
 		}),
+		confirmDelete: renderDeleteConfirm({
+			...base,
+			username: "minh_anh",
+			mentionDomains: true,
+		}),
+		deleted: renderAccountDeleted(HOST, page),
 		confirmSessions: renderRevokeOthersConfirm({
 			...base,
 			action: "/account/sessions/revoke-others",

@@ -16,12 +16,8 @@ import {
 	type PortalHandler,
 	portalCsrfScope,
 } from "./portal-session.js";
-import { grantIdsOf, revokeGrants } from "./revoke-access.js";
-import {
-	listSessions,
-	otherSessionUids,
-	revokeSession,
-} from "./session-directory.js";
+import { grantIdsOf, otherSessionUids, revokeGrants } from "./revoke-access.js";
+import { listSessions, revokeSession } from "./session-directory.js";
 
 type Wrap = (handler: PortalHandler) => RequestHandler;
 

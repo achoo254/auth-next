@@ -115,36 +115,6 @@ export async function listSessions(
 		.sort((a, b) => (b.loginAt?.getTime() ?? 0) - (a.loginAt?.getTime() ?? 0));
 }
 
-/**
- * Every live session of the account except `currentUid`, with no page
- * limit: "sign out every other session" must not miss one.
- */
-export async function otherSessionUids(
-	{ db, tenant }: TenantDb,
-	accountId: string,
-	currentUid: string,
-): Promise<string[]> {
-	const sessions = await db
-		.collection(collectionNameFor("Session"))
-		.find(
-			{
-				"payload.accountId": accountId,
-				...inTenant(tenant),
-				expiresAt: { $gt: new Date() },
-			},
-			{ projection: { "payload.uid": 1 } },
-		)
-		.toArray();
-	return sessions.flatMap((document) => {
-		const payload: unknown = document.payload;
-		const uid: unknown =
-			typeof payload === "object" && payload !== null
-				? Reflect.get(payload, "uid")
-				: undefined;
-		return typeof uid === "string" && uid !== currentUid ? [uid] : [];
-	});
-}
-
 type BackchannelLogout = (sub: string, sid: string | undefined) => unknown;
 
 function backchannelLogoutOf(client: object): BackchannelLogout | undefined {

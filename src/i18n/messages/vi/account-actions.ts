@@ -18,6 +18,24 @@ export const viAccountActions: Translation<typeof enAccountActions> = {
 	"notice.deviceRevoked": "Đã đăng xuất thiết bị.",
 	"notice.appRevoked": "Đã gỡ quyền của ứng dụng.",
 	"notice.notFound": "Không tìm thấy mục cần gỡ.",
+	"notice.deleteMismatch": "Tên đăng nhập không khớp. Tài khoản chưa bị xoá.",
+	"confirm.delete.title": "Xoá tài khoản {brand}?",
+	"confirm.delete.lead":
+		"Tài khoản {username} và mọi thứ gắn với nó ở {brand} bị xoá ngay. Không khôi phục được.",
+	"confirm.delete.signOut":
+		"Mọi phiên, thiết bị và ứng dụng đã cấp quyền bị đăng xuất; bạn không đăng nhập Localman, Tunelo hay Chat bằng tài khoản này được nữa.",
+	"confirm.delete.providers":
+		"Liên kết Google, GitHub, Apple và Telegram bị gỡ. Đăng nhập lại sau này sẽ tạo một tài khoản mới, khác tài khoản này.",
+	"confirm.delete.appData":
+		"Dữ liệu bạn lưu trong các ứng dụng dùng tài khoản này (như project Localman, tin nhắn Chat) không bị xoá ở bước này.",
+	"confirm.delete.owner":
+		"Domain bạn đã nhận vẫn là của bạn: quyền sở hữu gắn với tài khoản Google hoặc GitHub, không gắn với tài khoản này.",
+	"confirm.delete.securityLog":
+		"Nhật ký bảo mật chỉ giữ loại sự kiện, thời điểm và mã tài khoản; không còn địa chỉ IP, trình duyệt hay tên thiết bị.",
+	"confirm.delete.typeUsername": "Gõ {username} để xác nhận",
+	"confirm.delete.button": "Xoá vĩnh viễn tài khoản",
+	"deleted.title": "Đã xoá tài khoản",
+	"deleted.body": "Tài khoản {brand} của bạn và dữ liệu gắn với nó đã bị xoá.",
 	"confirm.app.title": "Gỡ quyền của ứng dụng?",
 	"confirm.app.lead": "{app} sẽ không dùng được tài khoản {brand} của bạn nữa.",
 	"confirm.app.canNow": "Hiện ứng dụng được:",

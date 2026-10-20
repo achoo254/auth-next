@@ -28,6 +28,7 @@ function page(
 			...account,
 		},
 		currentSessionUid: "session-1",
+		canDelete: true,
 		providers,
 		telegramEnabled: false,
 		sessions: [],

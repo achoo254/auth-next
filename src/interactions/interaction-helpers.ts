@@ -121,6 +121,15 @@ export async function finishLogin(
 	accountId: string,
 	amr: readonly string[],
 ): Promise<void> {
+	// Read again: the account may have been deleted (ADR 0009) since the
+	// sign-in was decided; it must not get a new session after that.
+	if (!(await services.accounts.findActiveById(accountId))) {
+		sendInteractionError(services, res, {
+			message: "upstream.rejected.disabled",
+			status: 403,
+		});
+		return;
+	}
 	const result: InteractionResults = {
 		login: { accountId, amr: [...amr] },
 	};

@@ -51,7 +51,11 @@ describe("/account buttons say what they do", () => {
 		expect(page).toContain('href="/account/sessions/revoke-others"');
 		// Signing in through localman-web authorized "Localman".
 		expect(page).toContain('href="/account/apps/localman-web/revoke"');
-		expect(page.match(/btn-danger/g)).toHaveLength(1);
+		// Red only for removing the app and deleting the account.
+		expect(page.match(/btn-danger/g)).toHaveLength(2);
+		expect(page).toMatch(
+			/class="btn btn-danger-outline" href="\/account\/delete"/,
+		);
 		expect(page).toContain("Remove app access");
 		for (const id of [
 			"profile",

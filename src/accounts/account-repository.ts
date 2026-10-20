@@ -65,6 +65,39 @@ export class AccountRepository implements AccountStore {
 		return account ?? undefined;
 	}
 
+	/** Also a disabled account: only for finishing its deletion. */
+	async findIncludingDisabled(
+		id: string,
+	): Promise<AccountDocument | undefined> {
+		return (
+			(await this.accounts.findOne({ _id: id, ...this.scope })) ?? undefined
+		);
+	}
+
+	/**
+	 * First step of deleting an account (ADR 0009): from here it no longer
+	 * signs in, links, refreshes or uses a one-time token. An account
+	 * disabled earlier (a deletion that stopped half way) reads as such.
+	 */
+	async disable(id: string): Promise<"disabled" | "was-disabled" | "missing"> {
+		const result = await this.accounts.updateOne(
+			{ _id: id, ...this.scope, disabledAt: { $exists: false } },
+			{ $set: { disabledAt: new Date() }, $inc: { securityVersion: 1 } },
+		);
+		if (result.modifiedCount > 0) return "disabled";
+		return (await this.findIncludingDisabled(id)) ? "was-disabled" : "missing";
+	}
+
+	/** Last step of a deletion; never removes an account still in use. */
+	async deleteDisabled(id: string): Promise<boolean> {
+		const result = await this.accounts.deleteOne({
+			_id: id,
+			...this.scope,
+			disabledAt: { $exists: true },
+		});
+		return result.deletedCount > 0;
+	}
+
 	async findByEmail(email: string): Promise<AccountDocument | undefined> {
 		return (
 			(await this.accounts.findOne({

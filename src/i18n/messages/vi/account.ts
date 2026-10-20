@@ -73,6 +73,10 @@ export const viAccount: Translation<typeof enAccount> = {
 		"Đã liên kết với {chat} lúc {date}. Dùng để nhận thông báo bảo mật của tài khoản.",
 	"account.telegram.link": "Liên kết Telegram",
 	"account.telegram.unlink": "Huỷ liên kết Telegram",
+	"account.delete.title": "Xoá tài khoản",
+	"account.delete.description":
+		"Xoá vĩnh viễn tài khoản {brand} này cùng phiên, thiết bị và liên kết của nó.",
+	"account.delete.open": "Xoá tài khoản…",
 	"account.telegram.statusLinked": "đã liên kết",
 	"account.telegram.statusNone": "chưa liên kết",
 	"account.telegram.statusOff": "đang tắt",

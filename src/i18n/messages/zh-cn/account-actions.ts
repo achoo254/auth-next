@@ -17,6 +17,24 @@ export const zhAccountActions: Translation<typeof enAccountActions> = {
 	"notice.deviceRevoked": "已退出该设备。",
 	"notice.appRevoked": "已移除该应用的访问权限。",
 	"notice.notFound": "找不到要移除的项目。",
+	"notice.deleteMismatch": "用户名不匹配，账号未被删除。",
+	"confirm.delete.title": "删除你的 {brand} 账号？",
+	"confirm.delete.lead":
+		"账号 {username} 以及它在 {brand} 的所有关联内容将立即删除，无法恢复。",
+	"confirm.delete.signOut":
+		"所有会话、设备和已授权的应用都会退出；你将无法再用此账号登录 Localman、Tunelo 或 Chat。",
+	"confirm.delete.providers":
+		"与 Google、GitHub、Apple 和 Telegram 的关联会被移除。以后再次登录会创建一个新的、不同的账号。",
+	"confirm.delete.appData":
+		"你在使用此账号的应用中保存的数据（如 Localman 项目和 Chat 消息）不会在这一步删除。",
+	"confirm.delete.owner":
+		"你认领的域名仍归你所有：所有权属于你的 Google 或 GitHub 账号，而不是此账号。",
+	"confirm.delete.securityLog":
+		"安全日志只保留事件类型、时间和账号 ID，不再包含 IP 地址、浏览器或设备名称。",
+	"confirm.delete.typeUsername": "输入 {username} 以确认",
+	"confirm.delete.button": "永久删除账号",
+	"deleted.title": "账号已删除",
+	"deleted.body": "你的 {brand} 账号及其关联数据已删除。",
 	"confirm.app.title": "移除应用访问权限？",
 	"confirm.app.lead": "{app} 将无法再使用你的 {brand} 账号。",
 	"confirm.app.canNow": "它目前可以：",

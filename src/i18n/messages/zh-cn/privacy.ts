@@ -4,7 +4,7 @@ import type { Translation } from "../translation.js";
 export const zhPrivacy: Translation<typeof enPrivacy> = {
 	"privacy.title": "隐私政策",
 	"privacy.subtitle":
-		"适用于登录服务 auth.{brandDomain}。更新于 2026年10月19日。",
+		"适用于登录服务 auth.{brandDomain}。更新于 2026年10月20日。",
 	"privacy.stored.title": "我们存储的数据",
 	"privacy.stored.profile": "用户名、邮箱地址、显示名称和头像。",
 	"privacy.stored.noPassword":
@@ -24,7 +24,11 @@ export const zhPrivacy: Translation<typeof enPrivacy> = {
 		"个人资料只提供给同一所有者运营的应用（Localman、Tunelo）或你已授权的应用，且仅限你同意的范围。不与任何其他第三方共享。",
 	"privacy.rights.title": "你的权利",
 	"privacy.rights.body":
-		"在{account}页面，你可以查看和编辑个人资料，取消关联 Google、GitHub、Apple 或 Telegram，退出会话并撤销已授权的应用。如需删除账号，请联系 {email}。",
+		"在{account}页面，你可以查看和编辑个人资料，取消关联 Google、GitHub、Apple 或 Telegram，退出会话并撤销已授权的应用。",
+	"privacy.rights.deleteHere":
+		"你可以在{account}页面（删除账号）自行删除账号。账号会立即删除：会话、设备、关联和个人资料都会被移除，安全日志只保留事件类型、时间和账号 ID。",
+	"privacy.rights.deleteContact": "如需删除账号，请联系 {email}。",
+	"privacy.rights.deleteHelp": "如果无法删除，请联系 {email}。",
 	"privacy.storage.title": "存储",
 	"privacy.storage.body":
 		"数据存放在越南的服务器上，由服务所有者管理，每日备份并保留 14 天。",

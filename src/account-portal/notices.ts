@@ -22,6 +22,7 @@ const NOTICES: Readonly<Record<string, Notice>> = {
 	"device-revoked": { tone: "success", text: "notice.deviceRevoked" },
 	"app-revoked": { tone: "success", text: "notice.appRevoked" },
 	"not-found": { tone: "error", text: "notice.notFound" },
+	"delete-mismatch": { tone: "error", text: "notice.deleteMismatch" },
 };
 
 /**

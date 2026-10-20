@@ -70,6 +70,10 @@ export const enAccount = {
 		"Linked to {chat} on {date}. Used for your account's security notices.",
 	"account.telegram.link": "Link Telegram",
 	"account.telegram.unlink": "Unlink Telegram",
+	"account.delete.title": "Delete account",
+	"account.delete.description":
+		"Permanently delete this {brand} account with its sessions, devices and links.",
+	"account.delete.open": "Delete account…",
 	"account.telegram.statusLinked": "linked",
 	"account.telegram.statusNone": "not linked",
 	"account.telegram.statusOff": "off",

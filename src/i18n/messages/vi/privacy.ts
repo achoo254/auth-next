@@ -4,7 +4,7 @@ import type { Translation } from "../translation.js";
 export const viPrivacy: Translation<typeof enPrivacy> = {
 	"privacy.title": "Chính sách quyền riêng tư",
 	"privacy.subtitle":
-		"Áp dụng cho dịch vụ đăng nhập auth.{brandDomain}. Cập nhật ngày 19/10/2026.",
+		"Áp dụng cho dịch vụ đăng nhập auth.{brandDomain}. Cập nhật ngày 20/10/2026.",
 	"privacy.stored.title": "Dữ liệu được lưu",
 	"privacy.stored.profile":
 		"Tên đăng nhập, địa chỉ email, tên hiển thị và ảnh đại diện.",
@@ -26,7 +26,11 @@ export const viPrivacy: Translation<typeof enPrivacy> = {
 		"Thông tin hồ sơ chỉ được cấp cho các ứng dụng do cùng chủ sở hữu vận hành (Localman, Tunelo) hoặc ứng dụng bạn đã đồng ý cấp quyền, trong phạm vi bạn đồng ý. Không chia sẻ cho bên thứ ba nào khác.",
 	"privacy.rights.title": "Quyền của bạn",
 	"privacy.rights.body":
-		"Tại trang {account}, bạn xem và sửa hồ sơ, gỡ liên kết Google, GitHub, Apple hoặc Telegram, thu hồi phiên và ứng dụng đã cấp quyền. Để xoá tài khoản, liên hệ {email}.",
+		"Tại trang {account}, bạn xem và sửa hồ sơ, gỡ liên kết Google, GitHub, Apple hoặc Telegram, thu hồi phiên và ứng dụng đã cấp quyền.",
+	"privacy.rights.deleteHere":
+		"Bạn tự xoá tài khoản tại trang {account} (mục Xoá tài khoản). Tài khoản bị xoá ngay: phiên, thiết bị, liên kết và hồ sơ bị xoá; nhật ký bảo mật chỉ giữ loại sự kiện, thời điểm và mã tài khoản.",
+	"privacy.rights.deleteContact": "Để xoá tài khoản, liên hệ {email}.",
+	"privacy.rights.deleteHelp": "Nếu không xoá được, liên hệ {email}.",
 	"privacy.storage.title": "Lưu trữ",
 	"privacy.storage.body":
 		"Dữ liệu nằm trên máy chủ tại Việt Nam do chủ sở hữu dịch vụ quản lý, có sao lưu hằng ngày giữ 14 ngày.",

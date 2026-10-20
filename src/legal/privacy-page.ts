@@ -7,6 +7,8 @@ import { type PageContext, pageContext } from "../ui/page-context.js";
 
 export const PRIVACY_PATH = "/privacy";
 
+const CONTACT_EMAIL = "quocdat254@gmail.com";
+
 const STORED: readonly MessageKey[] = [
 	"privacy.stored.profile",
 	"privacy.stored.noPassword",
@@ -20,9 +22,14 @@ const STORED: readonly MessageKey[] = [
  * Public privacy policy. Google requires one before a "Sign in with Google"
  * app can leave testing; it states only what this service actually stores.
  */
-export function renderPrivacyPage(host: string, page: PageContext): string {
+export function renderPrivacyPage(
+	host: string,
+	page: PageContext,
+	selfServiceDeletion: boolean,
+): string {
 	const { i18n } = page;
 	const title = i18n.t("privacy.title");
+	const account = html`<a href="/account">${i18n.t("layout.brand")}</a>`;
 	return renderPage({
 		title,
 		host,
@@ -37,7 +44,13 @@ export function renderPrivacyPage(host: string, page: PageContext): string {
 <h2>${i18n.t("privacy.sharing.title")}</h2>
 <p>${i18n.t("privacy.sharing.body")}</p>
 <h2>${i18n.t("privacy.rights.title")}</h2>
-<p>${i18n.rich("privacy.rights.body", { account: html`<a href="/account">${i18n.t("layout.brand")}</a>`, email: "quocdat254@gmail.com" })}</p>
+<p>${i18n.rich("privacy.rights.body", { account })}</p>
+${
+	selfServiceDeletion
+		? html`<p data-id="privacy-delete">${i18n.rich("privacy.rights.deleteHere", { account })}</p>
+<p>${i18n.t("privacy.rights.deleteHelp", { email: CONTACT_EMAIL })}</p>`
+		: html`<p data-id="privacy-delete">${i18n.t("privacy.rights.deleteContact", { email: CONTACT_EMAIL })}</p>`
+}
 <h2>${i18n.t("privacy.storage.title")}</h2>
 <p>${i18n.t("privacy.storage.body")}</p>
 </div>`,
@@ -48,7 +61,10 @@ export function renderPrivacyPage(host: string, page: PageContext): string {
  * The page depends on the visitor's language (cookie, Accept-Language),
  * so caches must revalidate rather than serve one language to everyone.
  */
-export function createPrivacyRouter(host: string): Router {
+export function createPrivacyRouter(
+	host: string,
+	selfServiceDeletion: boolean,
+): Router {
 	const router = Router();
 	router.get(PRIVACY_PATH, (req, res) => {
 		res
@@ -57,7 +73,7 @@ export function createPrivacyRouter(host: string): Router {
 			.vary("Cookie")
 			.vary("Accept-Language")
 			.type("html")
-			.send(renderPrivacyPage(host, pageContext(req)));
+			.send(renderPrivacyPage(host, pageContext(req), selfServiceDeletion));
 	});
 	return router;
 }

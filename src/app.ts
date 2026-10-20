@@ -1,4 +1,5 @@
 import express, { type Express, type RequestHandler } from "express";
+import { deletesOwnAccount } from "./account-portal/account-deletion.js";
 import { createAccountRouter } from "./account-portal/account-routes.js";
 import { createAppsRouter } from "./app-directory/apps-page.js";
 import { createAssetsRouter } from "./assets.js";
@@ -85,7 +86,9 @@ export function createTenantApp(options: TenantAppOptions): Express {
 		app.use(createAdminRouter(services, tenancy));
 	}
 	if (options.enrollmentChallenge) app.use(options.enrollmentChallenge);
-	app.use(createPrivacyRouter(new URL(tenant.issuer).host));
+	app.use(
+		createPrivacyRouter(new URL(tenant.issuer).host, deletesOwnAccount(tenant)),
+	);
 	app.use(createLanguageRouter(services));
 	// Until its owner adds a sign-in provider, a claimed tenant serves only
 	// /admin, its assets, the language switch and the privacy page: no
