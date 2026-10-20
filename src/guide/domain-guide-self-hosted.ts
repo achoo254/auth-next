@@ -5,7 +5,7 @@ import type { Section } from "./domain-guide-sections.js";
  * public repository that ships it.
  */
 export const SELF_HOSTED_INSTALL_GUIDE =
-	"https://github.com/achoo254/hoandat-auth/blob/main/docs/self-hosted-install.md";
+	"https://github.com/achoo254/auth-next/blob/main/docs/self-hosted-install.md";
 
 /**
  * Running a domain on its owner's servers, and moving one there: shown

@@ -1,4 +1,4 @@
-# A self-hosted install of hoandat-auth, Localman, Tunelo and Chat for one
+# A self-hosted install of auth-next, Localman, Tunelo and Chat for one
 # domain (ADR 0007, docs/self-hosted-install.md). Every value comes from
 # .env and the files init.sh writes under data/; nothing secret is here.
 #
