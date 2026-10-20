@@ -2,7 +2,7 @@
 
 Hướng dẫn cho chủ một domain đã chọn **tự host** ở `/claim` (ADR [0007](decisions/0007-self-hosted-tenants.md)): đăng nhập, Localman, Tunelo và Chat chạy trên máy của họ, với domain của họ là tenant chính. Gateway (`https://auth.hoandat.com`) chỉ xác minh domain và cấp gói enrollment; cài xong, không request hay dữ liệu nào đi qua gateway.
 
-Bundle nằm ở `deploy/self-hosted/` của repo này và build image từ mã nguồn của ba repo: hoandat-auth, localman-next, chat-next.
+Bundle nằm ở `deploy/self-hosted/` của repo này và build image từ mã nguồn của ba repo: auth-next, localman-next, chat-next.
 
 > **Trạng thái (17/10/2026):** đã build và chạy trọn trên box LAB 183 (Docker 29.7, 2 nhân, 4 GB RAM) với chứng chỉ tự ký: cả bốn app lên, đăng nhập đi tới Google, audit tới Localman qua loopback, không dòng lỗi nào trong log. Chưa chạy ở nơi có IP công khai: chứng chỉ Let's Encrypt thật, đổi gói với gateway thật, đăng nhập Google/GitHub trọn vẹn và Turnstile thật còn chờ một VM công khai và domain thử (`plans/dattqh/261017-0735-self-hosted-tenant/`).
 
@@ -47,7 +47,7 @@ curl -s https://auth.<domain>/.well-known/openid-configuration | head -c 200
 
 ## Cập nhật
 
-Bản phát hành do workflow `selfhosted-release` của hoandat-auth đẩy lên GHCR (`ghcr.io/achoo254/selfhosted-*`, công khai) và ký; bản cài tải thẳng từ GHCR, chỉ khi operator chạy:
+Bản phát hành do workflow `selfhosted-release` của auth-next đẩy lên GHCR (`ghcr.io/achoo254/selfhosted-*`, công khai) và ký; bản cài tải thẳng từ GHCR, chỉ khi operator chạy:
 
 ```bash
 cd deploy/self-hosted

@@ -1,4 +1,4 @@
-# Dùng domain riêng với hoandat-auth, Localman và Tunelo
+# Dùng domain riêng với auth-next, Localman và Tunelo
 
 Hướng dẫn cho người sở hữu một domain muốn người dùng của mình đăng nhập ở `auth.<domain>`,
 dùng Localman ở `localman.<domain>` và Tunelo ở `tunnel.<domain>`. Mỗi domain là một

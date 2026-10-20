@@ -1,6 +1,6 @@
-# hoandat-auth
+# auth-next
 
-IdP OpenID Connect tự host tại `auth.hoandat.com`: một nơi đăng nhập cho Localman web, Localman MCP, Tunelo CLI và Tunelo web. Dựng trên [`oidc-provider`](https://github.com/panva/node-oidc-provider) v9, Express 5 và MongoDB. Lý do chọn kiến trúc: [`docs/decisions/0001-own-oidc-idp.md`](docs/decisions/0001-own-oidc-idp.md); tài khoản và trang đăng nhập: [`docs/decisions/0002-accounts-and-login-pages.md`](docs/decisions/0002-accounts-and-login-pages.md); token exchange, kiểm client và audit: [`docs/decisions/0003-token-exchange-and-audit-outbox.md`](docs/decisions/0003-token-exchange-and-audit-outbox.md); chỉ đăng nhập bằng Google/GitHub: [`docs/decisions/0004-upstream-only-sign-in.md`](docs/decisions/0004-upstream-only-sign-in.md), thêm Apple: [`docs/decisions/0008-sign-in-with-apple.md`](docs/decisions/0008-sign-in-with-apple.md). **App tích hợp đọc [`docs/integration-guide.md`](docs/integration-guide.md).**
+`auth-next` (trước là `hoandat-auth`; process pm2, thư mục `/var/www/hoandat-auth` trên server và repo GitHub vẫn giữ tên cũ) là IdP OpenID Connect tự host tại `auth.hoandat.com`, dùng chung cho hệ `*-next`: một nơi đăng nhập cho Localman web, Localman MCP, Tunelo CLI, Tunelo web, Chat và Scribe. Dựng trên [`oidc-provider`](https://github.com/panva/node-oidc-provider) v9, Express 5 và MongoDB. Lý do chọn kiến trúc: [`docs/decisions/0001-own-oidc-idp.md`](docs/decisions/0001-own-oidc-idp.md); tài khoản và trang đăng nhập: [`docs/decisions/0002-accounts-and-login-pages.md`](docs/decisions/0002-accounts-and-login-pages.md); token exchange, kiểm client và audit: [`docs/decisions/0003-token-exchange-and-audit-outbox.md`](docs/decisions/0003-token-exchange-and-audit-outbox.md); chỉ đăng nhập bằng Google/GitHub: [`docs/decisions/0004-upstream-only-sign-in.md`](docs/decisions/0004-upstream-only-sign-in.md), thêm Apple: [`docs/decisions/0008-sign-in-with-apple.md`](docs/decisions/0008-sign-in-with-apple.md). **App tích hợp đọc [`docs/integration-guide.md`](docs/integration-guide.md).**
 
 Trạng thái: phase 03 (phần IdP). Có lõi OIDC (phase 01), trang đăng nhập, đăng ký, consent, duyệt thiết bị, đăng xuất, trang `/account` (phase 02), cùng token exchange Localman → Tunelo, script kiểm client và outbox sự kiện audit gửi sang Localman (phase 03). Đăng nhập và đăng ký chỉ bằng Google, GitHub hoặc Apple (Apple khi đã cấu hình, ADR 0008): không có mật khẩu, mã khôi phục hay quên mật khẩu (ADR 0004). Không gửi email ở bất kỳ đâu.
 
@@ -16,9 +16,11 @@ Người dùng xem danh sách này ở trang công khai `/apps` (mở `auth.hoan
 | Tunelo web | `https://tunnel.hoandat.com` | `tunelo-web` | Nút đăng nhập trên web (Code + PKCE) |
 | Chat web (repo `chat-next`) | `https://chat.hoandat.com` | `chat-web` | Nút đăng nhập trên web (Code + PKCE); phiên gắn với phiên IdP |
 | Chat mobile, desktop (repo `chat-next`) | app iOS/Android, macOS/Windows/Linux | `chat-mobile`, `chat-desktop` | Trình duyệt hệ thống, Code + PKCE; redirect private-use scheme (`CHAT_MOBILE_REDIRECT_URI`) hoặc loopback cổng bất kỳ |
+| Scribe web (repo `scribe-next`) | `https://scribe.hoandat.com` | `scribe-web` | Nút đăng nhập trên web (Code + PKCE, client confidential); back-channel logout về `/api/auth/backchannel-logout` |
+| Scribe mobile (repo `scribe-next`) | app iOS/Android | `scribe-mobile` | Trình duyệt hệ thống, Code + PKCE; redirect private-use scheme (`SCRIBE_MOBILE_REDIRECT_URI`, mặc định `com.hoandat.scribe:/auth/callback`) |
 | Trang tài khoản | `https://auth.hoandat.com/account` | `hoandat-account` | Nội bộ IdP, không dành cho app bên ngoài |
 
-Địa chỉ trên là của production; môi trường khác đổi qua `LOCALMAN_WEB_URL`, `TUNELO_WEB_URL`, `CHAT_WEB_URL`, `ISSUER`. Trang `/apps` chỉ liệt kê Chat ở tenant chính: tenant khác chưa có host `chat.<domain>`. Localman còn nhận sự kiện audit từ IdP (mục **Audit** bên dưới). Client tĩnh chỉ khai ở [`src/oidc/clients.ts`](src/oidc/clients.ts); thêm app mới thì khai ở đó rồi cập nhật bảng này, trang `/apps`, mục [Client và audience](#client-và-audience) và [`docs/integration-guide.md`](docs/integration-guide.md) mục 2.
+Địa chỉ trên là của production; môi trường khác đổi qua `LOCALMAN_WEB_URL`, `TUNELO_WEB_URL`, `CHAT_WEB_URL`, `SCRIBE_WEB_URL`, `ISSUER`. Trang `/apps` chỉ liệt kê Chat ở tenant chính: tenant khác chưa có host `chat.<domain>`. Scribe cũng chỉ có ở tenant chính, và chỉ khi đã khai `SCRIBE_WEB_URL` (client khai ở [`src/oidc/scribe-clients.ts`](src/oidc/scribe-clients.ts); `scribe-web-dev` cho máy dev không hiện ở `/apps`). Localman còn nhận sự kiện audit từ IdP (mục **Audit** bên dưới). Client tĩnh chỉ khai ở [`src/oidc/clients.ts`](src/oidc/clients.ts); thêm app mới thì khai ở đó rồi cập nhật bảng này, trang `/apps`, mục [Client và audience](#client-và-audience) và [`docs/integration-guide.md`](docs/integration-guide.md) mục 2.
 
 ## Domain riêng (tenant)
 
@@ -64,10 +66,12 @@ Client phải đọc endpoint từ `/.well-known/openid-configuration`, không h
 | `tunelo-web` | confidential | Code + PKCE, refresh (gắn phiên IdP) | `openid profile email tunnels:open tunnels:read` | `https://tunnel.hoandat.com` (trang web Tunelo chỉ xin `openid profile`, nhận access token opaque cho userinfo) |
 | `chat-web` | confidential | Code + PKCE, refresh (gắn phiên IdP) | `openid profile email` | không có (chat tự cấp phiên, chỉ đọc ID token và userinfo) |
 | `chat-mobile`, `chat-desktop` | public, native | Code + PKCE, refresh (theo thiết bị) | `openid profile email` | không có |
+| `scribe-web`, `scribe-web-dev` | confidential | Code + PKCE, refresh (gắn phiên IdP) | `openid profile email` | không có (Scribe tự cấp phiên, chỉ đọc ID token và userinfo) |
+| `scribe-mobile` | public, native | Code + PKCE, refresh | `openid profile email` | không có |
 | Client MCP (DCR) | public hoặc confidential | Code + PKCE, refresh | chỉ `mock:read mock:write client:read client:write client:send`, cộng `credentials:write` nếu khai rõ lúc đăng ký | luôn `https://localman.hoandat.com/mcp` |
 | `hoandat-account` | public, nội bộ | Code + PKCE (code không bao giờ được đổi) | `openid` | không có |
 
-Back-channel logout: `localman-web` tới `${LOCALMAN_WEB_URL}/auth/backchannel-logout`, `tunelo-web` tới `${TUNELO_WEB_URL}/auth/backchannel-logout`, `chat-web` tới `${CHAT_WEB_URL}/auth/backchannel-logout` (cả ba có `sid`).
+Back-channel logout: `localman-web` tới `${LOCALMAN_WEB_URL}/auth/backchannel-logout`, `tunelo-web` tới `${TUNELO_WEB_URL}/auth/backchannel-logout`, `chat-web` tới `${CHAT_WEB_URL}/auth/backchannel-logout`, `scribe-web` tới `${SCRIBE_WEB_URL}/api/auth/backchannel-logout` (cả bốn có `sid`; `scribe-web-dev` không có back-channel).
 
 **Token exchange** (RFC 8693, grant `urn:ietf:params:oauth:grant-type:token-exchange`): chỉ `localman-web`, đổi access token opaque của phiên Localman lấy JWT `aud=https://tunnel.hoandat.com`, `scope=tunnels:read`, sống 15 phút, có `act`/`azp` là `localman-web`, không có refresh token. Subject token phải còn sống (grant chưa bị thu hồi, tài khoản không bị khoá). Chi tiết và mã lỗi: [`docs/integration-guide.md`](docs/integration-guide.md) mục 6.
 
