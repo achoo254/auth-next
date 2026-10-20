@@ -5,7 +5,7 @@
 #   ./update.sh 1.2.0      that release
 #   ./update.sh --fetch [1.2.0]   only verify and pull it, for init.sh --release
 # Pulls the public release images from GHCR, verifies every image's cosign
-# signature (made by hoandat-auth's release workflow) on the exact digest
+# signature (made by auth-next's release workflow) on the exact digest
 # it will run, takes
 # the release's own bundle files, backs up MongoDB and Postgres, then
 # switches; if the stack does not come up healthy it goes back to the
@@ -27,8 +27,12 @@ SIGNER_OWNER="${SIGNER_OWNER:-achoo254}"
 REGISTRY="$(sed -n 's/^RELEASE_REGISTRY=//p' .env | tail -n 1)"
 REGISTRY="${REGISTRY:-ghcr.io/$SIGNER_OWNER}"
 COSIGN_IMAGE=ghcr.io/sigstore/cosign/cosign:v2.4.1
-# The release workflow of hoandat-auth; GitHub Actions' OIDC issuer.
-SIGNER_IDENTITY="^https://github.com/$SIGNER_OWNER/hoandat-auth/\\.github/workflows/selfhosted-release\\.yml@"
+# The release workflow of auth-next; GitHub Actions' OIDC issuer. The
+# GitHub repo is renamed from hoandat-auth to auth-next (2026-10-20), and
+# the signing identity names the repo: accept both, so an install on a
+# release signed before the rename can verify one signed after it.
+# Drop hoandat-auth once every tenant runs a release signed from auth-next.
+SIGNER_IDENTITY="^https://github.com/$SIGNER_OWNER/(hoandat-auth|auth-next)/\\.github/workflows/selfhosted-release\\.yml@"
 SIGNER_ISSUER=https://token.actions.githubusercontent.com
 IMAGES=(nginx auth localman tunelo chat)
 
