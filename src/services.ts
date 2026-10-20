@@ -18,6 +18,10 @@ import { ensureAuditOutboxIndexes } from "./audit/audit-outbox.js";
 import { auditProviderEvents } from "./audit/provider-events.js";
 import type { Env } from "./config/env.js";
 import { telegramBotConfig } from "./config/integrations-env.js";
+import {
+	type ReviewLoginConfig,
+	reviewLoginConfig,
+} from "./config/review-login-env.js";
 import { type Csrf, createCsrf } from "./http/csrf.js";
 import type { Logger } from "./logger.js";
 import { type TelegramBot, createTelegramBot } from "./telegram/bot-client.js";
@@ -47,6 +51,8 @@ export interface AppServices {
 	readonly cookieKeys: readonly string[];
 	readonly upstreams: Upstreams;
 	readonly telegram?: TelegramBot;
+	/** The review-only password sign-in (ADR 0010): primary tenant, when on. */
+	readonly reviewLogin?: ReviewLoginConfig;
 	/** Per-IP budget for form POSTs and Google/GitHub sign-in starts. */
 	readonly formPostsPerMinute: number;
 	/** Claiming domains (/claim) and tenant administration (/admin), when enabled. */
@@ -106,6 +112,8 @@ export function createServices(deps: ServiceDependencies): AppServices {
 			deps.integrations?.upstreams ??
 			deps.upstreams ??
 			createUpstreams(env, tenant.issuer),
+		// Never for a registry tenant; reads the hash file (a bad one stops startup).
+		reviewLogin: deps.integrations ? undefined : reviewLoginConfig(env),
 		formPostsPerMinute: deps.formPostsPerMinute ?? 30,
 		tenancy: deps.tenancy,
 		telegram: deps.integrations

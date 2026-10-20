@@ -287,7 +287,8 @@ Body là Security Event Token (RFC 8417), header `{alg: "ES256", kid, typ: "sece
 
 | Loại (`urn:hoandat:auth:event:` + …) | Dữ liệu |
 |---|---|
-| `login.succeeded` | `methods` (amr: `fed`, đăng nhập qua Google/GitHub) |
+| `login.succeeded` | `methods` (amr: `fed`, đăng nhập qua Google/GitHub/Apple; `pwd` + `review`: đăng nhập cho người duyệt ứng dụng, ADR 0010) |
+| `login.failed` | `method` (`review`), `reason` (`unknown-email`, `wrong-password`). Chỉ từ đăng nhập cho người duyệt ứng dụng (ADR 0010); `sub` là tài khoản duyệt hoặc `review-login` |
 | `method.linked`, `method.unlinked` | `method` (`google`, `github`, `telegram`). Liên kết lại sang chat Telegram khác cũng sinh `method.linked`; Localman đọc lại `userinfo` khi nhận sự kiện có `method: "telegram"` |
 | `email.reclaimed` | (tài khoản `sub` mất email chưa xác minh cho chủ đã xác minh) |
 | `account.deleted` | `source` (`web`, `app`). Tài khoản `sub` đã bị xoá vĩnh viễn (ADR 0009): `sub` không bao giờ quay lại; đăng nhập lại cùng Google/GitHub/Apple tạo `sub` mới. App nhận sự kiện nên xoá hoặc ẩn dữ liệu của `sub` theo chính sách của mình |
@@ -295,7 +296,7 @@ Body là Security Event Token (RFC 8417), header `{alg: "ES256", kid, typ: "sece
 | `session.revoked`, `grant.revoked` | `count`, `cause` (`account-page`, `token-revocation`: client thu hồi refresh token ở `revocation_endpoint`), có thể có `clientId` |
 | `session.logout` | `scope` (`all`: đăng xuất khỏi IdP; `client`: chỉ khỏi một app), có thể có `clientId` (RP-initiated logout) |
 
-`ip`, `user_agent` có khi sự kiện đến từ một request của user; sự kiện nằm chờ quá 30 ngày (Localman chưa nhận) bị xoá hai trường này trước khi gửi. Sự kiện đã gửi được giữ 30 ngày trong outbox rồi tự xoá. Payload không bao giờ chứa mã, token, link hay secret. Từ khi bỏ mật khẩu (ADR 0004) IdP không còn phát `login.failed`, `login.locked`, `password.changed`, `password.reset`, `recovery_codes.regenerated`, và `cause` không còn `password-change`, `password-reset`, `security-review`; sự kiện cũ loại đó đã nằm trong outbox vẫn được gửi. Thứ tự gửi theo lúc xảy ra (cũ trước), nhưng thử lại có thể làm sự kiện tới không theo thứ tự: sắp theo `toe`.
+`ip`, `user_agent` có khi sự kiện đến từ một request của user; sự kiện nằm chờ quá 30 ngày (Localman chưa nhận) bị xoá hai trường này trước khi gửi. Sự kiện đã gửi được giữ 30 ngày trong outbox rồi tự xoá. Payload không bao giờ chứa mã, token, link hay secret. Từ khi bỏ mật khẩu (ADR 0004) IdP không còn phát `login.failed` (trừ đăng nhập cho người duyệt, ADR 0010), `login.locked`, `password.changed`, `password.reset`, `recovery_codes.regenerated`, và `cause` không còn `password-change`, `password-reset`, `security-review`; sự kiện cũ loại đó đã nằm trong outbox vẫn được gửi. Thứ tự gửi theo lúc xảy ra (cũ trước), nhưng thử lại có thể làm sự kiện tới không theo thứ tự: sắp theo `toe`.
 
 **Localman phải**
 

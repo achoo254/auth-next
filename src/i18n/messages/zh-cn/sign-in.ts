@@ -55,4 +55,11 @@ export const zhSignIn: Translation<typeof enSignIn> = {
 	"logout.doneTitle": "已退出登录",
 	"logout.done": "你已在此浏览器上退出 {brand} 账号。",
 	"logout.signInAgain": "重新登录",
+	"review.link": "应用审核人员登录",
+	"review.title": "应用审核人员登录",
+	"review.subtitle": "仅供应用商店审核人员使用审核备注中的演示账号登录。",
+	"review.email": "邮箱",
+	"review.password": "密码",
+	"review.submit": "登录",
+	"review.failed": "邮箱或密码不正确。",
 };

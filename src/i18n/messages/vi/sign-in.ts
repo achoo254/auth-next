@@ -60,4 +60,12 @@ export const viSignIn: Translation<typeof enSignIn> = {
 	"logout.done":
 		"Bạn đã đăng xuất khỏi tài khoản {brand} trên trình duyệt này.",
 	"logout.signInAgain": "Đăng nhập lại",
+	"review.link": "Tài khoản dành cho người duyệt ứng dụng",
+	"review.title": "Đăng nhập cho người duyệt ứng dụng",
+	"review.subtitle":
+		"Chỉ dành cho người duyệt của kho ứng dụng, với tài khoản demo trong ghi chú duyệt.",
+	"review.email": "Email",
+	"review.password": "Mật khẩu",
+	"review.submit": "Đăng nhập",
+	"review.failed": "Email hoặc mật khẩu không đúng.",
 };

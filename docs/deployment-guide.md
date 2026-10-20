@@ -169,6 +169,36 @@ Kiểm từ ngoài (cùng cách như chat): `for c in scribe-web scribe-mobile s
 - Telegram (đã bật 2026-10-09 với `@auth_hoandat_bot`): `TELEGRAM_BOT_TOKEN`, `TELEGRAM_BOT_USERNAME`, `TELEGRAM_WEBHOOK_SECRET` nằm trong `.env`; webhook `https://auth.hoandat.com/telegram/webhook` đặt bằng `setWebhook` với `secret_token` và `allowed_updates=["message","callback_query"]`. Khi xoay token: cập nhật `.env`, restart, đặt lại webhook.
 - Audit sang Localman: điền `AUDIT_EVENTS_URL`, `AUDIT_CLIENT_ID`, `AUDIT_CLIENT_SECRET` khi Localman có endpoint.
 
+## Đăng nhập cho người duyệt ứng dụng (ADR 0010)
+
+Tắt mặc định; chỉ bật trong thời gian App Store duyệt app (tài khoản demo theo Guideline 2.1), chỉ ở tenant chính.
+
+**Bật**
+
+1. Sinh hash trên máy chủ sở hữu, mật khẩu đi qua stdin (không bao giờ là tham số) và hash đi thẳng vào file trên server, không lưu tạm:
+
+   ```bash
+   printf '%s' "$REVIEW_PASSWORD" | pnpm -s review-login:hash \
+     | ssh -p 24700 <user>@103.72.98.65 'umask 077; cat > /var/www/hoandat-auth/secrets/review-login.hash'
+   ssh -p 24700 <user>@103.72.98.65 'chmod 600 /var/www/hoandat-auth/secrets/review-login.hash && ls -l /var/www/hoandat-auth/secrets/review-login.hash'
+   ```
+
+   File phải mode 600 và thuộc user chạy pm2 (`<user>` ở trên); thư mục `secrets/` không bị `infra/deploy.sh` đồng bộ. Mật khẩu dài 12–256 ký tự.
+2. Thêm vào `/var/www/hoandat-auth/.env`:
+
+   ```dotenv
+   REVIEW_LOGIN_EMAIL=<email ghi trong App Review notes>
+   REVIEW_LOGIN_PASSWORD_HASH_PATH=/var/www/hoandat-auth/secrets/review-login.hash
+   ```
+
+   Hai biến đi cùng nhau; thiếu một biến, email sai dạng, file đọc được bởi group/other hoặc không phải hash thì IdP không khởi động và báo tên biến (không in nội dung). Email không được là email của một tài khoản thật (đăng nhập sẽ bị từ chối).
+3. `pm2 startOrReload infra/ecosystem.config.cjs --update-env`, `curl -fsS https://auth.hoandat.com/healthz`, `pm2 logs hoandat-auth --lines 50 --nostream`. Kiểm: trang đăng nhập có link "Tài khoản dành cho người duyệt ứng dụng"; đăng nhập bằng email + mật khẩu đó vào app Scribe được. Lần đầu tạo tài khoản `app_review` ("App Review", email chưa xác minh).
+4. Ghi email và mật khẩu vào App Review Information (Sign-in required) trên App Store Connect.
+
+Lần sai: 5 lần/IP/15 phút, 30 lần/giờ cho mọi IP; mỗi lần ghi `login.failed` (audit) và log `Review sign-in failed`.
+
+**Tắt** (sau khi app được duyệt): xoá hai dòng `REVIEW_LOGIN_*` khỏi `.env`, restart như bước 3, xoá `secrets/review-login.hash`. Link biến mất, `/interaction/:uid/review` trả 404; tài khoản `app_review` còn nhưng không còn cách đăng nhập (xoá ở `/account` trước khi tắt nếu không cần giữ).
+
 ## Xoay khoá ký
 
 `node dist/generate-signing-key.mjs secrets/signing-keys.json [--alg ES256|RS256]` thêm khoá mới ở cuối (mặc định ES256). Khoá đầu tiên **của mỗi thuật toán** ký, nên khoá mới chỉ để xác minh nếu file đã có khoá cùng thuật toán. Sau khi các app đã cache JWKS mới, chuyển khoá đó lên trước các khoá cùng thuật toán và restart. Xem ADR 0001 mục 4 và ADR 0005.

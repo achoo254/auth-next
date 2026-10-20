@@ -111,8 +111,9 @@ export function checkCsrf(
 }
 
 /**
- * Completes the login prompt for `accountId`, signed in through Google or
- * GitHub (`amr` "fed"). Every completed sign-in goes through here.
+ * Completes the login prompt for `accountId`, signed in through Google,
+ * GitHub or Apple (`amr` "fed") or the review-only sign-in ("pwd",
+ * "review"). Every completed sign-in goes through here.
  */
 export async function finishLogin(
 	services: AppServices,

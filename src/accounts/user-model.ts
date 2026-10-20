@@ -42,7 +42,8 @@ export interface ProviderDetail {
 
 /**
  * One account in the `accounts` collection; `_id` is the OIDC `sub`.
- * Accounts sign in only through a linked Google, GitHub or Apple account. Documents
+ * Accounts sign in only through a linked Google, GitHub or Apple account
+ * (and the review account of ADR 0010 while that sign-in is on). Documents
  * from before that may still hold `passwordHash`, `recoveryCodeHashes`,
  * `recoveryCodesCreatedAt`, `credentialsChangedAt` or
  * `securityReviewPendingSince`; they are left in place but deliberately
@@ -104,6 +105,8 @@ export interface AccountDocument {
 	reclaimedEmail?: { email: string; at: Date };
 	createdAt: Date;
 	disabledAt?: Date;
+	/** Made by the review-only password sign-in (ADR 0010), the only one it opens. */
+	reviewLogin?: true;
 }
 
 export const ACCOUNTS_COLLECTION = "accounts";

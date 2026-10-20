@@ -56,4 +56,12 @@ export const enSignIn = {
 	"logout.doneTitle": "Signed out",
 	"logout.done": "You signed out of your {brand} account in this browser.",
 	"logout.signInAgain": "Sign in again",
+	"review.link": "App reviewer sign-in",
+	"review.title": "App reviewer sign-in",
+	"review.subtitle":
+		"Only for app store reviewers, with the demo account from the review notes.",
+	"review.email": "Email",
+	"review.password": "Password",
+	"review.submit": "Sign in",
+	"review.failed": "Incorrect email or password.",
 };

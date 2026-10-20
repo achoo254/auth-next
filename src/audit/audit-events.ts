@@ -21,6 +21,14 @@ export type RevocationCause = "account-page" | "token-revocation";
  */
 export type AuditEventData = {
 	"login.succeeded": { readonly methods: readonly string[] };
+	/**
+	 * A failed review-only password sign-in (ADR 0010): whether the email
+	 * was the configured one, never what was typed.
+	 */
+	"login.failed": {
+		readonly method: "review";
+		readonly reason: "unknown-email" | "wrong-password";
+	};
 	"method.linked": { readonly method: LinkedMethod };
 	"method.unlinked": { readonly method: LinkedMethod };
 	/** The account lost its unverified email to the email's proven owner. */

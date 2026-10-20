@@ -10,9 +10,11 @@ import {
 } from "./interaction-helpers.js";
 import { renderLogin, renderSignup } from "./login-page.js";
 
-/** 503 while no Google/GitHub app is configured: there is no way in at all. */
+/** 503 while no provider (nor the review sign-in) is configured: no way in at all. */
 function pageStatus(services: AppServices): number | undefined {
-	return services.upstreams.size === 0 ? 503 : undefined;
+	return services.upstreams.size === 0 && !services.reviewLogin
+		? 503
+		: undefined;
 }
 
 /** The login page for `interaction`: Google/GitHub buttons and cancel. */
@@ -40,6 +42,7 @@ export async function showLogin(
 					: client?.clientName,
 			externalClient: client ? !isStaticClientId(client.clientId) : false,
 			forDevice: interaction.deviceCode !== undefined,
+			reviewLogin: services.reviewLogin !== undefined,
 		}),
 		pageStatus(services),
 	);

@@ -12,12 +12,14 @@ import {
 	sendInteractionError,
 } from "./interaction-helpers.js";
 import { showLogin, showSignup } from "./login-handler.js";
+import { registerReviewLoginRoutes } from "./review-login-routes.js";
 import { registerUpstreamInteractionRoutes } from "./upstream-routes.js";
 
 /**
  * Login, consent and the rest of the interaction pages under
- * /interaction/:uid. Signing in is only through Google or GitHub (see
- * upstream-routes.ts). Every POST checks CSRF and is rate-limited per IP.
+ * /interaction/:uid. Signing in is through Google, GitHub or Apple (see
+ * upstream-routes.ts), plus the review-only sign-in when it is on
+ * (review-login-routes.ts, ADR 0010). Every POST checks CSRF and is rate-limited per IP.
  */
 export function createInteractionRouter(services: AppServices): Router {
 	const router = Router();
@@ -99,5 +101,6 @@ export function createInteractionRouter(services: AppServices): Router {
 	);
 
 	registerUpstreamInteractionRoutes(router, services);
+	registerReviewLoginRoutes(router, services);
 	return router;
 }

@@ -1,9 +1,11 @@
 import { z } from "zod";
+import { REVIEW_LOGIN_KEYS, reviewLoginEnvShape } from "./review-login-env.js";
 
 /**
  * Optional third-party integrations. Each group is all-or-nothing: a
  * partially configured provider is a deployment mistake, not "disabled".
  * When a group is unset its buttons are hidden and its routes answer 404.
+ * The review-only sign-in (ADR 0010) is one of these groups.
  */
 export const integrationEnvShape = {
 	GOOGLE_CLIENT_ID: z.string().min(1).optional(),
@@ -44,6 +46,7 @@ export const integrationEnvShape = {
 		.string()
 		.min(32, "must be at least 32 characters")
 		.optional(),
+	...reviewLoginEnvShape,
 };
 
 const GROUPS = [
@@ -51,6 +54,7 @@ const GROUPS = [
 	["GITHUB_CLIENT_ID", "GITHUB_CLIENT_SECRET"],
 	["TELEGRAM_BOT_TOKEN", "TELEGRAM_BOT_USERNAME", "TELEGRAM_WEBHOOK_SECRET"],
 	["AUDIT_EVENTS_URL", "AUDIT_CLIENT_ID", "AUDIT_CLIENT_SECRET"],
+	REVIEW_LOGIN_KEYS,
 ] as const;
 
 type GroupKey = (typeof GROUPS)[number][number];

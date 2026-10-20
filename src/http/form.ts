@@ -22,10 +22,18 @@ export const parseForm: RequestHandler = express.urlencoded({
 export function formRateLimit(
 	limit: number,
 	windowMs = 60_000,
+	options: {
+		/** One budget for every client together instead of one per IP. */
+		readonly global?: boolean;
+		/** Count only answers of 400 and above (failed attempts). */
+		readonly failuresOnly?: boolean;
+	} = {},
 ): RequestHandler {
 	return rateLimit({
 		windowMs,
 		limit,
+		...(options.global ? { keyGenerator: () => "global" } : {}),
+		skipSuccessfulRequests: options.failuresOnly === true,
 		standardHeaders: "draft-8",
 		legacyHeaders: false,
 		message: (req: Request) =>

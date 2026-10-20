@@ -13,6 +13,7 @@ import { renderPage } from "../ui/layout.js";
 import type { PageContext } from "../ui/page-context.js";
 import { providerLogo } from "../ui/provider-logos.js";
 import { clientLabel } from "./client-label.js";
+import { reviewLoginLink } from "./review-login-page.js";
 
 /**
  * "Sign in with Google" style buttons, each with its provider's mark, or
@@ -46,6 +47,8 @@ export interface LoginView {
 	/** The app registered through DCR: its name is self-declared. */
 	readonly externalClient?: boolean;
 	readonly forDevice: boolean;
+	/** Offer the review-only sign-in (ADR 0010) under the buttons. */
+	readonly reviewLogin?: boolean;
 }
 
 /**
@@ -81,6 +84,7 @@ export function renderLogin(view: LoginView): string {
 ${upstreamButtons(i18n, view.uid, view.providers, "login.with")}
 </div>
 ${view.providers.length > 0 ? html`<p class="auth-foot" data-id="login-first-time">${i18n.t("login.firstTime")}</p>` : ""}
+${view.reviewLogin ? reviewLoginLink(i18n, view.uid) : ""}
 <form method="post" action="/interaction/${view.uid}/abort" class="auth-cancel">${csrfField(view.csrf)}${submitButton(i18n.t("login.cancel"), { variant: "minimal", dataId: "login-cancel" })}</form>`;
 	return renderPage({
 		title: i18n.t("login.title"),
