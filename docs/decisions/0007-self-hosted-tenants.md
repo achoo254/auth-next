@@ -48,7 +48,7 @@ Jev 1,00 cho bản ghi tối thiểu (xoá hết: 0). Sổ tenant giữ domain, 
 
 ### 5. Đóng gói
 
-Jev 0,99 cho docker compose (script cài trên máy trần: 0,01). Bundle `deploy/self-hosted/` (hướng dẫn: `docs/self-hosted-install.md`) gồm IdP, Localman, Tunelo, Chat, MongoDB (replica set một node), Postgres, nginx và certbot. Ba client chat (`chat-web`, `chat-mobile`, `chat-desktop`) giữ cùng client id, nên một bản app chat mobile/desktop vẫn phục vụ mọi tenant.
+Jev 0,99 cho docker compose (script cài trên máy trần: 0,01). Bundle `deploy/self-hosted/` (hướng dẫn: `docs/self-hosted-install.md`) gồm IdP, Localman, Tunelo, Chat, MongoDB (replica set một node), Postgres, nginx và certbot. Hai client chat (`chat-web`, `chat-mobile`) giữ cùng client id, nên một bản app chat mobile vẫn phục vụ mọi tenant (20/10/2026: gỡ `chat-desktop`, desktop dùng Chat web dạng PWA).
 
 - **Một host như máy chủ dùng chung:** các container app dùng chung network namespace với nginx và nghe trên `127.0.0.1`. Vì vậy cấu hình nginx là chính các block tenant của ba repo (chỉ bỏ listener IPv6, điền hash CSP, mở `/internal/` của Localman cho loopback để nhận audit), và mỗi app vẫn chỉ tin địa chỉ chuyển tiếp từ loopback (Chat chỉ tin `X-Real-IP` từ loopback). Luật real-IP Cloudflare đặt ở cấp http như trên máy chủ dùng chung; thiếu nó, một request Flexible tới block Localman sẽ mang địa chỉ `127.0.0.1`.
 - **Không có API nội bộ:** domain là tenant chính, nên Localman và Tunelo không cần `IDP_INTERNAL_*`; tenant chính được cấu hình bằng env.

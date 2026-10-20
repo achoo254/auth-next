@@ -2,8 +2,8 @@
 # Chat (Go API with realtime and bots, and the web app nginx serves) for a
 # self-hosted install (ADR 0007). Context: a checkout of chat-next. The web
 # app reads its tenant from chat.<domain> at run time, so the image serves
-# any domain; app ids and the URL scheme stay, so one mobile and desktop
-# app serves every tenant.
+# any domain; app ids and the URL scheme stay, so one mobile app serves
+# every tenant (desktop uses the web app as a PWA).
 
 FROM node:22-alpine AS web
 RUN npm install --global pnpm@11.9.0 && npm cache clean --force

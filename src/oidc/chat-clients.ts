@@ -1,11 +1,13 @@
 import type { ClientMetadata } from "oidc-provider";
 import { ALLOWED_RESOURCES_PROPERTY } from "./resources.js";
 
-/** Clients of the chat app (repo chat-next): web, mobile, desktop. */
+/**
+ * Clients of the chat app (repo chat-next): web and mobile. Desktop uses the
+ * web app as a PWA, so there is no desktop client.
+ */
 export const CHAT_CLIENT_IDS = {
 	chatWeb: "chat-web",
 	chatMobile: "chat-mobile",
-	chatDesktop: "chat-desktop",
 } as const;
 
 /**
@@ -19,13 +21,6 @@ export const CHAT_MOBILE_REDIRECT_URI = "com.hoandat.chat:/auth/callback";
 /** `<reverse-domain scheme>:/<path>`, the RFC 8252 §7.1 form with one slash. */
 export const PRIVATE_USE_REDIRECT =
 	/^[a-z][a-z0-9]*(\.[a-z][a-z0-9-]*){2,}:\/[a-z0-9_-]+(\/[a-z0-9_-]+)*$/;
-
-/**
- * Loopback redirect of the chat desktop app (RFC 8252 §7.3): oidc-provider
- * ignores the port of a loopback redirect for native clients, so the app
- * listens on whichever port is free.
- */
-export const CHAT_DESKTOP_REDIRECT_URI = "http://127.0.0.1/auth/callback";
 
 /**
  * Chat runs its own sessions and only reads the ID token and userinfo, so
@@ -75,6 +70,5 @@ export function buildChatClients(
 			[ALLOWED_RESOURCES_PROPERTY]: [],
 		},
 		nativeChatClient(CHAT_CLIENT_IDS.chatMobile, mobileRedirectUri),
-		nativeChatClient(CHAT_CLIENT_IDS.chatDesktop, CHAT_DESKTOP_REDIRECT_URI),
 	];
 }

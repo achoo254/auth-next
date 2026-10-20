@@ -50,7 +50,7 @@ export const zhAccount: Translation<typeof enAccount> = {
 	"account.sessions.browserOn": "{system} 上的 {browser}",
 	"account.devices.title": "设备",
 	"account.devices.description":
-		"通过 Tunelo CLI 或手机、电脑应用登录的机器。每台机器可单独退出。",
+		"通过 Tunelo CLI 或手机应用登录的机器。每台机器可单独退出。",
 	"account.devices.empty": "还没有机器通过 {command} 登录。",
 	"account.devices.dates": "允许于 {granted} · {expires} 过期",
 	"account.devices.signOut": "退出此设备",

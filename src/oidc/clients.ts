@@ -79,7 +79,6 @@ export function refreshesWithSession(clientId: string): boolean {
  */
 const DEVICE_BOUND_STATIC_CLIENTS: ReadonlySet<string> = new Set([
 	STATIC_CLIENT_IDS.chatMobile,
-	STATIC_CLIENT_IDS.chatDesktop,
 	STATIC_CLIENT_IDS.scribeMobile,
 ]);
 

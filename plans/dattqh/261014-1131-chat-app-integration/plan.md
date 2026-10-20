@@ -13,6 +13,8 @@ created: 2026-10-14
 
 # Đưa app chat vào IdP
 
+> **Huỷ 20/10/2026: desktop = PWA.** Toàn hệ sinh thái không có app desktop native (quyết định của user, `docs/ecosystem-architecture.md` §3, §4 ở thư mục gốc `hoandat-app`). Client `chat-desktop` đã gỡ khỏi code (`src/oidc/chat-clients.ts`); máy tính dùng `chat-web` cài dạng PWA. Phần về `chat-desktop` bên dưới chỉ còn là lịch sử.
+
 ## Overview
 
 App chat (repo `chat-next`) là sản phẩm tiếp theo trong hệ sinh thái hoandat, sau Localman và Tunelo. Nó đăng nhập chỉ qua IdP này, có tenant theo domain như hai app kia, và backend chạy chung server `103.72.98.65` với IdP. Plan này làm phần phía IdP để app chat dùng được.

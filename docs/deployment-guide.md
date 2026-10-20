@@ -127,7 +127,7 @@ Chứng chỉ của tenant do provisioner cấp (root, systemd timer 5 phút), k
 
 ## Client của app chat
 
-App chat (repo `chat-next`, `https://chat.hoandat.com`, pm2 `chat-api` trên cùng máy) đăng nhập qua ba client `chat-web`, `chat-mobile`, `chat-desktop` (`src/oidc/chat-clients.ts`). Deploy và vận hành phía chat ở `chat-next/docs/deployment-guide.md`; bước đầu của nó là đặt `.env` của IdP:
+App chat (repo `chat-next`, `https://chat.hoandat.com`, pm2 `chat-api` trên cùng máy) đăng nhập qua hai client `chat-web`, `chat-mobile` (`src/oidc/chat-clients.ts`). Không có client desktop: desktop dùng Chat web dạng PWA; `chat-desktop` đã gỡ ngày 20/10/2026. Deploy và vận hành phía chat ở `chat-next/docs/deployment-guide.md`; bước đầu của nó là đặt `.env` của IdP:
 
 | Env | Ý nghĩa |
 |---|---|
@@ -140,12 +140,12 @@ Tenant khác: secret của `chat-web` suy từ `APP_CLIENT_SECRET_KEY` (mục tr
 Kiểm từ ngoài: IdP biết client thì chuyển lỗi "PKCE required" về đúng redirect của nó, client lạ thì không chuyển hướng:
 
 ```bash
-for c in chat-web chat-mobile chat-desktop; do
+for c in chat-web chat-mobile chat-desktop; do  # chat-desktop đã gỡ: phải in redirect rỗng
   curl -s -o /dev/null -w "$c %{redirect_url}\n" "https://auth.hoandat.com/auth?client_id=$c&response_type=code&scope=openid" | cut -d'?' -f1
 done
 ```
 
-**Trạng thái production (15/10/2026):** đã đặt `CHAT_WEB_URL`, `CHAT_WEB_CLIENT_SECRET` (chưa đặt `CHAT_MOBILE_REDIRECT_URI`, dùng mặc định); `/opt/chat/.env` có `OIDC_ISSUER`, `OIDC_CLIENT_ID`, `OIDC_CLIENT_SECRET`; cả ba client có trên IdP (build 14/10/2026 15:57). API nội bộ chưa có vai `chat` (`InternalRole` trong `src/tenants/internal-auth.ts`: `localman`, `tunelo`, `provisioner`, `scribe`). 19/10/2026: deploy `84c169d` (`/account` liệt kê từng máy `chat-mobile`, `chat-desktop`), backup trước đó `auth-20261019-143353`.
+**Trạng thái production (15/10/2026):** đã đặt `CHAT_WEB_URL`, `CHAT_WEB_CLIENT_SECRET` (chưa đặt `CHAT_MOBILE_REDIRECT_URI`, dùng mặc định); `/opt/chat/.env` có `OIDC_ISSUER`, `OIDC_CLIENT_ID`, `OIDC_CLIENT_SECRET`; cả ba client có trên IdP (build 14/10/2026 15:57). API nội bộ chưa có vai `chat` (`InternalRole` trong `src/tenants/internal-auth.ts`: `localman`, `tunelo`, `provisioner`, `scribe`). 19/10/2026: deploy `84c169d` (`/account` liệt kê từng máy `chat-mobile`, `chat-desktop`), backup trước đó `auth-20261019-143353`. 20/10/2026: gỡ client `chat-desktop` trong code (desktop = PWA); production còn phục vụ nó tới lần deploy IdP kế tiếp.
 
 ## Client của app Scribe
 

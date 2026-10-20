@@ -53,7 +53,7 @@ export const viAccount: Translation<typeof enAccount> = {
 	"account.sessions.browserOn": "{browser} trên {system}",
 	"account.devices.title": "Thiết bị",
 	"account.devices.description":
-		"Các máy đăng nhập bằng Tunelo CLI hoặc ứng dụng trên điện thoại, máy tính. Mỗi máy đăng xuất riêng.",
+		"Các máy đăng nhập bằng Tunelo CLI hoặc ứng dụng trên điện thoại. Mỗi máy đăng xuất riêng.",
 	"account.devices.empty": "Chưa có máy nào đăng nhập bằng {command}.",
 	"account.devices.dates": "Cho phép lúc {granted} · hết hạn {expires}",
 	"account.devices.signOut": "Đăng xuất thiết bị",

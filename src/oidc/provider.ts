@@ -177,7 +177,7 @@ export function buildProviderConfiguration(
 		// MCP clients and Localman web hold no offline_access, yet need refresh
 		// tokens to outlive the 15-minute access token; theirs die with the
 		// IdP session (and logout revokes their grant).
-		// The chat mobile and desktop apps hold no offline_access either; their
+		// The chat mobile app holds no offline_access either; its
 		// refresh tokens belong to the device and outlive the IdP session.
 		issueRefreshToken: async (_ctx, client, code) =>
 			client.grantTypeAllowed("refresh_token") &&

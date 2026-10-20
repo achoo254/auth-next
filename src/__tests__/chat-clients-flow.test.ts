@@ -1,11 +1,12 @@
 import { decodeJwt } from "jose";
 import * as client from "openid-client";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { CHAT_MOBILE_REDIRECT_URI } from "../oidc/chat-clients.js";
 import {
-	CHAT_DESKTOP_REDIRECT_URI,
-	CHAT_MOBILE_REDIRECT_URI,
-} from "../oidc/chat-clients.js";
-import { STATIC_CLIENT_IDS } from "../oidc/clients.js";
+	STATIC_CLIENT_IDS,
+	isStaticClientId,
+	refreshesPerDevice,
+} from "../oidc/clients.js";
 import { hasHardCap } from "../oidc/sliding-grants.js";
 import { codeTokens } from "./helpers/exchange-flows.js";
 import { discoverClient } from "./helpers/flows.js";
@@ -29,8 +30,8 @@ import {
  */
 const CHAT_URL = "http://127.0.0.1:9";
 const CHAT_SCOPE = "openid profile email";
-/** A port the desktop app picked; only the portless URI is registered. */
-const DESKTOP_REDIRECT = "http://127.0.0.1:53123/auth/callback";
+/** Desktop runs the chat web app as a PWA; this id must stay unregistered. */
+const RETIRED_DESKTOP_CLIENT_ID = "chat-desktop";
 const backchannel: { clientId: string; sid: unknown }[] = [];
 let idp: TestIdp;
 
@@ -155,7 +156,7 @@ describe("chat-web", () => {
 	});
 });
 
-describe("chat-mobile and chat-desktop", () => {
+describe("chat-mobile", () => {
 	it("chat-mobile: approves on a first-party page and keeps its refresh token after IdP sign-out", async () => {
 		const browser = await signedIn();
 		const config = await nativeClient(STATIC_CLIENT_IDS.chatMobile);
@@ -175,23 +176,17 @@ describe("chat-mobile and chat-desktop", () => {
 		expect(refreshed.refresh_token).not.toBe(refreshToken);
 	});
 
-	it("chat-desktop: accepts its loopback redirect on any port", async () => {
-		const browser = await signedIn();
-		const config = await nativeClient(STATIC_CLIENT_IDS.chatDesktop);
-		const { tokens } = await nativeSignIn(browser, config, DESKTOP_REDIRECT);
-		expect(tokens.refresh_token).toEqual(expect.any(String));
-		expect(CHAT_DESKTOP_REDIRECT_URI).toBe("http://127.0.0.1/auth/callback");
-	});
-
 	it("lists each signed-in machine at /account and signs it out alone", async () => {
 		const account = await createTestAccount(repositoryOf(idp));
-		const laptop = await signedInBrowser(idp, account);
+		const tablet = await signedInBrowser(idp, account);
 		const phone = await signedInBrowser(idp, account);
-		const desktop = await nativeClient(STATIC_CLIENT_IDS.chatDesktop);
 		const mobile = await nativeClient(STATIC_CLIENT_IDS.chatMobile);
-		const onLaptop = await nativeSignIn(laptop, desktop, DESKTOP_REDIRECT, {
-			device_name: "laptop-cua-dat",
-		});
+		const onTablet = await nativeSignIn(
+			tablet,
+			mobile,
+			CHAT_MOBILE_REDIRECT_URI,
+			{ device_name: "tablet-cua-dat" },
+		);
 		const onPhone = await nativeSignIn(
 			phone,
 			mobile,
@@ -200,28 +195,28 @@ describe("chat-mobile and chat-desktop", () => {
 		);
 
 		const accountPage = await (
-			await laptop.request(`${idp.issuer}/account`)
+			await tablet.request(`${idp.issuer}/account`)
 		).text();
-		expect(accountPage).toContain("Chat · laptop-cua-dat");
+		expect(accountPage).toContain("Chat · tablet-cua-dat");
 		expect(accountPage).toContain("Chat · phone-cua-dat");
 		const grantIds = [
 			...accountPage.matchAll(/\/account\/devices\/([\w-]+)\/revoke/g),
 		].map((match) => match[1]);
 		expect(grantIds).toHaveLength(2);
-		// The laptop row comes from the laptop's own grant.
-		const laptopRow = accountPage
+		// The tablet row comes from the tablet's own grant.
+		const tabletRow = accountPage
 			.split('<li class="item-row"')
-			.find((row) => row.includes("laptop-cua-dat"));
-		const laptopGrant =
-			/\/account\/devices\/([\w-]+)\/revoke/.exec(laptopRow ?? "")?.[1] ?? "";
+			.find((row) => row.includes("tablet-cua-dat"));
+		const tabletGrant =
+			/\/account\/devices\/([\w-]+)\/revoke/.exec(tabletRow ?? "")?.[1] ?? "";
 		await submitForm(
-			laptop,
-			`${idp.issuer}/account/devices/${laptopGrant}/revoke`,
+			tablet,
+			`${idp.issuer}/account/devices/${tabletGrant}/revoke`,
 			{ csrf: formField(accountPage, "csrf") },
 		);
 
 		await expect(
-			client.refreshTokenGrant(desktop, onLaptop.tokens.refresh_token ?? ""),
+			client.refreshTokenGrant(mobile, onTablet.tokens.refresh_token ?? ""),
 		).rejects.toMatchObject({ error: "invalid_grant" });
 		const refreshed = await client.refreshTokenGrant(
 			mobile,
@@ -234,9 +229,7 @@ describe("chat-mobile and chat-desktop", () => {
 		const browser = await signedIn();
 		const cases: [string, string][] = [
 			[STATIC_CLIENT_IDS.chatMobile, "com.evil.chat:/auth/callback"],
-			[STATIC_CLIENT_IDS.chatDesktop, "http://localhost:53123/auth/callback"],
-			[STATIC_CLIENT_IDS.chatDesktop, "https://127.0.0.1:53123/auth/callback"],
-			[STATIC_CLIENT_IDS.chatDesktop, "http://127.0.0.1:53123/other"],
+			[STATIC_CLIENT_IDS.chatMobile, "http://127.0.0.1:53123/auth/callback"],
 		];
 		for (const [clientId, redirect] of cases) {
 			const { url } = await authorizationUrl(
@@ -251,7 +244,57 @@ describe("chat-mobile and chat-desktop", () => {
 
 	it("has no 90-day cap, like Tunelo CLI devices", () => {
 		expect(hasHardCap(STATIC_CLIENT_IDS.chatMobile)).toBe(false);
-		expect(hasHardCap(STATIC_CLIENT_IDS.chatDesktop)).toBe(false);
 		expect(hasHardCap(STATIC_CLIENT_IDS.tuneloCli)).toBe(false);
+	});
+});
+
+describe("chat-desktop (retired: desktop is the PWA)", () => {
+	it("is not a static client and gets no device-bound refresh", () => {
+		expect(Object.values(STATIC_CLIENT_IDS)).not.toContain(
+			RETIRED_DESKTOP_CLIENT_ID,
+		);
+		expect(isStaticClientId(RETIRED_DESKTOP_CLIENT_ID)).toBe(false);
+		expect(refreshesPerDevice(RETIRED_DESKTOP_CLIENT_ID)).toBe(false);
+	});
+
+	it("is unknown to the provider: no sign-in, no refresh of an old grant", async () => {
+		expect(await idp.provider.Client.find(RETIRED_DESKTOP_CLIENT_ID)).toBe(
+			undefined,
+		);
+		const metadata = (
+			await nativeClient(STATIC_CLIENT_IDS.chatMobile)
+		).serverMetadata();
+		const redirect = "http://127.0.0.1:53123/auth/callback";
+		const authorize = new URL(metadata.authorization_endpoint ?? "");
+		authorize.search = new URLSearchParams({
+			client_id: RETIRED_DESKTOP_CLIENT_ID,
+			response_type: "code",
+			redirect_uri: redirect,
+			scope: CHAT_SCOPE,
+			code_challenge: "E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM",
+			code_challenge_method: "S256",
+		}).toString();
+		const browser = await signedIn();
+		const { response, location } = await browser.navigate(
+			authorize.href,
+			{},
+			redirect,
+		);
+		expect(location).toBeUndefined();
+		expect(response.status).toBe(400);
+
+		// A refresh token kept from a never-shipped desktop build cannot be
+		// redeemed: client authentication fails before the token is looked up.
+		const refresh = await fetch(metadata.token_endpoint ?? "", {
+			method: "POST",
+			headers: { "content-type": "application/x-www-form-urlencoded" },
+			body: new URLSearchParams({
+				grant_type: "refresh_token",
+				refresh_token: "stale-desktop-refresh-token",
+				client_id: RETIRED_DESKTOP_CLIENT_ID,
+			}),
+		});
+		expect(refresh.status).toBe(401);
+		expect(await refresh.json()).toMatchObject({ error: "invalid_client" });
 	});
 });
