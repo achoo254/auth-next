@@ -145,7 +145,7 @@ for c in chat-web chat-mobile chat-desktop; do
 done
 ```
 
-**Trạng thái production (15/10/2026):** đã đặt `CHAT_WEB_URL`, `CHAT_WEB_CLIENT_SECRET` (chưa đặt `CHAT_MOBILE_REDIRECT_URI`, dùng mặc định); `/opt/chat/.env` có `OIDC_ISSUER`, `OIDC_CLIENT_ID`, `OIDC_CLIENT_SECRET`; cả ba client có trên IdP (build 14/10/2026 15:57). API nội bộ chưa có vai `chat` (`InternalRole` trong `src/tenants/internal-auth.ts` chỉ có `localman`, `tunelo`, `provisioner`). 19/10/2026: deploy `84c169d` (`/account` liệt kê từng máy `chat-mobile`, `chat-desktop`), backup trước đó `auth-20261019-143353`.
+**Trạng thái production (15/10/2026):** đã đặt `CHAT_WEB_URL`, `CHAT_WEB_CLIENT_SECRET` (chưa đặt `CHAT_MOBILE_REDIRECT_URI`, dùng mặc định); `/opt/chat/.env` có `OIDC_ISSUER`, `OIDC_CLIENT_ID`, `OIDC_CLIENT_SECRET`; cả ba client có trên IdP (build 14/10/2026 15:57). API nội bộ chưa có vai `chat` (`InternalRole` trong `src/tenants/internal-auth.ts`: `localman`, `tunelo`, `provisioner`, `scribe`). 19/10/2026: deploy `84c169d` (`/account` liệt kê từng máy `chat-mobile`, `chat-desktop`), backup trước đó `auth-20261019-143353`.
 
 ## Client của app Scribe
 
@@ -197,7 +197,7 @@ Tắt mặc định; chỉ bật trong thời gian App Store duyệt app (tài k
 
 Lần sai: 5 lần/IP/15 phút, 30 lần/giờ cho mọi IP; mỗi lần ghi `login.failed` (audit) và log `Review sign-in failed`.
 
-**Trạng thái production (20/10/2026 11:05):** deploy `2199161` (kèm `8cd497f` Apple chưa bật, `9714b07`, `2de2bd5` xoá tài khoản), backup trước đó `auth-20261020-110303` và `/root/hoandat-auth-backup-20261020-110302` (dist, static, `.env` cũ). Đã bật: `REVIEW_LOGIN_EMAIL=appreview@hoandat.com`, tệp hash 600 (root); mật khẩu ở iCloud access-tokens, service `apple-app-review-demo`. pm2 restart 56 → 57, log lỗi trống; mọi client (`scribe-web`, `scribe-mobile`, `localman-web`, `chat-web`, `tunelo-web`) vẫn chuyển hướng đúng. Rollback: deploy lại `84c169d`.
+**Trạng thái production (20/10/2026 11:05):** deploy `2199161` (kèm `8cd497f` Apple chưa bật, `9714b07`, `2de2bd5` xoá tài khoản), backup trước đó `auth-20261020-110303` và `/root/hoandat-auth-backup-20261020-110302` (dist, static, `.env` cũ). Đã bật: `REVIEW_LOGIN_EMAIL=appreview@hoandat.com`, tệp hash 600 (root); mật khẩu ở iCloud access-tokens, service `apple-app-review-demo`. pm2 restart 56 → 57, log lỗi trống; mọi client (`scribe-web`, `scribe-mobile`, `localman-web`, `chat-web`, `tunelo-web`) vẫn chuyển hướng đúng. Rollback: deploy lại `84c169d`. 11:19 cùng ngày: deploy `34c70a1` (vai `scribe` của API nội bộ, chỉ `GET /internal/tenants/lookup`); `INTERNAL_API_CREDENTIALS` thêm `scribe:<secret>` (bản `.env` trước: `/root/hoandat-auth-env.bak-20261020-111903`; secret ở iCloud access-tokens `hoandat-auth-internal-scribe`, phía Scribe `/opt/scribe-be/.idp-internal-secret`), backup `auth-20261020-111922`; lookup `scribe.hoandat.com` trả `Auth Next`, route khác trả 401 cho vai này.
 
 **Tắt** (sau khi app được duyệt): xoá hai dòng `REVIEW_LOGIN_*` khỏi `.env`, restart như bước 3, xoá `secrets/review-login.hash`. Link biến mất, `/interaction/:uid/review` trả 404; tài khoản `app_review` còn nhưng không còn cách đăng nhập (xoá ở `/account` trước khi tắt nếu không cần giữ).
 
