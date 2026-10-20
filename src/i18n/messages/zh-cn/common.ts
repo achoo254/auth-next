@@ -11,6 +11,7 @@ export const zhCommon: Translation<typeof enCommon> = {
 	"common.signedInAs": "当前登录：{username}。",
 	"common.tooManyRequests": "请求过多，请几分钟后重试。",
 	"layout.brand": "账号",
+	"layout.description": "登录账号，管理已关联的应用和设备。",
 	"layout.language": "语言",
 	"layout.nav": "站点导航",
 	"layout.home": "首页",

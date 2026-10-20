@@ -1,3 +1,5 @@
+import { brand } from "../../../brand.js";
+
 /** Shared words, the page shell, error pages. English is the source. */
 export const enCommon = {
 	"common.unknown": "unknown",
@@ -9,6 +11,8 @@ export const enCommon = {
 	"common.signedInAs": "Signed in as {username}.",
 	"common.tooManyRequests": "Too many requests. Try again in a few minutes.",
 	"layout.brand": "Account",
+	/** Meta description of every page; the English text is the brand description. */
+	"layout.description": brand.description,
 	"layout.language": "Language",
 	"layout.nav": "Site",
 	"layout.home": "Home",

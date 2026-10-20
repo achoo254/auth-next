@@ -11,6 +11,8 @@ export const viCommon: Translation<typeof enCommon> = {
 	"common.signedInAs": "Đang đăng nhập là {username}.",
 	"common.tooManyRequests": "Quá nhiều yêu cầu. Thử lại sau ít phút.",
 	"layout.brand": "Tài khoản",
+	"layout.description":
+		"Đăng nhập vào tài khoản và quản lý các ứng dụng, thiết bị đã kết nối với tài khoản.",
 	"layout.language": "Ngôn ngữ",
 	"layout.nav": "Điều hướng",
 	"layout.home": "Trang chủ",

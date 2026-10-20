@@ -117,6 +117,7 @@ export function renderPage(options: PageOptions): string {
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="referrer" content="no-referrer">
 <meta name="robots" content="noindex">
+<meta name="description" content="${i18n.t("layout.description")}">
 <title>${options.title} · ${i18n.brand.name}</title>
 ${FONT_STYLESHEETS.map((href) => html`<link rel="stylesheet" href="${href}">`)}
 ${["tokens.css", "app.css", ...(options.stylesheets ?? [])].map(

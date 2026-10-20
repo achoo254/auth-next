@@ -11,7 +11,7 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 # ---- build: compile the server bundle --------------------------------------
 FROM base AS build
 RUN pnpm install --frozen-lockfile
-COPY tsconfig.json ./
+COPY tsconfig.json brand.config.json ./
 COPY scripts ./scripts
 COPY src ./src
 RUN pnpm build

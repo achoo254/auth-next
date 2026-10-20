@@ -25,6 +25,7 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="referrer" content="no-referrer">
 <meta name="robots" content="noindex">
+<meta name="description" content="Sign in to your account and manage the apps and devices connected to it.">
 <title>One account for every Auth Next app · Auth Next</title>
 <link rel="stylesheet" href="/assets/fonts/inter/400.css"><link rel="stylesheet" href="/assets/fonts/inter/500.css"><link rel="stylesheet" href="/assets/fonts/inter/600.css"><link rel="stylesheet" href="/assets/fonts/jetbrains-mono/400.css"><link rel="stylesheet" href="/assets/fonts/jetbrains-mono/600.css"><link rel="stylesheet" href="/assets/fonts/jetbrains-mono/700.css">
 <link rel="stylesheet" href="/assets/css/tokens.css?v=HASH"><link rel="stylesheet" href="/assets/css/app.css?v=HASH"><link rel="stylesheet" href="/assets/css/apps.css?v=HASH">
@@ -160,6 +161,7 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="referrer" content="no-referrer">
 <meta name="robots" content="noindex">
+<meta name="description" content="Đăng nhập vào tài khoản và quản lý các ứng dụng, thiết bị đã kết nối với tài khoản.">
 <title>Một tài khoản cho mọi ứng dụng Auth Next · Auth Next</title>
 <link rel="stylesheet" href="/assets/fonts/inter/400.css"><link rel="stylesheet" href="/assets/fonts/inter/500.css"><link rel="stylesheet" href="/assets/fonts/inter/600.css"><link rel="stylesheet" href="/assets/fonts/jetbrains-mono/400.css"><link rel="stylesheet" href="/assets/fonts/jetbrains-mono/600.css"><link rel="stylesheet" href="/assets/fonts/jetbrains-mono/700.css">
 <link rel="stylesheet" href="/assets/css/tokens.css?v=HASH"><link rel="stylesheet" href="/assets/css/app.css?v=HASH"><link rel="stylesheet" href="/assets/css/apps.css?v=HASH">
@@ -295,6 +297,7 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="referrer" content="no-referrer">
 <meta name="robots" content="noindex">
+<meta name="description" content="登录账号，管理已关联的应用和设备。">
 <title>一个账号，通用所有 Auth Next 应用 · Auth Next</title>
 <link rel="stylesheet" href="/assets/fonts/inter/400.css"><link rel="stylesheet" href="/assets/fonts/inter/500.css"><link rel="stylesheet" href="/assets/fonts/inter/600.css"><link rel="stylesheet" href="/assets/fonts/jetbrains-mono/400.css"><link rel="stylesheet" href="/assets/fonts/jetbrains-mono/600.css"><link rel="stylesheet" href="/assets/fonts/jetbrains-mono/700.css">
 <link rel="stylesheet" href="/assets/css/tokens.css?v=HASH"><link rel="stylesheet" href="/assets/css/app.css?v=HASH"><link rel="stylesheet" href="/assets/css/apps.css?v=HASH">
@@ -430,6 +433,7 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /privacy the same w
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="referrer" content="no-referrer">
 <meta name="robots" content="noindex">
+<meta name="description" content="Sign in to your account and manage the apps and devices connected to it.">
 <title>Privacy policy · Auth Next</title>
 <link rel="stylesheet" href="/assets/fonts/inter/400.css"><link rel="stylesheet" href="/assets/fonts/inter/500.css"><link rel="stylesheet" href="/assets/fonts/inter/600.css"><link rel="stylesheet" href="/assets/fonts/jetbrains-mono/400.css"><link rel="stylesheet" href="/assets/fonts/jetbrains-mono/600.css"><link rel="stylesheet" href="/assets/fonts/jetbrains-mono/700.css">
 <link rel="stylesheet" href="/assets/css/tokens.css?v=HASH"><link rel="stylesheet" href="/assets/css/app.css?v=HASH">
@@ -471,6 +475,7 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /privacy the same w
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="referrer" content="no-referrer">
 <meta name="robots" content="noindex">
+<meta name="description" content="Đăng nhập vào tài khoản và quản lý các ứng dụng, thiết bị đã kết nối với tài khoản.">
 <title>Chính sách quyền riêng tư · Auth Next</title>
 <link rel="stylesheet" href="/assets/fonts/inter/400.css"><link rel="stylesheet" href="/assets/fonts/inter/500.css"><link rel="stylesheet" href="/assets/fonts/inter/600.css"><link rel="stylesheet" href="/assets/fonts/jetbrains-mono/400.css"><link rel="stylesheet" href="/assets/fonts/jetbrains-mono/600.css"><link rel="stylesheet" href="/assets/fonts/jetbrains-mono/700.css">
 <link rel="stylesheet" href="/assets/css/tokens.css?v=HASH"><link rel="stylesheet" href="/assets/css/app.css?v=HASH">
@@ -512,6 +517,7 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /privacy the same w
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="referrer" content="no-referrer">
 <meta name="robots" content="noindex">
+<meta name="description" content="登录账号，管理已关联的应用和设备。">
 <title>隐私政策 · Auth Next</title>
 <link rel="stylesheet" href="/assets/fonts/inter/400.css"><link rel="stylesheet" href="/assets/fonts/inter/500.css"><link rel="stylesheet" href="/assets/fonts/inter/600.css"><link rel="stylesheet" href="/assets/fonts/jetbrains-mono/400.css"><link rel="stylesheet" href="/assets/fonts/jetbrains-mono/600.css"><link rel="stylesheet" href="/assets/fonts/jetbrains-mono/700.css">
 <link rel="stylesheet" href="/assets/css/tokens.css?v=HASH"><link rel="stylesheet" href="/assets/css/app.css?v=HASH">
@@ -1246,6 +1252,7 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in en 
   "inactive.body": "Sign-in at {host} is not set up yet.",
   "inactive.title": "Not set up yet",
   "layout.brand": "Account",
+  "layout.description": "Sign in to your account and manage the apps and devices connected to it.",
   "layout.guide": "Guide",
   "layout.home": "Home",
   "layout.language": "Language",
@@ -1714,6 +1721,7 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in vi 
   "inactive.body": "Đăng nhập tại {host} chưa được thiết lập.",
   "inactive.title": "Chưa thiết lập",
   "layout.brand": "Tài khoản",
+  "layout.description": "Đăng nhập vào tài khoản và quản lý các ứng dụng, thiết bị đã kết nối với tài khoản.",
   "layout.guide": "Hướng dẫn",
   "layout.home": "Trang chủ",
   "layout.language": "Ngôn ngữ",
@@ -2182,6 +2190,7 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in zh-
   "inactive.body": "{host} 的登录尚未设置。",
   "inactive.title": "尚未设置",
   "layout.brand": "账号",
+  "layout.description": "登录账号，管理已关联的应用和设备。",
   "layout.guide": "指南",
   "layout.home": "首页",
   "layout.language": "语言",
