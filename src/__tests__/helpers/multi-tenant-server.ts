@@ -24,6 +24,7 @@ import { FAKE_OAUTH_ENV } from "./fake-upstreams.js";
 export const INTERNAL_SECRETS = {
 	localman: "localman-internal-secret-0123456789abcdef",
 	provisioner: "provisioner-internal-secret-0123456789ab",
+	scribe: "scribe-internal-secret-0123456789abcdefgh",
 } as const;
 
 export interface MultiTenantServer {
@@ -91,7 +92,7 @@ export async function startMultiTenantServer(
 		SCRIBE_WEB_CLIENT_SECRET: randomBytes(32).toString("base64url"),
 		TENANT_SECRETS_KEY: `k1:${randomBytes(32).toString("base64")}`,
 		APP_CLIENT_SECRET_KEY: randomBytes(32).toString("base64url"),
-		INTERNAL_API_CREDENTIALS: `localman:${INTERNAL_SECRETS.localman},provisioner:${INTERNAL_SECRETS.provisioner}`,
+		INTERNAL_API_CREDENTIALS: `localman:${INTERNAL_SECRETS.localman},provisioner:${INTERNAL_SECRETS.provisioner},scribe:${INTERNAL_SECRETS.scribe}`,
 		LOG_LEVEL: "silent",
 		...FAKE_OAUTH_ENV,
 		...extraEnv,

@@ -64,7 +64,7 @@ Mặc định IdP chỉ phục vụ tenant `hoandat.com`. Bật sổ tenant bằ
 | `TENANT_SECRETS_KEY` | `kid:base64` của khoá 32 byte (`openssl rand -base64 32`), có thể nhiều khoá cách bằng dấu phẩy; khoá đầu niêm phong secret của tenant (OAuth, bot, khoá ký) bằng AES-256-GCM |
 | `APP_CLIENT_SECRET_KEY` | ≥ 32 ký tự, chỉ IdP giữ; khoá riêng của Localman và Tunelo suy từ nó: `node --env-file=.env dist/app-client-key.mjs localman-web <file>` (và `tunelo-web`, `chat-web`), file mode 600, chép vào secret của app tương ứng |
 | `TENANT_MAX_ACTIVE` | số tenant đang phục vụ tối đa, mặc định 20 (đo 2026-10-13: mỗi runtime rỗi thêm khoảng 0,4 MB RSS; 50 runtime thêm 21 MB) |
-| `INTERNAL_API_CREDENTIALS` | `localman:<secret>,tunelo:<secret>,provisioner:<secret>` (≥ 32 ký tự mỗi secret); thiếu thì API nội bộ tắt |
+| `INTERNAL_API_CREDENTIALS` | `localman:<secret>,tunelo:<secret>,provisioner:<secret>,scribe:<secret>` (≥ 32 ký tự mỗi secret); thiếu thì API nội bộ tắt. Vai `scribe` chỉ gọi được `GET /internal/tenants/lookup`. Thêm Scribe: sinh secret (`openssl rand -base64 36`), nối `,scribe:<secret>` vào dòng này trong `.env` IdP, restart IdP, rồi đặt cùng giá trị cho Scribe (Basic `scribe:<secret>`) |
 | `INTERNAL_HOST`, `INTERNAL_PORT` | API nội bộ, mặc định `127.0.0.1:4501`, chỉ nhận địa chỉ loopback |
 | `SERVICE_IPV4` | IP công khai của máy; có thì mỗi tenant được kiểm lại 6 giờ một lần (TXT `_auth-claim.<d>`, bản ghi A của mọi host: bằng IP này, hoặc toàn IP Cloudflare khi Proxied); 3 lần sai dứt khoát liền thì `suspended`; lỗi resolver hay một lượt mọi tenant cùng sai không đình chỉ ai |
 

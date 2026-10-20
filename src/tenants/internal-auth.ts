@@ -2,12 +2,13 @@ import { createHash, timingSafeEqual } from "node:crypto";
 import type { RequestHandler } from "express";
 
 /** Who may call the internal API, and what for. */
-export type InternalRole = "localman" | "tunelo" | "provisioner";
+export type InternalRole = "localman" | "tunelo" | "provisioner" | "scribe";
 
 const ROLES: ReadonlySet<string> = new Set([
 	"localman",
 	"tunelo",
 	"provisioner",
+	"scribe",
 ]);
 
 export type InternalCredentials = ReadonlyMap<InternalRole, string>;
@@ -18,8 +19,8 @@ function isRole(value: string): value is InternalRole {
 
 /**
  * Parses `INTERNAL_API_CREDENTIALS`: `role:secret[,role:secret...]` with
- * roles localman, tunelo, provisioner and secrets of 32+ characters. Each
- * app gets its own secret, so one leaked secret only opens its own routes.
+ * roles localman, tunelo, provisioner, scribe and secrets of 32+ characters.
+ * Each app gets its own secret, so one leaked secret only opens its own routes.
  */
 export function parseInternalCredentials(
 	value: string | undefined,
@@ -33,7 +34,7 @@ export function parseInternalCredentials(
 		const secret = entry.slice(separator + 1);
 		if (separator <= 0 || !isRole(role) || secret.length < 32) {
 			throw new Error(
-				"INTERNAL_API_CREDENTIALS entries must be role:secret (roles localman, tunelo, provisioner; secrets of 32+ characters)",
+				"INTERNAL_API_CREDENTIALS entries must be role:secret (roles localman, tunelo, provisioner, scribe; secrets of 32+ characters)",
 			);
 		}
 		credentials.set(role, secret);

@@ -10,8 +10,8 @@ import type { Tenant } from "./tenant.js";
 import { normalizeTenantDomain } from "./tenant.js";
 
 /**
- * Domains a Host may belong to: `auth.`, `localman.`, `tunnel.` of the
- * domain, or one label under `localman.`/`tunnel.` (mocks, tunnels).
+ * Domains a Host may belong to: `auth.`, `localman.`, `tunnel.`, `scribe.` of
+ * the domain, or one label under `localman.`/`tunnel.` (mocks, tunnels).
  */
 export function tenantDomainCandidates(host: string): string[] {
 	const normalized = normalizeTenantDomain(host);
@@ -19,7 +19,7 @@ export function tenantDomainCandidates(host: string): string[] {
 	const labels = normalized.split(".");
 	const candidates: string[] = [];
 	const [first, second] = labels;
-	if (first && ["auth", "localman", "tunnel"].includes(first)) {
+	if (first && ["auth", "localman", "tunnel", "scribe"].includes(first)) {
 		candidates.push(labels.slice(1).join("."));
 	}
 	if (second && ["localman", "tunnel"].includes(second)) {

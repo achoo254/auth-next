@@ -309,11 +309,11 @@ Body là Security Event Token (RFC 8417), header `{alg: "ES256", kid, typ: "sece
 
 IdP phục vụ thêm tenant theo domain: tenant `<d>` có issuer `https://auth.<d>`, audience `https://localman.<d>`, `https://localman.<d>/mcp`, `https://tunnel.<d>`, cùng client id (`localman-web`, `tunelo-cli`, `tunelo-web`). Tenant `hoandat.com` không đổi gì ở mục 1–10; app giữ cấu hình tĩnh cho nó và không cần IdP lúc chạy.
 
-**API nội bộ** (chỉ trên loopback của máy chạy IdP, `INTERNAL_HOST:INTERNAL_PORT`, mặc định `127.0.0.1:4501`; không bao giờ qua nginx). Mỗi app có Basic credentials riêng (`localman:<secret>`, `tunelo:<secret>` trong `INTERNAL_API_CREDENTIALS` của IdP). Không endpoint nào trả secret.
+**API nội bộ** (chỉ trên loopback của máy chạy IdP, `INTERNAL_HOST:INTERNAL_PORT`, mặc định `127.0.0.1:4501`; không bao giờ qua nginx). Mỗi app có Basic credentials riêng (`localman:<secret>`, `tunelo:<secret>`, `scribe:<secret>` trong `INTERNAL_API_CREDENTIALS` của IdP). Không endpoint nào trả secret. Vai `scribe` (backend Scribe, cùng máy) chỉ được gọi `GET /internal/tenants/lookup` (đọc `displayName` của tenant chính qua `host=scribe.hoandat.com`); mọi endpoint khác trả nó `401` như với vai không được phép.
 
 | Endpoint | Trả |
 |---|---|
-| `GET /internal/tenants/lookup?host=<Host>` | `{ id, domain, displayName, issuer, status, resources, webApps, ownerSubs }` (`ownerSubs`: tài khoản trong tenant liên kết đúng danh tính owner, để app cho họ quyền quản trị; rỗng với tenant chính) cho mọi host của tenant (`auth.`, `localman.`, `<x>.localman.`, `tunnel.`, `<x>.tunnel.`); `404` khi không có tenant đang phục vụ (tenant bị đình chỉ cũng 404) |
+| `GET /internal/tenants/lookup?host=<Host>` | `{ id, domain, displayName, issuer, status, resources, webApps, ownerSubs }` (`ownerSubs`: tài khoản trong tenant liên kết đúng danh tính owner, để app cho họ quyền quản trị; rỗng với tenant chính) cho mọi host của tenant (`auth.`, `localman.`, `<x>.localman.`, `tunnel.`, `<x>.tunnel.`, `scribe.`); `404` khi không có tenant đang phục vụ (tenant bị đình chỉ cũng 404) |
 | `GET /internal/tenants/<id>` | cùng nội dung với lookup theo Host, cho việc nền của app chỉ có `tenantId` (job, hàng đợi); `404` khi tenant không còn phục vụ |
 | `GET /internal/tenants/<id>/jwks` | JWKS công khai của tenant |
 | `GET /internal/tenants/<id>/openid-configuration` | discovery của tenant, đúng như `https://auth.<d>/.well-known/openid-configuration` |

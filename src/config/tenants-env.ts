@@ -37,7 +37,7 @@ export const tenantsEnvShape = {
 		.default("127.0.0.1")
 		.refine((value) => LOOPBACK.has(value), "must be a loopback address"),
 	INTERNAL_PORT: z.coerce.number().int().min(1).max(65_535).default(4501),
-	/** `role:secret[,...]` for localman, tunelo, provisioner. */
+	/** `role:secret[,...]` for localman, tunelo, provisioner, scribe. */
 	INTERNAL_API_CREDENTIALS: z.string().optional(),
 	/** This service's public IPv4: tenant DNS must point exactly here. */
 	SERVICE_IPV4: z.ipv4().optional(),

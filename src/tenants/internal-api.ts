@@ -48,6 +48,8 @@ export function createInternalApi(deps: InternalApiDependencies): Express {
 	const app = express();
 	app.disable("x-powered-by");
 	const apps = requireRole(deps.credentials, ["localman", "tunelo"]);
+	// Scribe may only read a host's tenant (its brand): lookup, nothing else.
+	const reads = requireRole(deps.credentials, ["localman", "tunelo", "scribe"]);
 	const primaryHosts = new Set(deps.primaryHosts.map((h) => h.toLowerCase()));
 
 	async function servingTenant(id: string): Promise<
@@ -95,7 +97,7 @@ export function createInternalApi(deps: InternalApiDependencies): Express {
 		return undefined;
 	}
 
-	app.get("/internal/tenants/lookup", apps, async (req: Request, res, next) => {
+	app.get("/internal/tenants/lookup", reads, async (req, res, next) => {
 		try {
 			const host = typeof req.query.host === "string" ? req.query.host : "";
 			const tenant = await tenantForHost(host);
