@@ -145,7 +145,7 @@ for c in chat-web chat-mobile chat-desktop; do  # chat-desktop đã gỡ: phải
 done
 ```
 
-**Trạng thái production (15/10/2026):** đã đặt `CHAT_WEB_URL`, `CHAT_WEB_CLIENT_SECRET` (chưa đặt `CHAT_MOBILE_REDIRECT_URI`, dùng mặc định); `/opt/chat/.env` có `OIDC_ISSUER`, `OIDC_CLIENT_ID`, `OIDC_CLIENT_SECRET`; cả ba client có trên IdP (build 14/10/2026 15:57). API nội bộ chưa có vai `chat` (`InternalRole` trong `src/tenants/internal-auth.ts`: `localman`, `tunelo`, `provisioner`, `scribe`). 19/10/2026: deploy `84c169d` (`/account` liệt kê từng máy `chat-mobile`, `chat-desktop`), backup trước đó `auth-20261019-143353`. 20/10/2026: gỡ client `chat-desktop` trong code (desktop = PWA); production còn phục vụ nó tới lần deploy IdP kế tiếp.
+**Trạng thái production (15/10/2026):** đã đặt `CHAT_WEB_URL`, `CHAT_WEB_CLIENT_SECRET` (chưa đặt `CHAT_MOBILE_REDIRECT_URI`, dùng mặc định); `/opt/chat/.env` có `OIDC_ISSUER`, `OIDC_CLIENT_ID`, `OIDC_CLIENT_SECRET`; cả ba client có trên IdP (build 14/10/2026 15:57). API nội bộ chưa có vai `chat` (`InternalRole` trong `src/tenants/internal-auth.ts`: `localman`, `tunelo`, `provisioner`, `scribe`). 19/10/2026: deploy `84c169d` (`/account` liệt kê từng máy `chat-mobile`, `chat-desktop`), backup trước đó `auth-20261019-143353`. 20/10/2026: gỡ client `chat-desktop` trong code (desktop = PWA). 17:46 cùng ngày: deploy `0801e08` (gỡ `chat-desktop`, tên sản phẩm từ `brand.config.json`, `<meta name="description">`), backup trước đó `auth-20261020-174548` và `/root/hoandat-auth-backup-20261020-174549`; `chat-desktop` giờ trả 400 `invalid_client`, các client khác vẫn tới trang đăng nhập "Auth Next", discovery và JWKS không đổi. Rollback: deploy lại `34c70a1`.
 
 ## Client của app Scribe
 
