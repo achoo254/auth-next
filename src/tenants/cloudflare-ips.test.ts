@@ -51,6 +51,13 @@ describe("isCloudflareIpv4", () => {
 		]);
 	});
 
+	it("never trusts loopback at http level on the shared server", () => {
+		// Each tenant 443 block trusts loopback itself; at http level any local
+		// process could set the client IP of every app on the server.
+		const conf = readFileSync("infra/nginx/tenants-http.conf", "utf8");
+		expect(conf).not.toMatch(/^\s*set_real_ip_from\b/m);
+	});
+
 	it("matches the http-level real-IP trust of the self-hosted bundle", () => {
 		const conf = readFileSync(
 			"deploy/self-hosted/nginx/selfhosted-http.conf",
