@@ -60,10 +60,13 @@ async function main(): Promise<number> {
 }
 
 main().then(
-	(code) => process.exit(code),
+	// exitCode, not exit(): exiting with fetch sockets still open aborts libuv on Windows.
+	(code) => {
+		process.exitCode = code;
+	},
 	(error: unknown) => {
 		const message = error instanceof Error ? error.message : String(error);
 		process.stderr.write(`seed-clients failed: ${message}\n`);
-		process.exit(1);
+		process.exitCode = 1;
 	},
 );

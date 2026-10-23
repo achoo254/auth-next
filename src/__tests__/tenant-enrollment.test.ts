@@ -297,9 +297,12 @@ describe("redeeming a bundle", () => {
 		} finally {
 			await stop();
 		}
-		expect((await stat(join(dir, "install-key.json"))).mode & 0o777).toBe(
-			0o600,
-		);
+		// Windows has no POSIX permission bits (always 0o666).
+		if (process.platform !== "win32") {
+			expect((await stat(join(dir, "install-key.json"))).mode & 0o777).toBe(
+				0o600,
+			);
+		}
 	});
 
 	it("needs the TXT still proven and the challenge answered by the same key", async () => {

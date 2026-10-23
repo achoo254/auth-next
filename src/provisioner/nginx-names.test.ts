@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 import { type ConfigFiles, readNginxConfig } from "./nginx-config.js";
 import { configuredServerNames, conflictingName } from "./nginx-names.js";
 
+const posix = (path: string): string => path.replaceAll("\\", "/");
+
 describe("conflictingName", () => {
 	const names = (config: string) => configuredServerNames(config);
 
@@ -48,15 +50,19 @@ describe("readNginxConfig", () => {
 			"/etc/nginx/conf.d/notes.txt": "server { server_name hidden.org; }",
 		};
 		const files: ConfigFiles = {
-			read: async (path) => {
+			// path.join yields backslashes on Windows; the tree is POSIX.
+			read: async (rawPath) => {
+				const path = posix(rawPath);
 				const text = tree[path];
 				if (text === undefined) throw new Error(`ENOENT ${path}`);
 				return text;
 			},
-			list: async (dir) =>
-				Object.keys(tree)
+			list: async (rawDir) => {
+				const dir = posix(rawDir);
+				return Object.keys(tree)
 					.filter((path) => path.startsWith(`${dir}/`))
-					.map((path) => path.slice(dir.length + 1)),
+					.map((path) => path.slice(dir.length + 1));
+			},
 		};
 		const names = configuredServerNames(
 			await readNginxConfig("/etc/nginx/nginx.conf", files),

@@ -1,5 +1,5 @@
 import { readFileSync, readdirSync } from "node:fs";
-import { join, relative } from "node:path";
+import { join, relative, sep } from "node:path";
 import { describe, expect, it } from "vitest";
 
 /**
@@ -53,7 +53,7 @@ function sourceFiles(dir: string): string[] {
 describe("tenant data access", () => {
 	it("reaches MongoDB collections only from the tenant-aware modules", () => {
 		const offenders = sourceFiles(join(ROOT, "src"))
-			.map((path) => relative(ROOT, path))
+			.map((path) => relative(ROOT, path).split(sep).join("/"))
 			.filter((path) => !DATA_ACCESS_MODULES.has(path))
 			.filter((path) =>
 				/\.collection\s*[<(]|collectionNameFor\(|accountsCollection\(|auditOutboxCollection\(/.test(

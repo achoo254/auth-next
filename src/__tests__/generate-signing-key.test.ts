@@ -48,7 +48,10 @@ describe("generate-signing-key script", () => {
 		const jwks = parseSigningJwks(JSON.parse(await readFile(path, "utf8")));
 		expect(jwks.keys).toHaveLength(2);
 		expect(`${first.stdout}${second.stdout}`).not.toContain(jwks.keys[0]?.d);
-		expect((await stat(path)).mode & 0o777).toBe(0o600);
+		// Windows has no POSIX permission bits (always 0o666).
+		if (process.platform !== "win32") {
+			expect((await stat(path)).mode & 0o777).toBe(0o600);
+		}
 		// Only the final file remains; no temp file is left beside it.
 		expect(await readdir(join(dir, "secrets"))).toEqual(["signing-keys.json"]);
 	});

@@ -42,10 +42,11 @@ function harness(
 		log: () => undefined,
 		files: {
 			writeSecret: async (path, content) => {
-				secrets.set(path, content);
+				// credentialsPath uses path.join; the expectations are POSIX paths.
+				secrets.set(path.replaceAll("\\", "/"), content);
 			},
 			remove: async (path) => {
-				removed.push(path);
+				removed.push(path.replaceAll("\\", "/"));
 			},
 		},
 		nginxConfig: async () => NGINX_DUMP,

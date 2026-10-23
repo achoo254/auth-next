@@ -42,7 +42,9 @@ export function loadReviewPasswordHash(path: string): ReviewPasswordHash {
 	try {
 		const stat = statSync(path);
 		if (!stat.isFile()) throw new Error("not a file");
-		if ((stat.mode & 0o077) !== 0) {
+		// Windows reports 0o666 for every file and has no group/other bits (ACLs
+		// guard the file there), so the mode check only applies to POSIX.
+		if (process.platform !== "win32" && (stat.mode & 0o077) !== 0) {
 			throw new Error(
 				`${HASH_PATH}: the file must not be readable by group or others (chmod 600)`,
 			);

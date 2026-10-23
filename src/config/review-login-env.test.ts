@@ -88,7 +88,10 @@ describe("review login configuration", () => {
 		const cases: ReadonlyArray<readonly [string, RegExp]> = [
 			[join(dir, "missing.hash"), /cannot read that file/],
 			[dir, /cannot read that file/],
-			[shared, /chmod 600/],
+			// Windows has no group/other bits, so a shared file cannot be told apart.
+			...(process.platform === "win32"
+				? []
+				: ([[shared, /chmod 600/]] as const)),
 			[garbage, /pnpm review-login:hash/],
 		];
 		for (const [path, expected] of cases) {
