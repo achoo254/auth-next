@@ -65,6 +65,15 @@ struct ContractDecodingTests {
         #expect(AccountError.fromAPI(status: 502, body: nil, retryAfter: nil) == .server(status: 502, code: nil))
     }
 
+    @Test("link completion fixture decodes to an outcome")
+    func linkComplete() throws {
+        let completion = try APICoding.decoder().decode(LinkCompletion.self, from: Contract.data("link-complete.json"))
+        #expect(LinkOutcome(result: completion.result) == .linked)
+        #expect(LinkOutcome(result: "owned_by_other") == .ownedByOther)
+        #expect(LinkOutcome(result: "pending") == .failed)
+        #expect(LinkOutcome(result: nil) == .failed)
+    }
+
     @Test("push registration body matches the fixture")
     func pushBody() throws {
         let expected = try JSONDecoder().decode([String: String].self, from: Contract.data("push-device.json"))
@@ -102,6 +111,7 @@ struct AccountAPIRequestTests {
     func shapes() async throws {
         let (api, http, _) = api { request in
             if request.path.hasSuffix("/link") { return (200, try Contract.data("link-start.json").replacingHost(), [:]) }
+            if request.path.hasSuffix("/link/complete") { return (200, try Contract.data("link-complete.json"), [:]) }
             return (204, Data(), [:])
         }
         try await api.updateProfile(name: "Minh Anh")
@@ -114,6 +124,7 @@ struct AccountAPIRequestTests {
         try await api.deleteAccount(username: "minhanh", idToken: "id-5")
         try await api.registerPushDevice(PushDeviceRegistration(deviceToken: Data([0xab, 0x01]), environment: .production, locale: "en"))
         try await api.deletePushDevice()
+        #expect(try await api.completeLink(provider: .google, ref: "ref-1") == .linked)
         let seen = http.requests.map { "\($0.method) \($0.url.path(percentEncoded: true))" }
         #expect(seen == [
             "PATCH /api/account/profile",
@@ -126,6 +137,7 @@ struct AccountAPIRequestTests {
             "DELETE /api/account",
             "PUT /api/account/push-device",
             "DELETE /api/account/push-device",
+            "POST /api/account/providers/google/link/complete",
         ])
         let bodies = http.requests.map(\.json)
         #expect(bodies[0] == ["name": "Minh Anh"])
@@ -135,6 +147,7 @@ struct AccountAPIRequestTests {
         #expect(bodies[5] == ["id_token": "id-3"])
         #expect(bodies[7] == ["id_token": "id-5", "username": "minhanh"])
         #expect(bodies[8] == ["token": "ab01", "environment": "production", "locale": "en"])
+        #expect(bodies[10] == ["ref": "ref-1"])
         for request in http.requests {
             #expect(request.headers["Authorization"] == "Bearer access-a")
         }
@@ -170,6 +183,12 @@ struct AccountAPIRequestTests {
         await #expect(throws: AccountError.offline) { try await offline.snapshot() }
         let (garbage, _, _) = api { _ in (200, json("{}"), [:]) }
         await #expect(throws: AccountError.invalidResponse) { try await garbage.snapshot() }
+    }
+
+    @Test("a completion body without a result is an invalid response")
+    func malformedCompletion() async throws {
+        let (api, _, _) = api { _ in (200, json(#"{"status":"ok"}"#), [:]) }
+        await #expect(throws: AccountError.invalidResponse) { try await api.completeLink(provider: .github, ref: "r") }
     }
 
     @Test("a link URL off the issuer is refused")

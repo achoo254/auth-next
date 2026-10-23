@@ -65,6 +65,9 @@ on, is in [`contract/README.md`](contract/README.md). In short:
 - Sensitive actions (remove app access, sign out all browsers, link, unlink,
   delete) run `prompt=login`, switch to the new grant, revoke the old refresh
   token, re-register push, then send the fresh `id_token` once.
+- Linking a provider is two steps: the browser sheet ends on
+  `/ios/linked?result=pending&ref=…`, then the app completes it with its own
+  bearer token (`POST …/link/complete`); only that answer is shown.
 - Sign-out: `DELETE /api/account/push-device`, revoke the refresh token,
   clear the Keychain item. Deletion: `DELETE /api/account`, clear the item,
   sign-in screen shows "deleted".
@@ -114,7 +117,7 @@ After editing an asset catalog in Xcode, run `pnpm exec biome format --write ios
 
 Verified on this Mac (Xcode 27.1, no simulator runtime installed):
 
-- `swift test` of AccountKit on macOS: 64 tests in 14 suites pass (the
+- `swift test` of AccountKit on macOS: 67 tests in 14 suites pass (the
   Keychain test is iOS-only and does not run there).
 - `xcodebuild build` and `build-for-testing` for `generic/platform=iOS Simulator`
   succeed with no compiler warnings under Swift 6 complete concurrency checking.

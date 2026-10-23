@@ -137,24 +137,58 @@ struct AccountStoreTests {
         #expect(store.alert == .lastSignInMethod)
     }
 
-    @Test("link opens the IdP page and reads the /ios/linked result", arguments: [
-        ("linked", nil as AccountError?),
-        ("owned_by_other", AccountError.linkFailed(.ownedByOther)),
-        ("something-new", AccountError.linkFailed(.failed)),
-    ])
-    func link(result: String, expected: AccountError?) async throws {
+    /// The IdP's answer to `POST …/link/complete` (status, body).
+    typealias Completion = (Int, String)
+
+    @Test("link: provider step, then completion through the API decides the outcome", arguments: [
+        ("result=pending&ref=r-1", (200, #"{"result":"linked"}"#), nil as AccountError?),
+        ("result=pending&ref=r-1", (200, #"{"result":"owned_by_other"}"#), AccountError.linkFailed(.ownedByOther)),
+        ("result=pending&ref=r-1", (200, #"{"result":"something-new"}"#), AccountError.linkFailed(.failed)),
+        ("result=pending&ref=r-1", (404, #"{"error":"not_found"}"#), AccountError.notFound),
+    ] as [(String, Completion, AccountError?)])
+    func linkPending(query: String, completion: Completion, expected: AccountError?) async throws {
         let server = FakeAccountServer()
         server.set("POST /api/account/providers/apple/link", 200, try Contract.data("link-start.json").replacingHost())
+        server.set("POST /api/account/providers/apple/link/complete", completion.0, json(completion.1))
         let web = FakeWebAuthenticator { url, callback in
             #expect(url.host() == "auth.example.test")
             #expect(callback == TestConfig.config.linkedURL)
-            return URL(string: "\(callback.absoluteString)?result=\(result)&provider=apple")!
+            return URL(string: "\(callback.absoluteString)?\(query)&provider=apple")!
         }
-        let (store, _, _) = store(server: server, web: web)
+        let (store, http, _) = store(server: server, web: web)
         await store.link(.apple)
         #expect(store.alert == expected)
         #expect(store.notice == (expected == nil ? .linked(.apple) : nil))
         #expect(web.openedURLs.count == 1)
+        let paths = http.requests.map { "\($0.method) \($0.path)" }
+        #expect(paths == [
+            "POST /api/account/providers/apple/link",
+            "POST /api/account/providers/apple/link/complete",
+            "GET /api/account",
+        ])
+        let complete = try #require(http.requests.first { $0.path.hasSuffix("/link/complete") })
+        #expect(complete.json == ["ref": "r-1"])
+        #expect(complete.headers["Authorization"] == "Bearer access-a")
+    }
+
+    @Test("link: a failed provider step or a pending result without ref completes nothing", arguments: [
+        ("result=failed", AccountError.linkFailed(.failed)),
+        ("result=expired", AccountError.linkFailed(.expired)),
+        ("result=already_linked", AccountError.linkFailed(.alreadyLinked)),
+        ("result=pending", AccountError.linkFailed(.failed)),
+        ("result=linked", AccountError.linkFailed(.failed)),
+    ])
+    func linkWithoutCompletion(query: String, expected: AccountError) async throws {
+        let server = FakeAccountServer()
+        server.set("POST /api/account/providers/apple/link", 200, try Contract.data("link-start.json").replacingHost())
+        let web = FakeWebAuthenticator { _, callback in
+            URL(string: "\(callback.absoluteString)?\(query)")!
+        }
+        let (store, http, _) = store(server: server, web: web)
+        await store.link(.apple)
+        #expect(!http.requests.contains { $0.path.hasSuffix("/link/complete") })
+        #expect(store.alert == expected)
+        #expect(store.notice == nil)
     }
 
     @Test("delete requires the typed username, then re-authenticates")
@@ -376,12 +410,18 @@ struct PushTests {
         #expect(IdPLocale.from(preferredLocalization: nil) == "en")
     }
 
-    @Test("link outcome parsing checks the callback path")
-    func linkOutcome() {
+    @Test("link callback parsing checks the path and requires a ref when pending")
+    func linkCallback() {
         let expected = TestConfig.config.linkedURL
-        #expect(LinkOutcome.parse(URL(string: "\(expected)?result=linked")!, expected: expected) == .linked)
-        #expect(LinkOutcome.parse(URL(string: "\(expected)?result=expired")!, expected: expected) == .expired)
-        #expect(LinkOutcome.parse(URL(string: "https://evil.test/ios/linked?result=linked")!, expected: expected) == .failed)
-        #expect(LinkOutcome.parse(expected, expected: expected) == .failed)
+        func parse(_ raw: String) -> LinkCallback { LinkCallback.parse(URL(string: raw)!, expected: expected) }
+        #expect(parse("\(expected)?result=pending&ref=abc") == .pending(ref: "abc"))
+        #expect(parse("\(expected)?result=pending&ref=") == .finished(.failed))
+        #expect(parse("\(expected)?result=pending") == .finished(.failed))
+        #expect(parse("\(expected)?result=expired") == .finished(.expired))
+        #expect(parse("\(expected)?result=owned_by_other") == .finished(.ownedByOther))
+        #expect(parse("\(expected)?result=whatever") == .finished(.failed))
+        #expect(parse("\(expected)?result=linked") == .finished(.failed))
+        #expect(parse("https://evil.test/ios/linked?result=pending&ref=abc") == .finished(.failed))
+        #expect(parse("\(expected)") == .finished(.failed))
     }
 }

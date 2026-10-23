@@ -92,6 +92,7 @@ Every non-2xx response with a body uses
 | `POST /api/account/sessions/revoke-all` | bearer + re-auth | `{"id_token"}` | `204` (all browser sessions) |
 | `POST /api/account/providers/:provider/unlink` | bearer + re-auth | `{"id_token"}` | `204` |
 | `POST /api/account/providers/:provider/link` | bearer + re-auth | `{"id_token"}` | `200` `{"url": "<https URL on the issuer host>"}` (`link-start.json`) |
+| `POST /api/account/providers/:provider/link/complete` | bearer (same grant that started the link) | `{"ref"}` | `200` `{"result": "linked" \| "owned_by_other" \| "already_linked" \| "expired" \| "failed"}` (`link-complete.json`); `404 not_found` when the ref does not belong to this grant |
 | `DELETE /api/account` | bearer + re-auth | `{"id_token", "username"}` | `204` |
 | `PUT /api/account/push-device` | bearer | `{"token", "environment", "locale"}` (`push-device.json`) | `204` |
 | `DELETE /api/account/push-device` | bearer | — | `204` (also when nothing is registered) |
@@ -155,12 +156,27 @@ Never included: `revocationToken`, raw `providerDetails`, `securityVersion`,
 `tenantId`, `disabledAt`, `reviewLogin`, Telegram `chatId`, grant ids of
 `apps[]`.
 
-### Provider link result (`/ios/linked`)
+### Provider link (`/ios/linked`, then `…/link/complete`)
 
-The IdP ends a `link-app` flow with `303` to
-`<issuer>/ios/linked?result=<value>&provider=<id>`; the app reads `result`:
-`linked`, `owned_by_other`, `already_linked`, `expired`, `failed` (any other
-value is shown as `failed`).
+The provider step never links by itself (that would let a link started in
+someone else's browser land on this account). The flow is:
+
+1. `POST …/providers/:provider/link` (after re-auth) returns the IdP URL;
+   the app opens it in the browser sheet.
+2. After the provider step the IdP redirects `303` to
+   `<issuer>/ios/linked?result=pending&ref=<ref>&provider=<id>`. If the
+   provider step failed or was cancelled it redirects with
+   `result=owned_by_other | already_linked | expired | failed` instead, and
+   the app shows that outcome without a further call.
+3. On `result=pending` the app calls
+   `POST …/providers/:provider/link/complete` with its bearer token and
+   `{"ref": "<ref>"}`. Only the `result` of that response is shown, then the
+   snapshot reloads.
+
+App rules: `result=pending` without a non-empty `ref` is shown as `failed`;
+a bare `result=linked` in the redirect is not trusted and is shown as
+`failed`; any unknown `result` (redirect or completion) is `failed`. The ref
+is held in memory for the one completion call only, never logged or stored.
 
 ### Push device (`push-device.json`)
 

@@ -62,6 +62,16 @@ public struct AccountAPI: Sendable {
         return start.url
     }
 
+    /// Second half of a provider link: the `ref` from `/ios/linked?result=pending`
+    /// is accepted only together with this grant's bearer token.
+    public func completeLink(provider: ProviderID, ref: String) async throws -> LinkOutcome {
+        let data = try await send("POST", ["providers", provider.rawValue, "link", "complete"], body: ["ref": ref])
+        guard let completion = try? APICoding.decoder().decode(LinkCompletion.self, from: data) else {
+            throw AccountError.invalidResponse
+        }
+        return LinkOutcome(result: completion.result)
+    }
+
     public func deleteAccount(username: String, idToken: String) async throws {
         try await send("DELETE", [], body: ["id_token": idToken, "username": username])
     }

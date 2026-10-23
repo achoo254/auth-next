@@ -108,7 +108,8 @@ public final class AccountStore {
     }
 
     /// Re-authenticates, asks the API for the link page, opens it in the
-    /// browser sheet and reads the result from the `/ios/linked` redirect.
+    /// browser sheet, then completes the link through the API with the ref
+    /// from the `/ios/linked` redirect. The outcome is shown only after that.
     public func link(_ provider: ProviderID) async {
         guard !isWorking else { return }
         isWorking = true
@@ -117,7 +118,13 @@ public final class AccountStore {
             let idToken = try await reauthenticate()
             let start = try await api.startLink(provider: provider, idToken: idToken)
             let callback = try await web.authenticate(url: start, callback: linkedURL)
-            let outcome = LinkOutcome.parse(callback, expected: linkedURL)
+            let outcome: LinkOutcome
+            switch LinkCallback.parse(callback, expected: linkedURL) {
+            case .pending(let ref):
+                outcome = try await api.completeLink(provider: provider, ref: ref)
+            case .finished(let finished):
+                outcome = finished
+            }
             if outcome == .linked {
                 notice = .linked(provider)
             } else {

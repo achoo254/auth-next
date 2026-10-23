@@ -130,3 +130,8 @@ public struct AuthorizedApp: Decodable, Sendable, Equatable, Identifiable {
 public struct LinkStart: Decodable, Sendable, Equatable {
     public let url: URL
 }
+
+/// `POST /api/account/providers/:provider/link/complete` response.
+struct LinkCompletion: Decodable {
+    let result: String
+}
