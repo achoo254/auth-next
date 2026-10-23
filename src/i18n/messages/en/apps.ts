@@ -36,6 +36,10 @@ export const enApps = {
 	"apps.scribeWeb.description":
 		"Record audio and turn it into searchable, editable transcripts.",
 	"apps.scribeWeb.signIn": "Choose Sign in on the site.",
+	"apps.miuWeb.description":
+		"A 3D world to play and learn maths and Vietnamese with friends.",
+	"apps.miuWeb.signIn":
+		"Choose Sign in on the site or in the iPhone or Android app.",
 	"apps.steps.title": "How sign-in works",
 	"apps.steps.choose.title": "Pick an app",
 	"apps.steps.choose.body":

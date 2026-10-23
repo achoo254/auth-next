@@ -116,6 +116,7 @@ export function createUpstreamCallbackRouter(services: AppServices): Router {
 					state,
 					codeVerifier: data.verifier,
 					nonce: data.nonce,
+					freshLogin: data.freshLogin === "1",
 				});
 			} catch (error) {
 				services.logger.warn(

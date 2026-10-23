@@ -1,6 +1,6 @@
 import type { Env } from "../config/env.js";
 import type { StaticClientSecrets } from "../oidc/clients.js";
-import type { ScribeClientsConfig } from "../oidc/scribe-clients.js";
+import type { PrimaryAppClientsConfig } from "../oidc/primary-app-clients.js";
 import type { Tenant } from "./tenant.js";
 
 /**
@@ -13,8 +13,8 @@ export const PRIMARY_TENANT_ID = "primary";
  * The primary tenant, from the environment: its issuer is `ISSUER` as
  * before (any shape, so the conformance harness keeps working), its domain
  * `TENANT_DOMAIN` (resources and audiences follow from it), its web apps
- * `LOCALMAN_WEB_URL`, `TUNELO_WEB_URL`, `CHAT_WEB_URL` and, once its client
- * secret is set, `SCRIBE_WEB_URL`. It is always active; documents written
+ * `LOCALMAN_WEB_URL`, `TUNELO_WEB_URL`, `CHAT_WEB_URL` and, once their client
+ * secrets are set, `SCRIBE_WEB_URL` and `MIU_WEB_URL`. It is always active; documents written
  * before tenants existed are tagged as its own at startup.
  */
 export function envTenant(
@@ -28,6 +28,8 @@ export function envTenant(
 		| "CHAT_WEB_URL"
 		| "SCRIBE_WEB_URL"
 		| "SCRIBE_WEB_CLIENT_SECRET"
+		| "MIU_WEB_URL"
+		| "MIU_WEB_CLIENT_SECRET"
 	>,
 ): Tenant {
 	return {
@@ -41,6 +43,7 @@ export function envTenant(
 			tunelo: env.TUNELO_WEB_URL,
 			chat: env.CHAT_WEB_URL,
 			...(env.SCRIBE_WEB_CLIENT_SECRET ? { scribe: env.SCRIBE_WEB_URL } : {}),
+			...(env.MIU_WEB_CLIENT_SECRET ? { miu: env.MIU_WEB_URL } : {}),
 		},
 	};
 }
@@ -61,6 +64,21 @@ export function envClientSecrets(
 	};
 }
 
+/** One primary-tenant app's clients from its web, mobile and dev settings. */
+function appClients(
+	url: string,
+	secret: string | undefined,
+	mobileRedirectUri: string,
+	devUrl: string | undefined,
+	devSecret: string | undefined,
+): PrimaryAppClientsConfig {
+	return {
+		...(secret ? { web: { url, secret } } : {}),
+		mobileRedirectUri,
+		...(devUrl && devSecret ? { dev: { url: devUrl, secret: devSecret } } : {}),
+	};
+}
+
 /**
  * The primary tenant's Scribe clients, from the environment. Registry
  * tenants never get one (Scribe is not derived per tenant).
@@ -74,13 +92,35 @@ export function envScribeClients(
 		| "SCRIBE_WEB_DEV_URL"
 		| "SCRIBE_WEB_DEV_CLIENT_SECRET"
 	>,
-): ScribeClientsConfig {
-	const web = env.SCRIBE_WEB_CLIENT_SECRET;
-	const devUrl = env.SCRIBE_WEB_DEV_URL;
-	const devSecret = env.SCRIBE_WEB_DEV_CLIENT_SECRET;
-	return {
-		...(web ? { web: { url: env.SCRIBE_WEB_URL, secret: web } } : {}),
-		mobileRedirectUri: env.SCRIBE_MOBILE_REDIRECT_URI,
-		...(devUrl && devSecret ? { dev: { url: devUrl, secret: devSecret } } : {}),
-	};
+): PrimaryAppClientsConfig {
+	return appClients(
+		env.SCRIBE_WEB_URL,
+		env.SCRIBE_WEB_CLIENT_SECRET,
+		env.SCRIBE_MOBILE_REDIRECT_URI,
+		env.SCRIBE_WEB_DEV_URL,
+		env.SCRIBE_WEB_DEV_CLIENT_SECRET,
+	);
+}
+
+/**
+ * The primary tenant's Miu World clients, from the environment. Registry
+ * tenants never get one (Miu World is not derived per tenant).
+ */
+export function envMiuClients(
+	env: Pick<
+		Env,
+		| "MIU_WEB_URL"
+		| "MIU_WEB_CLIENT_SECRET"
+		| "MIU_MOBILE_REDIRECT_URI"
+		| "MIU_WEB_DEV_URL"
+		| "MIU_WEB_DEV_CLIENT_SECRET"
+	>,
+): PrimaryAppClientsConfig {
+	return appClients(
+		env.MIU_WEB_URL,
+		env.MIU_WEB_CLIENT_SECRET,
+		env.MIU_MOBILE_REDIRECT_URI,
+		env.MIU_WEB_DEV_URL,
+		env.MIU_WEB_DEV_CLIENT_SECRET,
+	);
 }

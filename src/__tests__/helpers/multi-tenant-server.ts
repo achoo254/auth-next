@@ -90,6 +90,7 @@ export async function startMultiTenantServer(
 		TUNELO_WEB_CLIENT_SECRET: randomBytes(32).toString("base64url"),
 		CHAT_WEB_CLIENT_SECRET: randomBytes(32).toString("base64url"),
 		SCRIBE_WEB_CLIENT_SECRET: randomBytes(32).toString("base64url"),
+		MIU_WEB_CLIENT_SECRET: randomBytes(32).toString("base64url"),
 		TENANT_SECRETS_KEY: `k1:${randomBytes(32).toString("base64")}`,
 		APP_CLIENT_SECRET_KEY: randomBytes(32).toString("base64url"),
 		INTERNAL_API_CREDENTIALS: `localman:${INTERNAL_SECRETS.localman},provisioner:${INTERNAL_SECRETS.provisioner},scribe:${INTERNAL_SECRETS.scribe}`,

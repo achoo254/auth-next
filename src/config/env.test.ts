@@ -89,6 +89,49 @@ describe("parseEnv", () => {
 		}
 	});
 
+	it("leaves Miu World off by default and checks its redirect and dev client", () => {
+		const env = parseEnv(REQUIRED);
+		expect(env.MIU_WEB_URL).toBe("https://miu.hoandat.com");
+		expect(env.MIU_WEB_CLIENT_SECRET).toBeUndefined();
+		expect(env.MIU_MOBILE_REDIRECT_URI).toBe("com.hoandat.miu:/auth/callback");
+		expect(env.MIU_WEB_DEV_URL).toBeUndefined();
+		for (const bad of [
+			"https://miu.hoandat.com/api/auth/callback",
+			"miu:/auth/callback",
+			"com.hoandat.miu://auth/callback",
+		]) {
+			expect(() =>
+				parseEnv({ ...REQUIRED, MIU_MOBILE_REDIRECT_URI: bad }),
+			).toThrow(/MIU_MOBILE_REDIRECT_URI/);
+		}
+		expect(() =>
+			parseEnv({ ...REQUIRED, MIU_WEB_CLIENT_SECRET: "short-hunter5" }),
+		).toThrow(/MIU_WEB_CLIENT_SECRET: must be at least 32/);
+		const dev = {
+			MIU_WEB_DEV_URL: "http://localhost:5173",
+			MIU_WEB_DEV_CLIENT_SECRET: "d".repeat(32),
+		};
+		expect(parseEnv({ ...REQUIRED, ...dev }).MIU_WEB_DEV_URL).toBe(
+			"http://localhost:5173",
+		);
+		expect(() =>
+			parseEnv({ ...REQUIRED, MIU_WEB_DEV_URL: dev.MIU_WEB_DEV_URL }),
+		).toThrow(/MIU_WEB_DEV_CLIENT_SECRET: must be set together/);
+		expect(() =>
+			parseEnv({
+				...REQUIRED,
+				MIU_WEB_DEV_CLIENT_SECRET: dev.MIU_WEB_DEV_CLIENT_SECRET,
+			}),
+		).toThrow(/MIU_WEB_DEV_URL: must be set together/);
+		expect(() =>
+			parseEnv({
+				...REQUIRED,
+				...dev,
+				MIU_WEB_DEV_URL: "http://10.0.0.2:5173",
+			}),
+		).toThrow(/MIU_WEB_DEV_URL: must be on localhost/);
+	});
+
 	it("applies defaults around the required values", () => {
 		const env = parseEnv(REQUIRED);
 		expect(env).toMatchObject({
@@ -192,6 +235,19 @@ describe("parseEnv", () => {
 					SCRIBE_WEB_CLIENT_SECRET: "s".repeat(32),
 					SCRIBE_WEB_DEV_URL: "http://localhost:5174",
 					SCRIBE_WEB_DEV_CLIENT_SECRET: "d".repeat(32),
+				}),
+			).toBe("");
+		});
+
+		it("requires a public https Miu World URL", () => {
+			expect(errorFor({ MIU_WEB_URL: "http://miu.hoandat.com" })).toMatch(
+				/MIU_WEB_URL:/,
+			);
+			expect(
+				errorFor({
+					MIU_WEB_CLIENT_SECRET: "m".repeat(32),
+					MIU_WEB_DEV_URL: "http://localhost:5173",
+					MIU_WEB_DEV_CLIENT_SECRET: "d".repeat(32),
 				}),
 			).toBe("");
 		});

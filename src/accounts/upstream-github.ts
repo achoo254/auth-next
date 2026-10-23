@@ -79,6 +79,9 @@ export function createGithubUpstream(
 	return {
 		provider: "github",
 		responseMode: "query",
+		// GitHub has no parameter that forces the credentials again
+		// (`checks.freshLogin` cannot be honoured): a browser signed in at
+		// GitHub finishes without them (docs/integration-guide.md).
 		async authorizationUrl(checks) {
 			return client.buildAuthorizationUrl(config, {
 				redirect_uri: redirectUri,

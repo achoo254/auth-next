@@ -11,6 +11,8 @@ export interface FakeProfile {
 	readonly email: string;
 	readonly emailVerified: boolean;
 	readonly name?: string;
+	/** Google's `auth_time` (seconds); now when unset. */
+	readonly authTime?: number;
 }
 
 /** What the fake authorize step remembers inside the code it hands out. */
@@ -28,6 +30,7 @@ const fakeProfile = z.object({
 	email: z.string(),
 	emailVerified: z.boolean(),
 	name: z.string().optional(),
+	authTime: z.number().optional(),
 	nonce: z.string().optional(),
 	codeChallenge: z.string().optional(),
 });

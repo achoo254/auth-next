@@ -80,6 +80,27 @@ describe("app list page", () => {
 		expect(other).not.toContain(scribe);
 	});
 
+	it("lists Miu World for the primary tenant once its client is configured", () => {
+		const miu = "https://miu.staging.example";
+		const withMiu = { ...STAGING, webApps: { ...STAGING.webApps, miu } };
+		const html = renderAppsPage(withMiu, testPage("en", "/apps"));
+		expect(html).toContain('data-id="app-open-miu-web"');
+		expect(html).toContain(`href="${miu}"`);
+		expect(html).toContain(">Miu World</text>");
+		expect(html).toContain(
+			"signs you in to Localman, Tunelo, Chat, and Miu World.",
+		);
+		const vi = renderAppsPage(withMiu, testPage("vi", "/apps"));
+		expect(vi).toContain("vừa chơi vừa học Toán và Tiếng Việt");
+
+		const other = renderAppsPage(
+			{ ...withMiu, id: "tenant-inetdev" },
+			testPage("en", "/apps"),
+		);
+		expect(other).not.toContain('data-id="app-miu-web"');
+		expect(other).not.toContain(miu);
+	});
+
 	it("links the sign-in steps from the hero", () => {
 		const html = renderAppsPage(STAGING, testPage("en", "/apps"));
 		expect(html).toContain('href="#how-sign-in-works"');

@@ -152,8 +152,13 @@ export function applySecurity(app: Express, options: SecurityOptions): void {
 export function nativeRedirectSchemes(env: {
 	readonly CHAT_MOBILE_REDIRECT_URI: string;
 	readonly SCRIBE_MOBILE_REDIRECT_URI: string;
+	readonly MIU_MOBILE_REDIRECT_URI: string;
 }): string[] {
-	const schemes = [env.CHAT_MOBILE_REDIRECT_URI, env.SCRIBE_MOBILE_REDIRECT_URI]
+	const schemes = [
+		env.CHAT_MOBILE_REDIRECT_URI,
+		env.SCRIBE_MOBILE_REDIRECT_URI,
+		env.MIU_MOBILE_REDIRECT_URI,
+	]
 		.map((uri) => URL.parse(uri)?.protocol)
 		.filter((scheme): scheme is string => scheme !== undefined);
 	return [...new Set(schemes)];

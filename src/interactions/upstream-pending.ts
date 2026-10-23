@@ -29,6 +29,7 @@ export async function savePendingUpstream(
 	if (profile.name) data.name = profile.name;
 	if (profile.picture) data.picture = profile.picture;
 	if (profile.revocationToken) data.revocationToken = profile.revocationToken;
+	if (profile.freshAuth) data.freshAuth = "1";
 	await services.tokens.put("upstream-pending", uid, data, PENDING_TTL_SECONDS);
 }
 
@@ -45,6 +46,7 @@ function toProfile(
 		name: data.name,
 		picture: data.picture,
 		revocationToken: data.revocationToken,
+		freshAuth: data.freshAuth === "1",
 	};
 }
 
@@ -62,16 +64,26 @@ export async function dropPendingUpstream(
 	await services.tokens.take("upstream-pending", uid);
 }
 
-/** Signs in through the provider and forgets the pending profile. */
+/**
+ * Signs in through the provider and forgets the pending profile. `amr`:
+ * "fed", the provider, and "reauth" when it proved a fresh authentication
+ * (clients that asked for one check it with `auth_time`).
+ */
 export async function finishUpstream(
 	services: AppServices,
 	req: Request,
 	res: Response,
 	interaction: Interaction,
 	accountId: string,
+	profile: UpstreamProfile,
 ): Promise<void> {
 	await dropPendingUpstream(services, interaction.uid);
-	await finishLogin(services, req, res, accountId, ["fed"]);
+	const amr = [
+		"fed",
+		profile.provider,
+		...(profile.freshAuth ? ["reauth"] : []),
+	];
+	await finishLogin(services, req, res, accountId, amr);
 }
 
 /** Loads the interaction and its pending Google/GitHub profile. */

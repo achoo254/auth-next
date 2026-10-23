@@ -15,6 +15,7 @@ import { collectionNameFor } from "../oidc/mongo-adapter.js";
 import {
 	CHAT_WEB_SECRET,
 	LOCALMAN_WEB_SECRET,
+	MIU_WEB_SECRET,
 	SCRIBE_WEB_DEV_SECRET,
 	SCRIBE_WEB_SECRET,
 	TUNELO_WEB_SECRET,
@@ -105,6 +106,7 @@ describe("seed-clients", () => {
 		expect(text).not.toContain(CHAT_WEB_SECRET);
 		expect(text).not.toContain(SCRIBE_WEB_SECRET);
 		expect(text).not.toContain(SCRIBE_WEB_DEV_SECRET);
+		expect(text).not.toContain(MIU_WEB_SECRET);
 	});
 
 	it("leaves Scribe out of the report when it is not configured", async () => {
@@ -123,6 +125,23 @@ describe("seed-clients", () => {
 		);
 		expect(configured.stdout).not.toContain("scribe-web-dev");
 		expect(configured.stdout).not.toContain(SCRIBE_WEB_SECRET);
+	});
+
+	it("leaves Miu World out of the report when it is not configured", async () => {
+		const { stdout } = await seed(["--skip-discovery"]);
+		expect(stdout).not.toContain("miu-");
+		const configured = await seed(["--skip-discovery"], {
+			MIU_WEB_CLIENT_SECRET: MIU_WEB_SECRET,
+		});
+		expect(configured.stdout).toContain('- miu-web "Miu World"');
+		expect(configured.stdout).toContain(
+			"back-channel logout https://miu.hoandat.com/api/auth/backchannel-logout",
+		);
+		expect(configured.stdout).toContain(
+			"redirect com.hoandat.miu:/auth/callback",
+		);
+		expect(configured.stdout).not.toContain("miu-web-dev");
+		expect(configured.stdout).not.toContain(MIU_WEB_SECRET);
 	});
 
 	it("flags a stored record that shadows a static client", async () => {

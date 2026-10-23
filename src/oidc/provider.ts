@@ -25,6 +25,7 @@ import {
 } from "./interaction-policy.js";
 import { SIGNING_ALG, type SigningJwks, idTokenSigningAlgs } from "./jwks.js";
 import { createMongoAdapterFactory } from "./mongo-adapter.js";
+import type { PrimaryAppClientsConfig } from "./primary-app-clients.js";
 import { buildProviderFeatures } from "./provider-features.js";
 import { logProviderEvents } from "./provider-logging.js";
 import { createClientMetadataValidator } from "./registration-policy.js";
@@ -34,7 +35,6 @@ import {
 	SUPPORTED_SCOPES,
 	createResourcePolicy,
 } from "./resources.js";
-import type { ScribeClientsConfig } from "./scribe-clients.js";
 import {
 	GRANT_IDLE_SECONDS,
 	createRotateAndSlideGrant,
@@ -87,8 +87,9 @@ export interface ProviderDependencies {
 	readonly clientSecrets: StaticClientSecrets;
 	/** Redirect of the chat mobile app; one value for every tenant. */
 	readonly chatMobileRedirectUri: string;
-	/** Scribe's clients; honoured for the primary tenant only. */
-	readonly scribeClients?: ScribeClientsConfig;
+	/** Scribe's and Miu World's clients; primary tenant only. */
+	readonly scribeClients?: PrimaryAppClientsConfig;
+	readonly miuClients?: PrimaryAppClientsConfig;
 	readonly accountStore: AccountStore;
 	readonly logger: Logger;
 }
@@ -136,6 +137,7 @@ export function buildProviderConfiguration(
 			deps.clientSecrets,
 			deps.chatMobileRedirectUri,
 			deps.scribeClients,
+			deps.miuClients,
 		),
 		findAccount: createFindAccount(accountStore),
 		jwks: { keys: jwks.keys.map((key) => ({ ...key })) },

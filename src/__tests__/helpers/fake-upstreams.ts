@@ -1,9 +1,6 @@
 /**
- * TEST ONLY. Stands in for Google, GitHub and the Telegram Bot API by
- * wrapping fetch: requests to their hosts are answered here, everything else
- * goes to the real fetch. The authorization code itself carries the profile
- * (base64url JSON), so a browser route or the fake authorize endpoint can
- * mint one and the fake token endpoint can read it back.
+ * TEST ONLY. Fakes Google, GitHub and the Telegram Bot API by wrapping fetch;
+ * the authorization code carries the profile (fake-upstream-codes.ts).
  */
 import { z } from "zod";
 import {
@@ -75,6 +72,7 @@ export class FakeUpstreams {
 	readonly telegramMessages: SentTelegramMessage[] = [];
 	/** Profiles returned, in order, by the fake authorize endpoints. */
 	readonly nextLogins: FakeProfile[] = [];
+	readonly authorizeRequests: URL[] = []; // every fake authorize request
 	private readonly realFetch = globalThis.fetch;
 
 	install(): () => void {
@@ -96,6 +94,7 @@ export class FakeUpstreams {
 			route === "GET https://accounts.google.com/o/oauth2/v2/auth" ||
 			route === "GET https://github.com/login/oauth/authorize"
 		) {
+			this.authorizeRequests.push(url);
 			const profile = this.nextLogins.shift();
 			if (!profile) return new Response("no queued login", { status: 500 });
 			return new Response(null, {
@@ -117,6 +116,7 @@ export class FakeUpstreams {
 				email_verified: profile.emailVerified,
 				name: profile.name,
 				nonce: profile.nonce,
+				auth_time: profile.authTime ?? now,
 				iat: now,
 				exp: now + 3600,
 			});

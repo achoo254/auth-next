@@ -24,7 +24,11 @@ import {
 	finishUpstream,
 	loadPending,
 } from "./upstream-pending.js";
-import { startUpstream } from "./upstream-start.js";
+import {
+	freshLoginRequired,
+	signInProviders,
+	startUpstream,
+} from "./upstream-start.js";
 
 const REJECTED: ReadonlyMap<string, MessageKey> = new Map([
 	["no-verified-email", "upstream.rejected.noVerifiedEmail"],
@@ -55,8 +59,14 @@ export function registerUpstreamInteractionRoutes(
 			}
 			const interaction = await loadInteraction(services, req, res);
 			if (!interaction) return;
+			// A sign-in that must be fresh only goes to a provider that proves it.
+			if (!signInProviders(services, interaction).includes(client.provider)) {
+				res.sendStatus(404);
+				return;
+			}
 			await startUpstream(services, res, client, "login", {
 				uid: interaction.uid,
+				freshLogin: freshLoginRequired(interaction),
 			});
 		}),
 	);
@@ -84,6 +94,7 @@ export function registerUpstreamInteractionRoutes(
 						res,
 						interaction,
 						decision.account._id,
+						profile,
 					);
 					return;
 				case "auto-link": {
@@ -117,6 +128,7 @@ export function registerUpstreamInteractionRoutes(
 						res,
 						interaction,
 						decision.account._id,
+						profile,
 					);
 					return;
 				}

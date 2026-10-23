@@ -24,6 +24,7 @@ import {
 } from "../../services.js";
 import {
 	envClientSecrets,
+	envMiuClients,
 	envScribeClients,
 	envTenant,
 } from "../../tenants/env-tenant.js";
@@ -34,10 +35,12 @@ import {
 	type FakeUpstreams,
 	sharedFakeUpstreams,
 } from "./fake-upstreams.js";
+import { PRIMARY_APP_TEST_ENV } from "./primary-app-test-env.js";
 import type { TestIdpOptions } from "./test-idp-options.js";
 import { withTenant } from "./test-tenant.js";
 
 export type { TestIdpOptions };
+export * from "./primary-app-test-env.js";
 
 export const TEST_ACCOUNT: AccountProfile = {
 	sub: "acc_test_1",
@@ -52,10 +55,6 @@ export const TEST_ACCOUNT: AccountProfile = {
 export const LOCALMAN_WEB_SECRET = randomBytes(32).toString("base64url");
 export const TUNELO_WEB_SECRET = randomBytes(32).toString("base64url");
 export const CHAT_WEB_SECRET = randomBytes(32).toString("base64url");
-export const SCRIBE_WEB_SECRET = randomBytes(32).toString("base64url");
-export const SCRIBE_WEB_DEV_SECRET = randomBytes(32).toString("base64url");
-/** A developer's local Scribe, served the scribe-web-dev client. */
-export const SCRIBE_WEB_DEV_URL = "http://localhost:5174";
 export const LOCALMAN_CALLBACK = "https://localman.hoandat.com/auth/callback";
 
 /** localman-web's redirect URI at `idp` (LOCALMAN_CALLBACK for the primary tenant). */
@@ -124,9 +123,7 @@ export async function startTestIdp(options: TestIdpOptions): Promise<TestIdp> {
 		LOCALMAN_WEB_CLIENT_SECRET: LOCALMAN_WEB_SECRET,
 		TUNELO_WEB_CLIENT_SECRET: TUNELO_WEB_SECRET,
 		CHAT_WEB_CLIENT_SECRET: CHAT_WEB_SECRET,
-		SCRIBE_WEB_CLIENT_SECRET: SCRIBE_WEB_SECRET,
-		SCRIBE_WEB_DEV_URL,
-		SCRIBE_WEB_DEV_CLIENT_SECRET: SCRIBE_WEB_DEV_SECRET,
+		...PRIMARY_APP_TEST_ENV,
 		LOG_LEVEL: "silent",
 		...(options.withoutUpstreams ? {} : FAKE_OAUTH_ENV),
 		...options.env,
@@ -154,6 +151,7 @@ export async function startTestIdp(options: TestIdpOptions): Promise<TestIdp> {
 		cookieKeys: env.COOKIE_KEYS,
 		chatMobileRedirectUri: env.CHAT_MOBILE_REDIRECT_URI,
 		scribeClients: envScribeClients(env),
+		miuClients: envMiuClients(env),
 		clientSecrets: envClientSecrets(env),
 		accountStore:
 			options.interactions === "real"

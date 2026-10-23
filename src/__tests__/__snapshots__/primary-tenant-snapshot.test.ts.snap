@@ -46,8 +46,8 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <a class="btn btn-secondary" href="#how-sign-in-works" data-id="apps-how">How sign-in works</a>
 </div>
 </div>
-<div class="apps-hero-art"><svg class="hub" viewBox="0 0 544 300" role="img" aria-label="Your Auth Next account, reached with Google or GitHub, signs you in to Localman, Tunelo, Chat, and Scribe." data-id="apps-hub">
-<path class="hub-line" d="M132 110 C162 110 162 150 192 150"/><path class="hub-flow tone-primary" d="M132 110 C162 110 162 150 192 150"/><path class="hub-line" d="M132 190 C162 190 162 150 192 150"/><path class="hub-flow tone-primary" d="M132 190 C162 190 162 150 192 150"/><path class="hub-line" d="M328 150 C360 150 360 38 392 38"/><path class="hub-flow tone-violet" d="M328 150 C360 150 360 38 392 38"/><path class="hub-line" d="M328 150 C360 150 360 113 392 113"/><path class="hub-flow tone-amber" d="M328 150 C360 150 360 113 392 113"/><path class="hub-line" d="M328 150 C360 150 360 188 392 188"/><path class="hub-flow tone-blue" d="M328 150 C360 150 360 188 392 188"/><path class="hub-line" d="M328 150 C360 150 360 263 392 263"/><path class="hub-flow tone-red" d="M328 150 C360 150 360 263 392 263"/>
+<div class="apps-hero-art"><svg class="hub" viewBox="0 0 544 300" role="img" aria-label="Your Auth Next account, reached with Google or GitHub, signs you in to Localman, Tunelo, Chat, Scribe, and Miu World." data-id="apps-hub">
+<path class="hub-line" d="M132 110 C162 110 162 150 192 150"/><path class="hub-flow tone-primary" d="M132 110 C162 110 162 150 192 150"/><path class="hub-line" d="M132 190 C162 190 162 150 192 150"/><path class="hub-flow tone-primary" d="M132 190 C162 190 162 150 192 150"/><path class="hub-line" d="M328 150 C360 150 360 30 392 30"/><path class="hub-flow tone-violet" d="M328 150 C360 150 360 30 392 30"/><path class="hub-line" d="M328 150 C360 150 360 90 392 90"/><path class="hub-flow tone-amber" d="M328 150 C360 150 360 90 392 90"/><path class="hub-line" d="M328 150 C360 150 360 150 392 150"/><path class="hub-flow tone-blue" d="M328 150 C360 150 360 150 392 150"/><path class="hub-line" d="M328 150 C360 150 360 210 392 210"/><path class="hub-flow tone-red" d="M328 150 C360 150 360 210 392 210"/><path class="hub-line" d="M328 150 C360 150 360 270 392 270"/><path class="hub-flow tone-cyan" d="M328 150 C360 150 360 270 392 270"/>
 <g class="hub-node">
 <rect x="8" y="90" width="124" height="40" rx="10"/>
 <svg x="20" y="102" width="16" height="16" viewBox="0 0 24 24"><path class="hub-mark" d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"/></svg>
@@ -63,25 +63,30 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <text class="hub-text hub-sub" x="260" y="168" text-anchor="middle">ISSUER_HOST</text>
 </g>
 <g class="hub-node tone-violet">
-<rect x="392" y="18" width="148" height="40" rx="10"/>
-<rect class="hub-chip" x="398" y="24" width="28" height="28" rx="7"/>
-<svg class="icon" x="404" y="30" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M8 4H7a2 2 0 0 0-2 2v4l-2 2 2 2v4a2 2 0 0 0 2 2h1M16 4h1a2 2 0 0 1 2 2v4l2 2-2 2v4a2 2 0 0 1-2 2h-1"/><circle cx="12" cy="12" r="1.5"/></svg>
-<text class="hub-text hub-app" x="434" y="43">Localman</text>
+<rect x="392" y="10" width="148" height="40" rx="10"/>
+<rect class="hub-chip" x="398" y="16" width="28" height="28" rx="7"/>
+<svg class="icon" x="404" y="22" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M8 4H7a2 2 0 0 0-2 2v4l-2 2 2 2v4a2 2 0 0 0 2 2h1M16 4h1a2 2 0 0 1 2 2v4l2 2-2 2v4a2 2 0 0 1-2 2h-1"/><circle cx="12" cy="12" r="1.5"/></svg>
+<text class="hub-text hub-app" x="434" y="35">Localman</text>
 </g><g class="hub-node tone-amber">
-<rect x="392" y="93" width="148" height="40" rx="10"/>
-<rect class="hub-chip" x="398" y="99" width="28" height="28" rx="7"/>
-<svg class="icon" x="404" y="105" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 20V12a9 9 0 0 1 18 0v8M7 20v-8a5 5 0 0 1 10 0v8M3 20h18"/></svg>
-<text class="hub-text hub-app" x="434" y="118">Tunelo</text>
+<rect x="392" y="70" width="148" height="40" rx="10"/>
+<rect class="hub-chip" x="398" y="76" width="28" height="28" rx="7"/>
+<svg class="icon" x="404" y="82" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 20V12a9 9 0 0 1 18 0v8M7 20v-8a5 5 0 0 1 10 0v8M3 20h18"/></svg>
+<text class="hub-text hub-app" x="434" y="95">Tunelo</text>
 </g><g class="hub-node tone-blue">
-<rect x="392" y="168" width="148" height="40" rx="10"/>
-<rect class="hub-chip" x="398" y="174" width="28" height="28" rx="7"/>
-<svg class="icon" x="404" y="180" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/><path d="M8.5 12h.01M12 12h.01M15.5 12h.01"/></svg>
-<text class="hub-text hub-app" x="434" y="193">Chat</text>
+<rect x="392" y="130" width="148" height="40" rx="10"/>
+<rect class="hub-chip" x="398" y="136" width="28" height="28" rx="7"/>
+<svg class="icon" x="404" y="142" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/><path d="M8.5 12h.01M12 12h.01M15.5 12h.01"/></svg>
+<text class="hub-text hub-app" x="434" y="155">Chat</text>
 </g><g class="hub-node tone-red">
-<rect x="392" y="243" width="148" height="40" rx="10"/>
-<rect class="hub-chip" x="398" y="249" width="28" height="28" rx="7"/>
-<svg class="icon" x="404" y="255" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3M8 21h8"/></svg>
-<text class="hub-text hub-app" x="434" y="268">Scribe</text>
+<rect x="392" y="190" width="148" height="40" rx="10"/>
+<rect class="hub-chip" x="398" y="196" width="28" height="28" rx="7"/>
+<svg class="icon" x="404" y="202" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3M8 21h8"/></svg>
+<text class="hub-text hub-app" x="434" y="215">Scribe</text>
+</g><g class="hub-node tone-cyan">
+<rect x="392" y="250" width="148" height="40" rx="10"/>
+<rect class="hub-chip" x="398" y="256" width="28" height="28" rx="7"/>
+<svg class="icon" x="404" y="262" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 10V4l4 3h6l4-3v6a7 7 0 0 1-14 0z"/><path d="M9.5 12h.01M14.5 12h.01M10.5 15.5h3"/></svg>
+<text class="hub-text hub-app" x="434" y="275">Miu World</text>
 </g>
 </svg></div>
 </section>
@@ -141,6 +146,15 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <p class="app-card-desc">Record audio and turn it into searchable, editable transcripts.</p>
 <div class="app-card-how"><p class="app-card-how-label">How to sign in</p><p>Choose Sign in on the site.</p></div>
 <div class="app-card-foot"><a class="btn btn-secondary" href="https://scribe.hoandat.com" data-id="app-open-scribe-web">Open</a></div>
+</li><li class="app-card tone-cyan" data-id="app-miu-web">
+<div class="app-card-head">
+<span class="app-card-icon"><svg class="icon" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 10V4l4 3h6l4-3v6a7 7 0 0 1-14 0z"/><path d="M9.5 12h.01M14.5 12h.01M10.5 15.5h3"/></svg></span>
+<div class="app-card-heading"><h3 class="app-card-name">Miu World</h3>
+<p class="app-card-meta"><span class="badge badge-neutral">Web app</span><span class="mono">miu.hoandat.com</span></p></div>
+</div>
+<p class="app-card-desc">A 3D world to play and learn maths and Vietnamese with friends.</p>
+<div class="app-card-how"><p class="app-card-how-label">How to sign in</p><p>Choose Sign in on the site or in the iPhone or Android app.</p></div>
+<div class="app-card-foot"><a class="btn btn-secondary" href="https://miu.hoandat.com" data-id="app-open-miu-web">Open</a></div>
 </li></ul>
 </section>
 <section class="apps-section" id="how-sign-in-works" aria-labelledby="apps-steps-title" data-id="apps-steps">
@@ -182,8 +196,8 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <a class="btn btn-secondary" href="#how-sign-in-works" data-id="apps-how">Đăng nhập diễn ra thế nào</a>
 </div>
 </div>
-<div class="apps-hero-art"><svg class="hub" viewBox="0 0 544 300" role="img" aria-label="Tài khoản Auth Next, vào bằng Google hoặc GitHub, đăng nhập cho bạn vào Localman, Tunelo, Chat và Scribe." data-id="apps-hub">
-<path class="hub-line" d="M132 110 C162 110 162 150 192 150"/><path class="hub-flow tone-primary" d="M132 110 C162 110 162 150 192 150"/><path class="hub-line" d="M132 190 C162 190 162 150 192 150"/><path class="hub-flow tone-primary" d="M132 190 C162 190 162 150 192 150"/><path class="hub-line" d="M328 150 C360 150 360 38 392 38"/><path class="hub-flow tone-violet" d="M328 150 C360 150 360 38 392 38"/><path class="hub-line" d="M328 150 C360 150 360 113 392 113"/><path class="hub-flow tone-amber" d="M328 150 C360 150 360 113 392 113"/><path class="hub-line" d="M328 150 C360 150 360 188 392 188"/><path class="hub-flow tone-blue" d="M328 150 C360 150 360 188 392 188"/><path class="hub-line" d="M328 150 C360 150 360 263 392 263"/><path class="hub-flow tone-red" d="M328 150 C360 150 360 263 392 263"/>
+<div class="apps-hero-art"><svg class="hub" viewBox="0 0 544 300" role="img" aria-label="Tài khoản Auth Next, vào bằng Google hoặc GitHub, đăng nhập cho bạn vào Localman, Tunelo, Chat, Scribe và Miu World." data-id="apps-hub">
+<path class="hub-line" d="M132 110 C162 110 162 150 192 150"/><path class="hub-flow tone-primary" d="M132 110 C162 110 162 150 192 150"/><path class="hub-line" d="M132 190 C162 190 162 150 192 150"/><path class="hub-flow tone-primary" d="M132 190 C162 190 162 150 192 150"/><path class="hub-line" d="M328 150 C360 150 360 30 392 30"/><path class="hub-flow tone-violet" d="M328 150 C360 150 360 30 392 30"/><path class="hub-line" d="M328 150 C360 150 360 90 392 90"/><path class="hub-flow tone-amber" d="M328 150 C360 150 360 90 392 90"/><path class="hub-line" d="M328 150 C360 150 360 150 392 150"/><path class="hub-flow tone-blue" d="M328 150 C360 150 360 150 392 150"/><path class="hub-line" d="M328 150 C360 150 360 210 392 210"/><path class="hub-flow tone-red" d="M328 150 C360 150 360 210 392 210"/><path class="hub-line" d="M328 150 C360 150 360 270 392 270"/><path class="hub-flow tone-cyan" d="M328 150 C360 150 360 270 392 270"/>
 <g class="hub-node">
 <rect x="8" y="90" width="124" height="40" rx="10"/>
 <svg x="20" y="102" width="16" height="16" viewBox="0 0 24 24"><path class="hub-mark" d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"/></svg>
@@ -199,25 +213,30 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <text class="hub-text hub-sub" x="260" y="168" text-anchor="middle">ISSUER_HOST</text>
 </g>
 <g class="hub-node tone-violet">
-<rect x="392" y="18" width="148" height="40" rx="10"/>
-<rect class="hub-chip" x="398" y="24" width="28" height="28" rx="7"/>
-<svg class="icon" x="404" y="30" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M8 4H7a2 2 0 0 0-2 2v4l-2 2 2 2v4a2 2 0 0 0 2 2h1M16 4h1a2 2 0 0 1 2 2v4l2 2-2 2v4a2 2 0 0 1-2 2h-1"/><circle cx="12" cy="12" r="1.5"/></svg>
-<text class="hub-text hub-app" x="434" y="43">Localman</text>
+<rect x="392" y="10" width="148" height="40" rx="10"/>
+<rect class="hub-chip" x="398" y="16" width="28" height="28" rx="7"/>
+<svg class="icon" x="404" y="22" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M8 4H7a2 2 0 0 0-2 2v4l-2 2 2 2v4a2 2 0 0 0 2 2h1M16 4h1a2 2 0 0 1 2 2v4l2 2-2 2v4a2 2 0 0 1-2 2h-1"/><circle cx="12" cy="12" r="1.5"/></svg>
+<text class="hub-text hub-app" x="434" y="35">Localman</text>
 </g><g class="hub-node tone-amber">
-<rect x="392" y="93" width="148" height="40" rx="10"/>
-<rect class="hub-chip" x="398" y="99" width="28" height="28" rx="7"/>
-<svg class="icon" x="404" y="105" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 20V12a9 9 0 0 1 18 0v8M7 20v-8a5 5 0 0 1 10 0v8M3 20h18"/></svg>
-<text class="hub-text hub-app" x="434" y="118">Tunelo</text>
+<rect x="392" y="70" width="148" height="40" rx="10"/>
+<rect class="hub-chip" x="398" y="76" width="28" height="28" rx="7"/>
+<svg class="icon" x="404" y="82" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 20V12a9 9 0 0 1 18 0v8M7 20v-8a5 5 0 0 1 10 0v8M3 20h18"/></svg>
+<text class="hub-text hub-app" x="434" y="95">Tunelo</text>
 </g><g class="hub-node tone-blue">
-<rect x="392" y="168" width="148" height="40" rx="10"/>
-<rect class="hub-chip" x="398" y="174" width="28" height="28" rx="7"/>
-<svg class="icon" x="404" y="180" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/><path d="M8.5 12h.01M12 12h.01M15.5 12h.01"/></svg>
-<text class="hub-text hub-app" x="434" y="193">Chat</text>
+<rect x="392" y="130" width="148" height="40" rx="10"/>
+<rect class="hub-chip" x="398" y="136" width="28" height="28" rx="7"/>
+<svg class="icon" x="404" y="142" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/><path d="M8.5 12h.01M12 12h.01M15.5 12h.01"/></svg>
+<text class="hub-text hub-app" x="434" y="155">Chat</text>
 </g><g class="hub-node tone-red">
-<rect x="392" y="243" width="148" height="40" rx="10"/>
-<rect class="hub-chip" x="398" y="249" width="28" height="28" rx="7"/>
-<svg class="icon" x="404" y="255" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3M8 21h8"/></svg>
-<text class="hub-text hub-app" x="434" y="268">Scribe</text>
+<rect x="392" y="190" width="148" height="40" rx="10"/>
+<rect class="hub-chip" x="398" y="196" width="28" height="28" rx="7"/>
+<svg class="icon" x="404" y="202" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3M8 21h8"/></svg>
+<text class="hub-text hub-app" x="434" y="215">Scribe</text>
+</g><g class="hub-node tone-cyan">
+<rect x="392" y="250" width="148" height="40" rx="10"/>
+<rect class="hub-chip" x="398" y="256" width="28" height="28" rx="7"/>
+<svg class="icon" x="404" y="262" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 10V4l4 3h6l4-3v6a7 7 0 0 1-14 0z"/><path d="M9.5 12h.01M14.5 12h.01M10.5 15.5h3"/></svg>
+<text class="hub-text hub-app" x="434" y="275">Miu World</text>
 </g>
 </svg></div>
 </section>
@@ -277,6 +296,15 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <p class="app-card-desc">Ghi âm và chuyển thành bản chép lời để tìm kiếm, chỉnh sửa.</p>
 <div class="app-card-how"><p class="app-card-how-label">Cách đăng nhập</p><p>Chọn Đăng nhập trên trang.</p></div>
 <div class="app-card-foot"><a class="btn btn-secondary" href="https://scribe.hoandat.com" data-id="app-open-scribe-web">Mở</a></div>
+</li><li class="app-card tone-cyan" data-id="app-miu-web">
+<div class="app-card-head">
+<span class="app-card-icon"><svg class="icon" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 10V4l4 3h6l4-3v6a7 7 0 0 1-14 0z"/><path d="M9.5 12h.01M14.5 12h.01M10.5 15.5h3"/></svg></span>
+<div class="app-card-heading"><h3 class="app-card-name">Miu World</h3>
+<p class="app-card-meta"><span class="badge badge-neutral">Ứng dụng web</span><span class="mono">miu.hoandat.com</span></p></div>
+</div>
+<p class="app-card-desc">Thế giới 3D vừa chơi vừa học Toán và Tiếng Việt, chơi cùng bạn bè.</p>
+<div class="app-card-how"><p class="app-card-how-label">Cách đăng nhập</p><p>Chọn Đăng nhập trên trang hoặc trong app iPhone, Android.</p></div>
+<div class="app-card-foot"><a class="btn btn-secondary" href="https://miu.hoandat.com" data-id="app-open-miu-web">Mở</a></div>
 </li></ul>
 </section>
 <section class="apps-section" id="how-sign-in-works" aria-labelledby="apps-steps-title" data-id="apps-steps">
@@ -318,8 +346,8 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <a class="btn btn-secondary" href="#how-sign-in-works" data-id="apps-how">登录如何进行</a>
 </div>
 </div>
-<div class="apps-hero-art"><svg class="hub" viewBox="0 0 544 300" role="img" aria-label="通过 Google 或 GitHub 进入你的 Auth Next 账号，即可登录 Localman、Tunelo、Chat和Scribe。" data-id="apps-hub">
-<path class="hub-line" d="M132 110 C162 110 162 150 192 150"/><path class="hub-flow tone-primary" d="M132 110 C162 110 162 150 192 150"/><path class="hub-line" d="M132 190 C162 190 162 150 192 150"/><path class="hub-flow tone-primary" d="M132 190 C162 190 162 150 192 150"/><path class="hub-line" d="M328 150 C360 150 360 38 392 38"/><path class="hub-flow tone-violet" d="M328 150 C360 150 360 38 392 38"/><path class="hub-line" d="M328 150 C360 150 360 113 392 113"/><path class="hub-flow tone-amber" d="M328 150 C360 150 360 113 392 113"/><path class="hub-line" d="M328 150 C360 150 360 188 392 188"/><path class="hub-flow tone-blue" d="M328 150 C360 150 360 188 392 188"/><path class="hub-line" d="M328 150 C360 150 360 263 392 263"/><path class="hub-flow tone-red" d="M328 150 C360 150 360 263 392 263"/>
+<div class="apps-hero-art"><svg class="hub" viewBox="0 0 544 300" role="img" aria-label="通过 Google 或 GitHub 进入你的 Auth Next 账号，即可登录 Localman、Tunelo、Chat、Scribe和Miu World。" data-id="apps-hub">
+<path class="hub-line" d="M132 110 C162 110 162 150 192 150"/><path class="hub-flow tone-primary" d="M132 110 C162 110 162 150 192 150"/><path class="hub-line" d="M132 190 C162 190 162 150 192 150"/><path class="hub-flow tone-primary" d="M132 190 C162 190 162 150 192 150"/><path class="hub-line" d="M328 150 C360 150 360 30 392 30"/><path class="hub-flow tone-violet" d="M328 150 C360 150 360 30 392 30"/><path class="hub-line" d="M328 150 C360 150 360 90 392 90"/><path class="hub-flow tone-amber" d="M328 150 C360 150 360 90 392 90"/><path class="hub-line" d="M328 150 C360 150 360 150 392 150"/><path class="hub-flow tone-blue" d="M328 150 C360 150 360 150 392 150"/><path class="hub-line" d="M328 150 C360 150 360 210 392 210"/><path class="hub-flow tone-red" d="M328 150 C360 150 360 210 392 210"/><path class="hub-line" d="M328 150 C360 150 360 270 392 270"/><path class="hub-flow tone-cyan" d="M328 150 C360 150 360 270 392 270"/>
 <g class="hub-node">
 <rect x="8" y="90" width="124" height="40" rx="10"/>
 <svg x="20" y="102" width="16" height="16" viewBox="0 0 24 24"><path class="hub-mark" d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"/></svg>
@@ -335,25 +363,30 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <text class="hub-text hub-sub" x="260" y="168" text-anchor="middle">ISSUER_HOST</text>
 </g>
 <g class="hub-node tone-violet">
-<rect x="392" y="18" width="148" height="40" rx="10"/>
-<rect class="hub-chip" x="398" y="24" width="28" height="28" rx="7"/>
-<svg class="icon" x="404" y="30" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M8 4H7a2 2 0 0 0-2 2v4l-2 2 2 2v4a2 2 0 0 0 2 2h1M16 4h1a2 2 0 0 1 2 2v4l2 2-2 2v4a2 2 0 0 1-2 2h-1"/><circle cx="12" cy="12" r="1.5"/></svg>
-<text class="hub-text hub-app" x="434" y="43">Localman</text>
+<rect x="392" y="10" width="148" height="40" rx="10"/>
+<rect class="hub-chip" x="398" y="16" width="28" height="28" rx="7"/>
+<svg class="icon" x="404" y="22" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M8 4H7a2 2 0 0 0-2 2v4l-2 2 2 2v4a2 2 0 0 0 2 2h1M16 4h1a2 2 0 0 1 2 2v4l2 2-2 2v4a2 2 0 0 1-2 2h-1"/><circle cx="12" cy="12" r="1.5"/></svg>
+<text class="hub-text hub-app" x="434" y="35">Localman</text>
 </g><g class="hub-node tone-amber">
-<rect x="392" y="93" width="148" height="40" rx="10"/>
-<rect class="hub-chip" x="398" y="99" width="28" height="28" rx="7"/>
-<svg class="icon" x="404" y="105" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 20V12a9 9 0 0 1 18 0v8M7 20v-8a5 5 0 0 1 10 0v8M3 20h18"/></svg>
-<text class="hub-text hub-app" x="434" y="118">Tunelo</text>
+<rect x="392" y="70" width="148" height="40" rx="10"/>
+<rect class="hub-chip" x="398" y="76" width="28" height="28" rx="7"/>
+<svg class="icon" x="404" y="82" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 20V12a9 9 0 0 1 18 0v8M7 20v-8a5 5 0 0 1 10 0v8M3 20h18"/></svg>
+<text class="hub-text hub-app" x="434" y="95">Tunelo</text>
 </g><g class="hub-node tone-blue">
-<rect x="392" y="168" width="148" height="40" rx="10"/>
-<rect class="hub-chip" x="398" y="174" width="28" height="28" rx="7"/>
-<svg class="icon" x="404" y="180" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/><path d="M8.5 12h.01M12 12h.01M15.5 12h.01"/></svg>
-<text class="hub-text hub-app" x="434" y="193">Chat</text>
+<rect x="392" y="130" width="148" height="40" rx="10"/>
+<rect class="hub-chip" x="398" y="136" width="28" height="28" rx="7"/>
+<svg class="icon" x="404" y="142" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/><path d="M8.5 12h.01M12 12h.01M15.5 12h.01"/></svg>
+<text class="hub-text hub-app" x="434" y="155">Chat</text>
 </g><g class="hub-node tone-red">
-<rect x="392" y="243" width="148" height="40" rx="10"/>
-<rect class="hub-chip" x="398" y="249" width="28" height="28" rx="7"/>
-<svg class="icon" x="404" y="255" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3M8 21h8"/></svg>
-<text class="hub-text hub-app" x="434" y="268">Scribe</text>
+<rect x="392" y="190" width="148" height="40" rx="10"/>
+<rect class="hub-chip" x="398" y="196" width="28" height="28" rx="7"/>
+<svg class="icon" x="404" y="202" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3M8 21h8"/></svg>
+<text class="hub-text hub-app" x="434" y="215">Scribe</text>
+</g><g class="hub-node tone-cyan">
+<rect x="392" y="250" width="148" height="40" rx="10"/>
+<rect class="hub-chip" x="398" y="256" width="28" height="28" rx="7"/>
+<svg class="icon" x="404" y="262" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 10V4l4 3h6l4-3v6a7 7 0 0 1-14 0z"/><path d="M9.5 12h.01M14.5 12h.01M10.5 15.5h3"/></svg>
+<text class="hub-text hub-app" x="434" y="275">Miu World</text>
 </g>
 </svg></div>
 </section>
@@ -413,6 +446,15 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <p class="app-card-desc">录音并转写为可搜索、可编辑的文字稿。</p>
 <div class="app-card-how"><p class="app-card-how-label">登录方式</p><p>在网站上选择登录。</p></div>
 <div class="app-card-foot"><a class="btn btn-secondary" href="https://scribe.hoandat.com" data-id="app-open-scribe-web">打开</a></div>
+</li><li class="app-card tone-cyan" data-id="app-miu-web">
+<div class="app-card-head">
+<span class="app-card-icon"><svg class="icon" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 10V4l4 3h6l4-3v6a7 7 0 0 1-14 0z"/><path d="M9.5 12h.01M14.5 12h.01M10.5 15.5h3"/></svg></span>
+<div class="app-card-heading"><h3 class="app-card-name">Miu World</h3>
+<p class="app-card-meta"><span class="badge badge-neutral">网页应用</span><span class="mono">miu.hoandat.com</span></p></div>
+</div>
+<p class="app-card-desc">边玩边学数学和越南语的 3D 世界，可与朋友一起玩。</p>
+<div class="app-card-how"><p class="app-card-how-label">登录方式</p><p>在网站或 iPhone、Android 应用中选择登录。</p></div>
+<div class="app-card-foot"><a class="btn btn-secondary" href="https://miu.hoandat.com" data-id="app-open-miu-web">打开</a></div>
 </li></ul>
 </section>
 <section class="apps-section" id="how-sign-in-works" aria-labelledby="apps-steps-title" data-id="apps-steps">
@@ -563,12 +605,14 @@ exports[`primary tenant (hoandat.com) is unchanged > serves the same discovery d
   "claims_parameter_supported": false,
   "claims_supported": [
     "sub",
+    "amr",
     "preferred_username",
     "name",
     "picture",
     "telegram_linked",
     "email",
     "email_verified",
+    "google_sub",
     "telegram_chat_id",
     "telegram_username",
     "sid",
@@ -902,6 +946,83 @@ exports[`primary tenant (hoandat.com) is unchanged > serves the same static clie
     "subject_type": "public",
     "token_endpoint_auth_method": "client_secret_basic",
   },
+  {
+    "allowed_resources": [],
+    "application_type": "web",
+    "backchannel_logout_session_required": true,
+    "backchannel_logout_uri": "https://miu.hoandat.com/api/auth/backchannel-logout",
+    "client_id": "miu-web",
+    "client_name": "Miu World",
+    "dpop_bound_access_tokens": false,
+    "grant_types": [
+      "authorization_code",
+    ],
+    "id_token_signed_response_alg": "ES256",
+    "post_logout_redirect_uris": [
+      "https://miu.hoandat.com/",
+    ],
+    "redirect_uris": [
+      "https://miu.hoandat.com/api/auth/callback",
+    ],
+    "require_auth_time": false,
+    "require_pushed_authorization_requests": false,
+    "response_types": [
+      "code",
+    ],
+    "scope": "openid email",
+    "subject_type": "public",
+    "token_endpoint_auth_method": "client_secret_basic",
+  },
+  {
+    "allowed_resources": [],
+    "application_type": "native",
+    "backchannel_logout_session_required": false,
+    "client_id": "miu-mobile",
+    "client_name": "Miu World",
+    "dpop_bound_access_tokens": false,
+    "grant_types": [
+      "authorization_code",
+    ],
+    "id_token_signed_response_alg": "ES256",
+    "post_logout_redirect_uris": [],
+    "redirect_uris": [
+      "com.hoandat.miu:/auth/callback",
+    ],
+    "require_auth_time": false,
+    "require_pushed_authorization_requests": false,
+    "response_types": [
+      "code",
+    ],
+    "scope": "openid email",
+    "subject_type": "public",
+    "token_endpoint_auth_method": "none",
+  },
+  {
+    "allowed_resources": [],
+    "application_type": "web",
+    "backchannel_logout_session_required": false,
+    "client_id": "miu-web-dev",
+    "client_name": "Miu World",
+    "dpop_bound_access_tokens": false,
+    "grant_types": [
+      "authorization_code",
+    ],
+    "id_token_signed_response_alg": "ES256",
+    "post_logout_redirect_uris": [
+      "http://localhost:5173/",
+    ],
+    "redirect_uris": [
+      "http://localhost:5173/api/auth/callback",
+    ],
+    "require_auth_time": false,
+    "require_pushed_authorization_requests": false,
+    "response_types": [
+      "code",
+    ],
+    "scope": "openid email",
+    "subject_type": "public",
+    "token_endpoint_auth_method": "client_secret_basic",
+  },
 ]
 `;
 
@@ -1030,6 +1151,8 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in en 
   "apps.localmanWeb.description": "Mock APIs and an API client in your browser.",
   "apps.localmanWeb.signIn": "Choose Sign in on the site.",
   "apps.manage": "To see or remove the apps that can access your account, open {account}.",
+  "apps.miuWeb.description": "A 3D world to play and learn maths and Vietnamese with friends.",
+  "apps.miuWeb.signIn": "Choose Sign in on the site or in the iPhone or Android app.",
   "apps.open": "Open",
   "apps.scribeWeb.description": "Record audio and turn it into searchable, editable transcripts.",
   "apps.scribeWeb.signIn": "Choose Sign in on the site.",
@@ -1499,6 +1622,8 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in vi 
   "apps.localmanWeb.description": "Mock API và API client ngay trên trình duyệt.",
   "apps.localmanWeb.signIn": "Chọn Đăng nhập trên trang.",
   "apps.manage": "Để xem hoặc gỡ các ứng dụng đang có quyền vào tài khoản, mở trang {account}.",
+  "apps.miuWeb.description": "Thế giới 3D vừa chơi vừa học Toán và Tiếng Việt, chơi cùng bạn bè.",
+  "apps.miuWeb.signIn": "Chọn Đăng nhập trên trang hoặc trong app iPhone, Android.",
   "apps.open": "Mở",
   "apps.scribeWeb.description": "Ghi âm và chuyển thành bản chép lời để tìm kiếm, chỉnh sửa.",
   "apps.scribeWeb.signIn": "Chọn Đăng nhập trên trang.",
@@ -1968,6 +2093,8 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in zh-
   "apps.localmanWeb.description": "在浏览器中使用 Mock API 和 API 客户端。",
   "apps.localmanWeb.signIn": "在网站上选择登录。",
   "apps.manage": "如需查看或移除可以访问你账号的应用，请打开{account}页面。",
+  "apps.miuWeb.description": "边玩边学数学和越南语的 3D 世界，可与朋友一起玩。",
+  "apps.miuWeb.signIn": "在网站或 iPhone、Android 应用中选择登录。",
   "apps.open": "打开",
   "apps.scribeWeb.description": "录音并转写为可搜索、可编辑的文字稿。",
   "apps.scribeWeb.signIn": "在网站上选择登录。",

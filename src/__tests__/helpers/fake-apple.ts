@@ -24,9 +24,9 @@ export interface FakeAppleGrant {
 	readonly email?: string;
 	readonly isPrivateEmail?: boolean;
 	readonly nonce?: string;
-	/** Signs the ID token with a key Apple does not publish. */
-	readonly forgeSignature?: boolean;
+	readonly forgeSignature?: boolean; // signs with a key Apple never published
 	readonly audience?: string;
+	readonly authTime?: number;
 }
 
 const grantSchema = z.object({
@@ -36,6 +36,7 @@ const grantSchema = z.object({
 	nonce: z.string().optional(),
 	forgeSignature: z.boolean().optional(),
 	audience: z.string().optional(),
+	authTime: z.number().optional(),
 });
 
 export function encodeAppleCode(grant: FakeAppleGrant): string {
@@ -134,6 +135,7 @@ export class FakeApple {
 				aud: grant.audience ?? FAKE_APPLE_SERVICES_ID,
 				sub: grant.sub,
 				nonce: grant.nonce,
+				auth_time: grant.authTime ?? Math.floor(Date.now() / 1000),
 				...(grant.email
 					? {
 							email: grant.email,

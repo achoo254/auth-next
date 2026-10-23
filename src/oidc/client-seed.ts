@@ -4,6 +4,7 @@ import type { Env } from "../config/env.js";
 import { createLogger } from "../logger.js";
 import {
 	envClientSecrets,
+	envMiuClients,
 	envScribeClients,
 	envTenant,
 } from "../tenants/env-tenant.js";
@@ -11,6 +12,7 @@ import { inTenant } from "../tenants/tenant-data.js";
 import { createInMemoryAccountStore } from "./claims.js";
 import { STATIC_CLIENT_IDS, TOKEN_EXCHANGE_GRANT } from "./clients.js";
 import { RSA_ID_TOKEN_ALG, SIGNING_ALG, type SigningJwks } from "./jwks.js";
+import { isMiuClientId } from "./miu-clients.js";
 import { collectionNameFor } from "./mongo-adapter.js";
 import { createProvider } from "./provider.js";
 import { isScribeClientId } from "./scribe-clients.js";
@@ -69,6 +71,7 @@ export async function inspectStaticClients(deps: {
 		cookieKeys: deps.env.COOKIE_KEYS,
 		chatMobileRedirectUri: deps.env.CHAT_MOBILE_REDIRECT_URI,
 		scribeClients: envScribeClients(deps.env),
+		miuClients: envMiuClients(deps.env),
 		clientSecrets: envClientSecrets(deps.env),
 		accountStore: createInMemoryAccountStore([]),
 		logger: createLogger("silent"),
@@ -76,8 +79,9 @@ export async function inspectStaticClients(deps: {
 	const clients: StaticClientSummary[] = [];
 	for (const clientId of Object.values(STATIC_CLIENT_IDS)) {
 		const client = await provider.Client.find(clientId);
-		// Scribe's clients exist only when its environment configures them.
-		if (!client && isScribeClientId(clientId)) continue;
+		// Scribe's and Miu's clients exist only when configured.
+		if (!client && (isScribeClientId(clientId) || isMiuClientId(clientId)))
+			continue;
 		if (!client) throw new Error(`Static client ${clientId} is missing`);
 		const metadata = client.metadata();
 		const backchannel = text(metadata.backchannel_logout_uri);

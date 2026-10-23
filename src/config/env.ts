@@ -10,6 +10,7 @@ import {
 	checkIntegrationGroups,
 	integrationEnvShape,
 } from "./integrations-env.js";
+import { checkMiuDevGroup, miuEnvShape } from "./miu-env.js";
 import { checkScribeDevGroup, scribeEnvShape } from "./scribe-env.js";
 import { checkTenantsGroup, tenantsEnvShape } from "./tenants-env.js";
 import { type TrustProxy, parseTrustProxy } from "./trust-proxy.js";
@@ -44,6 +45,7 @@ const PRODUCTION_URLS = [
 	"TUNELO_WEB_URL",
 	"CHAT_WEB_URL",
 	"SCRIBE_WEB_URL",
+	"MIU_WEB_URL",
 ] as const;
 
 const envSchema = z
@@ -145,12 +147,14 @@ const envSchema = z
 		...appleEnvShape,
 		...tenantsEnvShape,
 		...scribeEnvShape,
+		...miuEnvShape,
 	})
 	.superRefine((env, ctx) => {
 		checkIntegrationGroups(env, ctx);
 		checkAppleGroup(env, ctx);
 		checkTenantsGroup(env, ctx);
 		checkScribeDevGroup(env, ctx);
+		checkMiuDevGroup(env, ctx);
 		if (env.NODE_ENV !== "production") return;
 		for (const key of PRODUCTION_URLS) {
 			if (!isPublicHttpsUrl(env[key])) {

@@ -43,6 +43,8 @@ export interface Tenant {
 		readonly chat: string;
 		/** Scribe: the primary tenant only, and only when it is configured. */
 		readonly scribe?: string;
+		/** Miu World: the primary tenant only, and only when it is configured. */
+		readonly miu?: string;
 	};
 }
 

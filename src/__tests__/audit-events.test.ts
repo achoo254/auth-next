@@ -30,7 +30,7 @@ describe("credential events land in the outbox", () => {
 		expect(await eventsOf(account._id)).toMatchObject([
 			{
 				type: "login.succeeded",
-				data: { methods: ["fed"] },
+				data: { methods: ["fed", "google"] },
 				context: { ip: expect.any(String) },
 			},
 		]);

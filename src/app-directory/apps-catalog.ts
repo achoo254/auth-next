@@ -22,7 +22,8 @@ type AppIconName =
 	| "terminal"
 	| "tunnel"
 	| "chat"
-	| "scribe";
+	| "scribe"
+	| "miu";
 
 /** One app on the page; `id` is its `client_id` when it has a fixed one. */
 export interface ListedApp {
@@ -46,6 +47,7 @@ const ICON_SHAPES: Readonly<Record<AppIconName, SafeHtml>> = {
 	tunnel: html`<path d="M3 20V12a9 9 0 0 1 18 0v8M7 20v-8a5 5 0 0 1 10 0v8M3 20h18"/>`,
 	chat: html`<path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/><path d="M8.5 12h.01M12 12h.01M15.5 12h.01"/>`,
 	scribe: html`<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3M8 21h8"/>`,
+	miu: html`<path d="M5 10V4l4 3h6l4-3v6a7 7 0 0 1-14 0z"/><path d="M9.5 12h.01M14.5 12h.01M10.5 15.5h3"/>`,
 };
 
 /**
@@ -75,8 +77,8 @@ function code(value: string): SafeHtml {
 /**
  * The first-party apps of src/oidc/clients.ts, plus the MCP clients that
  * register themselves for Localman's MCP resource. Chat is listed only for
- * the primary tenant: other tenants have no chat host yet. Scribe likewise,
- * and only once its client is configured (`webApps.scribe`).
+ * the primary tenant: other tenants have no chat host yet. Scribe and Miu
+ * World likewise, once configured (`webApps.scribe`, `webApps.miu`).
  */
 export function listedApps(
 	tenant: AppDirectoryTenant,
@@ -131,6 +133,9 @@ export function listedApps(
 		...(tenant.id === PRIMARY_TENANT_ID && tenant.webApps.scribe
 			? [scribeWeb(tenant.webApps.scribe, i18n)]
 			: []),
+		...(tenant.id === PRIMARY_TENANT_ID && tenant.webApps.miu
+			? [miuWeb(tenant.webApps.miu, i18n)]
+			: []),
 	];
 }
 
@@ -156,6 +161,19 @@ function scribeWeb(href: string, i18n: Translator): ListedApp {
 		kind: "apps.kind.web",
 		description: "apps.scribeWeb.description",
 		signIn: html`${i18n.t("apps.scribeWeb.signIn")}`,
+		href,
+	};
+}
+
+function miuWeb(href: string, i18n: Translator): ListedApp {
+	return {
+		id: STATIC_CLIENT_IDS.miuWeb,
+		name: "Miu World",
+		tone: "cyan",
+		icon: "miu",
+		kind: "apps.kind.web",
+		description: "apps.miuWeb.description",
+		signIn: html`${i18n.t("apps.miuWeb.signIn")}`,
 		href,
 	};
 }

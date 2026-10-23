@@ -34,7 +34,10 @@ export interface TenantAppOptions {
 	readonly services: AppServices;
 	readonly env: Pick<
 		Env,
-		"TRUST_PROXY" | "CHAT_MOBILE_REDIRECT_URI" | "SCRIBE_MOBILE_REDIRECT_URI"
+		| "TRUST_PROXY"
+		| "CHAT_MOBILE_REDIRECT_URI"
+		| "SCRIBE_MOBILE_REDIRECT_URI"
+		| "MIU_MOBILE_REDIRECT_URI"
 	>;
 	/**
 	 * Replaces the interaction pages under /interaction. Tests only: the
@@ -126,6 +129,7 @@ export interface AppOptions extends TenantAppOptions {
 		| "ALLOWED_HOSTS"
 		| "CHAT_MOBILE_REDIRECT_URI"
 		| "SCRIBE_MOBILE_REDIRECT_URI"
+		| "MIU_MOBILE_REDIRECT_URI"
 	>;
 	readonly rateLimits?: readonly RateLimitRule[];
 }

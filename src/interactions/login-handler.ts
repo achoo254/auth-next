@@ -9,6 +9,7 @@ import {
 	interactionPage,
 } from "./interaction-helpers.js";
 import { renderLogin, renderSignup } from "./login-page.js";
+import { signInProviders } from "./upstream-start.js";
 
 /** 503 while no provider (nor the review sign-in) is configured: no way in at all. */
 function pageStatus(services: AppServices): number | undefined {
@@ -34,7 +35,7 @@ export async function showLogin(
 			page: interactionPage(req, interaction),
 			uid: interaction.uid,
 			csrf: services.csrf.token(req, res, csrfScope(interaction.uid)),
-			providers: [...services.upstreams.keys()],
+			providers: signInProviders(services, interaction),
 			// The account page is the IdP itself, not an app to "continue to".
 			clientName:
 				client?.clientId === STATIC_CLIENT_IDS.accountPortal
@@ -64,7 +65,7 @@ export function showSignup(
 			host: services.host,
 			page: interactionPage(req, interaction),
 			uid: interaction.uid,
-			providers: [...services.upstreams.keys()],
+			providers: signInProviders(services, interaction),
 		}),
 		pageStatus(services),
 	);

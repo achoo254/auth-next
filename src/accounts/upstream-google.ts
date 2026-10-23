@@ -56,7 +56,11 @@ export function createGoogleUpstream(
 					checks.codeVerifier,
 				),
 				code_challenge_method: "S256",
-				prompt: "select_account",
+				// A fresh authentication: Google asks for the credentials
+				// again instead of reusing its session.
+				...(checks.freshLogin
+					? { prompt: "login", max_age: "0" }
+					: { prompt: "select_account" }),
 			});
 		},
 		async fetchProfile(query, checks): Promise<UpstreamProfile> {
@@ -68,6 +72,9 @@ export function createGoogleUpstream(
 					expectedState: checks.state,
 					expectedNonce: checks.nonce,
 					idTokenExpected: true,
+					// With max_age=0, openid-client requires a just-made
+					// auth_time (within its clock tolerance).
+					...(checks.freshLogin ? { maxAge: 0 } : {}),
 				},
 			);
 			const claims = googleClaims.parse(tokens.claims());
@@ -78,6 +85,8 @@ export function createGoogleUpstream(
 					claims.email_verified === true ? claims.email : undefined,
 				name: claims.name,
 				picture: claims.picture,
+				// Checked above: auth_time within max_age=0.
+				...(checks.freshLogin ? { freshAuth: true } : {}),
 			};
 		},
 	};

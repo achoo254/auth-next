@@ -162,6 +162,26 @@ Kiểm từ ngoài (cùng cách như chat): `for c in scribe-web scribe-mobile s
 
 **Trạng thái production (16/10/2026):** deploy commit `e1a7c96`; `.env` có `SCRIBE_WEB_DEV_URL=http://localhost:5174` + `SCRIBE_WEB_DEV_CLIENT_SECRET` (bản sao ở máy dev của chủ sở hữu, `~/.onescribe-dev/.oidc-web-dev-secret`) ⟹ `scribe-web-dev`, `scribe-mobile` đang bật; `SCRIBE_WEB_CLIENT_SECRET` chưa đặt (bật khi `scribe.hoandat.com` có site, Phase 7b của plan Scribe).
 
+## Client của Miu World
+
+Miu World (repo `miu-world-next`, `https://miu.hoandat.com`, game cho mọi lứa tuổi, phụ huynh đăng nhập) dùng `miu-web` (confidential, BFF: server Miu đổi code rồi cấp phiên riêng của Miu), `miu-mobile` (public native cho app iPhone/Android, scheme `com.hoandat.miu`) và `miu-web-dev` (tuỳ chọn, chỉ cho dev local) — `src/oidc/miu-clients.ts`. **Chỉ tenant chính** có các client này. Scope chỉ `openid email`, chỉ grant `authorization_code`: không có refresh token, Miu không giữ token nào của IdP sau khi đăng nhập.
+
+| Biến | Ý nghĩa |
+|---|---|
+| `MIU_WEB_URL` | origin của Miu, mặc định `https://miu.hoandat.com`; redirect `/api/auth/callback`, back-channel `/api/auth/backchannel-logout`, post-logout `/` |
+| `MIU_WEB_CLIENT_SECRET` | tuỳ chọn, ≥ 32 ký tự; có thì bật `miu-web` + `miu-mobile` và thẻ Miu World ở `/apps`; thiếu thì không có client Miu và IdP vẫn khởi động. Cùng giá trị ở env server Miu (`OIDC_WEB_CLIENT_SECRET` phía Miu) |
+| `MIU_MOBILE_REDIRECT_URI` | tuỳ chọn, mặc định `com.hoandat.miu:/auth/callback`; phải trùng `urlScheme` trong `brand.config.json` của Miu |
+| `MIU_WEB_DEV_URL` + `MIU_WEB_DEV_CLIENT_SECRET` | đặt cả hai hoặc không: bật `miu-web-dev` (redirect loopback cổng khớp chính xác, vd `http://localhost:5173/api/auth/callback` qua proxy Vite, không back-channel) và `miu-mobile` |
+
+Bật trên production (không in secret ra terminal):
+
+1. Backup như mục "Các lần sau", deploy commit có `miu-clients.ts`.
+2. Sinh secret thẳng vào `.env` của IdP: `printf 'MIU_WEB_CLIENT_SECRET=%s\n' "$(openssl rand -base64 48 | tr -d '\n')" >> /var/www/hoandat-auth/.env` (kiểm chỉ có một dòng `MIU_WEB_CLIENT_SECRET`: `grep -c '^MIU_WEB_CLIENT_SECRET=' .env`). Chép cùng giá trị sang env của server Miu (đọc tệp, không echo) và lưu bản sao ở iCloud access-tokens.
+3. `pm2 startOrReload infra/ecosystem.config.cjs --update-env`, `curl -fsS https://auth.hoandat.com/healthz`, `pnpm seed:clients` (phải liệt kê `miu-web "Miu World"`, back-channel `https://miu.hoandat.com/api/auth/backchannel-logout`, `miu-mobile` redirect `com.hoandat.miu:/auth/callback`).
+4. Kiểm từ ngoài (như Scribe): `for c in miu-web miu-mobile; do curl -s -o /dev/null -w "$c %{redirect_url}\n" "https://auth.hoandat.com/auth?client_id=$c&response_type=code&scope=openid" | cut -d'?' -f1; done` phải in `https://miu.hoandat.com/api/auth/callback` và `com.hoandat.miu:/auth/callback`.
+
+Rollback: xoá dòng `MIU_WEB_CLIENT_SECRET` rồi reload; IdP không còn client Miu (Miu sẽ báo đăng nhập không khả dụng).
+
 ## Tuỳ chọn bật sau
 
 - Sign in with Apple (ADR 0008): code có sẵn, **chưa bật** (19/10/2026, chờ Apple duyệt tài khoản developer). Bật theo [`sign-in-with-apple.md`](sign-in-with-apple.md): khoá `.p8` ở `/var/www/hoandat-auth/secrets/apple-signin-key.p8` (600), bốn biến `APPLE_*` + `APPLE_PRIMARY_APP_ID` trong `.env`.

@@ -2,17 +2,15 @@ import type { ClientMetadata } from "oidc-provider";
 import type { TenantResources } from "../tenants/tenant-resources.js";
 import type { Tenant } from "../tenants/tenant.js";
 import { CHAT_CLIENT_IDS, buildChatClients } from "./chat-clients.js";
+import { MIU_CLIENT_IDS, buildMiuClients } from "./miu-clients.js";
+import type { PrimaryAppClientsConfig } from "./primary-app-clients.js";
 import {
 	ALLOWED_RESOURCES_PROPERTY,
 	LOCALMAN_SCOPES,
 	TELEGRAM_SCOPE,
 	TUNNEL_SCOPES,
 } from "./resources.js";
-import {
-	SCRIBE_CLIENT_IDS,
-	type ScribeClientsConfig,
-	buildScribeClients,
-} from "./scribe-clients.js";
+import { SCRIBE_CLIENT_IDS, buildScribeClients } from "./scribe-clients.js";
 
 export const DEVICE_CODE_GRANT = "urn:ietf:params:oauth:grant-type:device_code";
 /** RFC 8693; only localman-web may use it (see token-exchange.ts). */
@@ -27,6 +25,7 @@ export const STATIC_CLIENT_IDS = {
 	accountPortal: "hoandat-account",
 	...CHAT_CLIENT_IDS,
 	...SCRIBE_CLIENT_IDS,
+	...MIU_CLIENT_IDS,
 } as const;
 
 /** Where the IdP sends the browser back after signing in for /account. */
@@ -91,6 +90,7 @@ export const CLIENTS_WITHOUT_RESOURCES: ReadonlySet<string> = new Set([
 	STATIC_CLIENT_IDS.accountPortal,
 	...Object.values(CHAT_CLIENT_IDS),
 	...Object.values(SCRIBE_CLIENT_IDS),
+	...Object.values(MIU_CLIENT_IDS),
 ]);
 
 function scopeOf(...groups: readonly (readonly string[])[]): string {
@@ -110,17 +110,17 @@ export interface StaticClientSecrets {
 }
 
 /**
- * The first-party clients of a tenant. Client ids are the same in every
- * tenant; app origins, resources, names and secrets are the tenant's, so
- * local and staging deployments can point elsewhere. Scribe's clients
- * exist for the primary tenant only (see buildScribeClients).
+ * The first-party clients of a tenant: same ids everywhere, origins,
+ * resources, names and secrets the tenant's. Scribe's and Miu World's
+ * exist for the primary tenant only (primary-app-clients.ts).
  */
 export function buildStaticClients(
 	tenant: Pick<Tenant, "id" | "issuer" | "displayName" | "webApps">,
 	resources: TenantResources,
 	secrets: StaticClientSecrets,
 	chatMobileRedirectUri: string,
-	scribe?: ScribeClientsConfig,
+	scribe?: PrimaryAppClientsConfig,
+	miu?: PrimaryAppClientsConfig,
 ): ClientMetadata[] {
 	const localman = tenant.webApps.localman;
 	const tunelo = tenant.webApps.tunelo;
@@ -195,5 +195,6 @@ export function buildStaticClients(
 			chatMobileRedirectUri,
 		),
 		...buildScribeClients(tenant, scribe),
+		...buildMiuClients(tenant, miu),
 	];
 }

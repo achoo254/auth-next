@@ -90,6 +90,9 @@ export function createAppleUpstream(
 	return {
 		provider: "apple",
 		responseMode: "form_post",
+		// Apple has no prompt parameter; it asks for Face ID, Touch ID or the
+		// password on sign-in, and a fresh authentication (`freshLogin`) is
+		// checked on its ID token's auth_time (fetchProfile).
 		async authorizationUrl(checks) {
 			return client.buildAuthorizationUrl(await configuration(), {
 				redirect_uri: redirectUri,
@@ -112,6 +115,7 @@ export function createAppleUpstream(
 					expectedState: checks.state,
 					expectedNonce: checks.nonce,
 					idTokenExpected: true,
+					...(checks.freshLogin ? { maxAge: 0 } : {}),
 				},
 			);
 			if (!tokens.id_token) throw new Error("Apple sent no ID token");
@@ -126,6 +130,7 @@ export function createAppleUpstream(
 				verifiedEmail: identity.verifiedEmail,
 				name: appleDisplayName(query.get("user")),
 				revocationToken: tokens.refresh_token,
+				...(checks.freshLogin ? { freshAuth: true } : {}),
 			};
 		},
 		async revoke(token) {

@@ -34,6 +34,8 @@ export const zhApps: Translation<typeof enApps> = {
 	"apps.chatWeb.signIn": "在网站上选择登录。",
 	"apps.scribeWeb.description": "录音并转写为可搜索、可编辑的文字稿。",
 	"apps.scribeWeb.signIn": "在网站上选择登录。",
+	"apps.miuWeb.description": "边玩边学数学和越南语的 3D 世界，可与朋友一起玩。",
+	"apps.miuWeb.signIn": "在网站或 iPhone、Android 应用中选择登录。",
 	"apps.steps.title": "登录流程",
 	"apps.steps.choose.title": "选择一个应用",
 	"apps.steps.choose.body": "在它的网站上选择登录，或在终端运行 {command}。",

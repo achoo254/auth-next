@@ -49,6 +49,7 @@ import {
 } from "../../src/services.js";
 import {
 	envClientSecrets,
+	envMiuClients,
 	envScribeClients,
 	envTenant,
 } from "../../src/tenants/env-tenant.js";
@@ -107,6 +108,7 @@ const configuration = buildProviderConfiguration({
 	cookieKeys: env.COOKIE_KEYS,
 	chatMobileRedirectUri: env.CHAT_MOBILE_REDIRECT_URI,
 	scribeClients: envScribeClients(env),
+	miuClients: envMiuClients(env),
 	clientSecrets: envClientSecrets(env),
 	db,
 	jwks: {

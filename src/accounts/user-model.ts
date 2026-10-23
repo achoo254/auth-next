@@ -163,6 +163,9 @@ export function toAccountProfile(account: AccountDocument): AccountProfile {
 		name: account.name,
 		picture: account.picture,
 		telegramLinked: account.telegram !== undefined,
+		...(account.providers.google
+			? { googleSub: account.providers.google }
+			: {}),
 		...(account.telegram
 			? {
 					telegram: {

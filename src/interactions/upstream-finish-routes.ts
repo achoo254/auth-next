@@ -95,7 +95,14 @@ export function registerUpstreamFinishRoutes(
 					{ accountId: account._id, provider: profile.provider },
 					"Account created via provider",
 				);
-				await finishUpstream(services, req, res, interaction, account._id);
+				await finishUpstream(
+					services,
+					req,
+					res,
+					interaction,
+					account._id,
+					profile,
+				);
 			} catch (error) {
 				if (!(error instanceof AccountConflictError)) throw error;
 				// Say which field: a parallel sign-up may have taken either.

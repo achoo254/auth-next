@@ -21,6 +21,13 @@ export interface UpstreamChecks {
 	readonly codeVerifier: string;
 	/** OIDC providers only (Google, Apple): bound into the ID token. */
 	readonly nonce: string;
+	/**
+	 * The sign-in must be a fresh authentication (the client sent
+	 * `prompt=login` or a `max_age` the IdP session exceeds): Google is asked
+	 * for `prompt=login` + `max_age=0` and its `auth_time` is checked. Apple
+	 * always asks again; GitHub has no such parameter (see the guide).
+	 */
+	readonly freshLogin: boolean;
 }
 
 /** One external sign-in provider, hiding the OAuth library behind it. */

@@ -9,6 +9,7 @@ import {
 } from "../oidc/clients.js";
 import {
 	envClientSecrets,
+	envMiuClients,
 	envScribeClients,
 	envTenant,
 } from "../tenants/env-tenant.js";
@@ -61,6 +62,7 @@ describe("static clients match the integration contract", () => {
 				envClientSecrets(env),
 				env.CHAT_MOBILE_REDIRECT_URI,
 				envScribeClients(env),
+				envMiuClients(env),
 			).map((entry) => [entry.client_id, entry]),
 		);
 		expect(byId.get(STATIC_CLIENT_IDS.localmanWeb)).toMatchObject({
@@ -100,6 +102,7 @@ describe("static clients match the integration contract", () => {
 					envClientSecrets(env),
 					env.CHAT_MOBILE_REDIRECT_URI,
 					envScribeClients(env),
+					envMiuClients(env),
 				).map((entry) => [entry.client_id, entry]),
 			);
 		const unset = parseEnv(base);
@@ -164,6 +167,80 @@ describe("static clients match the integration contract", () => {
 			expect(metadata.grant_types).not.toContain(TOKEN_EXCHANGE_GRANT);
 			expect(scopes(metadata)).not.toContain("offline_access");
 		}
+	});
+
+	it("derives Miu World's URIs, for the primary tenant only and only once configured", () => {
+		const base = {
+			MONGO_URL: "mongodb://127.0.0.1:27017/auth",
+			SIGNING_KEYS_PATH: "unused.json",
+			COOKIE_KEYS: "k".repeat(32),
+			LOCALMAN_WEB_CLIENT_SECRET: "l".repeat(32),
+			TUNELO_WEB_CLIENT_SECRET: "t".repeat(32),
+			CHAT_WEB_CLIENT_SECRET: "c".repeat(32),
+		};
+		const idsOf = (
+			env: ReturnType<typeof parseEnv>,
+			tenant = envTenant(env),
+		): Map<string, Record<string, unknown>> =>
+			new Map(
+				buildStaticClients(
+					tenant,
+					resourcesFor(env.TENANT_DOMAIN),
+					envClientSecrets(env),
+					env.CHAT_MOBILE_REDIRECT_URI,
+					envScribeClients(env),
+					envMiuClients(env),
+				).map((entry) => [entry.client_id, entry]),
+			);
+		const unset = parseEnv(base);
+		expect(envTenant(unset).webApps.miu).toBeUndefined();
+		expect(
+			[...idsOf(unset).keys()].filter((id) => id.startsWith("miu")),
+		).toEqual([]);
+
+		const env = parseEnv({ ...base, MIU_WEB_CLIENT_SECRET: "m".repeat(32) });
+		expect(envTenant(env).webApps.miu).toBe("https://miu.hoandat.com");
+		const byId = idsOf(env);
+		expect(byId.get(STATIC_CLIENT_IDS.miuWeb)).toMatchObject({
+			client_secret: "m".repeat(32),
+			redirect_uris: ["https://miu.hoandat.com/api/auth/callback"],
+			post_logout_redirect_uris: ["https://miu.hoandat.com/"],
+			backchannel_logout_uri:
+				"https://miu.hoandat.com/api/auth/backchannel-logout",
+			backchannel_logout_session_required: true,
+		});
+		expect(byId.get(STATIC_CLIENT_IDS.miuMobile)).toMatchObject({
+			redirect_uris: ["com.hoandat.miu:/auth/callback"],
+		});
+		expect(byId.has(STATIC_CLIENT_IDS.miuWebDev)).toBe(false);
+
+		const other = idsOf(env, { ...OTHER_TEST_TENANT, issuer: env.ISSUER });
+		expect([...other.keys()].filter((id) => id.startsWith("miu"))).toEqual([]);
+	});
+
+	it("miu-web and miu-mobile: Code + PKCE, openid email only, no refresh, no resource", async () => {
+		expect(await metadataOf(STATIC_CLIENT_IDS.miuWeb)).toMatchObject({
+			client_name: "Miu World",
+			token_endpoint_auth_method: "client_secret_basic",
+			grant_types: ["authorization_code"],
+			response_types: ["code"],
+			scope: "openid email",
+			allowed_resources: [],
+		});
+		expect(await metadataOf(STATIC_CLIENT_IDS.miuMobile)).toMatchObject({
+			client_name: "Miu World",
+			application_type: "native",
+			token_endpoint_auth_method: "none",
+			grant_types: ["authorization_code"],
+			scope: "openid email",
+			allowed_resources: [],
+		});
+		expect(await metadataOf(STATIC_CLIENT_IDS.miuWebDev)).toMatchObject({
+			token_endpoint_auth_method: "client_secret_basic",
+			grant_types: ["authorization_code"],
+			redirect_uris: ["http://localhost:5173/api/auth/callback"],
+			allowed_resources: [],
+		});
 	});
 
 	it("localman-web: confidential code client that alone may exchange tokens", async () => {
