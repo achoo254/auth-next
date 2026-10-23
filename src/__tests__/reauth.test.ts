@@ -83,11 +83,17 @@ describe("sensitive changes need a recent sign-in", () => {
 		);
 		const loginPage = await login.response.text();
 		expect(loginPage).not.toContain('type="password"');
+		// The portal's own prompt=login is an ordinary sign-in at the provider:
+		// GitHub offered, Google asked with select_account, no auth_time check.
+		expect(loginPage).toContain('data-id="upstream-github"');
 		const uid = /\/interaction\/([\w-]+)/.exec(login.response.url)?.[1] ?? "";
 		idp.fake.nextLogins.push(linkedGoogleProfile(account));
 		const back = await browser.navigate(
 			`${idp.issuer}/interaction/${uid}/upstream/google`,
 		);
+		const google = idp.fake.authorizeRequests.at(-1)?.searchParams;
+		expect(google?.get("prompt")).toBe("select_account");
+		expect(google?.has("max_age")).toBe(false);
 		expect(back.response.url).toBe(`${idp.issuer}/account?notice=reauthed`);
 		expect(await back.response.text()).toContain("Identity confirmed.");
 

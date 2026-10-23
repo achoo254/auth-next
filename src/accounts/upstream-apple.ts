@@ -12,7 +12,7 @@ import {
 	verifyAppleNotification,
 } from "./apple-signed-tokens.js";
 import { callbackUrl } from "./upstream-callback-url.js";
-import type { UpstreamClient } from "./upstream-client.js";
+import { type UpstreamClient, isFreshAuthTime } from "./upstream-client.js";
 
 /**
  * Apple's OpenID Provider metadata, pinned like Google's. Values match
@@ -90,9 +90,8 @@ export function createAppleUpstream(
 	return {
 		provider: "apple",
 		responseMode: "form_post",
-		// Apple has no prompt parameter; it asks for Face ID, Touch ID or the
-		// password on sign-in, and a fresh authentication (`freshLogin`) is
-		// checked on its ID token's auth_time (fetchProfile).
+		// Apple has no prompt parameter; a fresh authentication (`freshLogin`)
+		// counts only when its ID token's auth_time proves it (fetchProfile).
 		async authorizationUrl(checks) {
 			return client.buildAuthorizationUrl(await configuration(), {
 				redirect_uri: redirectUri,
@@ -115,7 +114,6 @@ export function createAppleUpstream(
 					expectedState: checks.state,
 					expectedNonce: checks.nonce,
 					idTokenExpected: true,
-					...(checks.freshLogin ? { maxAge: 0 } : {}),
 				},
 			);
 			if (!tokens.id_token) throw new Error("Apple sent no ID token");
@@ -130,7 +128,9 @@ export function createAppleUpstream(
 				verifiedEmail: identity.verifiedEmail,
 				name: appleDisplayName(query.get("user")),
 				revocationToken: tokens.refresh_token,
-				...(checks.freshLogin ? { freshAuth: true } : {}),
+				...(checks.freshLogin && isFreshAuthTime(tokens.claims()?.auth_time)
+					? { freshAuth: true }
+					: {}),
 			};
 		},
 		async revoke(token) {

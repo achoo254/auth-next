@@ -2,6 +2,7 @@ import type { Response } from "express";
 import { randomToken } from "../accounts/one-time-tokens.js";
 import type { UpstreamClient } from "../accounts/upstream-client.js";
 import type { UpstreamProvider } from "../accounts/user-model.js";
+import { isMiuClientId } from "../oidc/miu-clients.js";
 import type { AppServices } from "../services.js";
 import type { Interaction } from "./interaction-helpers.js";
 
@@ -35,12 +36,17 @@ export function stateCookieOptions(services: AppServices): {
 }
 
 /**
- * Whether the sign-in of `interaction` must be a fresh authentication: the
- * client asked for `prompt=login` or `max_age=0`, or the IdP session is
+ * Whether the sign-in of `interaction` must be a fresh authentication at the
+ * provider: a Miu World client (it re-authenticates the parent to reopen a
+ * locked PIN) asked for `prompt=login` or `max_age=0`, or the IdP session is
  * older than its `max_age` (oidc-provider reasons `login_prompt`, `max_age`).
+ * Every other client keeps the ordinary upstream sign-in, even with
+ * prompt=login (the account portal, Chat's max_age): Google with
+ * select_account, GitHub offered, no upstream auth_time check.
  */
 export function freshLoginRequired(interaction: Interaction): boolean {
-	const { prompt, max_age: maxAge } = interaction.params;
+	const { prompt, max_age: maxAge, client_id: clientId } = interaction.params;
+	if (typeof clientId !== "string" || !isMiuClientId(clientId)) return false;
 	const reasons = interaction.prompt.reasons;
 	return (
 		(typeof prompt === "string" && prompt.split(" ").includes("login")) ||

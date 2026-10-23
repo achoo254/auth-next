@@ -116,7 +116,7 @@ export class FakeUpstreams {
 				email_verified: profile.emailVerified,
 				name: profile.name,
 				nonce: profile.nonce,
-				auth_time: profile.authTime ?? now,
+				auth_time: profile.authTime,
 				iat: now,
 				exp: now + 3600,
 			});

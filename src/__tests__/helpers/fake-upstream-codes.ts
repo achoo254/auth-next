@@ -11,7 +11,7 @@ export interface FakeProfile {
 	readonly email: string;
 	readonly emailVerified: boolean;
 	readonly name?: string;
-	/** Google's `auth_time` (seconds); now when unset. */
+	/** Google's `auth_time` (seconds); left out when unset, as Google does. */
 	readonly authTime?: number;
 }
 
