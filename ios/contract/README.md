@@ -166,8 +166,9 @@ someone else's browser land on this account). The flow is:
 2. After the provider step the IdP redirects `303` to
    `<issuer>/ios/linked?result=pending&ref=<ref>&provider=<id>`. If the
    provider step failed or was cancelled it redirects with
-   `result=owned_by_other | already_linked | expired | failed` instead, and
-   the app shows that outcome without a further call.
+   `result=expired | failed | cancelled` instead (no `ref`), and the app
+   shows that outcome without a further call (`cancelled` may be shown as
+   `failed`). `owned_by_other` and `already_linked` only come from step 3.
 3. On `result=pending` the app calls
    `POST …/providers/:provider/link/complete` with its bearer token and
    `{"ref": "<ref>"}`. Only the `result` of that response is shown, then the

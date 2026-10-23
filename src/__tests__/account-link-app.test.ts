@@ -58,6 +58,23 @@ async function openSheet(
 	return location;
 }
 
+/** The app's confirmation of the `ref` its sheet brought back. */
+async function complete(
+	app: { readonly accessToken: string },
+	ref: string | null | undefined,
+	provider = "github",
+): Promise<Response> {
+	return callApi(idp, `/providers/${provider}/link/complete`, {
+		method: "POST",
+		token: app.accessToken,
+		body: { ref: ref ?? "" },
+	});
+}
+
+async function githubOf(accountId: string): Promise<string | undefined> {
+	return (await repositoryOf(idp).findActiveById(accountId))?.providers.github;
+}
+
 async function sessionCount(accountId: string): Promise<number> {
 	return idp.db
 		.collection(collectionNameFor("Session"))
@@ -65,15 +82,22 @@ async function sessionCount(accountId: string): Promise<number> {
 }
 
 describe("linking a provider from the app", () => {
-	it("links without any IdP session and creates none", async () => {
+	it("links only once the app confirms, without any IdP session", async () => {
 		const app = await signedInApp(idp);
 		const url = await linkStart(app);
 		const before = await sessionCount(app.account._id);
 		const id = githubId();
 		const sheet = new TestBrowser();
 		const back = await openSheet(url, id, sheet);
-		expect(back?.searchParams.get("result")).toBe("linked");
+		expect(back?.searchParams.get("result")).toBe("pending");
 		expect(back?.searchParams.get("provider")).toBe("github");
+		const ref = back?.searchParams.get("ref");
+		expect(ref?.length).toBeGreaterThanOrEqual(43);
+		// Nothing is linked by the browser step alone.
+		expect(await githubOf(app.account._id)).toBeUndefined();
+		const done = await complete(app, ref);
+		expect(done.status).toBe(200);
+		expect(await done.json()).toEqual({ result: "linked" });
 		const after = await repositoryOf(idp).findActiveById(app.account._id);
 		expect(after?.providers.github).toBe(id);
 		// Still every way in it had.
@@ -86,6 +110,68 @@ describe("linking a provider from the app", () => {
 			.collection<{ type: string; data: { method?: string } }>("audit_outbox")
 			.findOne({ sub: app.account._id, type: "method.linked" });
 		expect(event?.data.method).toBe("github");
+		// Single use.
+		expect((await complete(app, ref)).status).toBe(404);
+	});
+
+	it("a link URL opened in someone else's browser cannot link into its creator's account", async () => {
+		const attacker = await signedInApp(idp);
+		const victim = await signedInApp(idp);
+		const url = await linkStart(attacker);
+		// The victim opens the attacker's URL and signs in to their own GitHub.
+		const victimGithub = githubId();
+		const back = await openSheet(url, victimGithub);
+		const ref = back?.searchParams.get("ref");
+		// The attacker never sees the victim's sheet, so no ref: a guess fails.
+		expect((await complete(attacker, "guessed-ref")).status).toBe(404);
+		// The victim's own app (another grant, another account) cannot use it.
+		const refused = await complete(victim, ref);
+		expect(refused.status).toBe(404);
+		expect((await refused.json()).error).toBe("not_found");
+		expect(await githubOf(attacker.account._id)).toBeUndefined();
+		expect(await githubOf(victim.account._id)).toBeUndefined();
+	});
+
+	it("refuses a ref of another grant of the same account, another provider, or expired", async () => {
+		const app = await signedInApp(idp);
+		const otherPhone = {
+			accessToken: (await appSignIn(idp, app.browser)).access_token,
+		};
+		const back = await openSheet(await linkStart(app), githubId());
+		const ref = back?.searchParams.get("ref");
+		expect((await complete(otherPhone, ref)).status).toBe(404);
+		expect((await complete(app, ref, "google")).status).toBe(404);
+		// Not used up by the refusals: the right grant can still confirm.
+		expect(await (await complete(app, ref)).json()).toEqual({
+			result: "linked",
+		});
+
+		const late = await signedInApp(idp);
+		const lateRef = (
+			await openSheet(await linkStart(late), githubId())
+		)?.searchParams.get("ref");
+		await idp.db
+			.collection("one_time_tokens")
+			.updateMany(
+				{ kind: "app-link-result", "data.accountId": late.account._id },
+				{ $set: { expiresAt: new Date(Date.now() - 1000) } },
+			);
+		expect((await complete(late, lateRef)).status).toBe(404);
+		expect(await githubOf(late.account._id)).toBeUndefined();
+	});
+
+	it("voids a held result after a security change of the account", async () => {
+		const app = await signedInApp(idp);
+		const ref = (
+			await openSheet(await linkStart(app), githubId())
+		)?.searchParams.get("ref");
+		await repositoryOf(idp).links.setTelegram(app.account._id, {
+			chatId: `${Date.now()}`,
+		});
+		expect(await (await complete(app, ref)).json()).toEqual({
+			result: "expired",
+		});
+		expect(await githubOf(app.account._id)).toBeUndefined();
 	});
 
 	it("opens a link state once", async () => {
@@ -126,31 +212,19 @@ describe("linking a provider from the app", () => {
 			await linkStart(app),
 			owner.providers.github ?? "",
 		);
-		expect(taken?.searchParams.get("result")).toBe("owned_by_other");
+		expect(
+			await (await complete(app, taken?.searchParams.get("ref"))).json(),
+		).toEqual({ result: "owned_by_other" });
 
-		const url = await linkStart(app);
+		const back = await openSheet(await linkStart(app), githubId());
 		const grantId = (await idp.provider.AccessToken.find(app.accessToken))
 			?.grantId;
-		const sheet = new TestBrowser();
-		// Started, then the phone is signed out before the provider answers.
-		const start = await sheet.request(url);
-		const provider = new URL(start.headers.get("location") ?? "");
+		// The phone is signed out before it confirms.
 		await (await idp.provider.Grant.find(grantId ?? ""))?.destroy();
-		idp.fake.nextLogins.push({
-			id: githubId(),
-			email: "x@example.com",
-			emailVerified: true,
-		});
-		const { location } = await sheet.navigate(
-			provider,
-			{},
-			`${idp.issuer}/ios/linked`,
+		expect((await complete(app, back?.searchParams.get("ref"))).status).toBe(
+			401,
 		);
-		expect(location?.searchParams.get("result")).toBe("expired");
-		expect(
-			(await repositoryOf(idp).findActiveById(app.account._id))?.providers
-				.github,
-		).toBeUndefined();
+		expect(await githubOf(app.account._id)).toBeUndefined();
 	});
 
 	it("ends on the app when the user cancels at the provider", async () => {

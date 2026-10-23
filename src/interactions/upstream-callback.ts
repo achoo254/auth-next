@@ -8,12 +8,12 @@ import { isUpstreamProvider } from "../accounts/user-model.js";
 import { readCookie } from "../http/cookies.js";
 import { queryValue, routeParam } from "../http/form.js";
 import type { AppServices } from "../services.js";
+import { holdAppLinkResult } from "./app-link-result.js";
 import { registerAppleNotifications } from "./apple-notifications.js";
 import { asyncHandler, sendInteractionError } from "./interaction-helpers.js";
 import { finishAccountLink } from "./upstream-account-link.js";
 import {
 	APP_LINK_PURPOSE,
-	finishAppLink,
 	redirectToApp,
 	registerAppLinkStart,
 } from "./upstream-app-link.js";
@@ -151,7 +151,7 @@ export function createUpstreamCallbackRouter(services: AppServices): Router {
 				return;
 			}
 			if (fromApp && data.accountId && data.grantId) {
-				await finishAppLink(services, res, {
+				await holdAppLinkResult(services, res, {
 					accountId: data.accountId,
 					grantId: data.grantId,
 					version: Number(data.securityVersion ?? "0"),

@@ -18,6 +18,7 @@ import type { AppServices } from "../services.js";
 import { accountLimit, ipLimit } from "./account-api-limits.js";
 import { registerSensitiveRoutes } from "./account-api-sensitive-routes.js";
 import { accountView } from "./account-api-view.js";
+import { registerAppLinkRoutes } from "./app-link-routes.js";
 import { apiRoute, requireBearer, sendApiError } from "./bearer-auth.js";
 import { registerPushDeviceRoutes } from "./push-device-routes.js";
 
@@ -110,6 +111,7 @@ export function createAccountApiRouter(services: AppServices): Router {
 	);
 
 	registerSensitiveRoutes(router, services);
+	registerAppLinkRoutes(router, services);
 	registerPushDeviceRoutes(router, services);
 	router.use((_req, res) => {
 		sendApiError(res, 404, "not_found");

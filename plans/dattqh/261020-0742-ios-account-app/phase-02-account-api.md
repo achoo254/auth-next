@@ -184,3 +184,10 @@ Code xong ở local, chưa commit, chưa chạy CI. Bước 1–6 xong; bước 
 - Test: `account-ios-client-flow` (5), `account-api` (7), `account-api-guards` (5), `account-actions` (5), `account-link-app` (5), `apple-app-site-association` (4), `account-api-contract` (1), cập nhật `client-contract` (12), `sliding-grants` (5), `tenant-source-scan`, snapshot tenant chính.
 - Lệch so với bản thiết kế: trả `204` cho thao tác không có dữ liệu trả về, mã lỗi và giá trị `result` theo `ios/contract/README.md` của app (phase này không ghi). `AppServices` nhận thêm `jwks` (công khai) để kiểm ID token.
 - **Đã chốt (23/10/2026):** fixture hợp đồng ở `ios/contract/account.json`, test Node đọc đúng đường dẫn đó.
+
+### Sửa sau review bảo mật (23/10/2026)
+
+- [x] CSRF liên kết (medium-high): callback `link-app` không còn liên kết; giữ hồ sơ provider dưới `ref` một lần (`app-link-result`, 5 phút, gắn tài khoản và grant) và chuyển `/ios/linked?result=pending&ref=…`. App xác nhận ở `POST /api/account/providers/:provider/link/complete` (`src/account-api/app-link-routes.ts`, `src/interactions/app-link-result.ts`). Test `account-link-app` (8): URL mở ở trình duyệt khác không liên kết được vào tài khoản người tạo; `ref` dùng lại, hết hạn, của grant/provider khác bị từ chối; thay đổi bảo mật làm `ref` hết hạn.
+- [x] Nginx không ghi query của `/ios/` và `/oauth/` vào access log (kiểm `nginx -t` và chạy thử cục bộ).
+- [x] APNs: một JWT provider cho các lượt gửi đồng thời; request luôn kết thúc khi stream đóng.
+- Fixture hợp đồng: test Node đọc `ios/contract/account.json` (đã thống nhất trong 78881ed) và kiểm thêm `ios/contract/link-complete.json`.

@@ -1,6 +1,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import type { AppLinkCompletion } from "../interactions/app-link-result.js";
 import { callApi, signedInApp } from "./helpers/account-ios-flows.js";
 import { localmanSignIn } from "./helpers/exchange-flows.js";
 import { FAKE_UPSTREAM_ENV } from "./helpers/fake-upstreams.js";
@@ -8,19 +9,14 @@ import { cliLogin } from "./helpers/session-flows.js";
 import { repositoryOf } from "./helpers/test-accounts.js";
 import { type TestIdp, startTestIdp } from "./helpers/test-idp.js";
 
+/** The fixtures the iOS app decodes in its own tests (ios/contract/README.md). */
+const CONTRACT_DIR = join(import.meta.dirname, "..", "..", "ios", "contract");
+
 /**
- * The fixture the iOS app decodes in its own tests (phase 02 of the plan
- * names this path). Both sides check against it, so a change of
- * GET /api/account that the app would not read fails here.
+ * Both sides check against it, so a change of GET /api/account that the
+ * app would not read fails here.
  */
-const FIXTURE = join(
-	import.meta.dirname,
-	"..",
-	"..",
-	"ios",
-	"contract",
-	"account.json",
-);
+const FIXTURE = join(CONTRACT_DIR, "account.json");
 
 type Shape =
 	| "string"
@@ -85,6 +81,23 @@ beforeAll(async () => {
 
 afterAll(async () => {
 	await idp?.close();
+});
+
+describe("link completion and the app's fixture", () => {
+	it("uses a result the server can answer", () => {
+		const fixture: unknown = JSON.parse(
+			readFileSync(join(CONTRACT_DIR, "link-complete.json"), "utf8"),
+		);
+		const results: readonly AppLinkCompletion[] = [
+			"linked",
+			"owned_by_other",
+			"already_linked",
+			"expired",
+			"failed",
+		];
+		expect(fixture).toEqual({ result: expect.any(String) });
+		expect(results).toContain(Reflect.get(Object(fixture), "result"));
+	});
 });
 
 describe("GET /api/account and the app's fixture", () => {

@@ -1,15 +1,9 @@
 import type { Response, Router } from "express";
-import type { UpstreamProfile } from "../accounts/account-linking.js";
-import { linkUpstream } from "../accounts/account-linking.js";
 import { randomToken } from "../accounts/one-time-tokens.js";
 import type { UpstreamClient } from "../accounts/upstream-client.js";
 import { isUpstreamProvider } from "../accounts/user-model.js";
 import { queryValue, routeParam } from "../http/form.js";
-import {
-	ACCOUNT_IOS_CLIENT_ID,
-	IOS_LINKED_PATH,
-} from "../oidc/account-ios-client.js";
-import { notifyAccount } from "../push/notify-account.js";
+import { IOS_LINKED_PATH } from "../oidc/account-ios-client.js";
 import type { AppServices } from "../services.js";
 import { asyncHandler } from "./interaction-helpers.js";
 import { stateCookieName, stateCookieOptions } from "./upstream-start.js";
@@ -20,22 +14,17 @@ import { stateCookieName, stateCookieOptions } from "./upstream-start.js";
  * cookie the link state itself carries the account, its security version
  * and the app grant that asked, issued only after a re-authenticated API
  * call. The browser sheet opens it once at /oauth/<provider>/start, which
- * binds it to that browser (state cookie) as any sign-in; the callback
- * links without reading or creating any IdP session, then lands on
- * /ios/linked for the app.
+ * binds it to that browser (state cookie) as any sign-in. The callback
+ * never links (the sheet's URL could be someone else's): it holds the
+ * provider's answer for the app to confirm (app-link-result.ts), without
+ * reading or creating any IdP session.
  */
 export const APP_LINK_PURPOSE = "link-app";
 
 const APP_LINK_TTL_SECONDS = 5 * 60;
 
-/** Outcomes the app reads from /ios/linked?result=… */
-export type AppLinkResult =
-	| "linked"
-	| "cancelled"
-	| "expired"
-	| "failed"
-	| "owned_by_other"
-	| "already_linked";
+/** Outcomes the app reads from /ios/linked?result=… (`pending`: confirm). */
+export type AppLinkResult = "pending" | "cancelled" | "expired" | "failed";
 
 /** Ends the browser sheet on the app's universal link. */
 export function redirectToApp(
@@ -136,64 +125,4 @@ export function registerAppLinkStart(
 			res.redirect(303, url.href);
 		}),
 	);
-}
-
-/**
- * Callback of an app link: the app grant must still be alive for the same
- * account, the provider account must not be someone else's, and the write
- * is conditioned on the security version the state was issued at.
- */
-export async function finishAppLink(
-	services: AppServices,
-	res: Response,
-	link: {
-		readonly accountId: string;
-		readonly grantId: string;
-		readonly version: number;
-		readonly profile: UpstreamProfile;
-	},
-): Promise<void> {
-	const { accountId, profile } = link;
-	const provider = profile.provider;
-	const grant = await services.provider.Grant.find(link.grantId);
-	const account = await services.accounts.findActiveById(accountId);
-	if (
-		!account ||
-		!grant ||
-		grant.accountId !== accountId ||
-		grant.clientId !== ACCOUNT_IOS_CLIENT_ID
-	) {
-		redirectToApp(services, res, "expired", provider);
-		return;
-	}
-	const owner = await services.accounts.findByProvider(
-		provider,
-		profile.providerId,
-	);
-	if (owner && owner._id !== accountId) {
-		redirectToApp(services, res, "owned_by_other", provider);
-		return;
-	}
-	if (account.providers[provider]) {
-		redirectToApp(services, res, "already_linked", provider);
-		return;
-	}
-	const write = await linkUpstream(
-		services.accounts,
-		account,
-		profile,
-		link.version,
-	);
-	if (!write.applied) {
-		redirectToApp(services, res, "expired", provider);
-		return;
-	}
-	notifyAccount(
-		services,
-		account,
-		{ kind: "provider-linked", provider },
-		{ exceptGrantId: link.grantId },
-	);
-	services.logger.info({ accountId, provider }, "Provider linked from the app");
-	redirectToApp(services, res, "linked", provider);
 }

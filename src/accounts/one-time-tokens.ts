@@ -8,7 +8,10 @@ import {
 } from "../tenants/tenant-data.js";
 
 /** Act on an account; only through AccountTokens (securityVersion-checked). */
-export type AccountTokenKind = "telegram-link" | "upstream-link-state";
+export type AccountTokenKind =
+	| "telegram-link"
+	| "upstream-link-state"
+	| "app-link-result";
 
 /** Not tied to an account (yet): OAuth sign-in state, a pending profile... */
 export type FreeTokenKind =
@@ -23,7 +26,7 @@ export type FreeTokenKind =
 	/** An app link state already opened in a browser (it opens once). */
 	| "link-app-started";
 
-/** What a one-time token is for; a token never works for another kind. */
+/** A token never works for another kind. */
 export type OneTimeTokenKind = AccountTokenKind | FreeTokenKind;
 
 export type TokenData = Record<string, string>;
@@ -31,7 +34,6 @@ export type TokenData = Record<string, string>;
 interface OneTimeTokenDocument {
 	/** SHA-256 of kind and token: the token itself is never stored. */
 	_id: string;
-	/** The tenant the document belongs to. */
 	tenantId: string;
 	kind: OneTimeTokenKind;
 	data: TokenData;
@@ -50,10 +52,8 @@ export function randomToken(): string {
 }
 
 /**
- * Storage of short-lived single-use secrets, hashed, with a TTL index.
- * `take` deletes atomically, so two requests racing on one token cannot
- * both succeed. Limited to one tenant: another tenant's token reads as
- * missing. Used directly only by the two token services below.
+ * Short-lived single-use secrets, hashed, TTL-indexed; `take` deletes
+ * atomically. One tenant only. Used only by the two token services below.
  */
 export class TokenCollection {
 	private readonly tokens: Collection<OneTimeTokenDocument>;
@@ -154,7 +154,7 @@ export class TokenCollection {
 	}
 }
 
-/** Tokens not bound to an account: OAuth sign-in state, pending profiles. */
+/** Not bound to an account: OAuth sign-in state, pending profiles... */
 export class OneTimeTokenStore {
 	private readonly collection: TokenCollection;
 
