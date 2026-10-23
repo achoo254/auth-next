@@ -3,6 +3,7 @@ import {
 	constants,
 	type Http2Server,
 	type IncomingHttpHeaders,
+	type ServerHttp2Session,
 	type ServerHttp2Stream,
 	createServer,
 } from "node:http2";
@@ -35,6 +36,7 @@ let origin: string;
 const received: Received[] = [];
 let replies: Reply[] = [];
 let sessionsOpened = 0;
+const sessions = new Set<ServerHttp2Session>();
 
 function reply(status: number, body?: object): Reply {
 	return (stream) => {
@@ -46,8 +48,10 @@ function reply(status: number, body?: object): Reply {
 beforeAll(async () => {
 	// h2c: the client is told the origin; TLS is not what is tested.
 	server = createServer();
-	server.on("session", () => {
+	server.on("session", (session) => {
 		sessionsOpened += 1;
+		sessions.add(session);
+		session.on("close", () => sessions.delete(session));
 	});
 	server.on("stream", (stream, headers) => {
 		let body = "";
@@ -65,6 +69,9 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
+	// close() waits for every open session; a client left connected by a
+	// failed test must not hang the suite.
+	for (const session of sessions) session.destroy();
 	await new Promise<void>((resolve) => server.close(() => resolve()));
 });
 
