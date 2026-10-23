@@ -40,7 +40,14 @@ const NOTICE_TTL_SECONDS = 24 * 60 * 60;
  */
 export class ApnsClient implements PushSender {
 	private readonly sessions = new Map<ApnsEnvironment, ClientHttp2Session>();
-	private providerToken?: { readonly value: string; readonly iat: number };
+	/**
+	 * The provider token being used, or being signed: concurrent sends share
+	 * one signature, so at most one JWT exists per refresh window.
+	 */
+	private providerToken?: {
+		readonly value: Promise<string>;
+		readonly iat: number;
+	};
 
 	constructor(
 		private readonly config: ApnsConfig,
@@ -101,12 +108,17 @@ export class ApnsClient implements PushSender {
 		if (cached && now - cached.iat < PROVIDER_TOKEN_SECONDS) {
 			return cached.value;
 		}
-		const value = await new SignJWT({})
+		const value = new SignJWT({})
 			.setProtectedHeader({ alg: "ES256", kid: this.config.keyId })
 			.setIssuer(this.config.teamId)
 			.setIssuedAt(now)
 			.sign(this.config.privateKey);
-		this.providerToken = { value, iat: now };
+		const entry = { value, iat: now };
+		this.providerToken = entry;
+		// A failed signature is not kept: the next send signs again.
+		value.catch(() => {
+			if (this.providerToken === entry) this.providerToken = undefined;
+		});
 		return value;
 	}
 
@@ -139,7 +151,19 @@ export class ApnsClient implements PushSender {
 	private async post(target: PushTarget, payload: object): Promise<ApnsAnswer> {
 		const authorization = `bearer ${await this.bearer()}`;
 		const session = this.session(target.environment);
-		return new Promise((resolve, reject) => {
+		return new Promise((resolveAnswer, rejectAnswer) => {
+			// Settles once: whichever of end, error, timeout or close comes first.
+			let settled = false;
+			const resolve = (answer: ApnsAnswer): void => {
+				if (settled) return;
+				settled = true;
+				resolveAnswer(answer);
+			};
+			const reject = (error: Error): void => {
+				if (settled) return;
+				settled = true;
+				rejectAnswer(error);
+			};
 			const request = session.request({
 				[constants.HTTP2_HEADER_METHOD]: "POST",
 				[constants.HTTP2_HEADER_PATH]: `/3/device/${target.token}`,
@@ -167,6 +191,8 @@ export class ApnsClient implements PushSender {
 			});
 			request.on("end", () => resolve(parseAnswer(status, body)));
 			request.on("error", reject);
+			// A stream closed without an answer (session lost, RST_STREAM).
+			request.on("close", () => reject(new Error("stream closed")));
 			request.end(JSON.stringify(payload));
 		});
 	}

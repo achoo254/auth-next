@@ -1,5 +1,6 @@
 import { generateKeyPairSync } from "node:crypto";
 import {
+	constants,
 	type Http2Server,
 	type IncomingHttpHeaders,
 	type ServerHttp2Stream,
@@ -160,6 +161,32 @@ describe("ApnsClient", () => {
 		await new Promise((resolve) => setTimeout(resolve, 50));
 		expect(await client.send(target, {})).toEqual({ status: "sent" });
 		expect(sessionsOpened - opened).toBe(2);
+		client.close();
+	});
+
+	it("signs one provider token for concurrent sends", async () => {
+		const { client } = capture();
+		const target = { token: TOKEN, environment: "sandbox" } as const;
+		const results = await Promise.all(
+			[1, 2, 3, 4, 5].map(() => client.send(target, {})),
+		);
+		expect(results.every((r) => r.status === "sent")).toBe(true);
+		const headers = new Set(received.map((r) => r.headers.authorization));
+		expect(headers.size).toBe(1);
+		client.close();
+	});
+
+	it("settles when the stream closes without an answer", async () => {
+		const { client } = capture();
+		replies = [
+			(stream) => stream.close(constants.NGHTTP2_NO_ERROR),
+			(stream) => stream.session?.destroy(),
+		];
+		const target = { token: TOKEN, environment: "sandbox" } as const;
+		expect(await client.send(target, {})).toEqual({ status: "failed" });
+		expect(await client.send(target, {})).toEqual({ status: "failed" });
+		// And recovers on a new connection.
+		expect(await client.send(target, {})).toEqual({ status: "sent" });
 		client.close();
 	});
 
