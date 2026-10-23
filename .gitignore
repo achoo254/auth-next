@@ -16,3 +16,8 @@ secrets/
 
 # Claude local state and skills (ops skills name servers and credential entries; never pushed)
 .claude/
+
+# Swift build output of the iOS app (swift build / xcodebuild inside ios/)
+ios/**/.build/
+ios/**/DerivedData/
+ios/Config/Local.xcconfig

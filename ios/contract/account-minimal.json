@@ -1,0 +1,24 @@
+{
+	"account": {
+		"id": "acc_MinimalAccount0001",
+		"username": "new_user",
+		"createdAt": "2026-10-23T00:00:00Z"
+	},
+	"providers": [
+		{
+			"provider": "apple",
+			"enabled": true,
+			"linked": true,
+			"linkedAt": "2026-10-23T00:00:00Z",
+			"canUnlink": false
+		}
+	],
+	"telegram": {
+		"available": false,
+		"linked": false
+	},
+	"sessions": [],
+	"devices": [],
+	"apps": [],
+	"canDelete": false
+}

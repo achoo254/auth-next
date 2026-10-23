@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- Universal links /ios/callback and /ios/linked (ASWebAuthenticationSession
+	     Callback.https) need both applinks and webcredentials in the AASA file. -->
+	<key>com.apple.developer.associated-domains</key>
+	<array>
+		<string>applinks:$(ISSUER_HOST)</string>
+		<string>webcredentials:$(ISSUER_HOST)</string>
+	</array>
+	<!-- Xcode re-signs as "production" when exporting for TestFlight/App Store. -->
+	<key>aps-environment</key>
+	<string>development</string>
+</dict>
+</plist>

@@ -1,0 +1,8 @@
+// Copy to Config/Local.xcconfig (git-ignored) to sign on a real device.
+// AM5C55N339 is the Apple Developer team of com.hoandat.account (the team
+// ID is public: it is part of the AASA file the IdP serves).
+DEVELOPMENT_TEAM = AM5C55N339
+
+// Point a development build at another issuer (it must serve the AASA
+// file for this team and bundle id, and know the client account-ios):
+// ISSUER_HOST = auth.example.test

@@ -1,0 +1,86 @@
+[
+	{
+		"status": 401,
+		"body": {
+			"error": "invalid_token",
+			"error_description": "Human-readable English text; the app does not show it."
+		}
+	},
+	{
+		"status": 403,
+		"body": {
+			"error": "insufficient_scope",
+			"error_description": "Human-readable English text; the app does not show it."
+		}
+	},
+	{
+		"status": 403,
+		"body": {
+			"error": "reauth_required",
+			"error_description": "Human-readable English text; the app does not show it."
+		}
+	},
+	{
+		"status": 404,
+		"body": {
+			"error": "not_found",
+			"error_description": "Human-readable English text; the app does not show it."
+		}
+	},
+	{
+		"status": 409,
+		"body": {
+			"error": "last_sign_in_method",
+			"error_description": "Human-readable English text; the app does not show it."
+		}
+	},
+	{
+		"status": 409,
+		"body": {
+			"error": "provider_unavailable",
+			"error_description": "Human-readable English text; the app does not show it."
+		}
+	},
+	{
+		"status": 409,
+		"body": {
+			"error": "already_linked",
+			"error_description": "Human-readable English text; the app does not show it."
+		}
+	},
+	{
+		"status": 400,
+		"body": {
+			"error": "username_mismatch",
+			"error_description": "Human-readable English text; the app does not show it."
+		}
+	},
+	{
+		"status": 400,
+		"body": {
+			"error": "invalid_name",
+			"error_description": "Human-readable English text; the app does not show it."
+		}
+	},
+	{
+		"status": 400,
+		"body": {
+			"error": "invalid_request",
+			"error_description": "Human-readable English text; the app does not show it."
+		}
+	},
+	{
+		"status": 429,
+		"body": {
+			"error": "rate_limited",
+			"error_description": "Human-readable English text; the app does not show it."
+		}
+	},
+	{
+		"status": 500,
+		"body": {
+			"error": "server_error",
+			"error_description": "Human-readable English text; the app does not show it."
+		}
+	}
+]

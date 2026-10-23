@@ -1,0 +1,9 @@
+# Xcode and SwiftPM build output and per-user state
+xcuserdata/
+DerivedData/
+.build/
+.swiftpm/
+*.xcuserstate
+
+# Local signing team and issuer overrides
+Config/Local.xcconfig

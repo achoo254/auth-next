@@ -1,0 +1,104 @@
+# The iOS Account app (ios/): builds it and runs its unit tests (AccountKit,
+# including decoding the shared JSON contract in ios/contract/) and UI tests
+# on an iOS Simulator. A separate workflow because `paths` filters only work
+# per workflow; it runs when the app or the API contract it consumes changes.
+# Nothing is signed here (CODE_SIGNING_ALLOWED=NO); TestFlight uploads are
+# done from Xcode by the owner (see ios/README.md).
+name: ios
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "ios/**"
+      - "src/account-api/**"
+      - "src/oidc/account-ios-client.ts"
+      - ".github/workflows/ios.yml"
+  pull_request:
+    paths:
+      - "ios/**"
+      - "src/account-api/**"
+      - "src/oidc/account-ios-client.ts"
+      - ".github/workflows/ios.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ios-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: macos-latest
+    timeout-minutes: 45
+    env:
+      # App Store uploads must be built with Xcode 26 or later; CI pins the
+      # newest installed Xcode 26.x so a runner image update cannot silently
+      # move the toolchain. Raise deliberately when moving to Xcode 27.
+      XCODE_MAJOR: "26"
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+
+      - name: Select Xcode
+        run: |
+          xcode=$(ls -d /Applications/Xcode_${XCODE_MAJOR}*.app 2>/dev/null | sort -V | tail -n 1)
+          if [ -z "$xcode" ]; then
+            echo "::error::No Xcode ${XCODE_MAJOR}.x on this runner. Installed:"
+            ls -d /Applications/Xcode*.app
+            exit 1
+          fi
+          echo "DEVELOPER_DIR=$xcode/Contents/Developer" >> "$GITHUB_ENV"
+          echo "Using $xcode"
+          "$xcode/Contents/Developer/usr/bin/xcodebuild" -version
+
+      - name: Pick an iPhone simulator (iOS 18 or later)
+        run: |
+          udid=$(xcrun simctl list devices available --json | python3 -c '
+          import json, sys
+          devices = json.load(sys.stdin)["devices"]
+          candidates = []
+          for runtime, entries in devices.items():
+              if ".iOS-" not in runtime:
+                  continue
+              version = tuple(int(part) for part in runtime.rsplit("iOS-", 1)[1].split("-"))
+              if version < (18, 0):
+                  continue
+              for device in entries:
+                  if device["name"].startswith("iPhone"):
+                      candidates.append((version, device["name"], device["udid"]))
+          candidates.sort(reverse=True)
+          if candidates:
+              print(candidates[0][2])
+              print("Simulator:", candidates[0][1], ".".join(map(str, candidates[0][0])), file=sys.stderr)
+          ')
+          if [ -z "$udid" ]; then
+            echo "::error::No available iPhone simulator with iOS 18 or later"
+            xcrun simctl list devices available
+            exit 1
+          fi
+          echo "SIMULATOR_ID=$udid" >> "$GITHUB_ENV"
+
+      - name: Test
+        working-directory: ios
+        run: |
+          set -o pipefail
+          xcodebuild test \
+            -project AccountApp.xcodeproj \
+            -scheme AccountApp \
+            -destination "id=$SIMULATOR_ID" \
+            -derivedDataPath "$RUNNER_TEMP/DerivedData" \
+            -resultBundlePath "$RUNNER_TEMP/AccountApp.xcresult" \
+            CODE_SIGNING_ALLOWED=NO \
+            | tee "$RUNNER_TEMP/xcodebuild.log" \
+            | grep -E "error:|warning:|Test Suite|Test Case .* (passed|failed)|✔|✘|◇ Test run|\*\* (TEST|BUILD)"
+
+      - if: failure()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        with:
+          name: ios-test-results
+          path: |
+            ${{ runner.temp }}/AccountApp.xcresult
+            ${{ runner.temp }}/xcodebuild.log
+          retention-days: 7

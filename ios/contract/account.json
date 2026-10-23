@@ -1,0 +1,103 @@
+{
+	"account": {
+		"id": "acc_Q3VycmVudEFjY291bnRJZA",
+		"username": "minhanh",
+		"name": "Nguyễn Minh Anh",
+		"email": "minhanh@example.com",
+		"emailVerifiedBy": "google",
+		"picture": "https://lh3.googleusercontent.com/a/example",
+		"createdAt": "2026-10-08T13:25:00.000Z",
+		"reclaimedEmail": null
+	},
+	"providers": [
+		{
+			"provider": "apple",
+			"enabled": true,
+			"linked": false,
+			"email": null,
+			"login": null,
+			"linkedAt": null,
+			"canUnlink": false
+		},
+		{
+			"provider": "google",
+			"enabled": true,
+			"linked": true,
+			"email": "minhanh@example.com",
+			"login": null,
+			"linkedAt": "2026-10-08T13:25:00.000Z",
+			"canUnlink": true
+		},
+		{
+			"provider": "github",
+			"enabled": true,
+			"linked": true,
+			"email": "minhanh@example.com",
+			"login": "minhanh",
+			"linkedAt": "2026-10-12T02:10:30.250Z",
+			"canUnlink": true
+		}
+	],
+	"telegram": {
+		"available": true,
+		"linked": true,
+		"username": "minhanh_tg",
+		"name": "Minh Anh",
+		"linkedAt": "2026-10-15T09:00:00.000Z"
+	},
+	"sessions": [
+		{
+			"uid": "sess_Zb9yGcQf2kP1",
+			"loginAt": "2026-10-22T01:15:00.000Z",
+			"lastSeenAt": "2026-10-23T00:40:12.345Z",
+			"browser": "Safari",
+			"os": "macOS",
+			"ip": "203.0.113.24"
+		},
+		{
+			"uid": "sess_Lm3nOp4qRs5t",
+			"loginAt": "2026-10-20T08:00:00.000Z",
+			"lastSeenAt": null,
+			"browser": null,
+			"os": null,
+			"ip": null
+		}
+	],
+	"devices": [
+		{
+			"grantId": "grt_ThisPhone000001",
+			"clientId": "account-ios",
+			"appName": "Tài khoản",
+			"deviceName": "iPhone",
+			"grantedAt": "2026-10-23T00:30:00.000Z",
+			"expiresAt": "2026-11-22T00:30:00.000Z",
+			"current": true
+		},
+		{
+			"grantId": "grt_TuneloLaptop0002",
+			"clientId": "tunelo-cli",
+			"appName": "Tunelo CLI",
+			"deviceName": "macbook-pro",
+			"grantedAt": "2026-10-10T04:00:00.000Z",
+			"expiresAt": null,
+			"current": false
+		}
+	],
+	"apps": [
+		{
+			"clientId": "localman-web",
+			"name": "Localman",
+			"firstParty": true,
+			"redirectHosts": ["localman.hoandat.com"],
+			"scopes": ["openid", "profile", "email"]
+		},
+		{
+			"clientId": "dcr_Mcp7Example",
+			"name": "Claude",
+			"firstParty": false,
+			"redirectHosts": ["claude.ai"],
+			"scopes": ["openid", "tunnels:read"]
+		}
+	],
+	"canDelete": true
+}

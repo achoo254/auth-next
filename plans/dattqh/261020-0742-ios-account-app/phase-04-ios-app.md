@@ -66,3 +66,22 @@ ios/
 
 - Rủi ro: `Callback.https` không bắt được trên máy thật (AASA cache, thiếu `webcredentials`). Lùi về scheme `com.hoandat.account:/auth/callback` chỉ khi user đồng ý (scheme riêng chiếm được bởi app khác, PKCE thành lớp chặn duy nhất): đổi redirect ở `account-ios-client.ts`, thêm `nativeRedirectSchemes` (`src/http/security.ts`), đổi một hằng trong app, deploy lại IdP.
 - Rủi ro: tốn phút macOS trên CI. Workflow riêng chỉ chạy khi app hoặc hợp đồng API đổi.
+
+## Tình trạng thực hiện (23/10/2026)
+
+Code app đã có trong `ios/` (chưa commit). Lệch so với cấu trúc ở trên, có lý do:
+- Logic không phải view nằm trong Swift package `ios/AccountKit` (auth, API, view model, Face ID, push) để `swift test` chạy được trên Mac không có iOS Simulator; app target `ios/AccountApp` chỉ còn view và phần gắn hệ thống. Test đơn vị ở `ios/AccountKit/Tests/AccountKitTests` thay cho `AccountAppTests/`.
+- Fixture hợp đồng JSON chung ở `ios/contract/` (không phải `ios/AccountAppTests/Fixtures/`); test hợp đồng Node của phase 02 đọc `ios/contract/account.json`. Hợp đồng đầy đủ (endpoint, trường, mã lỗi, payload đẩy): `ios/contract/README.md`.
+- Project sinh bằng XcodeGen (`ios/project.yml`), file `.xcodeproj` được commit. Không sửa `biome.json`, `tsconfig.json`, `.gitignore` gốc hay `README.md` gốc (ngoài phạm vi file được giao); `ios/.gitignore` riêng.
+
+- [x] 1. Khung project, xcconfig, entitlements (applinks + webcredentials, aps-environment), màu từ `tokens.css`, icon, `.github/workflows/ios.yml`.
+- [x] 2. Auth: discovery, authorize + PKCE + state + nonce, callback universal link, đổi code, Keychain this-device-only, refresh tuần tự (actor), đăng xuất (DELETE push-device → revoke → xoá Keychain). **Chưa kiểm trên máy thật** (chờ phase 00 và phase 02 deploy).
+- [x] 3. API client và màn Tổng quan, Hồ sơ, Phiên, Thiết bị, Ứng dụng.
+- [x] 4. Đăng nhập lại `prompt=login`: kiểm `sub` và `auth_time`, chuyển sang grant mới rồi revoke refresh token cũ, đăng ký lại push (test).
+- [x] 5. Liên kết/huỷ liên kết sau đăng nhập lại; link mở URL từ API rồi đọc `/ios/linked?result=…`.
+- [x] 6. Xoá tài khoản: màn hậu quả, gõ username, đăng nhập lại, `DELETE`, xoá Keychain, màn chào báo "đã xoá".
+- [x] 7. Face ID (`.deviceOwnerAuthentication`, mặc định tắt, bật/tắt cần xác thực, ân hạn 30 giây), che nội dung khi không active.
+- [x] 8. Thông báo đẩy: xin quyền khi người dùng bật (thẻ ở Tổng quan hoặc Cài đặt), gửi token + environment (đọc từ provisioning profile) + locale, mở thông báo theo `kind`.
+- [x] 9. vi/en/zh-Hans (129 chuỗi + InfoPlist), Dynamic Type (kiểu chữ hệ thống, UI test cỡ chữ lớn nhất), nhãn VoiceOver, chế độ tối (màu sáng/tối từ `tokens.css`).
+
+Đã kiểm trên máy dev (Xcode 27.1, không có simulator runtime): `swift test` 64 test / 14 suite xanh; `xcodebuild build` và `build-for-testing` cho `generic/platform=iOS Simulator` thành công, 0 warning trình biên dịch (Swift 6, strict concurrency complete). Chưa kiểm: `xcodebuild test` trên simulator (lần đầu ở CI), mọi thứ với IdP thật và trên máy thật (mục Validation).

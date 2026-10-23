@@ -1,0 +1,2 @@
+# Fake APNs device token in the iOS contract fixture (not a secret)
+ios/contract/push-device.json:generic-api-key:2
