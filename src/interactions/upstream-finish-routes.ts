@@ -2,12 +2,11 @@ import type { Router } from "express";
 import { AccountConflictError } from "../accounts/account-conflicts.js";
 import { decideUpstreamLogin } from "../accounts/account-linking.js";
 import { providerDetail } from "../accounts/provider-link.js";
-import { UPSTREAM_LABELS } from "../accounts/upstream-client.js";
 import { isValidUsername, normalizeUsername } from "../accounts/user-model.js";
 import { formText } from "../http/form.js";
 import type { MessageKey } from "../i18n/dictionaries.js";
+import { notifyAccount } from "../push/notify-account.js";
 import type { AppServices } from "../services.js";
-import { notifyTelegram } from "../telegram/notify.js";
 import { sendPage } from "../ui/send-page.js";
 import {
 	asyncHandler,
@@ -75,11 +74,12 @@ export function registerUpstreamFinishRoutes(
 					{ fromAccountId: previous?._id, provider: profile.provider },
 					"Unverified email reclaimed by its verified owner",
 				);
-				notifyTelegram(services, previous, "bot.notice.emailReclaimed", {
-					email: decision.email,
-					username: previous?.username ?? "",
-					provider: UPSTREAM_LABELS[profile.provider],
-				});
+				notifyAccount(
+					services,
+					previous,
+					{ kind: "email-reclaimed", provider: profile.provider },
+					{ reclaimedEmail: decision.email },
+				);
 			}
 			try {
 				const account = await services.accounts.create({

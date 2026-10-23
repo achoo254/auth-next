@@ -152,6 +152,7 @@ const services = createServices({
 	tenant,
 	db,
 	provider,
+	jwks,
 	logger,
 	accounts,
 	formPostsPerMinute: 1_000,

@@ -3,12 +3,11 @@ import {
 	decideUpstreamLogin,
 	linkUpstream,
 } from "../accounts/account-linking.js";
-import { UPSTREAM_LABELS } from "../accounts/upstream-client.js";
 import { isUpstreamProvider } from "../accounts/user-model.js";
 import { formRateLimit, routeParam } from "../http/form.js";
 import type { MessageKey } from "../i18n/dictionaries.js";
+import { notifyAccount } from "../push/notify-account.js";
 import type { AppServices } from "../services.js";
-import { notifyTelegram } from "../telegram/notify.js";
 import { sendPage } from "../ui/send-page.js";
 import {
 	asyncHandler,
@@ -109,15 +108,10 @@ export function registerUpstreamInteractionRoutes(
 						res.redirect(303, `/interaction/${interaction.uid}/upstream`);
 						return;
 					}
-					notifyTelegram(
-						services,
-						decision.account,
-						"bot.notice.providerLinked",
-						{
-							username: decision.account.username,
-							provider: UPSTREAM_LABELS[profile.provider],
-						},
-					);
+					notifyAccount(services, decision.account, {
+						kind: "provider-linked",
+						provider: profile.provider,
+					});
 					services.logger.info(
 						{ accountId: decision.account._id, provider: profile.provider },
 						"Provider linked by verified email",

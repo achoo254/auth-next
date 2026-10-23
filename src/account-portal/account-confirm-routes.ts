@@ -4,6 +4,7 @@ import { routeParam } from "../http/form.js";
 import type { AppServices } from "../services.js";
 import { pageContext } from "../ui/page-context.js";
 import { sendPage } from "../ui/send-page.js";
+import { revokeApp, signOutSessions } from "./account-actions.js";
 import {
 	renderRemoveAppConfirm,
 	renderRevokeOthersConfirm,
@@ -16,8 +17,8 @@ import {
 	type PortalHandler,
 	portalCsrfScope,
 } from "./portal-session.js";
-import { grantIdsOf, otherSessionUids, revokeGrants } from "./revoke-access.js";
-import { listSessions, revokeSession } from "./session-directory.js";
+import { otherSessionUids } from "./revoke-access.js";
+import { listSessions } from "./session-directory.js";
 
 type Wrap = (handler: PortalHandler) => RequestHandler;
 
@@ -68,25 +69,15 @@ export function registerConfirmRoutes(
 	router.post(
 		"/apps/:clientId/revoke",
 		sensitive(async (req, res, { account }) => {
-			const clientId = routeParam(req, "clientId");
-			// Every grant of the client, not just those shown on the page.
-			const grants = await grantIdsOf(services, account._id, clientId);
-			const revoked = await revokeGrants(services, account._id, grants);
-			if (revoked > 0) {
-				await services.audit.record(
-					"grant.revoked",
-					account._id,
-					{ count: revoked, cause: "account-page", clientId },
-					auditContext(req),
-				);
-			}
-			services.logger.info(
-				{ accountId: account._id, clientId, grants: grants.length },
-				"App access revoked",
+			const { grants } = await revokeApp(
+				services,
+				account,
+				routeParam(req, "clientId"),
+				{ context: auditContext(req) },
 			);
 			res.redirect(
 				303,
-				`/account?notice=${grants.length > 0 ? "app-revoked" : "not-found"}`,
+				`/account?notice=${grants > 0 ? "app-revoked" : "not-found"}`,
 			);
 		}),
 	);
@@ -119,26 +110,10 @@ export function registerConfirmRoutes(
 		othersPath,
 		sensitive(async (req, res, { account, sessionUid }) => {
 			const uids = await otherSessionUids(services, account._id, sessionUid);
-			let count = 0;
 			// The same sign-out as one session's button, for each of them.
-			for (const uid of uids) {
-				const done = await revokeSession(
-					services.provider,
-					services,
-					services.logger,
-					account._id,
-					uid,
-				);
-				if (done) count += 1;
-			}
-			if (count > 0) {
-				await services.audit.record(
-					"session.revoked",
-					account._id,
-					{ count, cause: "account-page" },
-					auditContext(req),
-				);
-			}
+			const count = await signOutSessions(services, account, uids, {
+				context: auditContext(req),
+			});
 			res.redirect(
 				303,
 				`/account?notice=${count > 0 ? "sessions-revoked" : "not-found"}`,

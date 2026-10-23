@@ -1,5 +1,5 @@
 import { createHash, randomBytes } from "node:crypto";
-import type { Collection, Db } from "mongodb";
+import { type Collection, type Db, MongoServerError } from "mongodb";
 import {
 	type TenantFilter,
 	type TenantScope,
@@ -7,21 +7,21 @@ import {
 	tenantTag,
 } from "../tenants/tenant-data.js";
 
-/**
- * Tokens that act on an account. They are stamped with the account's
- * `securityVersion` and only reachable through AccountTokens, which refuses
- * them once that version moved on (see account-tokens.ts).
- */
+/** Act on an account; only through AccountTokens (securityVersion-checked). */
 export type AccountTokenKind = "telegram-link" | "upstream-link-state";
 
-/** Tokens not tied to an account (yet): OAuth sign-in state, a pending profile. */
+/** Not tied to an account (yet): OAuth sign-in state, a pending profile... */
 export type FreeTokenKind =
 	| "upstream-state"
 	/** A provider's form_post answer, until the same-site GET that reads it. */
 	| "upstream-form-post"
 	| "upstream-pending"
 	/** Opens a tenant's /admin for its owner; issued by the primary tenant. */
-	| "tenant-admin-handoff";
+	| "tenant-admin-handoff"
+	/** An ID token already spent on re-authenticating an /api/account call. */
+	| "reauth-id-token"
+	/** An app link state already opened in a browser (it opens once). */
+	| "link-app-started";
 
 /** What a one-time token is for; a token never works for another kind. */
 export type OneTimeTokenKind = AccountTokenKind | FreeTokenKind;
@@ -87,6 +87,36 @@ export class TokenCollection {
 		);
 	}
 
+	/** Records `token` once (unique `_id`): false if recorded and unexpired. */
+	async claim(
+		kind: OneTimeTokenKind,
+		token: string,
+		data: TokenData,
+		ttlSeconds: number,
+	): Promise<boolean> {
+		const _id = keyOf(kind, token);
+		await this.tokens.deleteOne({
+			_id,
+			...this.scope,
+			expiresAt: { $lte: new Date() },
+		});
+		try {
+			await this.tokens.insertOne({
+				_id,
+				...tenantTag(this.tenant),
+				kind,
+				data,
+				expiresAt: new Date(Date.now() + ttlSeconds * 1000),
+			});
+			return true;
+		} catch (error) {
+			if (!(error instanceof MongoServerError) || error.code !== 11000) {
+				throw error;
+			}
+			return false;
+		}
+	}
+
 	/** Reads without consuming; expired tokens read as missing. */
 	async peek(
 		kind: OneTimeTokenKind,
@@ -147,6 +177,15 @@ export class OneTimeTokenStore {
 
 	take(kind: FreeTokenKind, token: string): Promise<TokenData | undefined> {
 		return this.collection.take(kind, token);
+	}
+
+	claim(
+		kind: FreeTokenKind,
+		token: string,
+		data: TokenData,
+		ttlSeconds: number,
+	): Promise<boolean> {
+		return this.collection.claim(kind, token, data, ttlSeconds);
 	}
 }
 

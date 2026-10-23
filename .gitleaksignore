@@ -1,2 +1,4 @@
 # Fake APNs device token in the iOS contract fixture (not a secret)
 ios/contract/push-device.json:generic-api-key:2
+# Fake JWT ({"sub":"x"}, signature "sig") in an API guard test
+src/__tests__/account-api-guards.test.ts:generic-api-key:65

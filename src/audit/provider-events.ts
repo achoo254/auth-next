@@ -1,4 +1,6 @@
 import type Provider from "oidc-provider";
+import type { Logger } from "../logger.js";
+import type { PushDevices } from "../push/push-devices.js";
 import type { AuditOutbox } from "./audit-outbox.js";
 
 /**
@@ -31,6 +33,24 @@ export function auditProviderEvents(
 		void audit.record("session.logout", accountId, {
 			scope: everywhere ? "all" : "client",
 			...(clientId ? { clientId } : {}),
+		});
+	});
+}
+
+/**
+ * A grant revoked on the provider's own endpoints (/token/revocation, a
+ * replayed refresh token) takes the phone's push token with it, so a
+ * signed-out app stops hearing about the account at once.
+ */
+export function forgetRevokedPushDevices(
+	provider: Provider,
+	devices: Pick<PushDevices, "removeGrants">,
+	logger: Logger,
+): void {
+	provider.on("grant.revoked", (_ctx, grantId: unknown) => {
+		if (typeof grantId !== "string") return;
+		devices.removeGrants([grantId]).catch((error: unknown) => {
+			logger.warn({ err: error }, "Push device of a revoked grant kept");
 		});
 	});
 }

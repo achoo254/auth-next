@@ -164,9 +164,16 @@ export async function startTestIdp(options: TestIdpOptions): Promise<TestIdp> {
 		tenant,
 		db,
 		provider,
+		jwks,
 		logger,
 		accounts,
 		formPostsPerMinute: options.formPostsPerMinute ?? 1_000,
+		pushSender: options.pushSender,
+		accountApiLimits: options.accountApiLimits ?? {
+			perIp: 10_000,
+			perAccount: 10_000,
+			sensitivePerAccount: 10_000,
+		},
 	});
 	const app = createApp({
 		services,

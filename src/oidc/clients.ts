@@ -1,6 +1,10 @@
 import type { ClientMetadata } from "oidc-provider";
 import type { TenantResources } from "../tenants/tenant-resources.js";
 import type { Tenant } from "../tenants/tenant.js";
+import {
+	ACCOUNT_IOS_CLIENT_IDS,
+	buildAccountIosClients,
+} from "./account-ios-client.js";
 import { CHAT_CLIENT_IDS, buildChatClients } from "./chat-clients.js";
 import { MIU_CLIENT_IDS, buildMiuClients } from "./miu-clients.js";
 import type { PrimaryAppClientsConfig } from "./primary-app-clients.js";
@@ -26,6 +30,7 @@ export const STATIC_CLIENT_IDS = {
 	...CHAT_CLIENT_IDS,
 	...SCRIBE_CLIENT_IDS,
 	...MIU_CLIENT_IDS,
+	...ACCOUNT_IOS_CLIENT_IDS,
 } as const;
 
 /** Where the IdP sends the browser back after signing in for /account. */
@@ -35,10 +40,7 @@ const STATIC_ID_SET: ReadonlySet<string> = new Set(
 	Object.values(STATIC_CLIENT_IDS),
 );
 
-/**
- * First-party confidential apps, trusted to introspect any token (they act
- * for the user across Localman and Tunelo).
- */
+/** First-party apps acting for the user, trusted to introspect any token. */
 export const TRUSTED_INTROSPECTION_CLIENT_IDS: ReadonlySet<string> = new Set([
 	STATIC_CLIENT_IDS.localmanWeb,
 	STATIC_CLIENT_IDS.tuneloWeb,
@@ -50,11 +52,9 @@ export function isStaticClientId(clientId: unknown): boolean {
 }
 
 /**
- * Clients whose refresh tokens are bound to the IdP browser session instead
- * of `offline_access`: every DCR (MCP) client, Localman web (Jev 0.94),
- * the Tunelo web console (Jev 1.00), chat web and Scribe web: signing out at
- * the IdP ends their grant and refresh tokens, even when a back-channel
- * logout is lost.
+ * Refresh tokens bound to the IdP browser session instead of offline_access:
+ * DCR (MCP) clients, Localman (Jev 0.94), Tunelo (Jev 1.00), chat and Scribe
+ * web. IdP sign-out ends them, even when a back-channel logout is lost.
  */
 const SESSION_BOUND_STATIC_CLIENTS: ReadonlySet<string> = new Set([
 	STATIC_CLIENT_IDS.localmanWeb,
@@ -72,13 +72,14 @@ export function refreshesWithSession(clientId: string): boolean {
 
 /**
  * First-party native apps whose grant belongs to the device rather than to
- * the IdP browser session: they get refresh tokens without offline_access,
- * keep them when the user signs out in the browser, and slide without the
- * 90-day cap; each device stays revocable at /account.
+ * the IdP browser session: refresh tokens without offline_access, kept on
+ * IdP sign-out, sliding without the 90-day cap except `CAPPED_DEVICE_CLIENTS`
+ * (sliding-grants.ts); each device stays revocable at /account.
  */
 const DEVICE_BOUND_STATIC_CLIENTS: ReadonlySet<string> = new Set([
 	STATIC_CLIENT_IDS.chatMobile,
 	STATIC_CLIENT_IDS.scribeMobile,
+	STATIC_CLIENT_IDS.accountIos,
 ]);
 
 export function refreshesPerDevice(clientId: string | undefined): boolean {
@@ -91,18 +92,18 @@ export const CLIENTS_WITHOUT_RESOURCES: ReadonlySet<string> = new Set([
 	...Object.values(CHAT_CLIENT_IDS),
 	...Object.values(SCRIBE_CLIENT_IDS),
 	...Object.values(MIU_CLIENT_IDS),
+	...Object.values(ACCOUNT_IOS_CLIENT_IDS),
 ]);
 
 function scopeOf(...groups: readonly (readonly string[])[]): string {
 	return groups.flat().join(" ");
 }
 
-/** Absolute URL of `path` on the app at `base` (ignores any base path). */
 function appUrl(base: string, path: string): string {
 	return new URL(path, base).href;
 }
 
-/** Secrets of the confidential first-party clients of one tenant. */
+/** Secrets of the tenant's confidential first-party clients. */
 export interface StaticClientSecrets {
 	readonly localmanWeb: string;
 	readonly tuneloWeb: string;
@@ -111,8 +112,8 @@ export interface StaticClientSecrets {
 
 /**
  * The first-party clients of a tenant: same ids everywhere, origins,
- * resources, names and secrets the tenant's. Scribe's and Miu World's
- * exist for the primary tenant only (primary-app-clients.ts).
+ * resources, names and secrets the tenant's. Scribe's, Miu World's and the
+ * iOS account app's exist for the primary tenant only.
  */
 export function buildStaticClients(
 	tenant: Pick<Tenant, "id" | "issuer" | "displayName" | "webApps">,
@@ -130,8 +131,7 @@ export function buildStaticClients(
 			client_name: "Localman",
 			client_secret: secrets.localmanWeb,
 			token_endpoint_auth_method: "client_secret_basic",
-			// Token exchange: a user's Localman session buys a short
-			// tunnels:read token for Tunelo's API.
+			// Token exchange: a short tunnels:read token for Tunelo's API.
 			grant_types: [
 				"authorization_code",
 				"refresh_token",
@@ -177,9 +177,8 @@ export function buildStaticClients(
 			[ALLOWED_RESOURCES_PROPERTY]: [resources.tunnel],
 		},
 		{
-			// Public client with PKCE: /account starts an ordinary
-			// authorization request so sign-in goes through the same login
-			// pages, then only the IdP session cookie matters.
+			// Public client with PKCE: /account signs in through the usual
+			// login pages; then only the IdP session cookie matters.
 			client_id: STATIC_CLIENT_IDS.accountPortal,
 			client_name: `Tài khoản ${tenant.displayName}`,
 			token_endpoint_auth_method: "none",
@@ -196,5 +195,6 @@ export function buildStaticClients(
 		),
 		...buildScribeClients(tenant, scribe),
 		...buildMiuClients(tenant, miu),
+		...buildAccountIosClients(tenant),
 	];
 }

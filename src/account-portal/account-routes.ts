@@ -15,6 +15,7 @@ import type { AppServices } from "../services.js";
 import { pageContext } from "../ui/page-context.js";
 import { sendPage } from "../ui/send-page.js";
 import { registerAccessRoutes } from "./account-access-routes.js";
+import { updateProfileName } from "./account-actions.js";
 import { registerConfirmRoutes } from "./account-confirm-routes.js";
 import { registerDeleteRoutes } from "./account-delete-routes.js";
 import { deletesOwnAccount } from "./account-deletion.js";
@@ -125,8 +126,7 @@ export function createAccountRouter(services: AppServices): Router {
 	router.post(
 		"/profile",
 		write(async (req, res, { account }) => {
-			const name = formText(req, "name", 100);
-			await services.accounts.updateName(account._id, name || undefined);
+			await updateProfileName(services, account, formText(req, "name", 100));
 			res.redirect(303, "/account?notice=profile");
 		}),
 	);

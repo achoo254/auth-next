@@ -1,6 +1,8 @@
 import type { KoaContextWithOIDC, RefreshToken } from "oidc-provider";
 import { GRANT_META_COLLECTION } from "../account-portal/device-grants.js";
+import { slidePushDevices } from "../push/push-devices.js";
 import { type TenantDb, inTenant } from "../tenants/tenant-data.js";
+import { CAPPED_DEVICE_CLIENTS } from "./account-ios-client.js";
 import { STATIC_CLIENT_IDS, refreshesPerDevice } from "./clients.js";
 import { collectionNameFor } from "./mongo-adapter.js";
 
@@ -17,10 +19,21 @@ export const GRANT_MAX_SECONDS = 90 * DAY;
  * for months, and the chat mobile app, which stays signed in
  * like any messaging app. A device that keeps refreshing stays signed in;
  * one idle for 30 days still expires, and each stays revocable at /account.
+ * The iOS account app is a device client that keeps the cap.
  */
 export function hasHardCap(clientId: string | undefined): boolean {
+	if (clientId !== undefined && CAPPED_DEVICE_CLIENTS.has(clientId)) {
+		return true;
+	}
 	return (
 		clientId !== STATIC_CLIENT_IDS.tuneloCli && !refreshesPerDevice(clientId)
+	);
+}
+
+/** Device grants keep metadata (name, push token) that lives as long. */
+function hasDeviceMetadata(clientId: string | undefined): boolean {
+	return (
+		clientId === STATIC_CLIENT_IDS.tuneloCli || refreshesPerDevice(clientId)
 	);
 }
 
@@ -58,7 +71,7 @@ export function refreshTokenTtl(
  * Builds `rotateRefreshToken`: every refresh rotates (a replayed token
  * revokes the grant), and a successful refresh slides the grant: it now
  * expires 30 days after this refresh, capped at 90 days after sign-in
- * (see `hasHardCap`; an uncapped device also slides its /account metadata).
+ * (see `hasHardCap`; a device grant also slides its metadata).
  * oidc-provider calls this after the presented token and its grant passed
  * validation and before the new token is issued, and awaits it, so the new
  * expiry is stored before the response. The update only touches a grant
@@ -84,12 +97,15 @@ export function createRotateAndSlideGrant({
 				);
 				if (result.matchedCount === 1) {
 					grant.exp = exp;
-					// The device name shown at /account lives as long as its grant.
-					if (!capped) {
+					// The device name shown at /account and the phone's push
+					// token live as long as their grant.
+					if (hasDeviceMetadata(grant.clientId)) {
+						const expiresAt = new Date(exp * 1000);
 						await metas.updateOne(
 							{ _id: grant.jti, ...scope },
-							{ $set: { expiresAt: new Date(exp * 1000) } },
+							{ $set: { expiresAt } },
 						);
+						await slidePushDevices({ db, tenant }, grant.jti, expiresAt);
 					}
 				}
 			}

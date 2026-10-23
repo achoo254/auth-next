@@ -139,6 +139,8 @@ describe("the 90-day cap", () => {
 		expect(hasHardCap(STATIC_CLIENT_IDS.tuneloWeb)).toBe(true);
 		expect(hasHardCap("some-mcp-client")).toBe(true);
 		expect(hasHardCap(undefined)).toBe(true);
+		// The iOS account app is a device client that keeps the cap.
+		expect(hasHardCap(STATIC_CLIENT_IDS.accountIos)).toBe(true);
 		expect(slidingLifetime(start, start + 87 * DAY)).toBe(3 * DAY);
 	});
 

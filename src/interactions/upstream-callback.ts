@@ -12,6 +12,12 @@ import { registerAppleNotifications } from "./apple-notifications.js";
 import { asyncHandler, sendInteractionError } from "./interaction-helpers.js";
 import { finishAccountLink } from "./upstream-account-link.js";
 import {
+	APP_LINK_PURPOSE,
+	finishAppLink,
+	redirectToApp,
+	registerAppLinkStart,
+} from "./upstream-app-link.js";
+import {
 	registerFormPostCallback,
 	takeFormPost,
 } from "./upstream-form-post.js";
@@ -66,6 +72,7 @@ export function createUpstreamCallbackRouter(services: AppServices): Router {
 	const router = Router();
 	registerFormPostCallback(router, services);
 	registerAppleNotifications(router, services);
+	registerAppLinkStart(router, services);
 	router.get(
 		"/:provider/callback",
 		asyncHandler(async (req: Request, res: Response) => {
@@ -104,10 +111,13 @@ export function createUpstreamCallbackRouter(services: AppServices): Router {
 				return;
 			}
 			const back = data.uid ? `/interaction/${data.uid}` : "/account";
+			// Linking from the iOS app ends on the app's universal link.
+			const fromApp = data.purpose === APP_LINK_PURPOSE;
 			if (!params.get("code")) {
 				// The user cancelled at the provider (error=access_denied,
 				// Apple: user_cancelled_authorize).
-				res.redirect(303, back);
+				if (fromApp) redirectToApp(services, res, "cancelled", client.provider);
+				else res.redirect(303, back);
 				return;
 			}
 			let profile: Awaited<ReturnType<UpstreamClient["fetchProfile"]>>;
@@ -123,6 +133,10 @@ export function createUpstreamCallbackRouter(services: AppServices): Router {
 					{ err: error, provider: client.provider },
 					"Upstream sign-in failed",
 				);
+				if (fromApp) {
+					redirectToApp(services, res, "failed", client.provider);
+					return;
+				}
 				sendInteractionError(services, res, {
 					message: "upstream.failed",
 					params: { provider: label },
@@ -134,6 +148,15 @@ export function createUpstreamCallbackRouter(services: AppServices): Router {
 			if (data.purpose === "login" && data.uid) {
 				await savePendingUpstream(services, data.uid, profile);
 				res.redirect(303, `/interaction/${data.uid}/upstream`);
+				return;
+			}
+			if (fromApp && data.accountId && data.grantId) {
+				await finishAppLink(services, res, {
+					accountId: data.accountId,
+					grantId: data.grantId,
+					version: Number(data.securityVersion ?? "0"),
+					profile,
+				});
 				return;
 			}
 			if (data.purpose !== "link" || !data.accountId) {

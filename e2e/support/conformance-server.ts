@@ -103,6 +103,9 @@ const env = parseEnv({
 });
 const logger = createLogger(env.LOG_LEVEL);
 const tenant = envTenant(env);
+const jwks = {
+	keys: [await generateSigningJwk(), await generateSigningJwk("RS256")],
+};
 const configuration = buildProviderConfiguration({
 	tenant,
 	cookieKeys: env.COOKIE_KEYS,
@@ -111,9 +114,7 @@ const configuration = buildProviderConfiguration({
 	miuClients: envMiuClients(env),
 	clientSecrets: envClientSecrets(env),
 	db,
-	jwks: {
-		keys: [await generateSigningJwk(), await generateSigningJwk("RS256")],
-	},
+	jwks,
 	accountStore: createInMemoryAccountStore([ACCOUNT]),
 });
 const suiteClients = new Set<string>([
@@ -150,6 +151,7 @@ const services = createServices({
 	tenant,
 	db,
 	provider,
+	jwks,
 	logger,
 	accounts: new AccountRepository(
 		db,

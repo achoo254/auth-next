@@ -22,6 +22,7 @@ const DATA_ACCESS_MODULES = new Set([
 	"src/account-portal/session-directory.ts",
 	"src/account-portal/revoke-access.ts",
 	"src/account-portal/account-data-purge.ts",
+	"src/push/push-devices.ts",
 	"src/tenants/tenant-collections.ts",
 	"src/tenants/tenant-migration.ts",
 	// The registry and sealed secrets are keyed by tenant id themselves;

@@ -147,7 +147,7 @@ Code mới trong router `/api/account`:
     - state dùng lại hoặc `securityVersion` đã đổi đều bị từ chối;
     - không làm tài khoản mất cách đăng nhập.
   - `apple-app-site-association.test.ts`: có cả `applinks` và `webcredentials`; thiếu `IOS_APP_ID` thì 404.
-  - `account-api-contract.test.ts`: so JSON của `GET /api/account` với fixture `ios/AccountAppTests/Fixtures/account.json`; fixture này phase 04 dùng để decode.
+  - `account-api-contract.test.ts`: so JSON của `GET /api/account` với fixture `ios/contract/account.json` (chốt 23/10/2026, nơi app đặt); fixture này phase 04 dùng để decode.
   - Cập nhật `client-contract.test.ts`, `seed-clients.test.ts`, `sliding-grants.test.ts`, snapshot.
 
 ## Steps
@@ -169,3 +169,18 @@ Code mới trong router `/api/account`:
 
 - **Bề mặt tấn công mới:** scope riêng cho một client, PKCE, đăng nhập lại cho mọi thao tác `sensitive`, `id_token` dùng một lần, rate limit theo tài khoản, không có đường nào từ bearer ra phiên IdP.
 - **Lùi:** gỡ client khỏi `buildStaticClients` (grant còn lại vô hiệu) và gỡ router.
+
+## Trạng thái (23/10/2026)
+
+Code xong ở local, chưa commit, chưa chạy CI. Bước 1–6 xong; bước 7: local sạch `pnpm lint`, `pnpm typecheck`, `pnpm check:tokens`, semgrep (0 finding trên 66 file đổi) và từng file test liên quan; còn push và chờ CI.
+
+- [x] `account-actions.ts`: route web gọi lại (test `/account` cũ vẫn xanh: account-confirm, reauth, account-deletion, telegram, email-reclaim...).
+- [x] Client `account-ios` (`src/oidc/account-ios-client.ts`, tự export id, `CAPPED_DEVICE_CLIENTS`), scope `account` ở `resources.ts`, `require_auth_time`, trần 90 ngày (`hasHardCap`), chỉ tenant chính. Redirect https native được oidc-provider 9 chấp nhận (test luồng).
+- [x] AASA (`src/http/apple-app-site-association.ts`, `IOS_APP_ID` ở `src/config/ios-env.ts`) và trang `/ios/*` (`src/http/ios-callback-page.ts`; trang không chép query vào link đổi ngôn ngữ).
+- [x] Bearer auth, đăng nhập lại (ID token dùng một lần qua `tokens.claim("reauth-id-token")`), limiter IP / tài khoản / nhạy cảm (`AppServices.accountApiLimits`).
+- [x] Endpoint theo bảng guard (`account-api-routes.ts`, `account-api-sensitive-routes.ts`). Kiểm tham số rẻ chạy trước bước đăng nhập lại để lỗi tham số không làm mất ID token.
+- [x] Purpose `link-app` (`src/interactions/upstream-app-link.ts`, nhánh trong `upstream-callback.ts`); không sửa `upstream-start.ts` (một agent khác đang sửa file đó cho Miu) và `upstream-account-link.ts` chỉ đổi sang `notifyAccount`. Mở state ở `/oauth/:provider/start` một lần (`tokens.claim("link-app-started")`). ADR 0009 §5.
+- [x] README, `docs/integration-guide.md` mục 13, `docs/deployment-guide.md`.
+- Test: `account-ios-client-flow` (5), `account-api` (7), `account-api-guards` (5), `account-actions` (5), `account-link-app` (5), `apple-app-site-association` (4), `account-api-contract` (1), cập nhật `client-contract` (12), `sliding-grants` (5), `tenant-source-scan`, snapshot tenant chính.
+- Lệch so với bản thiết kế: trả `204` cho thao tác không có dữ liệu trả về, mã lỗi và giá trị `result` theo `ios/contract/README.md` của app (phase này không ghi). `AppServices` nhận thêm `jwks` (công khai) để kiểm ID token.
+- **Đã chốt (23/10/2026):** fixture hợp đồng ở `ios/contract/account.json`, test Node đọc đúng đường dẫn đó.

@@ -58,8 +58,14 @@ Nếu lỗi giữa chừng:
 - Xoá xong, trình duyệt được chuyển 303 sang `GET /account/deleted`, một trang công khai không cần phiên.
 - Trên tenant chính, `/privacy` hướng dẫn tự xoá và vẫn ghi email liên hệ. Tenant sổ chỉ ghi email liên hệ.
 
+### 5. Xoá và liên kết từ app iOS (23/10/2026)
+
+- `DELETE /api/account` gọi cùng `deleteAccount` với `source: "app"`. Guard tương đương web: bearer của `account-ios` (thay cho phiên + CSRF), một ID token mới (`auth_time` ≤ 10 phút, dùng một lần, thay cho `recentLogin`) và username gõ lại.
+- **Liên kết từ app.** App không có phiên IdP, nên luồng liên kết của web (đòi phiên trong cookie ở callback) không dùng được. Purpose upstream mới `link-app` (`src/interactions/upstream-app-link.ts`): chỉ cấp sau một lần gọi API đã đăng nhập lại; state gắn tài khoản, `securityVersion` và grant của access token, sống 5 phút, mở ở `/oauth/<provider>/start` đúng một lần (đặt cookie state cho trình duyệt đó như mọi lượt đăng nhập). Callback chỉ liên kết khi grant của app còn sống cho đúng tài khoản, provider không thuộc tài khoản khác, và ghi có điều kiện theo `securityVersion` của state. Nhánh này không bao giờ đọc hay tạo `oidc_session`/cookie phiên IdP, và chỉ thêm cách đăng nhập (không làm tài khoản mất cách nào). Kết thúc bằng `303` về universal link `/ios/linked?result=…`.
+- `push_devices` (token APNs của app) nằm trong `purgeAccountData` và cũng bị xoá khi grant của nó bị thu hồi.
+
 ## Hệ quả
 
 - `disabledAt` lần đầu có chỗ ghi. Nó chỉ là hàng rào trong lúc xoá, không phải trạng thái lâu dài.
 - Collection mới có dữ liệu gắn với tài khoản phải được thêm vào `purgeAccountData`. Test `account-deletion.test.ts` đếm dữ liệu còn sót theo `TENANT_COLLECTIONS`.
-- API xoá của app (phase sau) gọi cùng `deleteAccount` với `source: "app"`, kèm một bước xác thực lại tương đương `recentLogin`.
+- API xoá của app gọi cùng `deleteAccount` với `source: "app"`, kèm bước xác thực lại tương đương `recentLogin` (§5).

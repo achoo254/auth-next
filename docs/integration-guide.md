@@ -45,6 +45,7 @@ ID token mặc định ký **ES256**. Discovery quảng bá `id_token_signing_al
 | `miu-web` (chỉ tenant chính, khi có `MIU_WEB_CLIENT_SECRET`) | confidential (`client_secret_basic`) | Code + PKCE, **không refresh** (chỉ `authorization_code`) | `openid email` | không có | `${MIU_WEB_URL}/api/auth/backchannel-logout` |
 | `miu-mobile` (chỉ tenant chính) | public, native (`none`) | Code + PKCE qua trình duyệt hệ thống, không refresh | `openid email` | không có | không |
 | `miu-web-dev` (chỉ tenant chính, tuỳ chọn) | confidential (`client_secret_basic`) | Code + PKCE cho dev local, redirect loopback khớp đúng cổng, không refresh | `openid email` | không có | không |
+| `account-ios` (chỉ tenant chính) | public, native (`none`) | Code + PKCE qua `ASWebAuthenticationSession`, refresh (theo thiết bị, giữ trần 90 ngày), `require_auth_time` | `openid profile email account` | không có: token opaque cho `/api/account` (mục 13) | không |
 | client MCP (DCR) | public hoặc confidential | Code + PKCE, refresh (gắn phiên IdP) | mặc định `mock:read mock:write client:read client:write client:send`; thêm `credentials:write` chỉ khi khai rõ lúc đăng ký; `offline_access` bị bỏ qua (mục 9) | luôn `https://localman.hoandat.com/mcp` | không được khai |
 | `hoandat-account` | nội bộ IdP | không dùng ngoài IdP | | | |
 
@@ -337,3 +338,35 @@ App lấy JWKS và discovery của tenant qua API này, **không** phân giải 
 
 - **Lookup workspace** (`GET {LOCALMAN}/internal/users/:sub/workspaces`, client credentials, cache 60 giây): IdP chưa có tính năng nào cần nó (trang service account thuộc plan devops phase 01), nên chưa gọi. Khi làm, IdP coi Localman là nguồn duy nhất và không lưu danh sách workspace.
 - Service account và grant `client_credentials` (plan devops phase 01): khi có, Tunelo dùng nó để gọi API nội bộ của Localman.
+
+## 13. App iOS "Tài khoản" (`account-ios`) và `/api/account`
+
+Chỉ tenant chính. App SwiftUI ở `ios/` làm mọi việc của `/account` qua API JSON này; hợp đồng phía app: `ios/contract/README.md` (fixture dùng chung với test Node `src/__tests__/account-api-contract.test.ts`).
+
+**Client.** `account-ios`, public native, PKCE `S256`, scope `openid profile email account`, redirect `${ISSUER}/ios/callback` (đăng nhập) và `${ISSUER}/ios/linked` (kết quả liên kết provider), cả hai là universal link (AASA ở `/.well-known/apple-app-site-association`, có `applinks` cho `/ios/*` và `webcredentials`, chỉ khi có `IOS_APP_ID`). Mỗi lần duyệt là một grant thiết bị mới (trang "Cho phép" của IdP); refresh xoay vòng, gắn thiết bị, trượt 30 ngày, **trần 90 ngày**. ID token luôn có `auth_time` (`require_auth_time`). Mở `/ios/*` bằng trình duyệt thường chỉ thấy trang "Mở app" (`no-store`, `no-referrer`, không đọc query).
+
+**Xác thực.** `Authorization: Bearer <access token opaque của account-ios>`; không cookie, không CSRF. Token phải còn sống, của `account-ios`, có scope `account`, grant còn và cùng client, cùng tài khoản, tài khoản còn hoạt động, đúng tenant (`src/account-api/bearer-auth.ts`, như subject token của mục 6). Không có token: `401` + `WWW-Authenticate: Bearer realm="account"`; JWT, token hết hạn/bị thu hồi, grant đã chết: `401` `invalid_token`; token của client khác hoặc thiếu scope: `403` `insufficient_scope`. Thiết bị bị thu hồi ở web thì lần gọi sau nhận `401` ngay.
+
+**Đăng nhập lại** (thao tác mà web đòi đăng nhập trong 10 phút): body JSON có `id_token` do IdP ký cho `aud=account-ios`, đúng `sub`, `auth_time` ≤ 10 phút, mỗi ID token dùng **một lần** (`src/account-api/recent-auth.ts`). App lấy nó bằng authorize `prompt=login`, chuyển sang token mới rồi thu hồi refresh token cũ để mỗi máy chỉ có một grant. Thiếu, cũ, sai `aud`/`iss`/`sub` hay dùng lại: `403` `reauth_required`. Kiểm tham số rẻ (provider, username) chạy **trước** bước này nên lỗi tham số không làm mất ID token.
+
+| Web (guard) | API | Guard | Trả |
+|---|---|---|---|
+| `GET /account` | `GET /api/account` | bearer | `200` JSON (dưới) |
+| `POST /account/profile` (write) | `PATCH /api/account/profile` `{"name": string\|null}` | bearer | `204`; quá 100 ký tự `400 invalid_name` |
+| `POST /account/sessions/:uid/revoke` (write) | `POST /api/account/sessions/:uid/revoke` | bearer | `204`; `404 not_found` |
+| `POST /account/devices/:grantId/revoke` (write) | `POST /api/account/devices/:grantId/revoke` | bearer | `204`; `404 not_found` |
+| `POST /account/apps/:clientId/revoke` (sensitive) | `POST /api/account/apps/:clientId/revoke` | bearer + đăng nhập lại | `204`; `404 not_found` |
+| `POST /account/sessions/revoke-others` (sensitive) | `POST /api/account/sessions/revoke-all` (mọi phiên trình duyệt) | bearer + đăng nhập lại | `204` |
+| `POST /account/unlink/:provider` (sensitive) | `POST /api/account/providers/:provider/unlink` | bearer + đăng nhập lại | `204`; cách đăng nhập cuối `409 last_sign_in_method`; chưa liên kết `404` |
+| `POST /account/link/:provider` (sensitive) | `POST /api/account/providers/:provider/link` | bearer + đăng nhập lại | `200 {"url"}`; đã liên kết `409 already_linked`; provider không bật `409 provider_unavailable` |
+| `POST /account/delete` (sensitive) | `DELETE /api/account` `{"id_token","username"}` | bearer + đăng nhập lại | `204`; sai username `400 username_mismatch` |
+| — | `PUT /api/account/push-device` `{"token","environment","locale"}` | bearer | `204` (APNs tắt: không lưu gì) |
+| — | `DELETE /api/account/push-device` | bearer | `204` |
+
+Mỗi thao tác gọi cùng hàm với route web (`src/account-portal/account-actions.ts`, `deleteAccount`) nên ghi cùng sự kiện audit (`session.revoked`, `grant.revoked`, `method.unlinked`, `account.deleted` với `source: "app"`). Lỗi luôn là `{"error","error_description"}`; đường dẫn lạ dưới `/api/account` trả `404 not_found` JSON. Giới hạn tần suất (theo phút): 120 request mỗi IP cho cả prefix, 60 mỗi tài khoản sau khi xác thực, 10 mỗi tài khoản cho thao tác đăng nhập lại và link; quá thì `429 rate_limited` + `Retry-After`. Path có tham số tính chung một ngân sách.
+
+**`GET /api/account`** (`src/account-api/account-api-view.ts`, chép từng trường): `account` (`id`, `username`, `name`, `email`, `emailVerifiedBy`, `picture`, `createdAt`, `reclaimedEmail`), `providers[]` (Apple, Google, GitHub: `enabled`, `linked`, `email`, `login`, `linkedAt`, `canUnlink`), `telegram` (`available`, `linked`, `username`, `name`, `linkedAt`; app chỉ hiển thị), `sessions[]` (`uid`, `loginAt`, `lastSeenAt`, `browser`, `os`, `ip`), `devices[]` (`grantId`, `clientId`, `appName`, `deviceName`, `grantedAt`, `expiresAt`, `current`), `apps[]` (`clientId`, `name`, `firstParty`, `redirectHosts`, `scopes`), `canDelete`. Ngày là ISO 8601, giá trị thiếu là `null`. Không bao giờ có `revocationToken`, `providerDetails` thô, id tài khoản provider, `securityVersion`, `tenantId`, chat id Telegram, User-Agent.
+
+**Liên kết provider từ app** (ADR 0009 §5). `POST .../providers/:provider/link` (đã đăng nhập lại) cấp một state upstream một lần, sống 5 phút, gắn tài khoản, `securityVersion` và grant của access token, rồi trả `https://<issuer>/oauth/<provider>/start?state=…`. App mở URL trong `ASWebAuthenticationSession`: `/start` chỉ mở được một lần, đặt cookie state rồi sang provider; callback liên kết mà không đọc hay tạo phiên IdP (ghi có điều kiện theo `securityVersion` của state, grant phải còn sống), rồi `303` về `${ISSUER}/ios/linked?result=<linked|already_linked|owned_by_other|expired|failed|cancelled>&provider=<id>`.
+
+**Thông báo đẩy** (APNs, chỉ khi có đủ `APNS_*`). Thiết bị đăng ký token gắn với grant của access token; token sống, trượt và chết theo grant (thu hồi ở web, ở `/token/revocation`, refresh token dùng lại, hết hạn, xoá tài khoản). Sự kiện: `new-sign-in` (đăng nhập web mới hoặc grant thiết bị mới), `provider-linked`, `provider-unlinked`, `email-reclaimed`, `access-revoked`. Payload `{"aps":{"alert":{"title","body"},"sound":"default","thread-id":"account-security"},"kind","at"}`, đã dịch theo `locale` của thiết bị, không bao giờ có email, IP, mã, link hay token; tên ứng dụng chỉ là tên client first-party. Máy gây ra sự kiện qua API không nhận thông báo của chính nó.

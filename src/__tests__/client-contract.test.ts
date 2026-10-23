@@ -285,6 +285,26 @@ describe("static clients match the integration contract", () => {
 		]);
 	});
 
+	it("account-ios: public native client, scope account, no resource, auth_time, universal-link redirects", async () => {
+		const metadata = await metadataOf(STATIC_CLIENT_IDS.accountIos);
+		expect(metadata).toMatchObject({
+			application_type: "native",
+			token_endpoint_auth_method: "none",
+			grant_types: ["authorization_code", "refresh_token"],
+			response_types: ["code"],
+			require_auth_time: true,
+			redirect_uris: [`${idp.issuer}/ios/callback`, `${idp.issuer}/ios/linked`],
+			allowed_resources: [],
+		});
+		expect(scopes(metadata)).toEqual(["account", "email", "openid", "profile"]);
+		// No other static client may ask for the account scope.
+		for (const id of Object.values(STATIC_CLIENT_IDS)) {
+			if (id === STATIC_CLIENT_IDS.accountIos) continue;
+			const other = await idp.provider.Client.find(id);
+			if (other) expect(scopes(other.metadata()), id).not.toContain("account");
+		}
+	});
+
 	it("tunelo-web and hoandat-account", async () => {
 		expect(await metadataOf(STATIC_CLIENT_IDS.tuneloWeb)).toMatchObject({
 			token_endpoint_auth_method: "client_secret_basic",

@@ -10,6 +10,7 @@ import {
 	checkIntegrationGroups,
 	integrationEnvShape,
 } from "./integrations-env.js";
+import { iosEnvShape } from "./ios-env.js";
 import { checkMiuDevGroup, miuEnvShape } from "./miu-env.js";
 import { checkScribeDevGroup, scribeEnvShape } from "./scribe-env.js";
 import { checkTenantsGroup, tenantsEnvShape } from "./tenants-env.js";
@@ -148,6 +149,7 @@ const envSchema = z
 		...tenantsEnvShape,
 		...scribeEnvShape,
 		...miuEnvShape,
+		...iosEnvShape,
 	})
 	.superRefine((env, ctx) => {
 		checkIntegrationGroups(env, ctx);

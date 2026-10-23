@@ -1,5 +1,6 @@
 import type Provider from "oidc-provider";
 import { STATIC_CLIENT_IDS, refreshesPerDevice } from "../oidc/clients.js";
+import { PUSH_DEVICES_COLLECTION } from "../push/push-devices.js";
 import { type TenantDb, inTenant, tenantTag } from "../tenants/tenant-data.js";
 import type { GrantSummary } from "./grant-directory.js";
 
@@ -89,11 +90,14 @@ export async function listDeviceGrants(
 	}));
 }
 
-/** Drops the device names of revoked grants. */
+/** Drops the device names and push tokens of revoked grants. */
 export async function forgetDeviceGrants(
 	{ db, tenant }: TenantDb,
 	grantIds: readonly string[],
 ): Promise<void> {
 	const metas = db.collection<DeviceMetaDocument>(GRANT_META_COLLECTION);
 	await metas.deleteMany({ _id: { $in: [...grantIds] }, ...inTenant(tenant) });
+	await db
+		.collection(PUSH_DEVICES_COLLECTION)
+		.deleteMany({ grantId: { $in: [...grantIds] }, ...inTenant(tenant) });
 }

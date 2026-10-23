@@ -1,6 +1,8 @@
 import type { RequestHandler } from "express";
 import type { CommandStartedEvent } from "mongodb";
+import type { AccountApiLimits } from "../../account-api/account-api-limits.js";
 import type { RateLimitRule } from "../../http/security.js";
+import type { PushSender } from "../../push/apns-client.js";
 import type { Tenant } from "../../tenants/tenant.js";
 
 export interface TestIdpOptions {
@@ -28,4 +30,8 @@ export interface TestIdpOptions {
 	readonly mongoUrl?: string;
 	/** Sees every command the IdP sends to MongoDB. */
 	readonly onMongoCommand?: (event: CommandStartedEvent) => void;
+	/** Replaces APNs (push notices of the iOS account app). */
+	readonly pushSender?: PushSender;
+	/** /api/account budgets; generous by default so tests do not hit them. */
+	readonly accountApiLimits?: AccountApiLimits;
 }

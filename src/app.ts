@@ -1,4 +1,8 @@
 import express, { type Express, type RequestHandler } from "express";
+import {
+	ACCOUNT_API_PATH,
+	createAccountApiRouter,
+} from "./account-api/account-api-routes.js";
 import { deletesOwnAccount } from "./account-portal/account-deletion.js";
 import { createAccountRouter } from "./account-portal/account-routes.js";
 import { createAppsRouter } from "./app-directory/apps-page.js";
@@ -6,7 +10,9 @@ import { createAssetsRouter } from "./assets.js";
 import type { Env } from "./config/env.js";
 import { offerDomainGuide } from "./guide/domain-guide-link.js";
 import { createDomainGuideRouter } from "./guide/domain-guide-page.js";
+import { createAasaRouter } from "./http/apple-app-site-association.js";
 import { createErrorHandler } from "./http/error-handler.js";
+import { createIosCallbackRouter } from "./http/ios-callback-page.js";
 import {
 	type RateLimitRule,
 	forwardTrustedClientInfo,
@@ -38,6 +44,7 @@ export interface TenantAppOptions {
 		| "CHAT_MOBILE_REDIRECT_URI"
 		| "SCRIBE_MOBILE_REDIRECT_URI"
 		| "MIU_MOBILE_REDIRECT_URI"
+		| "IOS_APP_ID"
 	>;
 	/**
 	 * Replaces the interaction pages under /interaction. Tests only: the
@@ -104,6 +111,12 @@ export function createTenantApp(options: TenantAppOptions): Express {
 		app.use(inactiveTenant(tenant));
 	}
 	app.use(createAppsRouter(tenant));
+	// The iOS account app (primary tenant only, like its client).
+	if (tenant.id === PRIMARY_TENANT_ID) {
+		app.use(createAasaRouter(env.IOS_APP_ID));
+		app.use(createIosCallbackRouter(new URL(tenant.issuer).host));
+		app.use(ACCOUNT_API_PATH, createAccountApiRouter(services));
+	}
 	app.use(
 		INTERACTION_PATH,
 		options.interactions ?? createInteractionRouter(services),
@@ -130,6 +143,7 @@ export interface AppOptions extends TenantAppOptions {
 		| "CHAT_MOBILE_REDIRECT_URI"
 		| "SCRIBE_MOBILE_REDIRECT_URI"
 		| "MIU_MOBILE_REDIRECT_URI"
+		| "IOS_APP_ID"
 	>;
 	readonly rateLimits?: readonly RateLimitRule[];
 }

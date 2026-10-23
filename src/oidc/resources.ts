@@ -35,6 +35,13 @@ export const TUNNEL_SCOPES = ["tunnels:open", "tunnels:read"] as const;
  */
 export const TELEGRAM_SCOPE = "telegram";
 
+/**
+ * Manages the account itself through /api/account; only the iOS account
+ * app (`account-ios`) holds it. Carried by its opaque access token, never
+ * by a resource (audience-bound JWT).
+ */
+export const ACCOUNT_SCOPE = "account";
+
 /** Every scope the issuer supports: OIDC scopes plus all resource scopes. */
 export const SUPPORTED_SCOPES = [
 	"openid",
@@ -42,6 +49,7 @@ export const SUPPORTED_SCOPES = [
 	"profile",
 	"email",
 	TELEGRAM_SCOPE,
+	ACCOUNT_SCOPE,
 	...LOCALMAN_MCP_SCOPES,
 	...TUNNEL_SCOPES,
 ];

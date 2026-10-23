@@ -9,6 +9,7 @@ import { isStaticClientId } from "../oidc/clients.js";
 import { imitatesFirstPartyName } from "../oidc/first-party-name.js";
 import { isLoopbackHostname } from "../oidc/registration-policy.js";
 import { GRANT_IDLE_SECONDS } from "../oidc/sliding-grants.js";
+import { notifyAccount } from "../push/notify-account.js";
 import type { AppServices } from "../services.js";
 import { sendPage } from "../ui/send-page.js";
 import { renderConsent } from "./consent-page.js";
@@ -81,6 +82,12 @@ export async function completeConsent(
 		services.logger.info(
 			{ accountId, clientId, ip: clientIp(req) },
 			"Device approved",
+		);
+		notifyAccount(
+			services,
+			await services.accounts.findActiveById(accountId),
+			{ kind: "new-sign-in" },
+			{ exceptGrantId: grantId },
 		);
 	}
 	await services.provider.interactionFinished(

@@ -1,17 +1,15 @@
 import type { RequestHandler, Router } from "express";
-import {
-	isUpstreamProvider,
-	usableSignInProviders,
-} from "../accounts/user-model.js";
+import { isUpstreamProvider } from "../accounts/user-model.js";
 import { auditContext } from "../audit/audit-context.js";
 import { routeParam } from "../http/form.js";
 import { startUpstream } from "../interactions/upstream-start.js";
 import type { AppServices } from "../services.js";
-import { forgetDeviceGrants } from "./device-grants.js";
-import { revokeGrant } from "./grant-directory.js";
+import {
+	revokeDevice,
+	signOutSessions,
+	unlinkSignInProvider,
+} from "./account-actions.js";
 import type { PortalHandler } from "./portal-session.js";
-import { revokeUnlinked } from "./revoke-unlinked.js";
-import { revokeSession } from "./session-directory.js";
 
 /**
  * /account actions that grant or take away access: link and unlink
@@ -49,23 +47,12 @@ export function registerAccessRoutes(
 				res.sendStatus(404);
 				return;
 			}
-			// Some other linked provider must still sign in here, or the owner
-			// would lock themselves out; the write re-checks it is linked.
-			const others = usableSignInProviders(account, [
-				...services.upstreams.keys(),
-			]).filter((provider) => provider !== name);
-			if (others.length === 0) {
-				res.redirect(303, "/account?notice=last-method");
-				return;
-			}
-			const write = await services.accounts.links.unlinkProvider(
-				account._id,
-				name,
-			);
-			if (write.applied) await revokeUnlinked(services, account, name);
+			const result = await unlinkSignInProvider(services, account, name, {
+				context: auditContext(req),
+			});
 			res.redirect(
 				303,
-				`/account?notice=${write.applied ? "unlinked" : "last-method"}`,
+				`/account?notice=${result === "unlinked" ? "unlinked" : "last-method"}`,
 			);
 		}),
 	);
@@ -73,24 +60,15 @@ export function registerAccessRoutes(
 	router.post(
 		"/sessions/:uid/revoke",
 		write(async (req, res, { account }) => {
-			const done = await revokeSession(
-				services.provider,
+			const done = await signOutSessions(
 				services,
-				services.logger,
-				account._id,
-				routeParam(req, "uid"),
+				account,
+				[routeParam(req, "uid")],
+				{ context: auditContext(req) },
 			);
-			if (done) {
-				await services.audit.record(
-					"session.revoked",
-					account._id,
-					{ count: 1, cause: "account-page" },
-					auditContext(req),
-				);
-			}
 			res.redirect(
 				303,
-				`/account?notice=${done ? "session-revoked" : "not-found"}`,
+				`/account?notice=${done > 0 ? "session-revoked" : "not-found"}`,
 			);
 		}),
 	);
@@ -98,17 +76,12 @@ export function registerAccessRoutes(
 	router.post(
 		"/devices/:grantId/revoke",
 		write(async (req, res, { account }) => {
-			const grantId = routeParam(req, "grantId");
-			const done = await revokeGrant(services.provider, account._id, grantId);
-			if (done) {
-				await forgetDeviceGrants(services, [grantId]);
-				await services.audit.record(
-					"grant.revoked",
-					account._id,
-					{ count: 1, cause: "account-page" },
-					auditContext(req),
-				);
-			}
+			const done = await revokeDevice(
+				services,
+				account,
+				routeParam(req, "grantId"),
+				{ context: auditContext(req) },
+			);
 			res.redirect(
 				303,
 				`/account?notice=${done ? "device-revoked" : "not-found"}`,

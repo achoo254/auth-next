@@ -2,6 +2,7 @@ import type { Filter } from "mongodb";
 import { ONE_TIME_TOKENS_COLLECTION } from "../accounts/one-time-tokens.js";
 import { AUDIT_OUTBOX_COLLECTION } from "../audit/audit-outbox-model.js";
 import { GRANTABLE_MODELS, collectionNameFor } from "../oidc/mongo-adapter.js";
+import { PUSH_DEVICES_COLLECTION } from "../push/push-devices.js";
 import { type TenantDb, inTenant } from "../tenants/tenant-data.js";
 import { GRANT_META_COLLECTION } from "./device-grants.js";
 import { SESSION_META_COLLECTION } from "./session-directory.js";
@@ -57,6 +58,7 @@ function accountFilters(
 		},
 		{ collection: SESSION_META_COLLECTION, filter: { accountId } },
 		{ collection: GRANT_META_COLLECTION, filter: { accountId } },
+		{ collection: PUSH_DEVICES_COLLECTION, filter: { accountId } },
 		{
 			collection: ONE_TIME_TOKENS_COLLECTION,
 			filter: { "data.accountId": accountId },

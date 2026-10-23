@@ -1,10 +1,12 @@
 import type { NextFunction, Request, RequestHandler, Response } from "express";
 import type { InteractionResults } from "oidc-provider";
+import { grantsPerDevice } from "../account-portal/device-grants.js";
 import { auditContext } from "../audit/audit-context.js";
 import { routeParam } from "../http/form.js";
 import type { MessageKey } from "../i18n/dictionaries.js";
 import type { MessageParams } from "../i18n/translator.js";
 import { CREATE_PROMPT } from "../oidc/interaction-policy.js";
+import { notifyAccount } from "../push/notify-account.js";
 import type { AppServices } from "../services.js";
 import { type PageContext, pageContext } from "../ui/page-context.js";
 import { sendPage } from "../ui/send-page.js";
@@ -124,13 +126,15 @@ export async function finishLogin(
 ): Promise<void> {
 	// Read again: the account may have been deleted (ADR 0009) since the
 	// sign-in was decided; it must not get a new session after that.
-	if (!(await services.accounts.findActiveById(accountId))) {
+	const account = await services.accounts.findActiveById(accountId);
+	if (!account) {
 		sendInteractionError(services, res, {
 			message: "upstream.rejected.disabled",
 			status: 403,
 		});
 		return;
 	}
+	const { params } = await services.provider.interactionDetails(req, res);
 	const result: InteractionResults = {
 		login: { accountId, amr: [...amr] },
 	};
@@ -143,6 +147,11 @@ export async function finishLogin(
 		{ methods: [...amr] },
 		auditContext(req),
 	);
+	// A device app announces its sign-in once its own grant exists (consent).
+	const clientId = typeof params.client_id === "string" ? params.client_id : "";
+	if (!grantsPerDevice(clientId)) {
+		notifyAccount(services, account, { kind: "new-sign-in" });
+	}
 }
 
 /**

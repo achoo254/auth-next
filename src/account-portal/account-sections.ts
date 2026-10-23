@@ -24,19 +24,29 @@ const SYSTEMS: readonly [RegExp, string][] = [
 	[/Linux/, "Linux"],
 ];
 
+/** The browser and system a User-Agent names, when recognised. */
+export function userAgentParts(userAgent: string | undefined): {
+	readonly browser?: string;
+	readonly system?: string;
+} {
+	if (!userAgent) return {};
+	return {
+		browser: BROWSERS.find(([pattern]) => pattern.test(userAgent))?.[1],
+		system: SYSTEMS.find(([pattern]) => pattern.test(userAgent))?.[1],
+	};
+}
+
 /** A short "Chrome on macOS" style label from a User-Agent. */
 export function describeUserAgent(
 	i18n: Translator,
 	userAgent: string | undefined,
 ): string {
 	if (!userAgent) return i18n.t("account.sessions.unknownBrowser");
-	const browser =
-		BROWSERS.find(([pattern]) => pattern.test(userAgent))?.[1] ??
-		i18n.t("account.sessions.browser");
-	const system =
-		SYSTEMS.find(([pattern]) => pattern.test(userAgent))?.[1] ??
-		i18n.t("account.sessions.unknownSystem");
-	return i18n.t("account.sessions.browserOn", { browser, system });
+	const parts = userAgentParts(userAgent);
+	return i18n.t("account.sessions.browserOn", {
+		browser: parts.browser ?? i18n.t("account.sessions.browser"),
+		system: parts.system ?? i18n.t("account.sessions.unknownSystem"),
+	});
 }
 
 function sessionRow(view: AccountView, session: OpenSession): SafeHtml {

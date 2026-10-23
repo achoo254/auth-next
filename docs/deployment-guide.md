@@ -182,6 +182,31 @@ Bật trên production (không in secret ra terminal):
 
 Rollback: xoá dòng `MIU_WEB_CLIENT_SECRET` rồi reload; IdP không còn client Miu (Miu sẽ báo đăng nhập không khả dụng).
 
+## App iOS "Tài khoản" (`account-ios`, AASA, APNs)
+
+Client `account-ios` (`src/oidc/account-ios-client.ts`) và API `/api/account` có sẵn ở tenant chính, không cần biến nào: chưa có app thì không ai dùng. Hai phần tuỳ chọn, bật khi phase 00 của plan `261020-0742-ios-account-app` xong (App ID `com.hoandat.account` với Push Notifications và Associated Domains):
+
+| Biến | Ý nghĩa |
+|---|---|
+| `IOS_APP_ID` | `<TEAMID>.com.hoandat.account`. Có thì `https://auth.hoandat.com/.well-known/apple-app-site-association` trả JSON (`applinks` cho `/ios/callback`, `/ios/linked`; `webcredentials`); thiếu thì 404 và universal link không mở app |
+| `APNS_KEY_PATH` | khoá APNs `.p8` (EC P-256), file secret read-only, vd `/var/www/hoandat-auth/secrets/apns-auth-key.p8` (600). Sai file thì IdP không khởi động, báo tên biến, không in nội dung |
+| `APNS_KEY_ID` | Key ID 10 ký tự của khoá đó |
+| `APNS_TEAM_ID` | Team ID 10 ký tự |
+| `APNS_TOPIC` | bundle id của app: `com.hoandat.account` |
+
+Bốn biến `APNS_*` đi cùng nhau; thiếu biến nào thì thông báo đẩy tắt (log cảnh báo nếu đặt dở), `PUT /api/account/push-device` vẫn trả `204` nhưng không lưu token, IdP chạy như cũ. Host APNs chọn theo `environment` mỗi thiết bị gửi lên: `sandbox` → `api.sandbox.push.apple.com` (build chạy từ Xcode), `production` → `api.push.apple.com` (TestFlight, App Store). Một khoá token-based dùng được cho cả hai.
+
+Bật trên production (không in secret ra terminal):
+
+1. Ở Apple Developer → Certificates, IDs & Profiles → Keys: tạo khoá có "Apple Push Notifications service (APNs)", tải `AuthKey_<KEYID>.p8` (chỉ tải được một lần; bản sao ở iCloud access-tokens). Ghi Key ID và Team ID.
+2. Backup DB như mục "Các lần sau", deploy commit có `src/push/`.
+3. Chép khoá lên máy: `install -m 600 -o <user pm2> AuthKey_<KEYID>.p8 /var/www/hoandat-auth/secrets/apns-auth-key.p8`.
+4. Thêm vào `.env`: `IOS_APP_ID=<TEAMID>.com.hoandat.account`, `APNS_KEY_PATH=/var/www/hoandat-auth/secrets/apns-auth-key.p8`, `APNS_KEY_ID=<KEYID>`, `APNS_TEAM_ID=<TEAMID>`, `APNS_TOPIC=com.hoandat.account`.
+5. `pm2 startOrReload infra/ecosystem.config.cjs --update-env`, `curl -fsS https://auth.hoandat.com/healthz`, `curl -fsS https://auth.hoandat.com/.well-known/apple-app-site-association` (phải là JSON có đúng app id, không redirect), `pnpm seed:clients` (phải có `account-ios` redirect `https://auth.hoandat.com/ios/callback https://auth.hoandat.com/ios/linked`).
+6. Nginx: `/.well-known/apple-app-site-association`, `/ios/*` và `/api/account*` đi thẳng tới IdP như mọi path khác (không chặn, không redirect, không cache ở Cloudflare cho `/api/account`). Apple tải AASA qua CDN của nó; đổi `IOS_APP_ID` có thể mất tới 24 giờ mới tới máy.
+
+Collection mới `push_devices` (có `tenantId`, unique `{tenantId, token}`, TTL `expiresAt`) tự tạo chỉ mục khi khởi động. Rollback: xoá các biến `APNS_*` (tắt đẩy) và `IOS_APP_ID` (tắt universal link) rồi reload; gỡ hẳn client thì revert commit (grant `account-ios` còn lại vô hiệu).
+
 ## Tuỳ chọn bật sau
 
 - Sign in with Apple (ADR 0008): code có sẵn, **chưa bật** (19/10/2026, chờ Apple duyệt tài khoản developer). Bật theo [`sign-in-with-apple.md`](sign-in-with-apple.md): khoá `.p8` ở `/var/www/hoandat-auth/secrets/apple-signin-key.p8` (600), bốn biến `APPLE_*` + `APPLE_PRIMARY_APP_ID` trong `.env`.

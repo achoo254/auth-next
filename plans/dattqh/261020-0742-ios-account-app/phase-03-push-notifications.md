@@ -100,3 +100,16 @@ Tham số chỉ gồm `provider`, `clientName`, thời điểm. Không có email
 
 - **APNs chậm:** gửi kiểu fire-and-forget nên không làm chậm request.
 - **Lùi:** bỏ biến `APNS_*` là tắt tính năng; collection còn lại vô hại.
+
+## Trạng thái (23/10/2026)
+
+Code xong ở local, chưa commit, chưa chạy CI. Bước 1–3 xong; bước 4: tài liệu xong, khoá `.p8` và env trên .65 chờ user (phase 00).
+
+- [x] `src/push/push-devices.ts`: collection `push_devices` (unique `{tenantId, token}`, chỉ mục account và grant, TTL `expiresAt`), trượt cùng grant trong `rotateRefreshToken` (giờ cả `grant_meta` cũng trượt cho mọi grant thiết bị). Đã thêm vào `TENANT_COLLECTIONS`, `IDP_COLLECTIONS` của `export-tenant.sh`, `purgeAccountData`, danh sách module dữ liệu của `tenant-source-scan`.
+- [x] `src/push/apns-client.ts` + `apns-response.ts`: `node:http2` + `jose`, JWT ES256 làm mới mỗi 50 phút (bỏ khi Apple báo `ExpiredProviderToken`/`InvalidProviderToken`), mở lại phiên khi GOAWAY/close/error, timeout 10 giây, log chỉ mã trạng thái, `reason` và 6 ký tự cuối của token.
+- [x] `src/push/notify-account.ts` + `push-payload.ts`: `PushEvent` có kiểu, khoá `push.*` ba thứ tiếng, tên ứng dụng chỉ cho client first-party. Call site: `finishLogin` (trừ client thiết bị), consent của grant thiết bị, liên kết (web, tự liên kết theo email, app), huỷ liên kết, email bị lấy lại, thu hồi phiên/thiết bị/ứng dụng. Ba chỗ `notifyTelegram` cũ chuyển sang `notifyAccount` (Telegram giữ nguyên nội dung).
+- [x] Dọn thiết bị: listener `grant.revoked` (`forgetRevokedPushDevices`), `forgetDeviceGrants`, xoá tài khoản; lúc gửi kiểm `Grant.find` và xoá dòng có grant chết.
+- [x] `PUT`/`DELETE /api/account/push-device` (`src/account-api/push-device-routes.ts`); thiếu `APNS_*` thì `PUT` trả `204` và không lưu gì.
+- [x] Env `APNS_KEY_PATH`, `APNS_KEY_ID`, `APNS_TEAM_ID`, `APNS_TOPIC` (`src/config/ios-env.ts`), `.env.example`, `docs/deployment-guide.md`.
+- Test: `apns-client` (4), `push-devices` (4), `notify-account` (7), `ios-env` (2).
+- Ghi chú: lần đăng nhập lại `prompt=login` của chính app tạo grant mới nên máy đó có thể nhận một thông báo `new-sign-in` cho chính nó trước khi kịp thu hồi grant cũ và đăng ký lại token. Gửi thật (sandbox/production) để phase 04/05.

@@ -5,8 +5,8 @@ import {
 	linkUpstream,
 } from "../accounts/account-linking.js";
 import { UPSTREAM_LABELS } from "../accounts/upstream-client.js";
+import { notifyAccount } from "../push/notify-account.js";
 import type { AppServices } from "../services.js";
-import { notifyTelegram } from "../telegram/notify.js";
 import { sendInteractionError } from "./interaction-helpers.js";
 
 /**
@@ -72,9 +72,9 @@ export async function finishAccountLink(
 		sendInteractionError(services, res, { ...expired, status: 410 });
 		return;
 	}
-	notifyTelegram(services, portal.account, "bot.notice.providerLinked", {
-		username: portal.account.username,
-		provider: label,
+	notifyAccount(services, portal.account, {
+		kind: "provider-linked",
+		provider: profile.provider,
 	});
 	services.logger.info(
 		{ accountId: portal.account._id, provider: profile.provider },

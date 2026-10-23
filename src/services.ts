@@ -1,5 +1,11 @@
+import type { JWTVerifyGetKey } from "jose";
 import type { Db } from "mongodb";
 import type Provider from "oidc-provider";
+import {
+	type AccountApiLimits,
+	DEFAULT_ACCOUNT_API_LIMITS,
+} from "./account-api/account-api-limits.js";
+import { idTokenVerificationKeys } from "./account-api/recent-auth.js";
 import { GRANT_META_COLLECTION } from "./account-portal/device-grants.js";
 import {
 	SESSION_META_COLLECTION,
@@ -15,15 +21,22 @@ import { type Upstreams, createUpstreams } from "./accounts/upstream-client.js";
 import { ensureAccountIndexes } from "./accounts/user-model.js";
 import type { AuditOutbox } from "./audit/audit-outbox.js";
 import { ensureAuditOutboxIndexes } from "./audit/audit-outbox.js";
-import { auditProviderEvents } from "./audit/provider-events.js";
+import {
+	auditProviderEvents,
+	forgetRevokedPushDevices,
+} from "./audit/provider-events.js";
 import type { Env } from "./config/env.js";
 import { telegramBotConfig } from "./config/integrations-env.js";
+import { apnsConfig, partialApnsSettings } from "./config/ios-env.js";
 import {
 	type ReviewLoginConfig,
 	reviewLoginConfig,
 } from "./config/review-login-env.js";
 import { type Csrf, createCsrf } from "./http/csrf.js";
 import type { Logger } from "./logger.js";
+import type { SigningJwks } from "./oidc/jwks.js";
+import { ApnsClient, type PushSender } from "./push/apns-client.js";
+import { PushDevices, ensurePushDeviceIndexes } from "./push/push-devices.js";
 import { type TelegramBot, createTelegramBot } from "./telegram/bot-client.js";
 import type { Tenancy } from "./tenants/tenancy.js";
 import type { Tenant } from "./tenants/tenant.js";
@@ -57,6 +70,14 @@ export interface AppServices {
 	readonly formPostsPerMinute: number;
 	/** Claiming domains (/claim) and tenant administration (/admin), when enabled. */
 	readonly tenancy?: Tenancy;
+	/** Verifies the tenant's own ID tokens (re-authentication on /api/account). */
+	readonly idTokenKeys: JWTVerifyGetKey;
+	/** Budgets of /api/account. */
+	readonly accountApiLimits: AccountApiLimits;
+	/** Phones of the iOS account app that receive security notices. */
+	readonly pushDevices: PushDevices;
+	/** APNs; undefined when push is off (primary tenant with APNS_* only). */
+	readonly pushSender?: PushSender;
 }
 
 export interface ServiceDependencies {
@@ -80,6 +101,25 @@ export interface ServiceDependencies {
 	};
 	readonly formPostsPerMinute?: number;
 	readonly tenancy?: Tenancy;
+	/** The tenant's signing keys (only their public half is kept). */
+	readonly jwks: SigningJwks;
+	/** Replaces the env-derived APNs sender (tests). */
+	readonly pushSender?: PushSender;
+	readonly accountApiLimits?: AccountApiLimits;
+}
+
+/** APNs for the primary tenant, from APNS_*; never for a registry tenant. */
+function envPushSender(deps: ServiceDependencies): PushSender | undefined {
+	if (deps.integrations) return undefined;
+	const partial = partialApnsSettings(deps.env);
+	if (partial.length > 0) {
+		deps.logger.warn(
+			{ set: partial },
+			"Push notices off: APNS_KEY_PATH, APNS_KEY_ID, APNS_TEAM_ID and APNS_TOPIC go together",
+		);
+	}
+	const config = apnsConfig(deps.env);
+	return config ? new ApnsClient(config, deps.logger) : undefined;
 }
 
 export function createServices(deps: ServiceDependencies): AppServices {
@@ -95,6 +135,8 @@ export function createServices(deps: ServiceDependencies): AppServices {
 	const secureCookies = new URL(tenant.issuer).protocol === "https:";
 	trackSessions(deps.provider, { db, tenant }, deps.logger);
 	auditProviderEvents(deps.provider, deps.accounts.audit);
+	const pushDevices = new PushDevices(db, tenant);
+	forgetRevokedPushDevices(deps.provider, pushDevices, deps.logger);
 	return {
 		tenant,
 		issuer: tenant.issuer,
@@ -116,6 +158,12 @@ export function createServices(deps: ServiceDependencies): AppServices {
 		reviewLogin: deps.integrations ? undefined : reviewLoginConfig(env),
 		formPostsPerMinute: deps.formPostsPerMinute ?? 30,
 		tenancy: deps.tenancy,
+		idTokenKeys: idTokenVerificationKeys(deps.jwks),
+		accountApiLimits: deps.accountApiLimits ?? DEFAULT_ACCOUNT_API_LIMITS,
+		pushDevices,
+		pushSender: deps.integrations
+			? undefined
+			: (deps.pushSender ?? envPushSender(deps)),
 		telegram: deps.integrations
 			? deps.integrations.telegram
 			: (deps.telegram ??
@@ -129,6 +177,7 @@ export async function ensureAccountLayerIndexes(db: Db): Promise<void> {
 		ensureAccountIndexes(db),
 		ensureOneTimeTokenIndexes(db),
 		ensureAuditOutboxIndexes(db),
+		ensurePushDeviceIndexes(db),
 		...[SESSION_META_COLLECTION, GRANT_META_COLLECTION].map((name) =>
 			db
 				.collection(name)
