@@ -1,7 +1,8 @@
-import type { Db } from "mongodb";
+import type { Collection, Db, Filter } from "mongodb";
 import { accountsCollection } from "../accounts/user-model.js";
 import { type TenantDb, inTenant } from "../tenants/tenant-data.js";
 import {
+	type ClientUsageDocument,
 	type ClientUsageKind,
 	clientUsageCollection,
 } from "./client-usage-model.js";
@@ -13,16 +14,22 @@ import {
 } from "./saigon-weeks.js";
 import { IDP_OWN_CLIENT_IDS, appOfClient } from "./usage-apps.js";
 import {
+	type ActiveTally,
 	NO_APP_YET,
+	ROLLING_DAYS,
+	type RollingGrowth,
 	type TenantGrowth,
 	type WeekTally,
+	countActiveAccount,
 	countFirstApp,
 	countSignIns,
 	emptyWeekTally,
+	multiAppShare,
 	weekGrowth,
 } from "./week-growth.js";
 
 const IDP_OWN = [...IDP_OWN_CLIENT_IDS];
+const DAY_MS = 24 * 60 * 60 * 1000;
 
 /** The Saigon week of a usage document, as computed by MongoDB. */
 const USAGE_WEEK = {
@@ -44,8 +51,27 @@ export async function growthReportTenantIds(db: Db): Promise<string[]> {
 }
 
 /**
+ * The distinct app clients of each account that used one in `match`,
+ * grouped by `by` (the account, or its week and the account).
+ */
+function activeAccountClients<Key>(
+	usage: Collection<ClientUsageDocument>,
+	match: Filter<ClientUsageDocument>,
+	by: Record<string, unknown> | string,
+): Promise<{ _id: Key; clients: string[] }[]> {
+	return usage
+		.aggregate<{ _id: Key; clients: string[] }>([
+			{ $match: { ...match, clientId: { $nin: IDP_OWN } } },
+			{ $group: { _id: by, clients: { $addToSet: "$clientId" } } },
+		])
+		.toArray();
+}
+
+/**
  * The last `weeks` Saigon weeks of one tenant, oldest first, the current
- * (partial) week last. Reads only.
+ * (partial) week last, and the last ROLLING_DAYS days. The App Store
+ * reviewer's accounts (`reviewLogin`, ADR 0010) are left out of every
+ * number. Reads only.
  */
 export async function tenantGrowth(
 	{ db, tenant }: TenantDb,
@@ -59,6 +85,14 @@ export async function tenantGrowth(
 		starts.map((start) => [saigonWeekLabel(start), emptyWeekTally()]),
 	);
 	const usage = clientUsageCollection(db);
+	const reviewers = await accountsCollection(db).distinct("_id", {
+		...scope,
+		reviewLogin: { $exists: true },
+	});
+	const people: Filter<ClientUsageDocument> = {
+		...scope,
+		sub: { $nin: reviewers },
+	};
 
 	const accounts = await accountsCollection(db)
 		.find(
@@ -100,7 +134,7 @@ export async function tenantGrowth(
 			_id: { week: Date; clientId: string; kind: ClientUsageKind };
 			count: number;
 		}>([
-			{ $match: { ...scope, at: { $gte: from } } },
+			{ $match: { ...people, at: { $gte: from } } },
 			{
 				$group: {
 					_id: { week: USAGE_WEEK, clientId: "$clientId", kind: "$kind" },
@@ -115,27 +149,41 @@ export async function tenantGrowth(
 		countSignIns(tally, _id.clientId, _id.kind, count);
 	}
 
-	const active = await usage
-		.aggregate<{ _id: { week: Date; sub: string }; clients: string[] }>([
-			{ $match: { ...scope, at: { $gte: from }, clientId: { $nin: IDP_OWN } } },
-			{
-				$group: {
-					_id: { week: USAGE_WEEK, sub: "$sub" },
-					clients: { $addToSet: "$clientId" },
-				},
-			},
-		])
-		.toArray();
-	for (const { _id, clients } of active) {
+	const weekly = await activeAccountClients<{ week: Date }>(
+		usage,
+		{ ...people, at: { $gte: from } },
+		{ week: USAGE_WEEK, sub: "$sub" },
+	);
+	for (const { _id, clients } of weekly) {
 		const tally = tallies.get(saigonWeekLabel(_id.week));
-		if (!tally) continue;
-		tally.activeAccounts += 1;
-		const apps = new Set(clients.map(appOfClient));
-		if (apps.size >= 2) tally.multiAppAccounts += 1;
+		if (tally) countActiveAccount(tally, clients);
 	}
 
 	return {
 		tenantId: tenant.id,
 		weeks: [...tallies].map(([week, tally]) => weekGrowth(week, tally)),
+		rolling: await rollingGrowth(usage, people, now),
+	};
+}
+
+/** Accounts active in the last ROLLING_DAYS days up to `now`. */
+async function rollingGrowth(
+	usage: Collection<ClientUsageDocument>,
+	people: Filter<ClientUsageDocument>,
+	now: Date,
+): Promise<RollingGrowth> {
+	const since = new Date(now.getTime() - ROLLING_DAYS * DAY_MS);
+	const tally: ActiveTally = { activeAccounts: 0, multiAppAccounts: 0 };
+	const accounts = await activeAccountClients<string>(
+		usage,
+		{ ...people, at: { $gte: since, $lte: now } },
+		"$sub",
+	);
+	for (const { clients } of accounts) countActiveAccount(tally, clients);
+	return {
+		days: ROLLING_DAYS,
+		since: since.toISOString(),
+		...tally,
+		multiAppShare: multiAppShare(tally),
 	};
 }

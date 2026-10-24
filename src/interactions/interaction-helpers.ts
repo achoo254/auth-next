@@ -147,9 +147,9 @@ export async function finishLogin(
 		{ methods: [...amr] },
 		auditContext(req),
 	);
+	// The app it reaches is recorded once its authorization succeeds
+	// (recordClientUsage), not here: the consent step may still be denied.
 	const clientId = typeof params.client_id === "string" ? params.client_id : "";
-	// The authorization this sign-in resumes skips it (recordSsoUsage).
-	await services.clientUsage.record(accountId, clientId, "interactive");
 	// A device app announces its sign-in once its own grant exists (consent).
 	if (!grantsPerDevice(clientId)) {
 		notifyAccount(services, account, { kind: "new-sign-in" });

@@ -1,4 +1,8 @@
 import type { ClientUsageKind } from "./client-usage-model.js";
+import { appCount } from "./usage-apps.js";
+
+/** The rolling window of the report, in days up to the report time. */
+export const ROLLING_DAYS = 28;
 
 /** The first app of a new account that has not signed in to any app yet. */
 export const NO_APP_YET = "none";
@@ -28,17 +32,38 @@ export interface WeekGrowth {
 	readonly signIns: readonly ClientSignIns[];
 }
 
+/**
+ * The accounts that signed in to at least one app in the last ROLLING_DAYS
+ * days up to the report time, and how many of them to two apps or more.
+ * Apps keep their own sessions for weeks, so an account using two apps
+ * often reaches only one of them in a given week; this window shows the
+ * habit the weekly numbers miss.
+ */
+export interface RollingGrowth {
+	readonly days: number;
+	/** Start of the window (ISO 8601, UTC). */
+	readonly since: string;
+	readonly activeAccounts: number;
+	readonly multiAppAccounts: number;
+	readonly multiAppShare: number | null;
+}
+
 export interface TenantGrowth {
 	readonly tenantId: string;
 	readonly weeks: readonly WeekGrowth[];
+	readonly rolling: RollingGrowth;
+}
+
+/** Active accounts of a period while the report's queries add to them. */
+export interface ActiveTally {
+	activeAccounts: number;
+	multiAppAccounts: number;
 }
 
 /** Counts of one week while the report's queries add to them. */
-export interface WeekTally {
+export interface WeekTally extends ActiveTally {
 	newAccounts: number;
 	readonly firstApps: Map<string, number>;
-	activeAccounts: number;
-	multiAppAccounts: number;
 	readonly signIns: Map<string, Record<ClientUsageKind, number>>;
 }
 
@@ -50,6 +75,25 @@ export function emptyWeekTally(): WeekTally {
 		multiAppAccounts: 0,
 		signIns: new Map(),
 	};
+}
+
+/** Counts one account active in the period, with the clients it signed in to. */
+export function countActiveAccount(
+	tally: ActiveTally,
+	clientIds: readonly string[],
+): void {
+	tally.activeAccounts += 1;
+	if (appCount(clientIds) >= 2) tally.multiAppAccounts += 1;
+}
+
+/** multiAppAccounts / activeAccounts (4 decimals); null without any. */
+export function multiAppShare({
+	activeAccounts,
+	multiAppAccounts,
+}: ActiveTally): number | null {
+	return activeAccounts === 0
+		? null
+		: Math.round((multiAppAccounts / activeAccounts) * 10_000) / 10_000;
 }
 
 export function countFirstApp(tally: WeekTally, app: string): void {
@@ -80,10 +124,7 @@ export function weekGrowth(week: string, tally: WeekTally): WeekGrowth {
 		),
 		activeAccounts,
 		multiAppAccounts,
-		multiAppShare:
-			activeAccounts === 0
-				? null
-				: Math.round((multiAppAccounts / activeAccounts) * 10_000) / 10_000,
+		multiAppShare: multiAppShare(tally),
 		signIns: [...tally.signIns]
 			.map(([clientId, kinds]) => ({
 				clientId,

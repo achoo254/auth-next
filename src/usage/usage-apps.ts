@@ -38,3 +38,13 @@ export function appOfClient(clientId: string): string | undefined {
 	if (!isStaticClientId(clientId)) return "localman";
 	return APP_OF_STATIC_CLIENT[clientId] ?? clientId;
 }
+
+/** How many distinct apps `clientIds` belong to (the IdP's own left out). */
+export function appCount(clientIds: readonly string[]): number {
+	const apps = new Set<string>();
+	for (const clientId of clientIds) {
+		const app = appOfClient(clientId);
+		if (app !== undefined) apps.add(app);
+	}
+	return apps.size;
+}

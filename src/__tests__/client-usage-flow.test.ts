@@ -21,11 +21,11 @@ import {
 import { linkedGoogleProfile } from "./helpers/upstream-sign-in.js";
 
 /*
- * Every authorization an app receives is recorded once: as "interactive"
- * when the person signed in on the IdP's pages for it (finishLogin), as
- * "sso" when a live IdP session let them straight through
- * (authorization.success). oidc-provider emits authorization.success for
- * the interactive case too, after the login and any consent step.
+ * Every authorization an app receives is recorded once, by the provider's
+ * authorization.success listener: "interactive" when the person signed in
+ * on the IdP's pages for it, "sso" when a live IdP session let them
+ * straight through. A sign-in whose consent is then denied is no
+ * authorization and is not recorded.
  */
 
 const CHAT_URL = "http://127.0.0.1:9";
@@ -56,26 +56,65 @@ async function usageOf(
 		.toArray();
 }
 
-/** Waits until `account` has `count` records (provider events are not awaited). */
+/**
+ * The records of `account` once at least `count` have landed and no other
+ * write has followed for a while: provider events are not awaited, so an
+ * extra (double) record could land after the expected ones.
+ */
 async function settledUsage(account: TestAccount, count: number) {
-	await expect.poll(async () => (await usageOf(account)).length).toBe(count);
-	return usageOf(account);
+	await expect
+		.poll(async () => (await usageOf(account)).length)
+		.toBeGreaterThanOrEqual(count);
+	let records = await usageOf(account);
+	for (let reads = 0; reads < 20; reads += 1) {
+		await new Promise((resolve) => setTimeout(resolve, 250));
+		const again = await usageOf(account);
+		if (again.length === records.length) return again;
+		records = again;
+	}
+	throw new Error("client usage kept changing");
 }
 
-/** The approval page of a native app, then back to the app. */
-async function approveNativeApp(
+/** The uid of the interaction page `page` shows. */
+function interactionUid(page: Response): string {
+	const uid = /\/interaction\/([\w-]+)/.exec(page.url)?.[1];
+	if (!uid) throw new Error(`not on an interaction page: ${page.status}`);
+	return uid;
+}
+
+/** Approves (consent) or denies (abort) a native app's approval page. */
+async function answerNativeApp(
 	browser: TestBrowser,
 	page: Response,
-): Promise<void> {
-	const uid = /\/interaction\/([\w-]+)/.exec(page.url)?.[1];
-	if (!uid) throw new Error(`no approval page: ${page.status}`);
+	answer: "consent" | "abort",
+): Promise<URL> {
 	const back = await submitForm(
 		browser,
-		`${idp.issuer}/interaction/${uid}/consent`,
+		`${idp.issuer}/interaction/${interactionUid(page)}/${answer}`,
 		{ csrf: formField(await page.text(), "csrf") },
 		CHAT_MOBILE_REDIRECT_URI,
 	);
 	if (!back.location) throw new Error("did not return to the app");
+	return back.location;
+}
+
+/** chat-mobile's sign-in page signed in with `account`: its approval page. */
+async function signInToChatMobile(
+	browser: TestBrowser,
+	account: TestAccount,
+): Promise<Response> {
+	const { response: login } = await browser.navigate(
+		await chatMobileAuthorization(),
+		{},
+		CHAT_MOBILE_REDIRECT_URI,
+	);
+	idp.fake.nextLogins.push(linkedGoogleProfile(account));
+	const { response: approval } = await browser.navigate(
+		`${idp.issuer}/interaction/${interactionUid(login)}/upstream/google`,
+		{},
+		CHAT_MOBILE_REDIRECT_URI,
+	);
+	return approval;
 }
 
 async function chatMobileAuthorization(): Promise<URL> {
@@ -113,7 +152,7 @@ describe("client usage of sign-ins", () => {
 			{},
 			CHAT_MOBILE_REDIRECT_URI,
 		);
-		await approveNativeApp(browser, response);
+		await answerNativeApp(browser, response, "consent");
 		await cliLogin(idp, browser);
 
 		expect(await settledUsage(account, 4)).toEqual([
@@ -127,25 +166,30 @@ describe("client usage of sign-ins", () => {
 	it("counts a sign-in followed by an approval page once", async () => {
 		const account = await createTestAccount(repositoryOf(idp));
 		const browser = new TestBrowser();
-		const { response: login } = await browser.navigate(
-			await chatMobileAuthorization(),
-			{},
-			CHAT_MOBILE_REDIRECT_URI,
-		);
-		const uid = /\/interaction\/([\w-]+)/.exec(login.url)?.[1];
-		if (!uid) throw new Error(`not on the sign-in page: ${login.url}`);
-		idp.fake.nextLogins.push(linkedGoogleProfile(account));
-		const { response: approval } = await browser.navigate(
-			`${idp.issuer}/interaction/${uid}/upstream/google`,
-			{},
-			CHAT_MOBILE_REDIRECT_URI,
-		);
-		await approveNativeApp(browser, approval);
+		const approval = await signInToChatMobile(browser, account);
+		await answerNativeApp(browser, approval, "consent");
 
-		// Let a stray authorization.success write land before counting.
-		await new Promise((resolve) => setTimeout(resolve, 200));
 		expect(await settledUsage(account, 1)).toEqual([
 			{ clientId: STATIC_CLIENT_IDS.chatMobile, kind: "interactive" },
+		]);
+	});
+
+	it("does not count a sign-in whose approval is then denied", async () => {
+		const account = await createTestAccount(repositoryOf(idp));
+		const browser = new TestBrowser();
+		const approval = await signInToChatMobile(browser, account);
+		const back = await answerNativeApp(browser, approval, "abort");
+		expect(back.searchParams.get("error")).toBe("access_denied");
+
+		expect(await settledUsage(account, 0)).toEqual([]);
+	});
+
+	it("counts a device sign-in on the IdP's pages once, as interactive", async () => {
+		const account = await createTestAccount(repositoryOf(idp));
+		await cliLogin(idp, new TestBrowser(), account);
+
+		expect(await settledUsage(account, 1)).toEqual([
+			{ clientId: STATIC_CLIENT_IDS.tuneloCli, kind: "interactive" },
 		]);
 	});
 });

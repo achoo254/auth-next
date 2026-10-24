@@ -24,7 +24,7 @@ import { ensureAuditOutboxIndexes } from "./audit/audit-outbox.js";
 import {
 	auditProviderEvents,
 	forgetRevokedPushDevices,
-	recordSsoUsage,
+	recordClientUsage,
 } from "./audit/provider-events.js";
 import type { Env } from "./config/env.js";
 import { telegramBotConfig } from "./config/integrations-env.js";
@@ -81,8 +81,6 @@ export interface AppServices {
 	readonly pushDevices: PushDevices;
 	/** APNs; undefined when push is off (primary tenant with APNS_* only). */
 	readonly pushSender?: PushSender;
-	/** Which app each sign-in goes to, for the growth report (ADR 0011). */
-	readonly clientUsage: ClientUsageRecorder;
 }
 
 export interface ServiceDependencies {
@@ -142,13 +140,11 @@ export function createServices(deps: ServiceDependencies): AppServices {
 	auditProviderEvents(deps.provider, deps.accounts.audit);
 	const pushDevices = new PushDevices(db, tenant);
 	forgetRevokedPushDevices(deps.provider, pushDevices, deps.logger);
-	const clientUsage = new ClientUsageRecorder(
-		db,
-		tenant,
-		deps.logger,
-		env.CLIENT_USAGE_ENABLED,
+	// Which app each authorization goes to, for the growth report (ADR 0011).
+	recordClientUsage(
+		deps.provider,
+		new ClientUsageRecorder(db, tenant, deps.logger, env.CLIENT_USAGE_ENABLED),
 	);
-	recordSsoUsage(deps.provider, clientUsage);
 	return {
 		tenant,
 		issuer: tenant.issuer,
@@ -173,7 +169,6 @@ export function createServices(deps: ServiceDependencies): AppServices {
 		idTokenKeys: idTokenVerificationKeys(deps.jwks),
 		accountApiLimits: deps.accountApiLimits ?? DEFAULT_ACCOUNT_API_LIMITS,
 		pushDevices,
-		clientUsage,
 		pushSender: deps.integrations
 			? undefined
 			: (deps.pushSender ?? envPushSender(deps)),

@@ -216,7 +216,7 @@ Collection mới `push_devices` (có `tenantId`, unique `{tenantId, token}`, TTL
 
 ## Số liệu tăng trưởng (ADR 0011)
 
-Collection `client_usage` (có `tenantId`, TTL 400 ngày trên `at`) tự tạo chỉ mục khi khởi động, hoặc trước đó bằng `dist/create-tenant-indexes.mjs`. Cập nhật `/privacy` đi cùng bản này. Đọc số liệu trong `/var/www/hoandat-auth`: `node --env-file=.env dist/growth-report.mjs` (8 tuần, mọi tenant), thêm `--weeks N`, `--tenant <id>`, `--json`. Script chỉ đọc. Có sự cố thì đặt `CLIENT_USAGE_ENABLED=false` trong `.env` rồi `pm2 startOrReload infra/ecosystem.config.cjs --update-env`; dữ liệu đã ghi tự hết theo TTL.
+Collection `client_usage` (có `tenantId`, TTL 400 ngày trên `at`) tự tạo chỉ mục khi khởi động, hoặc trước đó bằng `dist/create-tenant-indexes.mjs`. Cập nhật `/privacy` đi cùng bản này. Đọc số liệu trong `/var/www/hoandat-auth`: `node --env-file=.env dist/growth-report.mjs` (8 tuần và 28 ngày gần nhất, mọi tenant), thêm `--weeks N` (tối đa 57), `--tenant <id>`, `--json`. Script chỉ đọc. Có sự cố thì đặt `CLIENT_USAGE_ENABLED=false` trong `.env` rồi `pm2 startOrReload infra/ecosystem.config.cjs --update-env`; dữ liệu đã ghi tự hết theo TTL.
 
 ## Đăng nhập cho người duyệt ứng dụng (ADR 0010)
 

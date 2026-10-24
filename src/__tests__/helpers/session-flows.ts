@@ -23,10 +23,15 @@ export async function signedInBrowser(
 	return page.browser;
 }
 
-/** Tunelo CLI device login, approved in `browser` (already signed in). */
+/**
+ * Tunelo CLI device login, approved in `browser`. The browser is already
+ * signed in, unless `signInAs` is given: then the user code leads to the
+ * login page and `account` signs in with its linked Google account first.
+ */
 export async function cliLogin(
 	idp: TestIdp,
 	browser: TestBrowser,
+	signInAs?: TestAccount,
 ): Promise<{ config: client.Configuration; refreshToken: string }> {
 	const config = await discoverClient(
 		idp,
@@ -37,13 +42,21 @@ export async function cliLogin(
 		scope: "openid offline_access tunnels:open tunnels:read",
 	});
 	const input = await (await browser.request(device.verification_uri)).text();
-	const approval = await browser.navigate(device.verification_uri, {
+	let approval = await browser.navigate(device.verification_uri, {
 		form: {
 			xsrf: formField(input, "xsrf"),
 			user_code: device.user_code,
 			confirm: "yes",
 		},
 	});
+	if (signInAs) {
+		const login = /\/interaction\/([\w-]+)/.exec(approval.response.url)?.[1];
+		if (!login) throw new Error("the device flow did not ask to sign in");
+		idp.fake.nextLogins.push(linkedGoogleProfile(signInAs));
+		approval = await browser.navigate(
+			`${idp.issuer}/interaction/${login}/upstream/google`,
+		);
+	}
 	const uid = /\/interaction\/([\w-]+)/.exec(approval.response.url)?.[1] ?? "";
 	await browser.navigate(`${idp.issuer}/interaction/${uid}/consent`, {
 		form: { csrf: formField(await approval.response.text(), "csrf") },

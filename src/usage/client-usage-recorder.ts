@@ -9,9 +9,9 @@ import {
 
 /**
  * Writes one `client_usage` document per sign-in into an app, for the
- * tenant it was built for. Two callers, one sign-in each: `finishLogin`
- * for a sign-in on the IdP's pages, the provider's `authorization.success`
- * for an app reached through a live IdP session (`recordSsoUsage`).
+ * tenant it was built for. One caller: the provider's
+ * `authorization.success` listener (`recordClientUsage`), once per
+ * authorization an app receives.
  *
  * Recording never throws: the sign-in has already happened and must not
  * fail because of a statistic, so a failed write is only logged (client

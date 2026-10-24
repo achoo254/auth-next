@@ -39,24 +39,28 @@ export function auditProviderEvents(
 }
 
 /**
- * Records an app reached through a live IdP session. oidc-provider emits
- * `authorization.success` for every authorization it answers (the
- * authorization endpoint and the device flow), including the one that
- * resumes after a sign-in on the IdP's pages. That sign-in is already
- * recorded by `finishLogin`; its login result is still on the context
- * here (a consent step after it carries it over), so it is skipped and
- * each authorization counts once.
+ * Records every authorization an app receives, from this one point.
+ * oidc-provider emits `authorization.success` for each authorization it
+ * answers: at the authorization endpoint (lib/actions/authorization/
+ * respond.js) and in the device flow once the user code is approved
+ * (device.js, after `resume`). When the authorization resumes an
+ * interaction, `resume` puts the interaction's result on
+ * `ctx.oidc.result`; a consent step after a sign-in merges the login
+ * result into it. So a login result here means the person signed in on
+ * the IdP's pages for this authorization ("interactive"); without one, a
+ * live IdP session let them through ("sso"). A sign-in followed by a
+ * denied consent never gets here and is not counted.
  */
-export function recordSsoUsage(
+export function recordClientUsage(
 	provider: Provider,
 	usage: Pick<ClientUsageRecorder, "record">,
 ): void {
 	provider.on("authorization.success", (ctx) => {
-		if (ctx.oidc?.result?.login) return;
 		const accountId = ctx.oidc?.session?.accountId;
 		const clientId = ctx.oidc?.client?.clientId;
 		if (!accountId || !clientId) return;
-		void usage.record(accountId, clientId, "sso");
+		const kind = ctx.oidc.result?.login ? "interactive" : "sso";
+		void usage.record(accountId, clientId, kind);
 	});
 }
 

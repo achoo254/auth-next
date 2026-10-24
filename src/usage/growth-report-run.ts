@@ -1,4 +1,5 @@
 import type { Db } from "mongodb";
+import { CLIENT_USAGE_RETENTION_DAYS } from "./client-usage-model.js";
 import type { GrowthReport } from "./growth-report-format.js";
 import {
 	growthReportTenantIds,
@@ -6,13 +7,18 @@ import {
 } from "./growth-report-queries.js";
 
 export const DEFAULT_REPORT_WEEKS = 8;
-const MAX_REPORT_WEEKS = 60;
+/**
+ * As many weeks as `client_usage` keeps whole: the oldest week starts less
+ * than 7 × 57 = 399 days ago, inside the 400-day TTL, so no week shown has
+ * lost records to it. (New accounts are not subject to the TTL.)
+ */
+export const MAX_REPORT_WEEKS = Math.floor(CLIENT_USAGE_RETENTION_DAYS / 7);
 
 export const GROWTH_REPORT_USAGE =
 	"usage: growth-report [--weeks N] [--tenant <tenantId>] [--json]";
 
 export interface GrowthReportOptions {
-	/** Weeks shown, the current one included (1 to 60). */
+	/** Weeks shown, the current one included (1 to MAX_REPORT_WEEKS). */
 	readonly weeks: number;
 	/** Only this tenant; every tenant with data when absent. */
 	readonly tenantId?: string;

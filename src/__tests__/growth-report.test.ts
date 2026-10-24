@@ -69,7 +69,14 @@ beforeAll(async () => {
 	const early = await account(TENANT, "early_one", SUNDAY_2330);
 	const late = await account(TENANT, "late_one", MONDAY_0030);
 	await account(TENANT, "no_app_yet", MIDWEEK);
-	await account(TENANT, "app_reviewer", MIDWEEK, { reviewLogin: true });
+	const reviewer = await account(TENANT, "app_reviewer", MIDWEEK, {
+		reviewLogin: true,
+	});
+	const lapsed = await account(
+		TENANT,
+		"lapsed_one",
+		new Date("2026-01-05T00:00:00Z"),
+	);
 	const old = await account(
 		TENANT,
 		"old_timer",
@@ -100,6 +107,12 @@ beforeAll(async () => {
 	used(old, "chat-web", MIDWEEK, "interactive");
 	used(old, "chat-mobile", MIDWEEK);
 	used(foreign, "chat-web", MIDWEEK, "interactive", OTHER);
+	// The App Store reviewer is never counted, whatever app it opens.
+	used(reviewer, "chat-web", MIDWEEK, "interactive");
+	used(reviewer, "localman-web", LAST_WEEK);
+	// Two apps 29 days before NOW: outside the last 28 days and both weeks.
+	used(lapsed, "chat-web", new Date("2026-09-25T05:00:00Z"));
+	used(lapsed, "miu-web", new Date("2026-09-25T06:00:00Z"));
 	await clientUsageCollection(db).insertMany(usage);
 });
 
@@ -118,7 +131,7 @@ describe("Saigon weeks", () => {
 });
 
 describe("growth report", () => {
-	it("gives each tenant's four weekly numbers from its own data only", async () => {
+	it("gives each tenant's numbers from its own data only, the reviewer left out", async () => {
 		const report = await buildGrowthReport(db, { weeks: 2 }, NOW);
 		expect(report.tenants.map((tenant) => tenant.tenantId)).toEqual([
 			TENANT.id,
@@ -153,11 +166,24 @@ describe("growth report", () => {
 				{ clientId: "scribe-web", interactive: 0, sso: 1, total: 1 },
 			],
 		});
+		// Each account active in the last 28 days used two apps there, though
+		// early_one and old_timer reached one app in some week.
+		expect(report.tenants[0]?.rolling).toEqual({
+			days: 28,
+			since: "2026-09-26T05:00:00.000Z",
+			activeAccounts: 3,
+			multiAppAccounts: 3,
+			multiAppShare: 1,
+		});
 		expect(report.tenants[1]?.weeks.at(-1)).toMatchObject({
 			newAccounts: 1,
 			firstApps: { chat: 1 },
 			activeAccounts: 1,
 			signIns: [{ clientId: "chat-web", interactive: 1, sso: 0, total: 1 }],
+		});
+		expect(report.tenants[1]?.rolling).toMatchObject({
+			activeAccounts: 1,
+			multiAppAccounts: 0,
 		});
 	});
 
@@ -187,6 +213,9 @@ describe("growth report", () => {
 		expect(text).toContain("Week of 2026-10-19 (current, so far)");
 		expect(text).toContain("Signed in to 2+ apps:  0/0 (-)");
 		expect(text).toContain("chat-web: 1 (1 interactive, 0 sso)");
+		expect(text).toContain(
+			"Last 28 days (since 2026-09-26T05:00:00.000Z)\n    Signed in to 2+ apps:  0/1 (0.0%)",
+		);
 		expect(JSON.parse(JSON.stringify(report))).toMatchObject({
 			timeZone: "Asia/Saigon",
 			weekStartsOn: "monday",
@@ -199,9 +228,11 @@ describe("growth report", () => {
 		expect(
 			parseGrowthReportArgs(["--weeks", "12", "--tenant", "primary", "--json"]),
 		).toEqual({ weeks: 12, tenantId: "primary", json: true });
+		// 57 whole weeks fit in the 400-day retention of client_usage.
+		expect(parseGrowthReportArgs(["--weeks", "57"]).weeks).toBe(57);
 		for (const bad of [
 			["--weeks", "0"],
-			["--weeks", "61"],
+			["--weeks", "58"],
 			["--weeks", "two"],
 			["--tenant"],
 			["--tenant", "--json"],
