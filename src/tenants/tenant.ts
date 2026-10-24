@@ -49,6 +49,13 @@ export interface Tenant {
 		/** Miu World: the primary tenant only, and only when it is configured. */
 		readonly miu?: string;
 	};
+	/**
+	 * A registry tenant whose `scribe.<domain>` certificate is issued: only
+	 * then does /apps link to its Scribe (a link before that fails on TLS).
+	 * The scribe-web client and the internal lookup never wait for it, since
+	 * Scribe sets itself up through them before the certificate exists.
+	 */
+	readonly scribeCertificateIssued?: boolean;
 }
 
 /**

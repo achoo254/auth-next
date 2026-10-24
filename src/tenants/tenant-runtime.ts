@@ -102,6 +102,7 @@ export function tenantFromDocument(
 		webApps: webAppsFor(document.domain, {
 			scribe: scribeTenants && document.scribe !== undefined,
 		}),
+		scribeCertificateIssued: document.scribeCertificate?.status === "issued",
 	};
 }
 

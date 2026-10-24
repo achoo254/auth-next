@@ -5,6 +5,7 @@ import type { TenantDocument } from "../tenants/tenant-registry.js";
 import { tenantFromDocument } from "../tenants/tenant-runtime.js";
 import { looksLikeAppHost } from "../tenants/tenant.js";
 import {
+	INTERNAL_SECRETS,
 	type MultiTenantServer,
 	getAs,
 	startMultiTenantServer,
@@ -114,10 +115,33 @@ describe("a registry tenant turning Scribe on and off", () => {
 	const apps = async (): Promise<string> =>
 		(await getAs(server, host, "/apps")).text();
 
-	it("gets scribe-web and a Scribe entry on /apps once turned on", async () => {
+	it("gets scribe-web once turned on, before its certificate", async () => {
 		expect(await authorize()).toBe(400);
 		expect(await apps()).not.toContain("https://scribe.acme.example.org");
 		await server.registry.setScribeEnabled(acme._id, true);
+		expect(await authorize()).toBe(303);
+		// scribe.<domain> has no certificate yet: /apps does not link to it.
+		expect(await apps()).not.toContain("https://scribe.acme.example.org");
+		await server.registry.setScribeCertificate(acme._id, {
+			status: "pending",
+			attempts: 0,
+		});
+		expect(await apps()).not.toContain("https://scribe.acme.example.org");
+	});
+
+	it("lists Scribe on /apps once the provisioner reports it issued", async () => {
+		const response = await fetch(
+			`${server.internalOrigin}/internal/certificates/${acme._id}?kind=scribe`,
+			{
+				method: "POST",
+				headers: {
+					authorization: `Basic ${Buffer.from(`provisioner:${INTERNAL_SECRETS.provisioner}`).toString("base64")}`,
+					"content-type": "application/json",
+				},
+				body: JSON.stringify({ outcome: "issued" }),
+			},
+		);
+		expect(response.status).toBe(204);
 		expect(await authorize()).toBe(303);
 		expect(await apps()).toContain('href="https://scribe.acme.example.org"');
 	});

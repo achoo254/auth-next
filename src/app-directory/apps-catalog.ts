@@ -10,7 +10,7 @@ import { type SafeHtml, html } from "../ui/html.js";
 /** Where the apps that sign in through this IdP live: the tenant's. */
 export type AppDirectoryTenant = Pick<
 	Tenant,
-	"id" | "issuer" | "domain" | "webApps"
+	"id" | "issuer" | "domain" | "webApps" | "scribeCertificateIssued"
 >;
 
 /** One palette hue per app, from the data-viz tokens (apps.css). */
@@ -77,9 +77,10 @@ function code(value: string): SafeHtml {
 /**
  * The first-party apps of src/oidc/clients.ts, plus the MCP clients that
  * register themselves for Localman's MCP resource. Chat is listed for every
- * tenant: each has its chat host (`webApps.chat`, chat.<domain>). Scribe and
- * Miu World only for the primary tenant, once configured (`webApps.scribe`,
- * `webApps.miu`).
+ * tenant: each has its chat host (`webApps.chat`, chat.<domain>). Scribe for
+ * the primary tenant once configured, and for a registry tenant once it
+ * turned Scribe on and its scribe.<domain> certificate is issued (ADR 0012).
+ * Miu World only for the primary tenant, once configured (`webApps.miu`).
  */
 export function listedApps(
 	tenant: AppDirectoryTenant,
@@ -131,12 +132,24 @@ export function listedApps(
 			href: tenant.webApps.tunelo,
 		},
 		chatWeb(tenant, i18n),
-		// Any tenant that turned Scribe on (ADR 0012); Miu World stays primary.
-		...(tenant.webApps.scribe ? [scribeWeb(tenant.webApps.scribe, i18n)] : []),
+		...(tenant.webApps.scribe && scribeReachable(tenant)
+			? [scribeWeb(tenant.webApps.scribe, i18n)]
+			: []),
 		...(tenant.id === PRIMARY_TENANT_ID && tenant.webApps.miu
 			? [miuWeb(tenant.webApps.miu, i18n)]
 			: []),
 	];
+}
+
+/**
+ * True when a link to the tenant's Scribe opens: the primary tenant serves
+ * it with its own certificate; a registry tenant's scribe.<domain> has a
+ * lineage of its own, and before it is issued the link fails on TLS.
+ */
+function scribeReachable(tenant: AppDirectoryTenant): boolean {
+	return (
+		tenant.id === PRIMARY_TENANT_ID || tenant.scribeCertificateIssued === true
+	);
 }
 
 function chatWeb(tenant: AppDirectoryTenant, i18n: Translator): ListedApp {

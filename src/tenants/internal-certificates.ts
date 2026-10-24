@@ -153,6 +153,12 @@ export function certificateRouter(
 			}
 			if (kind === "scribe") {
 				await registry.setScribeCertificate(tenant._id, certificate);
+				// /apps lists Scribe only once scribe.<d> has a certificate:
+				// rebuild the runtime when that changes (not on a renewal).
+				const wasIssued = previous.status === "issued";
+				if (wasIssued !== (certificate?.status === "issued")) {
+					await registry.touch(tenant._id);
+				}
 				res.status(204).end();
 				return;
 			}

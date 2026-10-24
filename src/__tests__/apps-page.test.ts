@@ -83,12 +83,30 @@ describe("app list page", () => {
 			testPage("en", "/apps"),
 		);
 		expect(other).not.toContain('data-id="app-scribe-web"');
-		const otherOn = renderAppsPage(
-			{ ...withScribe, id: "tenant-inetdev" },
+	});
+
+	it("lists a registry tenant's Scribe only once its certificate is issued", () => {
+		const scribe = "https://scribe.inetdev.example";
+		const tenant = {
+			...STAGING,
+			id: "tenant-inetdev",
+			webApps: { ...STAGING.webApps, scribe },
+		};
+		// Turned on, scribe.<domain> certificate still pending: a link would
+		// fail on TLS, so neither the card nor the hub shows Scribe.
+		const pending = renderAppsPage(tenant, testPage("en", "/apps"));
+		expect(pending).not.toContain('data-id="app-scribe-web"');
+		expect(pending).not.toContain(scribe);
+		expect(pending).not.toContain(">Scribe</text>");
+		expect(pending).toContain("signs you in to Localman, Tunelo, and Chat.");
+
+		const issued = renderAppsPage(
+			{ ...tenant, scribeCertificateIssued: true },
 			testPage("en", "/apps"),
 		);
-		expect(otherOn).toContain('data-id="app-open-scribe-web"');
-		expect(otherOn).toContain(`href="${scribe}"`);
+		expect(issued).toContain('data-id="app-open-scribe-web"');
+		expect(issued).toContain(`href="${scribe}"`);
+		expect(issued).toContain(">Scribe</text>");
 	});
 
 	it("lists Miu World for the primary tenant once its client is configured", () => {
