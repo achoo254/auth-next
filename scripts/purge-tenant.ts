@@ -7,40 +7,36 @@
  *   node --env-file=.env dist/purge-tenant.mjs <domain>            counts only
  *   node --env-file=.env dist/purge-tenant.mjs <domain> --confirm  deletes
  *
+ * `--any-status` purges a tenant whatever its status or age (the owner
+ * shutting tenants down); it still prints the tenant and its counts.
+ *
  * Back up the database first (infra/backup-auth-db.sh).
  */
 import { parseEnv } from "../src/config/env.js";
 import { connectMongo } from "../src/db/connect-mongo.js";
 import { createLogger } from "../src/logger.js";
+import { purgeRefusal } from "../src/tenants/purge-eligibility.js";
 import {
 	countTenantData,
 	purgeTenantData,
 } from "../src/tenants/tenant-collections.js";
 import { TenantRegistry } from "../src/tenants/tenant-registry.js";
 
-const RETENTION_MS = 14 * 24 * 60 * 60 * 1000;
-
 async function main(): Promise<number> {
 	const [domain] = process.argv.slice(2);
-	if (!domain) throw new Error("usage: purge-tenant <domain> [--confirm]");
+	if (!domain || domain.startsWith("--")) {
+		throw new Error("usage: purge-tenant <domain> [--any-status] [--confirm]");
+	}
 	const confirm = process.argv.includes("--confirm");
+	const anyStatus = process.argv.includes("--any-status");
 	const env = parseEnv(process.env);
 	const connection = await connectMongo(env.MONGO_URL, createLogger("warn"));
 	try {
 		const tenant = await new TenantRegistry(connection.db).findByDomain(domain);
-		if (tenant?.status !== "self_hosted" || !tenant.enrolledAt) {
-			throw new Error(
-				`${domain} is not a tenant that moved to its own servers`,
-			);
-		}
-		const since = Date.now() - tenant.enrolledAt.getTime();
-		if (since < RETENTION_MS) {
-			const days = Math.ceil((RETENTION_MS - since) / (24 * 60 * 60 * 1000));
-			throw new Error(
-				`${domain} moved less than 14 days ago; ${days} day(s) left`,
-			);
-		}
+		const refusal = purgeRefusal(domain, tenant, Date.now(), anyStatus);
+		if (refusal !== undefined || !tenant) throw new Error(refusal);
 		process.stdout.write(`tenant: ${tenant._id}\n`);
+		process.stdout.write(`status: ${tenant.status}\n`);
 		const counts = await countTenantData(connection.db, tenant._id);
 		for (const { collection, count } of counts) {
 			process.stdout.write(`${collection}: ${count}\n`);

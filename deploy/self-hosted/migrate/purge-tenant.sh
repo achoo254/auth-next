@@ -4,6 +4,8 @@
 # days (the backups' window, the way back). On the shared server, as root:
 #   bash purge-tenant.sh <domain>            counts only
 #   bash purge-tenant.sh <domain> --confirm  deletes
+# --any-status (after the domain, with or without --confirm) purges a tenant
+# whatever its status or age: the owner shutting tenants down.
 # The IdP's documents and sealed secrets (signing keys last), Localman's
 # and Tunelo's documents, the chat rows. Back up the three databases
 # first. Afterwards remove the tenant's chat process and env file
@@ -11,17 +13,26 @@
 # and counts, never a secret.
 set -euo pipefail
 
-DOMAIN="${1:?usage: purge-tenant.sh <domain> [--confirm]}"
+DOMAIN="${1:?usage: purge-tenant.sh <domain> [--any-status] [--confirm]}"
+shift
 CONFIRM=""
-if [ "${2:-}" = --confirm ]; then CONFIRM=1; fi
+ANY_STATUS=""
+for flag in "$@"; do
+	case "$flag" in
+	--confirm) CONFIRM=1 ;;
+	--any-status) ANY_STATUS=1 ;;
+	*) echo "purge-tenant: unknown flag $flag" >&2; exit 1 ;;
+	esac
+done
 HERE="$(cd "$(dirname "$0")" && pwd)"
 IDP=/var/www/hoandat-auth
 die() { echo "purge-tenant: $*" >&2; exit 1; }
 [ "$(id -u)" -eq 0 ] || die "run as root"
 [[ "$DOMAIN" =~ ^[a-z0-9-]+(\.[a-z0-9-]+)+$ ]] || die "domain: a plain lowercase hostname"
 
-# The IdP refuses a tenant that is not self_hosted for 14 days, and names it.
-counts="$(cd "$IDP" && node --env-file=.env dist/purge-tenant.mjs "$DOMAIN")"
+# The IdP refuses a tenant that is not self_hosted for 14 days (unless
+# --any-status), and names it.
+counts="$(cd "$IDP" && node --env-file=.env dist/purge-tenant.mjs "$DOMAIN" ${ANY_STATUS:+--any-status})"
 TENANT_ID="$(sed -n 's/^tenant: \(ten_[A-Za-z0-9_-]*\)$/\1/p' <<<"$counts")"
 [ -n "$TENANT_ID" ] || die "the IdP did not name the tenant"
 echo "== IdP ($TENANT_ID)"
@@ -50,7 +61,7 @@ fi
 
 if [ -n "$CONFIRM" ]; then
 	echo "== IdP"
-	(cd "$IDP" && node --env-file=.env dist/purge-tenant.mjs "$DOMAIN" --confirm)
+	(cd "$IDP" && node --env-file=.env dist/purge-tenant.mjs "$DOMAIN" ${ANY_STATUS:+--any-status} --confirm)
 else
 	echo "Counts only: run again with --confirm to delete"
 fi
