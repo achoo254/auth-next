@@ -56,7 +56,7 @@ Bản gỡ tenant theo domain, tự host và Scribe trên tenant: IdP chỉ dự
 
 Rollback: chép lại `dist`, `static`, `package.json`, `.env` từ thư mục backup rồi reload; collection khôi phục từ `mongodump` của bước 5.
 
-**Bản ghi deploy:** _(chưa deploy; người deploy ghi commit, giờ, thư mục backup, kết quả kiểm ở đây)_
+**Bản ghi deploy (24/10/2026):** bản `c2aa9cb` (đơn tenant) lên production lúc 23:31 qua `infra/deploy.sh`, từ một phiên làm việc khác (đi cùng commit `99b6b04` về privacy YouTube), trước khi Scribe, Localman, Tunelo kịp bỏ API nội bộ; Scribe chuyển bản mới cùng phút đó, Localman 23:33, Tunelo ngay sau. Sau deploy: `/claim`, `/admin`, `/.well-known/hoandat-enrollment` trả 404, discovery và `/jwks` 200 với cùng hai `kid`, không còn tiến trình nghe cổng 4501, log không có lỗi. 23:4x dọn server: bỏ 13 biến env của tính năng đã gỡ (`.env` cũ ở `/root/backup-261024-single-tenant/hoandat-auth.env.before-phase07`), reload, healthz ok; chuyển `00-tenants-http.conf` sang `/root/nginx-bak-261024/` (`nginx -T` không còn `$tenant_`), gỡ bốn unit `hoandat-tenant-*` (file unit cất trong thư mục backup), xoá `/usr/local/lib/hoandat-tenant-provisioner`, `/var/lib/hoandat-tenant-acme`, `/etc/letsencrypt-tenants`, `/var/www/hoandat-auth/deploy`; `shred` `/etc/hoandat-tenant-provisioner/`, `secrets/provisioner.pub.pem`, `secrets/scribe-sealing.pub.pem`. MongoDB: `mongodump` (`db/auth-before-drop.archive.gz`) rồi drop `tenants` (2 document), `tenant_claims` (0), `tenant_secrets` (0, đã purge trước đó). Bản sao `.env` trên iCloud cập nhật, khoá provisioner trên iCloud đã xoá. Quay lại: chép `dist`, `static`, `package.json`, `.env` từ thư mục backup rồi reload; collection khôi phục bằng `mongorestore` từ dump trên.
 
 ## Xoá tài khoản dừng giữa chừng
 
