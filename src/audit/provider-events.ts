@@ -1,6 +1,7 @@
 import type Provider from "oidc-provider";
 import type { Logger } from "../logger.js";
 import type { PushDevices } from "../push/push-devices.js";
+import type { ClientUsageRecorder } from "../usage/client-usage-recorder.js";
 import type { AuditOutbox } from "./audit-outbox.js";
 
 /**
@@ -34,6 +35,28 @@ export function auditProviderEvents(
 			scope: everywhere ? "all" : "client",
 			...(clientId ? { clientId } : {}),
 		});
+	});
+}
+
+/**
+ * Records an app reached through a live IdP session. oidc-provider emits
+ * `authorization.success` for every authorization it answers (the
+ * authorization endpoint and the device flow), including the one that
+ * resumes after a sign-in on the IdP's pages. That sign-in is already
+ * recorded by `finishLogin`; its login result is still on the context
+ * here (a consent step after it carries it over), so it is skipped and
+ * each authorization counts once.
+ */
+export function recordSsoUsage(
+	provider: Provider,
+	usage: Pick<ClientUsageRecorder, "record">,
+): void {
+	provider.on("authorization.success", (ctx) => {
+		if (ctx.oidc?.result?.login) return;
+		const accountId = ctx.oidc?.session?.accountId;
+		const clientId = ctx.oidc?.client?.clientId;
+		if (!accountId || !clientId) return;
+		void usage.record(accountId, clientId, "sso");
 	});
 }
 

@@ -28,7 +28,7 @@ CHAT_TENANTS=/opt/chat/tenants
 # Every collection with tenantId of the IdP (TENANT_COLLECTIONS; a test keeps
 # this list equal to it).
 IDP_COLLECTIONS="accounts one_time_tokens audit_outbox session_meta grant_meta
-	push_devices
+	push_devices client_usage
 	oidc_accesstoken oidc_authorizationcode oidc_backchannelauthenticationrequest
 	oidc_client oidc_clientcredentials oidc_devicecode oidc_grant
 	oidc_initialaccesstoken oidc_interaction oidc_preauthorizedcode

@@ -15,7 +15,8 @@ const manifest = z
 // application source is bundled. The client check ships too, so it runs in
 // the production image: `node dist/seed-clients.mjs`, and so does the key
 // generator, so signing keys are created on the server and never travel,
-// and the tenant migration steps (indexes before a deploy, backfill after).
+// the tenant migration steps (indexes before a deploy, backfill after)
+// and the read-only growth report.
 rmSync(distDir, { recursive: true, force: true });
 await build({
 	entryPoints: {
@@ -28,6 +29,7 @@ await build({
 		"export-tenant-secrets": resolve(root, "scripts/export-tenant-secrets.ts"),
 		"import-tenant": resolve(root, "scripts/import-tenant.ts"),
 		"purge-tenant": resolve(root, "scripts/purge-tenant.ts"),
+		"growth-report": resolve(root, "scripts/growth-report.ts"),
 		"finish-account-deletion": resolve(
 			root,
 			"scripts/finish-account-deletion.ts",

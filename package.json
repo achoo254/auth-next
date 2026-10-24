@@ -23,7 +23,8 @@
 		"conformance:idp": "tsx e2e/support/conformance-server.ts",
 		"check:tokens": "tsx scripts/check-tokens.ts",
 		"check:brand": "check-brand --config brand.config.json --dir src --hint 'read it from src/brand.ts'",
-		"seed:clients": "tsx --env-file-if-exists=.env scripts/seed-clients.ts"
+		"seed:clients": "tsx --env-file-if-exists=.env scripts/seed-clients.ts",
+		"growth:report": "tsx --env-file-if-exists=.env scripts/growth-report.ts"
 	},
 	"dependencies": {
 		"@fontsource/inter": "^5.3.0",

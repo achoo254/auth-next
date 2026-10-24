@@ -4,7 +4,7 @@ import type { Translation } from "../translation.js";
 export const viPrivacy: Translation<typeof enPrivacy> = {
 	"privacy.title": "Chính sách quyền riêng tư",
 	"privacy.subtitle":
-		"Áp dụng cho dịch vụ đăng nhập auth.{brandDomain}. Cập nhật ngày 20/10/2026.",
+		"Áp dụng cho dịch vụ đăng nhập auth.{brandDomain}. Cập nhật ngày 24/10/2026.",
 	"privacy.stored.title": "Dữ liệu được lưu",
 	"privacy.stored.profile":
 		"Tên đăng nhập, địa chỉ email, tên hiển thị và ảnh đại diện.",
@@ -16,11 +16,13 @@ export const viPrivacy: Translation<typeof enPrivacy> = {
 		"Khi bạn liên kết Telegram: mã chat và tên người dùng Telegram.",
 	"privacy.stored.sessions":
 		"Phiên đăng nhập, thiết bị và ứng dụng bạn đã cấp quyền, kèm thời điểm sử dụng.",
+	"privacy.stored.appUsage":
+		"Lần đăng nhập vào từng ứng dụng (mã ứng dụng, thời điểm, đăng nhập mới hay dùng phiên sẵn có), không kèm địa chỉ IP hay trình duyệt; giữ 400 ngày.",
 	"privacy.stored.securityLog":
 		"Nhật ký bảo mật (đăng nhập, liên kết hoặc gỡ phương thức đăng nhập, thu hồi phiên và quyền) gồm địa chỉ IP và trình duyệt; IP và trình duyệt của sự kiện chưa gửi đi bị xoá sau 30 ngày.",
 	"privacy.purpose.title": "Mục đích sử dụng",
 	"privacy.purpose.body":
-		"Dữ liệu chỉ dùng để xác thực bạn, giữ phiên đăng nhập, khôi phục tài khoản và phát hiện truy cập bất thường. Dịch vụ không gửi email, không hiển thị quảng cáo và không bán dữ liệu.",
+		"Dữ liệu chỉ dùng để xác thực bạn, giữ phiên đăng nhập, khôi phục tài khoản, phát hiện truy cập bất thường và thống kê tổng hợp số người dùng theo ứng dụng. Dịch vụ không gửi email, không hiển thị quảng cáo, không bán và không chia sẻ dữ liệu hay số liệu thống kê này.",
 	"privacy.sharing.title": "Chia sẻ",
 	"privacy.sharing.body":
 		"Thông tin hồ sơ chỉ được cấp cho các ứng dụng do cùng chủ sở hữu vận hành (Localman, Tunelo) hoặc ứng dụng bạn đã đồng ý cấp quyền, trong phạm vi bạn đồng ý. Không chia sẻ cho bên thứ ba nào khác.",
@@ -28,7 +30,7 @@ export const viPrivacy: Translation<typeof enPrivacy> = {
 	"privacy.rights.body":
 		"Tại trang {account}, bạn xem và sửa hồ sơ, gỡ liên kết Google, GitHub, Apple hoặc Telegram, thu hồi phiên và ứng dụng đã cấp quyền.",
 	"privacy.rights.deleteHere":
-		"Bạn tự xoá tài khoản tại trang {account} (mục Xoá tài khoản). Tài khoản bị xoá ngay: phiên, thiết bị, liên kết và hồ sơ bị xoá; nhật ký bảo mật chỉ giữ loại sự kiện, thời điểm và mã tài khoản.",
+		"Bạn tự xoá tài khoản tại trang {account} (mục Xoá tài khoản). Tài khoản bị xoá ngay: phiên, thiết bị, liên kết, lịch sử đăng nhập ứng dụng và hồ sơ bị xoá; nhật ký bảo mật chỉ giữ loại sự kiện, thời điểm và mã tài khoản.",
 	"privacy.rights.deleteContact": "Để xoá tài khoản, liên hệ {email}.",
 	"privacy.rights.deleteHelp": "Nếu không xoá được, liên hệ {email}.",
 	"privacy.storage.title": "Lưu trữ",

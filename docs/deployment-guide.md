@@ -214,6 +214,10 @@ Collection mới `push_devices` (có `tenantId`, unique `{tenantId, token}`, TTL
 - Telegram (đã bật 2026-10-09 với `@auth_hoandat_bot`): `TELEGRAM_BOT_TOKEN`, `TELEGRAM_BOT_USERNAME`, `TELEGRAM_WEBHOOK_SECRET` nằm trong `.env`; webhook `https://auth.hoandat.com/telegram/webhook` đặt bằng `setWebhook` với `secret_token` và `allowed_updates=["message","callback_query"]`. Khi xoay token: cập nhật `.env`, restart, đặt lại webhook.
 - Audit sang Localman: điền `AUDIT_EVENTS_URL`, `AUDIT_CLIENT_ID`, `AUDIT_CLIENT_SECRET` khi Localman có endpoint.
 
+## Số liệu tăng trưởng (ADR 0011)
+
+Collection `client_usage` (có `tenantId`, TTL 400 ngày trên `at`) tự tạo chỉ mục khi khởi động, hoặc trước đó bằng `dist/create-tenant-indexes.mjs`. Cập nhật `/privacy` đi cùng bản này. Đọc số liệu trong `/var/www/hoandat-auth`: `node --env-file=.env dist/growth-report.mjs` (8 tuần, mọi tenant), thêm `--weeks N`, `--tenant <id>`, `--json`. Script chỉ đọc. Có sự cố thì đặt `CLIENT_USAGE_ENABLED=false` trong `.env` rồi `pm2 startOrReload infra/ecosystem.config.cjs --update-env`; dữ liệu đã ghi tự hết theo TTL.
+
 ## Đăng nhập cho người duyệt ứng dụng (ADR 0010)
 
 Tắt mặc định; chỉ bật trong thời gian App Store duyệt app (tài khoản demo theo Guideline 2.1), chỉ ở tenant chính.

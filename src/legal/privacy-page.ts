@@ -15,6 +15,7 @@ const STORED: readonly MessageKey[] = [
 	"privacy.stored.providers",
 	"privacy.stored.telegram",
 	"privacy.stored.sessions",
+	"privacy.stored.appUsage",
 	"privacy.stored.securityLog",
 ];
 

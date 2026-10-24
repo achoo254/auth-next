@@ -67,6 +67,7 @@ async function leftovers(
 					{ _id: accountId },
 					{ _id: { $in: [...grantIds] } },
 					{ accountId },
+					{ sub: accountId },
 					{ grantId: { $in: [...grantIds] } },
 					{ "payload.accountId": accountId },
 					{ "payload.session.accountId": accountId },
@@ -157,6 +158,9 @@ describe("delete my account at /account", () => {
 		const otherBrowser = await signedInBrowser(idp, other);
 		const grants = await grantIdsOf(account._id);
 		expect(grants.length).toBeGreaterThanOrEqual(2);
+		expect(await leftovers(account._id, grants)).toMatchObject({
+			client_usage: expect.any(Number),
+		});
 		const otherLeftBefore = await leftovers(
 			other._id,
 			await grantIdsOf(other._id),

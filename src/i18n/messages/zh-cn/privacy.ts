@@ -4,7 +4,7 @@ import type { Translation } from "../translation.js";
 export const zhPrivacy: Translation<typeof enPrivacy> = {
 	"privacy.title": "隐私政策",
 	"privacy.subtitle":
-		"适用于登录服务 auth.{brandDomain}。更新于 2026年10月20日。",
+		"适用于登录服务 auth.{brandDomain}。更新于 2026年10月24日。",
 	"privacy.stored.title": "我们存储的数据",
 	"privacy.stored.profile": "用户名、邮箱地址、显示名称和头像。",
 	"privacy.stored.noPassword":
@@ -14,11 +14,13 @@ export const zhPrivacy: Translation<typeof enPrivacy> = {
 	"privacy.stored.telegram":
 		"当你关联 Telegram 时：聊天 ID 和 Telegram 用户名。",
 	"privacy.stored.sessions": "登录会话、设备和你已授权的应用，以及使用时间。",
+	"privacy.stored.appUsage":
+		"你登录各应用的记录（应用 ID、时间，以及是重新登录还是使用已有会话），不含 IP 地址和浏览器信息；保留 400 天。",
 	"privacy.stored.securityLog":
 		"安全日志（登录、关联或移除登录方式、撤销会话和权限），包含 IP 地址和浏览器；尚未发送的事件的 IP 地址和浏览器信息会在 30 天后删除。",
 	"privacy.purpose.title": "使用目的",
 	"privacy.purpose.body":
-		"数据仅用于验证你的身份、保持登录、恢复账号和发现异常访问。本服务不发送邮件、不展示广告，也不出售数据。",
+		"数据仅用于验证你的身份、保持登录、恢复账号、发现异常访问，以及汇总统计各应用的用户人数。本服务不发送邮件、不展示广告，不出售也不共享你的数据或这些统计。",
 	"privacy.sharing.title": "共享",
 	"privacy.sharing.body":
 		"个人资料只提供给同一所有者运营的应用（Localman、Tunelo）或你已授权的应用，且仅限你同意的范围。不与任何其他第三方共享。",
@@ -26,7 +28,7 @@ export const zhPrivacy: Translation<typeof enPrivacy> = {
 	"privacy.rights.body":
 		"在{account}页面，你可以查看和编辑个人资料，取消关联 Google、GitHub、Apple 或 Telegram，退出会话并撤销已授权的应用。",
 	"privacy.rights.deleteHere":
-		"你可以在{account}页面（删除账号）自行删除账号。账号会立即删除：会话、设备、关联和个人资料都会被移除，安全日志只保留事件类型、时间和账号 ID。",
+		"你可以在{account}页面（删除账号）自行删除账号。账号会立即删除：会话、设备、关联、应用登录记录和个人资料都会被移除，安全日志只保留事件类型、时间和账号 ID。",
 	"privacy.rights.deleteContact": "如需删除账号，请联系 {email}。",
 	"privacy.rights.deleteHelp": "如果无法删除，请联系 {email}。",
 	"privacy.storage.title": "存储",

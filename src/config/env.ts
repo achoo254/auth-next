@@ -15,6 +15,7 @@ import { checkMiuDevGroup, miuEnvShape } from "./miu-env.js";
 import { checkScribeDevGroup, scribeEnvShape } from "./scribe-env.js";
 import { checkTenantsGroup, tenantsEnvShape } from "./tenants-env.js";
 import { type TrustProxy, parseTrustProxy } from "./trust-proxy.js";
+import { usageEnvShape } from "./usage-env.js";
 
 const port = z.coerce.number().int().min(1).max(65_535);
 
@@ -150,6 +151,7 @@ const envSchema = z
 		...scribeEnvShape,
 		...miuEnvShape,
 		...iosEnvShape,
+		...usageEnvShape,
 	})
 	.superRefine((env, ctx) => {
 		checkIntegrationGroups(env, ctx);

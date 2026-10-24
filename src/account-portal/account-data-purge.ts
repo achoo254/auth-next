@@ -4,6 +4,7 @@ import { AUDIT_OUTBOX_COLLECTION } from "../audit/audit-outbox-model.js";
 import { GRANTABLE_MODELS, collectionNameFor } from "../oidc/mongo-adapter.js";
 import { PUSH_DEVICES_COLLECTION } from "../push/push-devices.js";
 import { type TenantDb, inTenant } from "../tenants/tenant-data.js";
+import { CLIENT_USAGE_COLLECTION } from "../usage/client-usage-model.js";
 import { GRANT_META_COLLECTION } from "./device-grants.js";
 import { SESSION_META_COLLECTION } from "./session-directory.js";
 
@@ -59,6 +60,7 @@ function accountFilters(
 		{ collection: SESSION_META_COLLECTION, filter: { accountId } },
 		{ collection: GRANT_META_COLLECTION, filter: { accountId } },
 		{ collection: PUSH_DEVICES_COLLECTION, filter: { accountId } },
+		{ collection: CLIENT_USAGE_COLLECTION, filter: { sub: accountId } },
 		{
 			collection: ONE_TIME_TOKENS_COLLECTION,
 			filter: { "data.accountId": accountId },

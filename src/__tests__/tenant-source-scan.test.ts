@@ -23,6 +23,9 @@ const DATA_ACCESS_MODULES = new Set([
 	"src/account-portal/revoke-access.ts",
 	"src/account-portal/account-data-purge.ts",
 	"src/push/push-devices.ts",
+	"src/usage/client-usage-model.ts",
+	// The growth report lists every tenant with data, then reads each one.
+	"src/usage/growth-report-queries.ts",
 	"src/tenants/tenant-collections.ts",
 	"src/tenants/tenant-migration.ts",
 	// The registry and sealed secrets are keyed by tenant id themselves;
