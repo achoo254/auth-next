@@ -147,6 +147,7 @@ export async function createServing(
 					primary,
 					primaryHosts,
 					publicOrigin: `http://127.0.0.1:${env.PORT}`,
+					scribeTenants: env.SCRIBE_TENANTS,
 					logger,
 				})
 			: undefined;

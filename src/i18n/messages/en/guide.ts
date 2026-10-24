@@ -75,6 +75,8 @@ export const enGuide = {
 	"guide.users.accounts":
 		"Accounts: https://auth.<domain>. They are separate from {brandDomain} accounts, even for the same person.",
 	"guide.users.chat": "Chat: https://chat.<domain>.",
+	"guide.users.scribe":
+		"Scribe (transcription, meeting notes), once you add an AI key in the Scribe section of admin, where this server offers it: https://scribe.<domain>.",
 	"guide.users.localman":
 		"Localman: https://localman.<domain>; mocks at https://<secret>.localman.<domain>; MCP at https://localman.<domain>/mcp.",
 	"guide.users.tunelo":

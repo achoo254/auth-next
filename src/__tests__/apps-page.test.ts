@@ -62,7 +62,7 @@ describe("app list page", () => {
 		expect(html).toContain("signs you in to Localman, Tunelo, and Chat.");
 	});
 
-	it("lists Scribe for the primary tenant once its client is configured", () => {
+	it("lists Scribe for a tenant once it has Scribe", () => {
 		const scribe = "https://scribe.staging.example";
 		const withScribe = { ...STAGING, webApps: { ...STAGING.webApps, scribe } };
 		const html = renderAppsPage(withScribe, testPage("en", "/apps"));
@@ -77,12 +77,18 @@ describe("app list page", () => {
 
 		const unconfigured = renderAppsPage(STAGING, testPage("en", "/apps"));
 		expect(unconfigured).not.toContain('data-id="app-scribe-web"');
+		// A registry tenant has webApps.scribe only once it turned Scribe on.
 		const other = renderAppsPage(
-			{ ...withScribe, id: "tenant-inetdev" },
+			{ ...STAGING, id: "tenant-inetdev" },
 			testPage("en", "/apps"),
 		);
 		expect(other).not.toContain('data-id="app-scribe-web"');
-		expect(other).not.toContain(scribe);
+		const otherOn = renderAppsPage(
+			{ ...withScribe, id: "tenant-inetdev" },
+			testPage("en", "/apps"),
+		);
+		expect(otherOn).toContain('data-id="app-open-scribe-web"');
+		expect(otherOn).toContain(`href="${scribe}"`);
 	});
 
 	it("lists Miu World for the primary tenant once its client is configured", () => {

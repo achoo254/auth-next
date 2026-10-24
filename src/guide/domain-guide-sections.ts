@@ -184,6 +184,7 @@ export const SECTIONS: readonly Section[] = [
 				list: [
 					"guide.users.accounts",
 					"guide.users.chat",
+					"guide.users.scribe",
 					"guide.users.localman",
 					"guide.users.tunelo",
 				],

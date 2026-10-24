@@ -1,6 +1,16 @@
 import { createHmac } from "node:crypto";
-import type { StaticClientSecrets } from "../oidc/clients.js";
 import { STATIC_CLIENT_IDS } from "../oidc/clients.js";
+
+/**
+ * Secrets of a tenant's confidential first-party clients; `scribeWeb` is a
+ * registry tenant's (the primary tenant's comes from the environment).
+ */
+export interface StaticClientSecrets {
+	readonly localmanWeb: string;
+	readonly tuneloWeb: string;
+	readonly chatWeb: string;
+	readonly scribeWeb?: string;
+}
 
 function hmac(key: string, message: string): string {
 	return createHmac("sha256", key).update(message, "utf8").digest("base64url");
@@ -11,7 +21,8 @@ function hmac(key: string, message: string): string {
  * HMAC-SHA256 of `app-client-key\n<clientId>` under `APP_CLIENT_SECRET_KEY`
  * (which only the IdP holds), base64url. Localman gets the key of
  * `localman-web`, Tunelo the key of `tunelo-web`, chat the key of
- * `chat-web`, so a leak at one app never yields another's secrets.
+ * `chat-web`, Scribe the key of `scribe-web`, so a leak at one app never
+ * yields another's secrets.
  */
 export function appClientKey(masterKey: string, clientId: string): string {
 	return hmac(masterKey, `app-client-key\n${clientId}`);
@@ -51,6 +62,11 @@ export function derivedClientSecrets(
 			masterKey,
 			tenantId,
 			STATIC_CLIENT_IDS.chatWeb,
+		),
+		scribeWeb: derivedClientSecret(
+			masterKey,
+			tenantId,
+			STATIC_CLIENT_IDS.scribeWeb,
 		),
 	};
 }

@@ -74,6 +74,8 @@ export const zhGuide: Translation<typeof enGuide> = {
 	"guide.users.accounts":
 		"账号：https://auth.<domain>。与 {brandDomain} 的账号完全分开，即使是同一个人。",
 	"guide.users.chat": "Chat：https://chat.<domain>。",
+	"guide.users.scribe":
+		"Scribe（转写、会议纪要）：在管理页的 Scribe 部分添加 AI 密钥后可用（如果此服务器提供该部分）：https://scribe.<domain>。",
 	"guide.users.localman":
 		"Localman：https://localman.<domain>；mock 在 https://<secret>.localman.<domain>；MCP 在 https://localman.<domain>/mcp。",
 	"guide.users.tunelo":

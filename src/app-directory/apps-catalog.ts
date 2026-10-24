@@ -131,9 +131,8 @@ export function listedApps(
 			href: tenant.webApps.tunelo,
 		},
 		chatWeb(tenant, i18n),
-		...(tenant.id === PRIMARY_TENANT_ID && tenant.webApps.scribe
-			? [scribeWeb(tenant.webApps.scribe, i18n)]
-			: []),
+		// Any tenant that turned Scribe on (ADR 0012); Miu World stays primary.
+		...(tenant.webApps.scribe ? [scribeWeb(tenant.webApps.scribe, i18n)] : []),
 		...(tenant.id === PRIMARY_TENANT_ID && tenant.webApps.miu
 			? [miuWeb(tenant.webApps.miu, i18n)]
 			: []),

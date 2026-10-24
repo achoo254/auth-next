@@ -4,8 +4,10 @@ import { AccountRepository } from "../accounts/account-repository.js";
 import { AuditOutbox } from "../audit/audit-outbox.js";
 import type { Logger } from "../logger.js";
 import type { SigningJwks } from "../oidc/jwks.js";
-import type { TenantRegistry } from "./tenant-registry.js";
+import { SERVING_STATUSES, type TenantRegistry } from "./tenant-registry.js";
 import { resourcesFor } from "./tenant-resources.js";
+import { tenantFromDocument, tenantSigningKeys } from "./tenant-runtime.js";
+import type { TenantSecrets } from "./tenant-secrets.js";
 import type { Tenant } from "./tenant.js";
 import { normalizeTenantDomain } from "./tenant.js";
 
@@ -77,6 +79,39 @@ export function discoveryOf(
 		req.once("error", reject);
 		req.end();
 	});
+}
+
+/** A tenant served here, with its signing keys read on demand. */
+export interface ServingTenant {
+	readonly tenant: Tenant;
+	jwks(): Promise<SigningJwks>;
+}
+
+/**
+ * The tenant with this id if it is served here (primary, or a registry
+ * tenant `claimed`/`active`). `scribeTenants` is SCRIBE_TENANTS.
+ */
+export async function findServingTenant(
+	deps: {
+		readonly registry: TenantRegistry;
+		readonly secrets: TenantSecrets | undefined;
+		readonly primary: { readonly tenant: Tenant; readonly jwks: SigningJwks };
+		readonly scribeTenants: boolean;
+	},
+	id: string,
+): Promise<ServingTenant | undefined> {
+	if (id === deps.primary.tenant.id) {
+		return { tenant: deps.primary.tenant, jwks: async () => deps.primary.jwks };
+	}
+	const document = await deps.registry.findById(id);
+	const secrets = deps.secrets;
+	if (!document || !secrets || !SERVING_STATUSES.includes(document.status)) {
+		return undefined;
+	}
+	return {
+		tenant: tenantFromDocument(document, deps.scribeTenants),
+		jwks: () => tenantSigningKeys(secrets, document._id),
+	};
 }
 
 export interface SummaryDependencies {

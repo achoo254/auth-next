@@ -77,6 +77,8 @@ export const viGuide: Translation<typeof enGuide> = {
 	"guide.users.accounts":
 		"Tài khoản: https://auth.<domain>. Tách hẳn tài khoản ở {brandDomain}, kể cả khi cùng một người.",
 	"guide.users.chat": "Chat: https://chat.<domain>.",
+	"guide.users.scribe":
+		"Scribe (chép lời, biên bản), sau khi bạn thêm key AI ở mục Scribe của trang quản trị, nếu máy chủ có mục này: https://scribe.<domain>.",
 	"guide.users.localman":
 		"Localman: https://localman.<domain>; mock ở https://<secret>.localman.<domain>; MCP ở https://localman.<domain>/mcp.",
 	"guide.users.tunelo":

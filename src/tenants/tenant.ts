@@ -41,25 +41,33 @@ export interface Tenant {
 		readonly localman: string;
 		readonly tunelo: string;
 		readonly chat: string;
-		/** Scribe: the primary tenant only, and only when it is configured. */
+		/**
+		 * Scribe: the primary tenant when configured; a registry tenant once
+		 * SCRIBE_TENANTS is on and it saved a transcription key (ADR 0012).
+		 */
 		readonly scribe?: string;
 		/** Miu World: the primary tenant only, and only when it is configured. */
 		readonly miu?: string;
 	};
 }
 
-/** First labels of a tenant's app hosts (auth.<d>, chat.<d>, localman.<d>, tunnel.<d>). */
+/**
+ * First labels of a tenant's app hosts (auth.<d>, chat.<d>, localman.<d>,
+ * tunnel.<d>, scribe.<d>). `scribe.` has its own certificate and is not
+ * among the hosts whose DNS the ownership check requires.
+ */
 const APP_LABELS: ReadonlySet<string> = new Set([
 	"auth",
 	"chat",
 	"localman",
 	"tunnel",
+	"scribe",
 ]);
 
 /**
  * True when `domain` reads as an app host of another domain (auth.x,
- * chat.x, localman.x, tunnel.x): nginx maps hosts to certificates by those labels,
- * so such a domain can never be a tenant.
+ * chat.x, localman.x, tunnel.x, scribe.x): nginx maps hosts to certificates
+ * by those labels, so such a domain can never be a tenant.
  */
 export function looksLikeAppHost(domain: string): boolean {
 	return APP_LABELS.has(domain.split(".")[0] ?? "");

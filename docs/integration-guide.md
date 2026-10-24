@@ -39,7 +39,7 @@ ID token mặc định ký **ES256**. Discovery quảng bá `id_token_signing_al
 | `tunelo-web` | confidential (`client_secret_basic`) | Code + PKCE, refresh (gắn phiên IdP) | `openid profile email tunnels:open tunnels:read` (không có `offline_access`; trang web Tunelo xin `openid profile`) | `https://tunnel.hoandat.com` | `https://tunnel.hoandat.com/auth/backchannel-logout` |
 | `chat-web` | confidential (`client_secret_basic`) | Code + PKCE, refresh (gắn phiên IdP) | `openid profile email` (không có `offline_access`) | không có: access token opaque chỉ dùng cho userinfo | `https://chat.hoandat.com/auth/backchannel-logout` |
 | `chat-mobile` | public, native (`none`) | Code + PKCE qua trình duyệt hệ thống, refresh (theo thiết bị, mục 8) | `openid profile email` | không có | không |
-| `scribe-web` (chỉ tenant chính, khi có `SCRIBE_WEB_CLIENT_SECRET`) | confidential (`client_secret_basic`) | Code + PKCE, refresh (gắn phiên IdP) | `openid profile email` | không có | `${SCRIBE_WEB_URL}/api/auth/backchannel-logout` |
+| `scribe-web` (tenant chính khi có `SCRIBE_WEB_CLIENT_SECRET`; tenant sổ đã bật Scribe, mục 11) | confidential (`client_secret_basic`) | Code + PKCE, refresh (gắn phiên IdP) | `openid profile email` | không có | `${SCRIBE_WEB_URL}/api/auth/backchannel-logout`; tenant sổ: `https://scribe.<d>/api/auth/backchannel-logout` |
 | `scribe-mobile` (chỉ tenant chính) | public, native (`none`) | Code + PKCE qua trình duyệt hệ thống, refresh (theo thiết bị, mục 8) | `openid profile email` | không có | không |
 | `scribe-web-dev` (chỉ tenant chính, tuỳ chọn) | confidential (`client_secret_basic`) | Code + PKCE cho dev local, redirect loopback khớp đúng cổng | `openid profile email` | không có | không |
 | `miu-web` (chỉ tenant chính, khi có `MIU_WEB_CLIENT_SECRET`) | confidential (`client_secret_basic`) | Code + PKCE, **không refresh** (chỉ `authorization_code`) | `openid email` | không có | `${MIU_WEB_URL}/api/auth/backchannel-logout` |
@@ -319,7 +319,7 @@ Body là Security Event Token (RFC 8417), header `{alg: "ES256", kid, typ: "sece
 
 IdP phục vụ thêm tenant theo domain: tenant `<d>` có issuer `https://auth.<d>`, audience `https://localman.<d>`, `https://localman.<d>/mcp`, `https://tunnel.<d>`, cùng client id (`localman-web`, `tunelo-cli`, `tunelo-web`). Tenant `hoandat.com` không đổi gì ở mục 1–10; app giữ cấu hình tĩnh cho nó và không cần IdP lúc chạy.
 
-**API nội bộ** (chỉ trên loopback của máy chạy IdP, `INTERNAL_HOST:INTERNAL_PORT`, mặc định `127.0.0.1:4501`; không bao giờ qua nginx). Mỗi app có Basic credentials riêng (`localman:<secret>`, `tunelo:<secret>`, `scribe:<secret>` trong `INTERNAL_API_CREDENTIALS` của IdP). Không endpoint nào trả secret. Vai `scribe` (backend Scribe, cùng máy) chỉ được gọi `GET /internal/tenants/lookup` (đọc `displayName` của tenant chính qua `host=scribe.hoandat.com`); mọi endpoint khác trả nó `401` như với vai không được phép.
+**API nội bộ** (chỉ trên loopback của máy chạy IdP, `INTERNAL_HOST:INTERNAL_PORT`, mặc định `127.0.0.1:4501`; không bao giờ qua nginx). Mỗi app có Basic credentials riêng (`localman:<secret>`, `tunelo:<secret>`, `scribe:<secret>` trong `INTERNAL_API_CREDENTIALS` của IdP). Không endpoint nào trả secret cho bên không phải người nhận được niêm phong của nó. Vai `scribe` (backend Scribe, cùng máy) gọi được bốn endpoint đầu và hai endpoint key AI (ADR 0012); hàng đợi chứng chỉ trả nó `401` như với vai không được phép.
 
 | Endpoint | Trả |
 |---|---|
@@ -327,10 +327,14 @@ IdP phục vụ thêm tenant theo domain: tenant `<d>` có issuer `https://auth.
 | `GET /internal/tenants/<id>` | cùng nội dung với lookup theo Host, cho việc nền của app chỉ có `tenantId` (job, hàng đợi); `404` khi tenant không còn phục vụ |
 | `GET /internal/tenants/<id>/jwks` | JWKS công khai của tenant |
 | `GET /internal/tenants/<id>/openid-configuration` | discovery của tenant, đúng như `https://auth.<d>/.well-known/openid-configuration` |
+| `GET /internal/tenants/<id>/scribe-keys` (chỉ `scribe`) | `{ keys: [{ vendor, hint, updatedAt, status?, sealed: { kid, iv, ciphertext, tag, wrappedKey, recipient } }] }`: key AI owner nhập ở `/admin`, **niêm phong** cho public key của Scribe (RSA-OAEP SHA-256/MGF1 SHA-256 bọc khoá AES-256-GCM, AAD `<tenantId>\nscribe-<vendor>`, base64url không padding, `recipient` = 16 hex đầu SHA-256 của SPKI DER); `{ keys: [] }` khi tenant chưa bật Scribe hoặc `SCRIBE_TENANTS` tắt; `404` khi tenant không phục vụ |
+| `POST /internal/tenants/<id>/scribe-keys/<vendor>/status` (chỉ `scribe`) | body JSON `{ status, recipient }`, `status` là `invalid`, `quota` hoặc `unreadable`; `204`, IdP chỉ ghi khi `recipient` khớp key đang lưu (báo cáo về key cũ bị bỏ qua); sai dạng `400` |
+
+`webApps.scribe` có (`https://scribe.<d>`) khi `SCRIBE_TENANTS` bật và tenant đã lưu ít nhất một key chép lời (ElevenLabs, OpenAI, Gemini); khi đó tenant có đúng một client `scribe-web` (redirect `https://scribe.<d>/api/auth/callback`, post-logout `/`, back-channel `/api/auth/backchannel-logout`), không `scribe-mobile` hay `scribe-web-dev`.
 
 App lấy JWKS và discovery của tenant qua API này, **không** phân giải `auth.<d>` qua DNS công khai (domain của tenant do người khác giữ DNS). Cache theo tenant, dùng bản cũ khi IdP lỗi; chỉ cache âm khi IdP trả `404`.
 
-**Secret client của tenant mới** không được cấp qua API nào: app tự tính `base64url(HMAC-SHA256(<khoá của app>, "<tenantId>"))`. Khoá của app do IdP suy ra từ khoá gốc và giao một lần (`node --env-file=.env dist/app-client-key.mjs localman-web <file>`, tương tự `tunelo-web`); Localman chỉ giữ khoá của `localman-web`, Tunelo chỉ giữ khoá của `tunelo-web`. Xoay khoá gốc là xoay mọi secret suy ra cùng lúc.
+**Secret client của tenant mới** không được cấp qua API nào: app tự tính `base64url(HMAC-SHA256(<khoá của app>, "<tenantId>"))`. Khoá của app do IdP suy ra từ khoá gốc và giao một lần (`node --env-file=.env dist/app-client-key.mjs localman-web <file>`, tương tự `tunelo-web`, `chat-web`, `scribe-web`); Localman chỉ giữ khoá của `localman-web`, Tunelo chỉ giữ khoá của `tunelo-web`, Scribe chỉ giữ khoá của `scribe-web` (secret `scribe-web` của tenant chính vẫn là `SCRIBE_WEB_CLIENT_SECRET`). Xoay khoá gốc là xoay mọi secret suy ra cùng lúc.
 
 **Audit:** sự kiện của mọi tenant gửi tới cùng một intake `AUDIT_EVENTS_URL` (mục 10), với cùng Basic credentials và `aud` là URL đó; mỗi SET ký bằng khoá của tenant với `iss = https://auth.<d>`. Localman phân biệt tenant bằng `iss` và xác minh bằng JWKS của tenant lấy qua API nội bộ (tenant chính: JWKS công khai như cũ).
 

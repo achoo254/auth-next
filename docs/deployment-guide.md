@@ -62,9 +62,9 @@ Mặc định IdP chỉ phục vụ tenant `hoandat.com`. Bật sổ tenant bằ
 | Env | Ý nghĩa |
 |---|---|
 | `TENANT_SECRETS_KEY` | `kid:base64` của khoá 32 byte (`openssl rand -base64 32`), có thể nhiều khoá cách bằng dấu phẩy; khoá đầu niêm phong secret của tenant (OAuth, bot, khoá ký) bằng AES-256-GCM |
-| `APP_CLIENT_SECRET_KEY` | ≥ 32 ký tự, chỉ IdP giữ; khoá riêng của Localman và Tunelo suy từ nó: `node --env-file=.env dist/app-client-key.mjs localman-web <file>` (và `tunelo-web`, `chat-web`), file mode 600, chép vào secret của app tương ứng |
+| `APP_CLIENT_SECRET_KEY` | ≥ 32 ký tự, chỉ IdP giữ; khoá riêng của Localman và Tunelo suy từ nó: `node --env-file=.env dist/app-client-key.mjs localman-web <file>` (và `tunelo-web`, `chat-web`, `scribe-web`), file mode 600, chép vào secret của app tương ứng |
 | `TENANT_MAX_ACTIVE` | số tenant đang phục vụ tối đa, mặc định 20 (đo 2026-10-13: mỗi runtime rỗi thêm khoảng 0,4 MB RSS; 50 runtime thêm 21 MB) |
-| `INTERNAL_API_CREDENTIALS` | `localman:<secret>,tunelo:<secret>,provisioner:<secret>,scribe:<secret>` (≥ 32 ký tự mỗi secret); thiếu thì API nội bộ tắt. Vai `scribe` chỉ gọi được `GET /internal/tenants/lookup`. Thêm Scribe: sinh secret (`openssl rand -base64 36`), nối `,scribe:<secret>` vào dòng này trong `.env` IdP, restart IdP, rồi đặt cùng giá trị cho Scribe (Basic `scribe:<secret>`) |
+| `INTERNAL_API_CREDENTIALS` | `localman:<secret>,tunelo:<secret>,provisioner:<secret>,scribe:<secret>` (≥ 32 ký tự mỗi secret); thiếu thì API nội bộ tắt. Vai `scribe` gọi được lookup, `/internal/tenants/<id>` (JWKS, discovery) và key AI niêm phong của tenant (ADR 0012), không gọi được hàng đợi chứng chỉ. Thêm Scribe: sinh secret (`openssl rand -base64 36`), nối `,scribe:<secret>` vào dòng này trong `.env` IdP, restart IdP, rồi đặt cùng giá trị cho Scribe (Basic `scribe:<secret>`) |
 | `INTERNAL_HOST`, `INTERNAL_PORT` | API nội bộ, mặc định `127.0.0.1:4501`, chỉ nhận địa chỉ loopback |
 | `SERVICE_IPV4` | IP công khai của máy; có thì mỗi tenant được kiểm lại 6 giờ một lần (TXT `_auth-claim.<d>`, bản ghi A của mọi host: bằng IP này, hoặc toàn IP Cloudflare khi Proxied); 3 lần sai dứt khoát liền thì `suspended`; lỗi resolver hay một lượt mọi tenant cùng sai không đình chỉ ai |
 
@@ -149,7 +149,7 @@ done
 
 ## Client của app Scribe
 
-App Scribe (repo `scribe-next`, thư mục local `one-scribe`, `https://scribe.hoandat.com`, systemd trên cùng máy) đăng nhập qua `scribe-web` (confidential, BFF: backend đổi code, cookie phiên của Scribe), `scribe-mobile` (public native, scheme riêng) và `scribe-web-dev` (tuỳ chọn, chỉ cho dev local) — `src/oidc/scribe-clients.ts`. **Chỉ tenant chính** có các client này; không có secret dẫn xuất theo tenant.
+App Scribe (repo `scribe-next`, thư mục local `one-scribe`, `https://scribe.hoandat.com`, systemd trên cùng máy) đăng nhập qua `scribe-web` (confidential, BFF: backend đổi code, cookie phiên của Scribe), `scribe-mobile` (public native, scheme riêng) và `scribe-web-dev` (tuỳ chọn, chỉ cho dev local) — `src/oidc/scribe-clients.ts`. Ở tenant chính các client này đến từ env bên dưới. Tenant sổ chỉ có `scribe-web`, khi bật Scribe trên tenant (mục kế tiếp).
 
 | Env | Ý nghĩa |
 |---|---|
@@ -161,6 +161,17 @@ App Scribe (repo `scribe-next`, thư mục local `one-scribe`, `https://scribe.h
 Kiểm từ ngoài (cùng cách như chat): `for c in scribe-web scribe-mobile scribe-web-dev; do curl -s -o /dev/null -w "$c %{redirect_url}\n" "https://auth.hoandat.com/auth?client_id=$c&response_type=code&scope=openid" | cut -d'?' -f1; done`.
 
 **Trạng thái production (16/10/2026):** deploy commit `e1a7c96`; `.env` có `SCRIBE_WEB_DEV_URL=http://localhost:5174` + `SCRIBE_WEB_DEV_CLIENT_SECRET` (bản sao ở máy dev của chủ sở hữu, `~/.onescribe-dev/.oidc-web-dev-secret`) ⟹ `scribe-web-dev`, `scribe-mobile` đang bật; `SCRIBE_WEB_CLIENT_SECRET` chưa đặt (bật khi `scribe.hoandat.com` có site, Phase 7b của plan Scribe).
+
+### Scribe trên tenant sổ (ADR 0012)
+
+Tắt mặc định; production không đổi gì cho tới khi đặt cả hai env và restart IdP.
+
+| Env | Ý nghĩa |
+|---|---|
+| `SCRIBE_TENANTS` | `true` (hoặc `1`) bật: mục **Scribe** ở `/admin` của tenant, `webApps.scribe` và client `scribe-web` của tenant đã lưu key chép lời, key niêm phong qua API nội bộ. Tắt rồi restart là rollback (document `scribe-*` còn lại vô hại) |
+| `SCRIBE_SEALING_PUBLIC_KEY_PATH` | PEM public key RSA ≥ 3072 bit của Scribe (private key chỉ ở máy Scribe; sinh và xoay theo `scribe-next/docs/deploy-web-production.md`). IdP đọc và kiểm lúc khởi động: sai loại hay ngắn hơn 3072 bit thì không khởi động. Thiếu thì mục Scribe ở `/admin` không hiện |
+
+Khoá app của tenant sổ: `node --env-file=.env dist/app-client-key.mjs scribe-web <file>` (mode 600), chép vào tệp secret của Scribe; Scribe tự tính secret `scribe-web` của từng tenant. Owner lưu key ở `/admin` thì IdP gọi thử nhà cung cấp AI (một lượt, không tốn credit, timeout 10 giây) nên máy chủ cần ra được `api.elevenlabs.io`, `api.openai.com`, `generativelanguage.googleapis.com`, `api.anthropic.com`.
 
 ## Client của Miu World
 

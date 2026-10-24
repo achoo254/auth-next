@@ -85,15 +85,23 @@ export function buildPrimaryRuntime(
 	};
 }
 
-/** A registry tenant as the rest of the IdP sees it. */
-export function tenantFromDocument(document: TenantDocument): Tenant {
+/**
+ * A registry tenant as the rest of the IdP sees it. `scribeTenants` is
+ * SCRIBE_TENANTS: with it off, no tenant has Scribe whatever it saved.
+ */
+export function tenantFromDocument(
+	document: TenantDocument,
+	scribeTenants = false,
+): Tenant {
 	return {
 		id: document._id,
 		domain: document.domain,
 		displayName: document.displayName,
 		issuer: `https://auth.${document.domain}`,
 		status: document.status,
-		webApps: webAppsFor(document.domain),
+		webApps: webAppsFor(document.domain, {
+			scribe: scribeTenants && document.scribe !== undefined,
+		}),
 	};
 }
 
@@ -140,7 +148,7 @@ export async function buildTenantRuntime(
 	document: TenantDocument,
 ): Promise<TenantRuntime> {
 	const { env, db, logger, secrets } = deps;
-	const tenant = tenantFromDocument(document);
+	const tenant = tenantFromDocument(document, env.SCRIBE_TENANTS);
 	const jwks = await tenantSigningKeys(secrets, tenant.id);
 	const accounts = new AccountRepository(
 		db,

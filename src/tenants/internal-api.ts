@@ -12,16 +12,18 @@ import { type InternalCredentials, requireRole } from "./internal-auth.js";
 import { certificateRouter } from "./internal-certificates.js";
 import {
 	discoveryOf,
+	findServingTenant,
 	publicJwks,
 	tenantDomainCandidates,
 	tenantSummary,
 } from "./internal-lookups.js";
+import { scribeKeysRouter } from "./internal-scribe-keys.js";
 import {
 	SERVING_STATUSES,
 	type TenantDocument,
 	type TenantRegistry,
 } from "./tenant-registry.js";
-import { tenantFromDocument, tenantSigningKeys } from "./tenant-runtime.js";
+import { tenantFromDocument } from "./tenant-runtime.js";
 import type { TenantSecrets } from "./tenant-secrets.js";
 import type { Tenant } from "./tenant.js";
 
@@ -35,46 +37,26 @@ export interface InternalApiDependencies {
 	readonly primaryHosts: readonly string[];
 	/** Base URL of the public listener on loopback (discovery is read there). */
 	readonly publicOrigin: string;
+	/** SCRIBE_TENANTS: registry tenants may run Scribe (ADR 0012). */
+	readonly scribeTenants: boolean;
 	readonly logger: Logger;
 }
 
 /**
  * The internal API, on its own loopback listener (never behind nginx):
- * tenant lookup by Host or id, each tenant's JWKS and discovery for Localman and
- * Tunelo (so they never trust a tenant's public DNS for keys), and the
- * certificate queue for the provisioner. No route returns a secret.
+ * tenant lookup by Host or id, each tenant's JWKS and discovery for
+ * Localman, Tunelo and Scribe (so they never trust a tenant's public DNS
+ * for keys), a tenant's AI keys for Scribe and the certificate queue for
+ * the provisioner. No route returns a secret the caller is not its sealed
+ * recipient of.
  */
 export function createInternalApi(deps: InternalApiDependencies): Express {
 	const app = express();
 	app.disable("x-powered-by");
-	const apps = requireRole(deps.credentials, ["localman", "tunelo"]);
-	// Scribe may only read a host's tenant (its brand): lookup, nothing else.
-	const reads = requireRole(deps.credentials, ["localman", "tunelo", "scribe"]);
+	const apps = requireRole(deps.credentials, ["localman", "tunelo", "scribe"]);
 	const primaryHosts = new Set(deps.primaryHosts.map((h) => h.toLowerCase()));
 
-	async function servingTenant(id: string): Promise<
-		| {
-				tenant: Tenant;
-				jwks: () => Promise<SigningJwks>;
-		  }
-		| undefined
-	> {
-		if (id === deps.primary.tenant.id) {
-			return {
-				tenant: deps.primary.tenant,
-				jwks: async () => deps.primary.jwks,
-			};
-		}
-		const document = await deps.registry.findById(id);
-		const secrets = deps.secrets;
-		if (!document || !secrets || !SERVING_STATUSES.includes(document.status)) {
-			return undefined;
-		}
-		return {
-			tenant: tenantFromDocument(document),
-			jwks: () => tenantSigningKeys(secrets, document._id),
-		};
-	}
+	const servingTenant = (id: string) => findServingTenant(deps, id);
 
 	async function tenantForHost(host: string): Promise<Tenant | undefined> {
 		const primary = deps.primary.tenant;
@@ -91,13 +73,13 @@ export function createInternalApi(deps: InternalApiDependencies): Express {
 			const document: TenantDocument | undefined =
 				await deps.registry.findByDomain(domain);
 			if (document && SERVING_STATUSES.includes(document.status)) {
-				return tenantFromDocument(document);
+				return tenantFromDocument(document, deps.scribeTenants);
 			}
 		}
 		return undefined;
 	}
 
-	app.get("/internal/tenants/lookup", reads, async (req, res, next) => {
+	app.get("/internal/tenants/lookup", apps, async (req, res, next) => {
 		try {
 			const host = typeof req.query.host === "string" ? req.query.host : "";
 			const tenant = await tenantForHost(host);
@@ -165,6 +147,13 @@ export function createInternalApi(deps: InternalApiDependencies): Express {
 		},
 	);
 
+	app.use(
+		scribeKeysRouter(
+			deps.secrets,
+			servingTenant,
+			requireRole(deps.credentials, ["scribe"]),
+		),
+	);
 	app.use(
 		"/internal/certificates",
 		requireRole(deps.credentials, ["provisioner"]),
