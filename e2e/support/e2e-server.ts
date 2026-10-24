@@ -8,8 +8,11 @@
  * reach them with the tenant's Host header).
  * Started and stopped by Playwright's webServer.
  */
-import { randomBytes } from "node:crypto";
+import { generateKeyPairSync, randomBytes } from "node:crypto";
+import { mkdtemp, writeFile } from "node:fs/promises";
 import { type Server, createServer } from "node:http";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { MongoClient } from "mongodb";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import {
@@ -75,8 +78,25 @@ await ensureAccountLayerIndexes(db);
 await ensureTenantRegistryIndexes(db);
 await ensureTenantClaimIndexes(db);
 
+/**
+ * A throwaway public key of the certificate service: with it /admin offers
+ * the Cloudflare DNS token form, as it does in production.
+ */
+const provisionerKeyPath = join(
+	await mkdtemp(join(tmpdir(), "e2e-provisioner-")),
+	"provisioner.pem",
+);
+await writeFile(
+	provisionerKeyPath,
+	generateKeyPairSync("rsa", { modulusLength: 2048 }).publicKey.export({
+		type: "spki",
+		format: "pem",
+	}),
+);
+
 const env = parseEnv({
 	NODE_ENV: "test",
+	PROVISIONER_PUBLIC_KEY_PATH: provisionerKeyPath,
 	ISSUER: E2E_ISSUER,
 	MONGO_URL: `${mongod.getUri().replace(/\/$/, "")}/auth`,
 	SIGNING_KEYS_PATH: "unused-in-e2e.json",
