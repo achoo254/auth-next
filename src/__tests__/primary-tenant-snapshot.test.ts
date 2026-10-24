@@ -34,10 +34,37 @@ function withoutIssuer(text: string): string {
 		.replace(/\.css\?v=[0-9a-f]{12}/g, ".css?v=HASH");
 }
 
+/**
+ * Texts only domain tenants ever showed (claiming a domain, a tenant's
+ * /admin, the domain guide, Scribe on tenants): the primary tenant never
+ * rendered them, so they are not part of what it must keep showing.
+ */
+const TENANT_ONLY_NAMESPACES = [
+	"admin.",
+	"claim.",
+	"inactive.",
+	"guide.",
+	"scribe.",
+] as const;
+const TENANT_ONLY_KEYS: ReadonlySet<string> = new Set([
+	"layout.guide",
+	"confirm.delete.owner",
+	"privacy.rights.deleteContact",
+]);
+
+function isPrimaryText(key: string): boolean {
+	return (
+		!TENANT_ONLY_KEYS.has(key) &&
+		!TENANT_ONLY_NAMESPACES.some((namespace) => key.startsWith(namespace))
+	);
+}
+
 describe("primary tenant (hoandat.com) is unchanged", () => {
 	it.each(LOCALES)("shows the same texts in %s", (locale) => {
 		const { i18n } = testPage(locale);
-		const keys = Object.keys(DICTIONARIES[locale]) as MessageKey[];
+		const keys = (Object.keys(DICTIONARIES[locale]) as MessageKey[]).filter(
+			isPrimaryText,
+		);
 		expect(
 			Object.fromEntries(keys.map((key) => [key, i18n.t(key)])),
 		).toMatchSnapshot();
