@@ -116,7 +116,7 @@ describe("/admin Scribe section", () => {
 		expect(html).toContain('data-id="account-admin-scribe"');
 		expect(html).toContain(`A scribe.acme.example.org → ${IP}`);
 		expect(html).toContain('data-id="admin-scribe-billing"');
-		expect(html).toContain("add a transcription key below");
+		expect(html).toContain("Add a transcription key below");
 	});
 
 	it("needs the session's CSRF token", async () => {

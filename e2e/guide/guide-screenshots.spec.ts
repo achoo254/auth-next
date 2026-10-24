@@ -294,8 +294,7 @@ test("guide screenshots of /claim and /admin", async ({ page }) => {
 		await useLanguage(page.context(), language);
 		await page.goto(`https://auth.${DOMAIN}/admin`);
 		await band(page, language, "admin-overview", {
-			to: '[data-id="account-admin-name"]',
-			above: true,
+			to: '[data-id="account-admin-domain"]',
 		});
 		await shot(
 			page,

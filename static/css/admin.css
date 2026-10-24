@@ -1,0 +1,228 @@
+/* /admin — a tenant owner's settings: groups of cards, setup steps, values
+   to paste elsewhere, saved settings that fold their form away, one tile
+   per Scribe provider. Colours come only from tokens.css; the cards
+   themselves are styled in app.css (shared with /account and /claim). */
+
+/* title and lead, with the guide and "Leave admin" on the right */
+.admin-head {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-end;
+	justify-content: space-between;
+	gap: var(--space-3) var(--space-5);
+}
+.admin-head-text {
+	display: grid;
+	gap: var(--space-1);
+	min-width: 0;
+}
+.admin-head-actions {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: var(--space-4);
+}
+
+/* the two cards of a group share a height, so a row has no hole */
+.admin-grid {
+	align-items: stretch;
+}
+.admin-grid > .account-card {
+	align-content: start;
+	grid-template-columns: minmax(0, 1fr);
+}
+/* a title (the domain) or a status line can be one long word: it wraps
+   instead of widening the card */
+.admin-grid .account-card-title,
+.admin-grid .account-card-heading .help {
+	overflow-wrap: anywhere;
+}
+
+/* a value the owner pastes elsewhere: one click selects it */
+.admin-copy {
+	display: inline-block;
+	max-width: 100%;
+	margin-top: var(--space-1);
+	padding: var(--space-1) var(--space-2);
+	font-size: 12px;
+	line-height: 1.5;
+	border: 1px solid var(--c-border-subtle);
+	border-radius: var(--radius-sm);
+	background: var(--c-surface-subtle);
+}
+.admin-hosts {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--space-2);
+}
+.admin-hosts .admin-copy {
+	margin-top: 0;
+}
+
+/* numbered setup steps */
+.admin-steps {
+	margin: 0;
+	padding-left: var(--space-5);
+	display: grid;
+	gap: var(--space-2);
+	font-size: 13px;
+	line-height: 1.5;
+	color: var(--c-text-muted);
+}
+.admin-steps li::marker {
+	font-family: var(--font-mono);
+	font-weight: 700;
+	color: var(--c-primary);
+}
+
+/* a saved setting: label and value on one line */
+.admin-saved {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	gap: var(--space-1) var(--space-3);
+	padding: var(--space-2) var(--space-3);
+	border-radius: var(--radius-md);
+	background: var(--c-surface-subtle);
+	border: 1px solid var(--c-border-subtle);
+}
+.admin-saved-value {
+	min-width: 0;
+	overflow-wrap: anywhere;
+	font-size: 14px;
+}
+
+/* the form that replaces a saved setting, folded until asked for */
+.admin-replace > summary {
+	cursor: pointer;
+	width: fit-content;
+	font-family: var(--font-mono);
+	font-size: 13px;
+	font-weight: 600;
+	color: var(--c-primary);
+}
+.admin-replace > summary:hover {
+	text-decoration: underline;
+}
+.admin-replace-body {
+	display: grid;
+	gap: var(--space-3);
+	margin-top: var(--space-3);
+	padding-left: var(--space-3);
+	border-left: 2px solid var(--c-border-subtle);
+}
+
+/* one field and its button on one row; stacked on phones */
+.admin-inline-form {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto;
+	align-items: end;
+	gap: var(--space-2);
+}
+.admin-inline-form > .btn {
+	min-height: 44px;
+}
+@media (max-width: 479px) {
+	.admin-inline-form {
+		grid-template-columns: minmax(0, 1fr);
+	}
+	.admin-inline-form > .btn {
+		justify-self: start;
+	}
+}
+
+/* a remark inside a card (who pays, a DNS record to add) */
+.admin-note {
+	font-size: 13px;
+	line-height: 1.5;
+}
+
+/* Scribe: one tile per provider, two per row on wide cards */
+.admin-keys-head {
+	display: grid;
+	gap: var(--space-1);
+	padding-top: var(--space-3);
+	border-top: 1px solid var(--c-border-subtle);
+}
+.admin-vendors {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: var(--space-3);
+}
+@media (min-width: 720px) {
+	.admin-vendors {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+.admin-vendor {
+	display: grid;
+	align-content: start;
+	gap: var(--space-3);
+	min-width: 0;
+	padding: var(--space-4);
+	border: 1px solid var(--c-border-subtle);
+	border-radius: var(--radius-md);
+	background: var(--c-surface-subtle);
+}
+.admin-vendor > .inline-form {
+	justify-self: start;
+}
+.admin-vendor-head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--space-2);
+}
+.admin-keys-head > h4,
+.admin-vendor > .admin-vendor-head > h5 {
+	margin: 0;
+}
+.admin-vendor-name {
+	font-family: var(--font-mono);
+	font-size: 14px;
+	font-weight: 700;
+}
+.admin-uses {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--space-1);
+}
+.admin-uses li {
+	font-size: 12px;
+	padding: 2px var(--space-2);
+	border-radius: var(--radius-full);
+	color: var(--c-text-muted);
+	border: 1px solid var(--c-border-subtle);
+	background: var(--c-surface);
+}
+
+/* a wide card in two parts (the domain: addresses | display name) */
+.admin-split {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: var(--space-5);
+}
+.admin-split-part {
+	display: grid;
+	align-content: start;
+	gap: var(--space-3);
+	min-width: 0;
+}
+.admin-split-part .auth-form > .btn {
+	justify-self: start;
+}
+@media (min-width: 720px) {
+	.admin-split {
+		grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+	}
+	.admin-split-part + .admin-split-part {
+		padding-left: var(--space-5);
+		border-left: 1px solid var(--c-border-subtle);
+	}
+}

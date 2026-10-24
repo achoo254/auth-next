@@ -333,6 +333,11 @@ button {
 	background: color-mix(in srgb, var(--c-warning) 8%, var(--c-surface));
 	border-color: color-mix(in srgb, var(--c-warning) 30%, var(--c-surface));
 }
+.badge-error {
+	color: var(--c-error-text);
+	background: color-mix(in srgb, var(--c-error) 8%, var(--c-surface));
+	border-color: color-mix(in srgb, var(--c-error) 30%, var(--c-surface));
+}
 .alert {
 	padding: var(--space-3) var(--space-4);
 	border-radius: var(--radius-md);
@@ -569,6 +574,9 @@ button {
 	.account-grid {
 		grid-template-columns: repeat(2, minmax(0, 1fr));
 	}
+}
+.account-card-wide {
+	grid-column: 1 / -1;
 }
 .account-card {
 	display: grid;

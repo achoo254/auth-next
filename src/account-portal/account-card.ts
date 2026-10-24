@@ -1,5 +1,11 @@
 import { type HtmlValue, type SafeHtml, html } from "../ui/html.js";
 
+/** A card's state as a badge beside its title ("On", "Saved"). */
+export interface AccountCardState {
+	readonly tone: "success" | "neutral" | "warning" | "error";
+	readonly label: string;
+}
+
 export interface AccountCardOptions {
 	/** Becomes the element id `account-<id>` (Localman links to some). */
 	readonly id: string;
@@ -9,6 +15,10 @@ export interface AccountCardOptions {
 	readonly description: string;
 	/** How many items the card lists, or its state; omitted for forms. */
 	readonly count?: string | number;
+	/** Whether what the card configures is on, saved or failing. */
+	readonly state?: AccountCardState;
+	/** Takes the whole row of a two-column grid. */
+	readonly wide?: boolean;
 	readonly body: HtmlValue;
 	/** Actions under the list (e.g. "Sign out every other session"). */
 	readonly footer?: HtmlValue;
@@ -17,12 +27,13 @@ export interface AccountCardOptions {
 /** One section of /account: icon, title, description, count, content. */
 export function accountCard(options: AccountCardOptions): SafeHtml {
 	const id = `account-${options.id}`;
-	return html`<section class="card account-card" id="${id}" data-id="${id}" aria-labelledby="${id}-title">
+	return html`<section class="card account-card${options.wide ? " account-card-wide" : ""}" id="${id}" data-id="${id}" aria-labelledby="${id}-title">
 <header class="account-card-head">
 <span class="account-card-icon">${options.icon}</span>
 <div class="account-card-heading"><h3 class="account-card-title" id="${id}-title">${options.title}</h3>
 <p class="help">${options.description}</p></div>
 ${options.count === undefined ? "" : html`<span class="badge badge-neutral account-card-count" data-id="${id}-count">${options.count}</span>`}
+${options.state ? html`<span class="badge badge-${options.state.tone} account-card-count" data-id="${id}-state">${options.state.label}</span>` : ""}
 </header>
 <div class="account-card-body">${options.body}</div>
 ${options.footer ? html`<div class="account-card-foot">${options.footer}</div>` : ""}

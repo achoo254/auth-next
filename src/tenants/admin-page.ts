@@ -1,24 +1,17 @@
-import { accountCard } from "../account-portal/account-card.js";
-import { accountIcon } from "../account-portal/account-icons.js";
-import {
-	UPSTREAM_LABELS,
-	upstreamCallbackPath,
-} from "../accounts/upstream-client.js";
 import type { TenantOAuthProvider } from "../accounts/user-model.js";
 import { TENANT_OAUTH_PROVIDERS } from "../accounts/user-model.js";
-import type { MessageKey } from "../i18n/dictionaries.js";
-import { PRIVACY_PATH } from "../legal/privacy-page.js";
 import {
-	actionButton,
 	alertBox,
 	csrfField,
-	inputField,
 	pageTitle,
 	submitButton,
 } from "../ui/components.js";
 import { type SafeHtml, html } from "../ui/html.js";
 import { renderPage } from "../ui/layout.js";
 import type { PageContext } from "../ui/page-context.js";
+import { reopenAfterError } from "./admin-blocks.js";
+import { dnsCard, domainCard, telegramCard } from "./admin-cards.js";
+import { oauthCard } from "./admin-oauth-card.js";
 import {
 	type ScribeAdminView,
 	scribeAdminCard,
@@ -45,151 +38,65 @@ export interface AdminView {
 	};
 }
 
-function issuerOf(tenant: TenantDocument): string {
-	return `https://${appHostsFor(tenant.domain).auth}`;
+/** A headed group of cards, two per row on wide screens. */
+function adminGroup(
+	id: string,
+	title: string,
+	cards: readonly SafeHtml[],
+): SafeHtml {
+	return html`<section class="account-group" aria-labelledby="group-admin-${id}" data-id="group-admin-${id}">
+<h2 class="account-group-title" id="group-admin-${id}">${title}</h2>
+<div class="account-grid admin-grid">${cards}</div>
+</section>`;
 }
 
-function certificateLine(view: AdminView): SafeHtml {
+/** Title and lead, with the guide and "Leave admin" beside them. */
+function header(view: AdminView): SafeHtml {
 	const { i18n } = view.page;
-	const certificate = view.tenant.certificate;
-	if (!certificate) return html``;
-	const text =
-		certificate.status === "issued"
-			? i18n.t("admin.certificate.issued", {
-					date: i18n.date(certificate.issuedAt),
-				})
-			: certificate.status === "failed"
-				? i18n.t("admin.certificate.failed", {
-						error: certificate.lastError ?? "",
-						date: i18n.date(certificate.nextAttemptAt),
-					})
-				: i18n.t("admin.certificate.pending");
-	return html`<p class="help" data-id="admin-certificate">${text}</p>`;
+	return html`<div class="admin-head">
+<div class="admin-head-text">${pageTitle(i18n.t("admin.title"), i18n.t("admin.lead", { domain: view.tenant.domain }))}</div>
+<div class="admin-head-actions"><a class="link" href="${view.guideUrl}" data-id="admin-guide-link">${i18n.t("claim.guideLink")}</a>
+<form method="post" action="/admin/sign-out" class="inline-form">${csrfField(view.csrf)}${submitButton(i18n.t("admin.signOut"), { variant: "secondary", dataId: "admin-sign-out" })}</form></div>
+</div>`;
 }
 
-function overview(view: AdminView): SafeHtml {
-	const { i18n } = view.page;
-	const hosts = appHostsFor(view.tenant.domain);
-	const status: MessageKey =
-		view.tenant.status === "active"
-			? "admin.status.active"
-			: "admin.status.claimed";
-	return html`${alertBox(view.tenant.status === "active" ? "success" : "warning", i18n.t(status, { issuer: issuerOf(view.tenant) }))}
-<p class="label">${i18n.t("admin.hosts.title")}</p>
-<p class="help">${Object.values(hosts).map((host) => html`<code class="mono">${host}</code> `)}</p>
-<p class="help" data-id="admin-hosts-proxy">${i18n.t("admin.hosts.help")}</p>
-${certificateLine(view)}`;
-}
-
-function nameForm(view: AdminView): SafeHtml {
-	const { i18n } = view.page;
-	return html`<form method="post" action="/admin/name" class="auth-form">${csrfField(view.csrf)}
-${inputField({ name: "displayName", label: i18n.t("admin.name.title"), value: view.tenant.displayName, maxlength: 40, help: i18n.t("admin.name.help") })}
-${submitButton(i18n.t("admin.save"), { dataId: "admin-save-name" })}</form>`;
-}
-
-/** Whether people sign in with `provider` here, or why not yet. */
-function providerStatus(
-	view: AdminView,
-	provider: TenantOAuthProvider,
-): string {
-	const { i18n } = view.page;
-	const label = UPSTREAM_LABELS[provider];
-	if (view.oauth[provider])
-		return i18n.t("admin.oauth.on", { provider: label });
-	if (view.tenant.status === "active") {
-		return i18n.t("admin.oauth.off", { provider: label });
-	}
-	return i18n.t("admin.status.claimed");
-}
-
-function oauthForm(view: AdminView, provider: TenantOAuthProvider): SafeHtml {
-	const { i18n } = view.page;
-	const label = UPSTREAM_LABELS[provider];
-	const callback = `${issuerOf(view.tenant)}${upstreamCallbackPath(provider)}`;
-	const clientId = view.oauth[provider];
-	return html`<p class="help">${i18n.rich("admin.oauth.help", { provider: label, callback: html`<code class="mono" data-id="admin-callback-${provider}">${callback}</code>` })}</p>
-${provider === "google" ? html`<p class="help">${i18n.rich("admin.oauth.googlePrivacy", { url: html`<code class="mono">${issuerOf(view.tenant)}${PRIVACY_PATH}</code>` })}</p>` : ""}
-${clientId ? html`<p class="help" data-id="admin-oauth-${provider}-configured">${i18n.t("admin.oauth.configured", { clientId })}</p>` : ""}
-<form method="post" action="/admin/oauth/${provider}" class="auth-form">${csrfField(view.csrf)}
-${inputField({ name: "clientId", id: `f-${provider}-client-id`, label: i18n.t("admin.oauth.clientId"), autocomplete: "off", maxlength: 200 })}
-${inputField({ name: "clientSecret", id: `f-${provider}-client-secret`, label: i18n.t("admin.oauth.clientSecret"), type: "password", autocomplete: "off", maxlength: 200 })}
-${submitButton(i18n.t("admin.save"), { dataId: `admin-save-${provider}` })}</form>
-${clientId ? actionButton(`/admin/oauth/${provider}/remove`, view.csrf, i18n.t("admin.oauth.remove"), { variant: "danger", dataId: `admin-remove-${provider}` }) : ""}`;
-}
-
-function dnsForm(view: AdminView): SafeHtml {
-	const { i18n } = view.page;
-	if (!view.dnsAvailable)
-		return html`<p class="help">${i18n.t("admin.dns.unavailable")}</p>`;
-	return html`${view.dnsConfigured ? html`<p class="help" data-id="admin-dns-configured">${i18n.t("admin.dns.configured")}</p>` : ""}
-<form method="post" action="/admin/dns" class="auth-form">${csrfField(view.csrf)}
-${inputField({ name: "token", id: "f-dns-token", label: i18n.t("admin.dns.token"), type: "password", autocomplete: "off", maxlength: 200 })}
-${submitButton(i18n.t("admin.save"), { dataId: "admin-save-dns" })}</form>`;
-}
-
-function telegramForm(view: AdminView): SafeHtml {
-	const { i18n } = view.page;
-	return html`${view.telegramUsername ? html`<p class="help" data-id="admin-telegram-configured">${i18n.t("admin.telegram.configured", { username: view.telegramUsername })}</p>` : ""}
-<form method="post" action="/admin/telegram" class="auth-form">${csrfField(view.csrf)}
-${inputField({ name: "token", id: "f-telegram-token", label: i18n.t("admin.telegram.token"), type: "password", autocomplete: "off", maxlength: 200 })}
-${inputField({ name: "username", id: "f-telegram-username", label: i18n.t("admin.telegram.username"), autocomplete: "off", maxlength: 33 })}
-${submitButton(i18n.t("admin.save"), { dataId: "admin-save-telegram" })}</form>`;
-}
-
-/** A tenant's /admin, for its owner only (the route checks the session). */
+/**
+ * A tenant's /admin, for its owner only (the route checks the session):
+ * the domain (addresses, certificates, name), how people sign in, the
+ * Cloudflare and Telegram integrations, then the apps the owner turns on.
+ */
 export function renderAdminPage(view: AdminView): string {
 	const { i18n } = view.page;
 	const { domain } = view.tenant;
-	const cards = [
-		accountCard({
-			id: "admin-name",
-			icon: accountIcon("profile"),
-			title: i18n.t("admin.name.title"),
-			description: i18n.t("admin.name.help"),
-			body: nameForm(view),
-		}),
-		...TENANT_OAUTH_PROVIDERS.map((provider) =>
-			accountCard({
-				id: `admin-${provider}`,
-				icon: accountIcon("signIn"),
-				title: i18n.t("admin.oauth.title", {
-					provider: UPSTREAM_LABELS[provider],
-				}),
-				description: providerStatus(view, provider),
-				body: oauthForm(view, provider),
-			}),
-		),
-		accountCard({
-			id: "admin-dns",
-			icon: accountIcon("devices"),
-			title: i18n.t("admin.dns.title"),
-			description: i18n.t("admin.dns.help", { domain }),
-			body: dnsForm(view),
-		}),
-		accountCard({
-			id: "admin-telegram",
-			icon: accountIcon("telegram"),
-			title: i18n.t("admin.telegram.title"),
-			description: i18n.t("admin.telegram.help"),
-			body: telegramForm(view),
-		}),
-		view.scribe
-			? scribeAdminCard(view.page, view.csrf, view.tenant, view.scribe)
-			: "",
-	];
-	const body = html`${pageTitle(i18n.t("admin.title"), i18n.t("admin.lead", { domain }))}
-<p class="help"><a class="link" href="${view.guideUrl}" data-id="admin-guide-link">${i18n.t("claim.guideLink")}</a></p>
+	const body = html`${header(view)}
 ${view.result ? alertBox(view.result.tone, view.result.text) : ""}
-${overview(view)}
-<div class="account-grid">${cards}</div>
-<form method="post" action="/admin/sign-out" class="inline-form">${csrfField(view.csrf)}${submitButton(i18n.t("admin.signOut"), { variant: "minimal", dataId: "admin-sign-out" })}</form>`;
+${adminGroup("domain", i18n.t("admin.group.domain"), [domainCard(view)])}
+${adminGroup(
+	"sign-in",
+	i18n.t("admin.group.signIn"),
+	TENANT_OAUTH_PROVIDERS.map((provider) => oauthCard(view, provider)),
+)}
+${adminGroup("integrations", i18n.t("admin.group.integrations"), [dnsCard(view), telegramCard(view)])}
+${
+	view.scribe
+		? adminGroup("apps", i18n.t("admin.group.apps"), [
+				scribeAdminCard(
+					view.page,
+					view.csrf,
+					view.tenant,
+					view.scribe,
+					reopenAfterError(view),
+				),
+			])
+		: ""
+}`;
 	return renderPage({
 		title: i18n.t("admin.title"),
 		host: appHostsFor(domain).auth,
 		page: view.page,
 		layout: "portal",
 		nav: false,
+		stylesheets: ["admin.css"],
 		body,
 	});
 }
