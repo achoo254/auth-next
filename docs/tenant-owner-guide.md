@@ -123,8 +123,11 @@ chạy ở `https://scribe.<domain>` bằng key AI của **bạn**: mọi lượ
   Scribe: không ai đọc lại được, kể cả trang quản trị; trang chỉ hiện 4 ký tự cuối.
 - **Trạng thái:** khi Scribe gặp lỗi với key (bị từ chối, hết credit, không mở được), dòng của
   nhà cung cấp đó hiện lỗi; nhập key mới để sửa.
-- **DNS:** thêm bản ghi `A scribe.<domain>` trỏ về cùng IP với các host khác (chỉ DNS hoặc
-  proxy Cloudflare như các host khác). Thiếu bản ghi này không làm domain bị đình chỉ.
+- **DNS và chứng chỉ:** thêm bản ghi `A scribe.<domain>` trỏ về cùng IP với các host khác
+  (chỉ DNS hoặc proxy Cloudflare như các host khác). Khi lưu key chép lời đầu tiên, trang kiểm
+  bản ghi này; nếu chưa có, thêm rồi bấm **Kiểm tra DNS**. Bản ghi đúng thì chứng chỉ của
+  `scribe.<domain>` được cấp riêng (dòng trạng thái ở mục Scribe). Thiếu bản ghi này không làm
+  domain bị đình chỉ và không ảnh hưởng chứng chỉ của các host khác.
 - Chỉ có Scribe web (cài được dạng PWA); app Scribe iPhone/Android chỉ dùng cho hoandat.com.
   Chuyển domain sang máy chủ của bạn thì Scribe và dữ liệu Scribe không đi theo.
 

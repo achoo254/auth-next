@@ -52,6 +52,11 @@ export interface TenantDocument {
 	 * (ADR 0012); removed with the last one.
 	 */
 	scribe?: { readonly enabledAt: Date };
+	/**
+	 * The `scribe.<domain>` certificate: its own lineage, never part of
+	 * `certificate`, so a missing `scribe.` record breaks nothing else.
+	 */
+	scribeCertificate?: TenantCertificate;
 	createdAt: Date;
 	claimedAt?: Date;
 	activatedAt?: Date;
@@ -74,6 +79,16 @@ export const TENANTS_COLLECTION = "tenants";
 
 export function newTenantId(): string {
 	return `ten_${randomBytes(12).toString("base64url")}`;
+}
+
+/** True when the provisioner should work on `certificate` now. */
+export function certificateDue(
+	certificate: TenantCertificate | undefined,
+	now: Date,
+): boolean {
+	if (!certificate || certificate.status === "issued") return false;
+	const next = certificate.nextAttemptAt;
+	return next === undefined || next.getTime() <= now.getTime();
 }
 
 /** Statuses that count against TENANT_MAX_ACTIVE and serve pages. */

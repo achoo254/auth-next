@@ -36,6 +36,26 @@ server { server_name ~^auth\\.(?<tenant>.+)$; }
 server { server_name ~^(?:[^.]+\\.)?(?:auth|localman|tunnel)\\.(?<tenant>.+)$; }`;
 		expect(conflictingName("acme.org", names(config))).toBeUndefined();
 	});
+
+	it("checks scribe work against scribe.<domain> only, past the tenants' Scribe block", () => {
+		const config = `
+server { server_name scribe.hoandat.com; }
+server { server_name ~^scribe\\.(?<tenant>.+)$; }
+server { server_name ~^(?:[^.]+\\.)?(?:auth|chat|localman|tunnel|scribe)\\.(?<tenant>.+)$; }
+server { server_name auth.legacy.org; }`;
+		expect(
+			conflictingName("acme.org", names(config), "scribe"),
+		).toBeUndefined();
+		expect(conflictingName("legacy.org", names(config), "scribe")).toBe(
+			undefined,
+		);
+		expect(conflictingName("legacy.org", names(config))).toBe(
+			"auth.legacy.org",
+		);
+		expect(conflictingName("hoandat.com", names(config), "scribe")).toBe(
+			"scribe.hoandat.com",
+		);
+	});
 });
 
 describe("readNginxConfig", () => {

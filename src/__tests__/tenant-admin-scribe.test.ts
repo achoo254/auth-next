@@ -3,6 +3,7 @@ import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import type { OwnershipResolver } from "../tenants/ownership-records.js";
 import type { TenantDocument } from "../tenants/tenant-registry.js";
 import {
 	type MultiTenantServer,
@@ -17,6 +18,16 @@ import { signedInAdmin } from "./helpers/tenant-admin-client.js";
  */
 
 const IP = "203.0.113.65";
+/** A records the fake DNS knows (scribe.acme.example.org added later). */
+const aRecords = new Map<string, string[]>();
+const resolver: OwnershipResolver = {
+	resolveTxt: async () => [],
+	resolve4: async (name) => {
+		const found = aRecords.get(name);
+		if (found) return found;
+		throw Object.assign(new Error("ENOTFOUND"), { code: "ENOTFOUND" });
+	},
+};
 const OWNER = { provider: "google", providerId: "g-scribe-owner" } as const;
 /** Made-up keys (never real credentials). */
 const fake = (prefix: string, tail: string): string =>
@@ -55,7 +66,7 @@ async function startWith(
 ): Promise<{ server: MultiTenantServer; tenant: TenantDocument }> {
 	const server = await startMultiTenantServer(
 		{ SERVICE_IPV4: IP, ...extraEnv },
-		{ fetch: providers },
+		{ fetch: providers, resolver },
 	);
 	const added = await server.addTenant("acme.example.org", "claimed");
 	await server.db
@@ -141,7 +152,11 @@ describe("/admin Scribe section", () => {
 	});
 
 	it("turns Scribe on with a transcription key, showing only its last 4 characters", async () => {
-		expect(await save("openai", GOOD_OPENAI)).toBe("/admin?result=saved");
+		// Saved, but scribe.<domain> has no record yet: no certificate queued.
+		expect(await save("openai", GOOD_OPENAI)).toBe(
+			"/admin?result=scribe-dns-wrong",
+		);
+		expect((await current())?.scribeCertificate).toBeUndefined();
 		expect((await current())?.scribe?.enabledAt).toBeInstanceOf(Date);
 		const { html } = await admin.page();
 		expect(html).toContain(`••••${GOOD_OPENAI.slice(-4)}`);
@@ -156,6 +171,27 @@ describe("/admin Scribe section", () => {
 			expect.arrayContaining(["scribe-anthropic", "scribe-openai"]),
 		);
 		expect(JSON.stringify(audit)).not.toContain(GOOD_OPENAI);
+	});
+
+	it("queues the scribe.<domain> certificate once Check DNS finds the record", async () => {
+		const { html, csrf } = await admin.page();
+		expect(html).toContain('data-id="admin-scribe-check-dns"');
+		const missing = await admin.client.request("/admin/scribe/dns", { csrf });
+		expect(missing.headers.get("location")).toBe(
+			"/admin?result=scribe-dns-wrong",
+		);
+		aRecords.set("scribe.acme.example.org", [IP]);
+		const found = await admin.client.request("/admin/scribe/dns", {
+			csrf: (await admin.page()).csrf,
+		});
+		expect(found.headers.get("location")).toBe("/admin?result=scribe-dns-ok");
+		expect((await current())?.scribeCertificate).toMatchObject({
+			status: "pending",
+			attempts: 0,
+		});
+		const after = await admin.page();
+		expect(after.html).toContain('data-id="admin-scribe-certificate"');
+		expect(after.html).toContain("Certificate of scribe.: being issued.");
 	});
 
 	it("shows what Scribe reported about a key", async () => {

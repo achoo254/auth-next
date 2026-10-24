@@ -138,6 +138,11 @@ export const enTenants = {
 		"Scribe reports that this {provider} account is out of credit.",
 	"admin.scribe.status.unreadable":
 		"Scribe can no longer open it: enter the key again.",
+	"admin.scribe.certificate.pending": "Certificate of scribe.: being issued.",
+	"admin.scribe.certificate.issued": "Certificate of scribe.: issued {date}.",
+	"admin.scribe.certificate.failed":
+		"Certificate of scribe.: the last attempt failed ({error}); next try {date}.",
+	"admin.scribe.checkDns": "Check DNS",
 	"admin.save": "Save",
 	"admin.signOut": "Leave admin",
 	"admin.result.saved": "Saved.",
@@ -159,6 +164,12 @@ export const enTenants = {
 		"This key works, but its account is out of credit.",
 	"admin.result.scribeKeyUnreachable":
 		"The provider could not be reached. Try again.",
+	"admin.result.scribeDnsOk":
+		"scribe.{domain} points here: its certificate is on its way.",
+	"admin.result.scribeDnsWrong":
+		"Saved, but scribe.{domain} does not point to this server yet. Add the record shown in the Scribe section, then press Check DNS; DNS changes can take a few minutes.",
+	"admin.result.scribeDnsUnknown":
+		"DNS of scribe.{domain} could not be checked right now. Press Check DNS in a minute.",
 	"inactive.title": "Not set up yet",
 	"inactive.body": "Sign-in at {host} is not set up yet.",
 };

@@ -139,6 +139,11 @@ export const viTenants: Translation<typeof enTenants> = {
 		"Scribe báo tài khoản {provider} này đã hết credit.",
 	"admin.scribe.status.unreadable":
 		"Scribe không mở được key này nữa: hãy nhập lại key.",
+	"admin.scribe.certificate.pending": "Chứng chỉ của scribe.: đang cấp.",
+	"admin.scribe.certificate.issued": "Chứng chỉ của scribe.: đã cấp {date}.",
+	"admin.scribe.certificate.failed":
+		"Chứng chỉ của scribe.: lần cấp gần nhất thất bại ({error}); thử lại {date}.",
+	"admin.scribe.checkDns": "Kiểm tra DNS",
 	"admin.save": "Lưu",
 	"admin.signOut": "Rời trang quản trị",
 	"admin.result.saved": "Đã lưu.",
@@ -158,6 +163,12 @@ export const viTenants: Translation<typeof enTenants> = {
 		"Key dùng được nhưng tài khoản đã hết credit.",
 	"admin.result.scribeKeyUnreachable":
 		"Không kết nối được nhà cung cấp. Hãy thử lại.",
+	"admin.result.scribeDnsOk":
+		"scribe.{domain} đã trỏ về đây: chứng chỉ đang được cấp.",
+	"admin.result.scribeDnsWrong":
+		"Đã lưu, nhưng scribe.{domain} chưa trỏ về máy chủ này. Thêm bản ghi ở mục Scribe rồi bấm Kiểm tra DNS; thay đổi DNS có thể mất vài phút.",
+	"admin.result.scribeDnsUnknown":
+		"Chưa kiểm được DNS của scribe.{domain} lúc này. Bấm Kiểm tra DNS sau một phút.",
 	"inactive.title": "Chưa thiết lập",
 	"inactive.body": "Đăng nhập tại {host} chưa được thiết lập.",
 };

@@ -33,7 +33,7 @@ function harness(
 	reportFailure = false,
 ) {
 	const commands: Command[] = [];
-	const reports: { tenantId: string; body: unknown }[] = [];
+	const reports: { tenantId: string; kind?: string; body: unknown }[] = [];
 	const secrets = new Map<string, string>();
 	const removed: string[] = [];
 	const deps: ProvisionerDependencies = {
@@ -62,8 +62,11 @@ function harness(
 			);
 			if (url.endsWith("/internal/certificates/work"))
 				return Response.json({ work });
+			const reportUrl = new URL(url);
+			const kind = reportUrl.searchParams.get("kind");
 			reports.push({
-				tenantId: url.split("/").pop() ?? "",
+				tenantId: reportUrl.pathname.split("/").pop() ?? "",
+				...(kind ? { kind } : {}),
 				body: JSON.parse(String(init?.body)),
 			});
 			if (reportFailure) throw new Error("IdP restarting");
@@ -245,7 +248,7 @@ describe("provisioner", () => {
 		});
 	});
 
-	it("removes both certificates and the credentials, tolerating one never issued", async () => {
+	it("removes every certificate and the credentials, tolerating one never issued", async () => {
 		const run = harness(
 			[
 				{
@@ -256,8 +259,9 @@ describe("provisioner", () => {
 				},
 			],
 			(command) =>
-				command.args.includes("wildcard.old.org")
-					? "No certificate found with name wildcard.old.org"
+				command.args.includes("wildcard.old.org") ||
+				command.args.includes("scribe.old.org")
+					? "No certificate found with that name"
 					: undefined,
 		);
 		await provisionOnce(run.deps);
@@ -265,7 +269,7 @@ describe("provisioner", () => {
 			run.commands
 				.filter((command) => command.args[0] === "delete")
 				.map((command) => command.args.at(-1)),
-		).toEqual(["old.org", "wildcard.old.org"]);
+		).toEqual(["old.org", "wildcard.old.org", "scribe.old.org"]);
 		expect(run.removed).toEqual([
 			"/etc/letsencrypt-tenants/credentials/old.org.ini",
 		]);
@@ -341,5 +345,118 @@ describe("provisioner", () => {
 				PROVISIONER_ACME: "production",
 			}).PROVISIONER_ACME,
 		).toBe("production");
+	});
+});
+
+describe("provisioner, scribe.<domain> (ADR 0012)", () => {
+	const certNames = (commands: Command[]) =>
+		commands
+			.filter((command) => command.args[0] === "certonly")
+			.map((command) => command.args[command.args.indexOf("--cert-name") + 1]);
+
+	it("issues scribe.<domain> alone over HTTP-01 and reports it as scribe work", async () => {
+		const run = harness([
+			{
+				tenantId: "ten_s",
+				domain: "acme.org",
+				kind: "scribe",
+				action: "issue",
+				dnsCredential: null,
+			},
+		]);
+		expect(await provisionOnce(run.deps)).toEqual({ handled: 1, failed: 0 });
+		expect(certNames(run.commands)).toEqual(["scribe.acme.org"]);
+		const certbot = run.commands.find((c) => c.args[0] === "certonly");
+		expect(certbot?.args).toEqual(
+			expect.arrayContaining(["--webroot", "-d", "scribe.acme.org"]),
+		);
+		expect(certbot?.args).not.toContain("auth.acme.org");
+		expect(run.reports).toEqual([
+			{ tenantId: "ten_s", kind: "scribe", body: { outcome: "issued" } },
+		]);
+	});
+
+	it("uses the owner's token for DNS-01 when there is one", async () => {
+		const run = harness([
+			{
+				tenantId: "ten_s",
+				domain: "acme.org",
+				kind: "scribe",
+				action: "issue",
+				dnsCredential: sealed("ten_s"),
+			},
+		]);
+		await provisionOnce(run.deps);
+		const certbot = run.commands.find((c) => c.args[0] === "certonly");
+		expect(certbot?.args).toEqual(
+			expect.arrayContaining(["--dns-cloudflare", "-d", "scribe.acme.org"]),
+		);
+		expect(certbot?.args.join(" ")).not.toContain(TOKEN);
+		expect(run.reports[0]?.body).toEqual({ outcome: "issued" });
+	});
+
+	it("refuses a scribe name another block serves, and reports failure as scribe work", async () => {
+		const run = harness([
+			{
+				tenantId: "ten_s",
+				domain: "inetdev.io.vn",
+				kind: "scribe",
+				action: "issue",
+				dnsCredential: null,
+			},
+			{
+				tenantId: "ten_t",
+				domain: "taken.org",
+				kind: "scribe",
+				action: "issue",
+				dnsCredential: null,
+			},
+		]);
+		run.deps = {
+			...run.deps,
+			nginxConfig: async () =>
+				`${NGINX_DUMP}\nserver { server_name scribe.taken.org; }`,
+		};
+		await provisionOnce(run.deps);
+		expect(certNames(run.commands)).toEqual([]);
+		expect(run.reports).toEqual([
+			{
+				tenantId: "ten_s",
+				kind: "scribe",
+				body: { outcome: "failed", error: "domain refused by the provisioner" },
+			},
+			{
+				tenantId: "ten_t",
+				kind: "scribe",
+				body: {
+					outcome: "failed",
+					error: "server name in use: scribe.taken.org",
+				},
+			},
+		]);
+	});
+
+	it("removes only the scribe certificate for scribe work", async () => {
+		const run = harness([
+			{
+				tenantId: "ten_s",
+				domain: "acme.org",
+				kind: "scribe",
+				action: "remove",
+				dnsCredential: null,
+			},
+		]);
+		await provisionOnce(run.deps);
+		expect(
+			run.commands
+				.filter((command) => command.args[0] === "delete")
+				.map((command) => command.args.at(-1)),
+		).toEqual(["scribe.acme.org"]);
+		expect(run.removed).toEqual([]);
+		expect(run.reports[0]).toEqual({
+			tenantId: "ten_s",
+			kind: "scribe",
+			body: { outcome: "removed" },
+		});
 	});
 });

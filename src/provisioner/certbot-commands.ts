@@ -8,12 +8,20 @@ export interface Command {
 	readonly args: readonly string[];
 }
 
-/** Names of a tenant's two certificates (nginx maps hosts to them). */
+/**
+ * Names of a tenant's certificates (nginx maps hosts to them): hosts,
+ * wildcard, and `scribe.<d>`, a lineage of its own (ADR 0012).
+ */
 export function certificateNames(domain: string): {
 	readonly hosts: string;
 	readonly wildcard: string;
+	readonly scribe: string;
 } {
-	return { hosts: domain, wildcard: `wildcard.${domain}` };
+	return {
+		hosts: domain,
+		wildcard: `wildcard.${domain}`,
+		scribe: `scribe.${domain}`,
+	};
 }
 
 /** Where the Cloudflare credentials of a tenant live (mode 600, root only). */
@@ -51,6 +59,35 @@ export function issueHostsCommand(
 	dns = false,
 ): Command {
 	const hosts = appHostsFor(domain);
+	return issueCommand(config, domain, dns, certificateNames(domain).hosts, [
+		hosts.auth,
+		hosts.chat,
+		hosts.localman,
+		hosts.tunnel,
+	]);
+}
+
+/**
+ * Certificate for `scribe.<d>` alone (ADR 0012), DNS-01 with the owner's
+ * token or HTTP-01 like the hosts certificate. A lineage of its own: a
+ * missing `scribe.` record never breaks the other hosts' certificate.
+ */
+export function issueScribeCommand(
+	config: ProvisionerConfig,
+	domain: string,
+	dns = false,
+): Command {
+	const name = certificateNames(domain).scribe;
+	return issueCommand(config, domain, dns, name, [name]);
+}
+
+function issueCommand(
+	config: ProvisionerConfig,
+	domain: string,
+	dns: boolean,
+	certName: string,
+	names: readonly string[],
+): Command {
 	const method = dns
 		? [
 				"--dns-cloudflare",
@@ -70,15 +107,8 @@ export function issueHostsCommand(
 			"--keep-until-expiring",
 			...method,
 			"--cert-name",
-			certificateNames(domain).hosts,
-			"-d",
-			hosts.auth,
-			"-d",
-			hosts.chat,
-			"-d",
-			hosts.localman,
-			"-d",
-			hosts.tunnel,
+			certName,
+			...names.flatMap((name) => ["-d", name]),
 		],
 	};
 }

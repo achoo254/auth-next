@@ -1,6 +1,8 @@
 /** A unit of certificate work from the IdP's internal API, and its result. */
 export interface WorkItem {
 	readonly tenantId: string;
+	/** Hosts certificates, or `scribe.<d>` (ADR 0012); absent means hosts. */
+	readonly kind: "hosts" | "scribe";
 	readonly domain: unknown;
 	readonly action: "issue" | "remove";
 	readonly dnsCredential: unknown;
@@ -29,6 +31,7 @@ export function parseWork(body: unknown): WorkItem[] {
 		return [
 			{
 				tenantId,
+				kind: Reflect.get(item, "kind") === "scribe" ? "scribe" : "hosts",
 				action,
 				domain: Reflect.get(item, "domain"),
 				dnsCredential: Reflect.get(item, "dnsCredential"),

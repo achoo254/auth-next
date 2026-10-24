@@ -39,8 +39,28 @@ const USES: Readonly<Record<ScribeVendor, MessageKey>> = {
 	anthropic: "admin.scribe.uses.text",
 };
 
+/** Where the `scribe.` certificate stands, once Scribe is on. */
+function certificateLine(page: PageContext, tenant: TenantDocument): SafeHtml {
+	const { i18n } = page;
+	const certificate = tenant.scribeCertificate;
+	if (!tenant.scribe || !certificate) return html``;
+	const text =
+		certificate.status === "issued"
+			? i18n.t("admin.scribe.certificate.issued", {
+					date: i18n.date(certificate.issuedAt),
+				})
+			: certificate.status === "failed"
+				? i18n.t("admin.scribe.certificate.failed", {
+						error: certificate.lastError ?? "",
+						date: i18n.date(certificate.nextAttemptAt),
+					})
+				: i18n.t("admin.scribe.certificate.pending");
+	return html`<p class="help" data-id="admin-scribe-certificate">${text}</p>`;
+}
+
 function overview(
 	page: PageContext,
+	csrf: string,
 	tenant: TenantDocument,
 	view: ScribeAdminView,
 ): SafeHtml {
@@ -52,7 +72,9 @@ function overview(
 	const record = html`<code class="mono">A ${host} → ${view.serviceIp ?? ""}</code>`;
 	return html`<p class="help" data-id="admin-scribe-status">${status}</p>
 <p class="help" data-id="admin-scribe-billing"><strong>${i18n.t("admin.scribe.billing")}</strong></p>
-${view.serviceIp ? html`<p class="help" data-id="admin-scribe-record">${i18n.rich("admin.scribe.record", { record })}</p>` : ""}`;
+${view.serviceIp ? html`<p class="help" data-id="admin-scribe-record">${i18n.rich("admin.scribe.record", { record })}</p>` : ""}
+${certificateLine(page, tenant)}
+${tenant.scribe ? actionButton("/admin/scribe/dns", csrf, i18n.t("admin.scribe.checkDns"), { dataId: "admin-scribe-check-dns" }) : ""}`;
 }
 
 function savedLine(page: PageContext, key: ScribeKeySummary): SafeHtml {
@@ -106,7 +128,7 @@ export function scribeAdminCard(
 			domain: tenant.domain,
 			providers: transcription,
 		}),
-		body: html`${overview(page, tenant, view)}
+		body: html`${overview(page, csrf, tenant, view)}
 <p class="help">${i18n.t("admin.scribe.sealed")}</p>
 ${SCRIBE_VENDORS.map((vendor) =>
 	vendorBlock(

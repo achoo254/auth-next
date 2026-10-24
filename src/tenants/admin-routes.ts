@@ -11,7 +11,11 @@ import { pageContext } from "../ui/page-context.js";
 import { sendPage } from "../ui/send-page.js";
 import { renderAdminSignedOut } from "./admin-gate-pages.js";
 import { type AdminView, renderAdminPage } from "./admin-page.js";
-import { SETTING_RESULT_MESSAGES, isSettingResult } from "./admin-results.js";
+import {
+	SETTING_RESULT_MESSAGES,
+	isSettingResult,
+	isSuccessResult,
+} from "./admin-results.js";
 import {
 	addScribeAdminRoutes,
 	scribeAdminView,
@@ -113,7 +117,7 @@ export function createAdminRouter(
 				scribe: await scribeAdminView(tenancy, tenantId),
 				result: isSettingResult(result)
 					? {
-							tone: result === "saved" ? "success" : "error",
+							tone: isSuccessResult(result) ? "success" : "error",
 							text: page.i18n.t(SETTING_RESULT_MESSAGES[result], {
 								domain: tenant.domain,
 							}),

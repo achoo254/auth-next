@@ -16,6 +16,7 @@ export {
 	type TenantCertificate,
 	type TenantDocument,
 	type TenantOwner,
+	certificateDue,
 	isSelfHosted,
 	newTenantId,
 } from "./tenant-document.js";
@@ -70,14 +71,24 @@ export class TenantRegistry extends TenantLifecycle {
 		});
 	}
 
-	/** Tenants the provisioner should issue (or remove) a certificate for. */
+	/**
+	 * Tenants the provisioner should issue (or remove) a certificate for:
+	 * their hosts certificate, or the `scribe.` one of a tenant served here.
+	 */
 	listCertificateWork(now: Date): Promise<TenantDocument[]> {
+		const work = ["pending", "failed", "removing"];
 		return this.tenants
 			.find({
-				"certificate.status": { $in: ["pending", "failed", "removing"] },
 				$or: [
-					{ "certificate.nextAttemptAt": { $exists: false } },
-					{ "certificate.nextAttemptAt": { $lte: now } },
+					{
+						"certificate.status": { $in: work },
+						"certificate.nextAttemptAt": { $not: { $gt: now } },
+					},
+					{
+						status: { $in: [...SERVING_STATUSES] },
+						"scribeCertificate.status": { $in: work },
+						"scribeCertificate.nextAttemptAt": { $not: { $gt: now } },
+					},
 				],
 			})
 			.limit(20)
@@ -146,6 +157,19 @@ export class TenantRegistry extends TenantLifecycle {
 		return result.modifiedCount === 1;
 	}
 
+	/** Replaces the `scribe.` certificate state; undefined removes it. */
+	async setScribeCertificate(
+		id: string,
+		certificate: TenantCertificate | undefined,
+	): Promise<void> {
+		await this.tenants.updateOne(
+			{ _id: id },
+			certificate
+				? { $set: { scribeCertificate: certificate } }
+				: { $unset: { scribeCertificate: "" } },
+		);
+	}
+
 	/** Replaces the certificate state; undefined removes it (certificates gone). */
 	async setCertificate(
 		id: string,
@@ -164,5 +188,6 @@ export async function ensureTenantRegistryIndexes(db: Db): Promise<void> {
 		tenants.createIndex({ domain: 1 }, { unique: true }),
 		tenants.createIndex({ status: 1 }),
 		tenants.createIndex({ "certificate.status": 1 }),
+		tenants.createIndex({ "scribeCertificate.status": 1 }),
 	]);
 }

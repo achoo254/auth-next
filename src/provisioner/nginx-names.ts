@@ -39,21 +39,26 @@ function serves(name: string, host: string): boolean {
  * A tenant hostname another server block already serves (exactly, through
  * a wildcard or a regex): issuing would hand that app's traffic to the
  * tenant, so the provisioner refuses. The tenants' own regex blocks are
- * skipped. Wildcard hosts are checked with a probe label.
+ * skipped. Wildcard hosts are checked with a probe label. `scribe` work
+ * checks `scribe.<domain>` only.
  */
 export function conflictingName(
 	domain: string,
 	names: readonly string[],
+	kind: "hosts" | "scribe" = "hosts",
 ): string | undefined {
 	const hosts = appHostsFor(domain);
-	const probes = [
-		hosts.auth,
-		hosts.chat,
-		hosts.localman,
-		hosts.tunnel,
-		hosts.localmanWildcard.replace("*", "probe-label"),
-		hosts.tunnelWildcard.replace("*", "probe-label"),
-	];
+	const probes =
+		kind === "scribe"
+			? [`scribe.${domain}`]
+			: [
+					hosts.auth,
+					hosts.chat,
+					hosts.localman,
+					hosts.tunnel,
+					hosts.localmanWildcard.replace("*", "probe-label"),
+					hosts.tunnelWildcard.replace("*", "probe-label"),
+				];
 	for (const name of names) {
 		if (name.startsWith("~") && TENANT_BLOCK_PATTERN.test(name)) continue;
 		const host = probes.find((probe) => serves(name, probe));

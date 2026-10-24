@@ -21,7 +21,10 @@ export type SettingResult =
 	| "telegram-refused"
 	| "scribe-key-invalid"
 	| "scribe-key-no-credit"
-	| "scribe-key-unreachable";
+	| "scribe-key-unreachable"
+	| "scribe-dns-ok"
+	| "scribe-dns-wrong"
+	| "scribe-dns-unknown";
 
 /** OAuth apps the tenant configured (no secret, just which ones). */
 export async function configuredProviders(

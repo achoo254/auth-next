@@ -124,6 +124,11 @@ export const zhTenants: Translation<typeof enTenants> = {
 		"Scribe 报告 {provider} 拒绝了此密钥：请输入新密钥。",
 	"admin.scribe.status.quota": "Scribe 报告此 {provider} 账户余额已用完。",
 	"admin.scribe.status.unreadable": "Scribe 已无法打开此密钥：请重新输入。",
+	"admin.scribe.certificate.pending": "scribe. 的证书：正在签发。",
+	"admin.scribe.certificate.issued": "scribe. 的证书：已于 {date} 签发。",
+	"admin.scribe.certificate.failed":
+		"scribe. 的证书：上次尝试失败（{error}）；下次尝试 {date}。",
+	"admin.scribe.checkDns": "检查 DNS",
 	"admin.save": "保存",
 	"admin.signOut": "离开管理页",
 	"admin.result.saved": "已保存。",
@@ -138,6 +143,11 @@ export const zhTenants: Translation<typeof enTenants> = {
 	"admin.result.scribeKeyInvalid": "服务商拒绝了此密钥。",
 	"admin.result.scribeKeyNoCredit": "此密钥可用，但账户余额已用完。",
 	"admin.result.scribeKeyUnreachable": "无法连接服务商，请重试。",
+	"admin.result.scribeDnsOk": "scribe.{domain} 已指向此服务器：证书正在签发。",
+	"admin.result.scribeDnsWrong":
+		"已保存，但 scribe.{domain} 尚未指向此服务器。添加 Scribe 部分显示的记录后点击“检查 DNS”；DNS 更改可能需要几分钟。",
+	"admin.result.scribeDnsUnknown":
+		"暂时无法检查 scribe.{domain} 的 DNS。请一分钟后点击“检查 DNS”。",
 	"inactive.title": "尚未设置",
 	"inactive.body": "{host} 的登录尚未设置。",
 };

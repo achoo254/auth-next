@@ -8,10 +8,8 @@ import {
 	readableByNginxCommands,
 } from "./certbot-commands.js";
 import { configuredServerNames, conflictingName } from "./nginx-names.js";
-
-/** What a Cloudflare API token looks like; anything else never reaches the ini file. */
-const CLOUDFLARE_TOKEN = /^[A-Za-z0-9_-]{20,200}$/;
-import { openSealed, parseSealed } from "./open-sealed.js";
+import { prepareDnsChallenge } from "./provision-dns.js";
+import { issueScribe, removeScribe } from "./provision-scribe.js";
 import { type ProvisionerConfig, checkedDomain } from "./provisioner-config.js";
 import { type Outcome, type WorkItem, parseWork } from "./provisioner-work.js";
 
@@ -47,7 +45,7 @@ async function removeTenant(
 	domain: string,
 ): Promise<Outcome> {
 	const names = certificateNames(domain);
-	for (const name of [names.hosts, names.wildcard]) {
+	for (const name of [names.hosts, names.wildcard, names.scribe]) {
 		const result = await deps.run(deleteCommand(deps.config, name));
 		// A certificate never issued (no token, failed issuance) is fine.
 		if (result.code !== 0 && !/No certificate found/i.test(result.output)) {
@@ -79,21 +77,11 @@ async function issueTenant(
 	if (conflict)
 		return { outcome: "failed", error: `server name in use: ${conflict}` };
 	const names = certificateNames(domain);
-	const dns = item.dnsCredential !== null && item.dnsCredential !== undefined;
-	if (dns) {
-		const sealed = parseSealed(item.dnsCredential ?? "");
-		let token: string | undefined;
-		try {
-			token = sealed && openSealed(sealed, deps.privateKeyPem, item.tenantId);
-		} catch {
-			token = undefined;
-		}
-		if (!token || !CLOUDFLARE_TOKEN.test(token)) {
-			return { outcome: "failed", error: "dns token does not open" };
-		}
-		const path = credentialsPath(deps.config, domain);
-		await deps.files.writeSecret(path, `dns_cloudflare_api_token = ${token}\n`);
+	const challenge = await prepareDnsChallenge(deps, item, domain);
+	if (challenge === "failed") {
+		return { outcome: "failed", error: "dns token does not open" };
 	}
+	const dns = challenge === "ready";
 	// With a token the hosts certificate is DNS-01 too, so proxied hosts
 	// (any Cloudflare SSL mode) get one; without, HTTP-01.
 	if (
@@ -119,6 +107,23 @@ async function issueTenant(
 		return { outcome: "failed", error: "certificate permissions failed" };
 	}
 	return { outcome: "issued" };
+}
+
+/** One unit of work: the hosts certificates or the `scribe.` one. */
+function handle(
+	deps: ProvisionerDependencies,
+	item: WorkItem,
+	domain: string,
+	configured: readonly string[],
+): Promise<Outcome> {
+	if (item.kind === "scribe") {
+		return item.action === "remove"
+			? removeScribe(deps, domain)
+			: issueScribe(deps, item, domain, configured);
+	}
+	return item.action === "remove"
+		? removeTenant(deps, domain)
+		: issueTenant(deps, item, domain, configured);
 }
 
 /**
@@ -151,15 +156,14 @@ export async function provisionOnce(
 			const domain = checkedDomain(item.domain, deps.config);
 			outcome = !domain
 				? { outcome: "failed", error: "domain refused by the provisioner" }
-				: item.action === "remove"
-					? await removeTenant(deps, domain)
-					: await issueTenant(deps, item, domain, configured);
+				: await handle(deps, item, domain, configured);
 		} catch {
 			outcome = { outcome: "failed", error: "provisioner error" };
 		}
 		if (outcome.outcome === "failed") failed += 1;
+		const query = item.kind === "scribe" ? "?kind=scribe" : "";
 		const reported = await deps
-			.fetch(`${base}/internal/certificates/${item.tenantId}`, {
+			.fetch(`${base}/internal/certificates/${item.tenantId}${query}`, {
 				method: "POST",
 				headers: { ...headers, "content-type": "application/json" },
 				body: JSON.stringify(outcome),
@@ -170,6 +174,7 @@ export async function provisionOnce(
 		if (!reported) failed += 1;
 		deps.log("Tenant certificate work", {
 			tenantId: item.tenantId,
+			kind: item.kind,
 			action: item.action,
 			outcome: outcome.outcome,
 			reported,

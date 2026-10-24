@@ -2,6 +2,7 @@ import { formValue } from "../http/form.js";
 import type { AdminHandler } from "./admin-routes.js";
 import type { ScribeAdminView } from "./admin-scribe-section.js";
 import {
+	checkScribeDns,
 	removeScribeKey,
 	saveScribeKey,
 	scribeKeySummaries,
@@ -19,6 +20,9 @@ export function addScribeAdminRoutes(
 	tenancy: Tenancy,
 ): void {
 	if (!tenancy.scribe) return;
+	post("/scribe/dns", (_req, _res, { tenant }) =>
+		checkScribeDns(tenancy, tenant),
+	);
 	for (const vendor of SCRIBE_VENDORS) {
 		post(`/scribe/${vendor}`, (req, _res, { tenant }) =>
 			saveScribeKey(tenancy, tenant, vendor, formValue(req, "apiKey") ?? ""),

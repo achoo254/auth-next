@@ -17,7 +17,15 @@ export const SETTING_RESULT_MESSAGES: Readonly<
 	"scribe-key-invalid": "admin.result.scribeKeyInvalid",
 	"scribe-key-no-credit": "admin.result.scribeKeyNoCredit",
 	"scribe-key-unreachable": "admin.result.scribeKeyUnreachable",
+	"scribe-dns-ok": "admin.result.scribeDnsOk",
+	"scribe-dns-wrong": "admin.result.scribeDnsWrong",
+	"scribe-dns-unknown": "admin.result.scribeDnsUnknown",
 };
+
+/** Results shown as a success; every other one asks the owner to act. */
+export function isSuccessResult(result: SettingResult): boolean {
+	return result === "saved" || result === "scribe-dns-ok";
+}
 
 export function isSettingResult(
 	value: string | undefined,

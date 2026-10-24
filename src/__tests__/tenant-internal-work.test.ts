@@ -319,3 +319,89 @@ describe("certificate queue (provisioner)", () => {
 		expect(certificateBackoffMs(10)).toBe(24 * 3_600_000);
 	});
 });
+
+describe("scribe.<domain> certificate queue (ADR 0012)", () => {
+	const work = async (): Promise<Record<string, unknown>[]> => {
+		const response = await fetch(
+			`${server.internalOrigin}/internal/certificates/work`,
+			{ headers: provisioner },
+		);
+		return ((await response.json()) as { work: Record<string, unknown>[] })
+			.work;
+	};
+	const report = (tenantId: string, body: object, query = "?kind=scribe") =>
+		fetch(
+			`${server.internalOrigin}/internal/certificates/${tenantId}${query}`,
+			{
+				method: "POST",
+				headers: { ...provisioner, "content-type": "application/json" },
+				body: JSON.stringify(body),
+			},
+		);
+
+	it("hands out scribe work of a served tenant, apart from its hosts", async () => {
+		const scribe = await server.addTenant("scribe-q.example.org");
+		await server.registry.setScribeCertificate(scribe._id, {
+			status: "pending",
+			attempts: 0,
+		});
+		const items = (await work()).filter((item) => item.tenantId === scribe._id);
+		expect(items).toEqual([
+			expect.objectContaining({
+				kind: "scribe",
+				action: "issue",
+				domain: "scribe-q.example.org",
+				certName: "scribe.scribe-q.example.org",
+				http01: ["scribe.scribe-q.example.org"],
+				dns01: [],
+			}),
+		]);
+		const suspended = await server.addTenant(
+			"scribe-s.example.org",
+			"suspended",
+		);
+		await server.registry.setScribeCertificate(suspended._id, {
+			status: "pending",
+			attempts: 0,
+		});
+		const ids = (await work()).map((item) => item.tenantId);
+		expect(ids).not.toContain(suspended._id);
+	});
+
+	it("records reports in the scribe certificate only, with the same backoff", async () => {
+		const tenant = await server.addTenant("scribe-r.example.org");
+		await server.registry.setCertificate(tenant._id, {
+			status: "issued",
+			attempts: 0,
+			issuedAt: new Date(),
+		});
+		expect((await report(tenant._id, { outcome: "issued" })).status).toBe(404);
+		await server.registry.setScribeCertificate(tenant._id, {
+			status: "pending",
+			attempts: 0,
+		});
+		expect(
+			(await report(tenant._id, { outcome: "failed", error: "no A record" }))
+				.status,
+		).toBe(204);
+		let stored = await server.registry.findById(tenant._id);
+		expect(stored?.scribeCertificate).toMatchObject({
+			status: "failed",
+			attempts: 1,
+			lastError: "no A record",
+		});
+		expect(stored?.scribeCertificate?.nextAttemptAt?.getTime()).toBeGreaterThan(
+			Date.now() + 3_500_000,
+		);
+		expect(stored?.certificate?.status).toBe("issued");
+		const ids = (await work()).map((item) => item.tenantId);
+		expect(ids).not.toContain(tenant._id);
+		expect((await report(tenant._id, { outcome: "issued" })).status).toBe(204);
+		stored = await server.registry.findById(tenant._id);
+		expect(stored?.scribeCertificate?.status).toBe("issued");
+		expect((await report(tenant._id, { outcome: "removed" })).status).toBe(204);
+		stored = await server.registry.findById(tenant._id);
+		expect(stored?.scribeCertificate).toBeUndefined();
+		expect(stored?.certificate?.status).toBe("issued");
+	});
+});

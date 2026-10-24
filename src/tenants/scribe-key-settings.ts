@@ -1,3 +1,4 @@
+import { type ScribeHostCheck, checkScribeHost } from "./scribe-host-check.js";
 import { probeScribeKey, scribeKeyFormatOk } from "./scribe-key-probes.js";
 import {
 	SCRIBE_TRANSCRIPTION_VENDORS,
@@ -25,10 +26,17 @@ export async function scribeKeySummaries(
 	return keys.map(({ sealed: _sealed, ...summary }) => summary);
 }
 
+const DNS_RESULTS: Readonly<Record<ScribeHostCheck, SettingResult>> = {
+	ok: "scribe-dns-ok",
+	address: "scribe-dns-wrong",
+	unknown: "scribe-dns-unknown",
+};
+
 /**
  * Keeps an AI key for Scribe once its provider accepted it (ADR 0012):
  * sealed to Scribe's public key, so the IdP cannot read it back. The first
- * transcription key turns Scribe on for the tenant.
+ * transcription key turns Scribe on for the tenant; while `scribe.<domain>`
+ * has no certificate yet, its DNS is checked and the certificate queued.
  */
 export async function saveScribeKey(
 	tenancy: Tenancy,
@@ -47,10 +55,23 @@ export async function saveScribeKey(
 		key,
 		sealing.publicKey,
 	);
-	if (transcribes(vendor)) {
-		await tenancy.registry.setScribeEnabled(tenant._id, true);
+	if (!transcribes(vendor)) {
+		return applied(tenancy, tenant, scribeKeyKind(vendor));
 	}
-	return applied(tenancy, tenant, scribeKeyKind(vendor));
+	await tenancy.registry.setScribeEnabled(tenant._id, true);
+	const result = await applied(tenancy, tenant, scribeKeyKind(vendor));
+	if (tenant.scribeCertificate) return result;
+	const dns = await checkScribeHost(tenancy, tenant);
+	return dns === "ok" ? result : DNS_RESULTS[dns];
+}
+
+/** "Check DNS" of /admin's Scribe section: queues the certificate once it points here. */
+export async function checkScribeDns(
+	tenancy: Tenancy,
+	tenant: TenantDocument,
+): Promise<SettingResult> {
+	if (!tenant.scribe) return "invalid";
+	return DNS_RESULTS[await checkScribeHost(tenancy, tenant)];
 }
 
 /** Removes an AI key; without a transcription key left, Scribe turns off. */

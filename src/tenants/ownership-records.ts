@@ -85,6 +85,25 @@ export function pointsHere(
 }
 
 /**
+ * Whether one host's A records reach this service (`pointsHere`); "unknown"
+ * when the resolver could not answer. For hosts outside the ownership
+ * proof, like `scribe.<domain>` (ADR 0012).
+ */
+export async function hostReachesService(
+	host: string,
+	serviceIp: string,
+	resolver: OwnershipResolver,
+): Promise<"ok" | "address" | "unknown"> {
+	try {
+		const addresses = await lookup(() => resolver.resolve4(host));
+		return pointsHere(addresses, serviceIp) ? "ok" : "address";
+	} catch (error) {
+		if (error instanceof DnsUnavailable) return "unknown";
+		throw error;
+	}
+}
+
+/**
  * What a domain must hold to be (and stay) a tenant: the claim TXT value,
  * and every app hostname (wildcards probed with a random label) reaching
  * this service, directly or through Cloudflare's proxy (`pointsHere`). The
