@@ -9,6 +9,12 @@ export const PRIVACY_PATH = "/privacy";
 
 const CONTACT_EMAIL = "quocdat254@gmail.com";
 
+/** Links YouTube's API policies require in the privacy policy of an API client. */
+const YOUTUBE_TERMS_URL = "https://www.youtube.com/t/terms";
+const GOOGLE_PRIVACY_URL = "https://policies.google.com/privacy";
+const GOOGLE_PERMISSIONS_URL =
+	"https://security.google.com/settings/security/permissions";
+
 const STORED: readonly MessageKey[] = [
 	"privacy.stored.profile",
 	"privacy.stored.noPassword",
@@ -27,8 +33,11 @@ export function renderPrivacyPage(
 	host: string,
 	page: PageContext,
 	selfServiceDeletion: boolean,
+	publishesToYoutube: boolean,
 ): string {
 	const { i18n } = page;
+	const link = (href: string, key: MessageKey) =>
+		html`<a href="${href}" rel="noopener">${i18n.t(key)}</a>`;
 	const title = i18n.t("privacy.title");
 	const account = html`<a href="/account">${i18n.t("layout.brand")}</a>`;
 	return renderPage({
@@ -54,6 +63,22 @@ ${
 }
 <h2>${i18n.t("privacy.storage.title")}</h2>
 <p>${i18n.t("privacy.storage.body")}</p>
+${
+	publishesToYoutube
+		? html`<h2>${i18n.t("privacy.youtube.title")}</h2>
+<p data-id="privacy-youtube">${i18n.rich("privacy.youtube.body", {
+				youtubeTerms: link(YOUTUBE_TERMS_URL, "privacy.youtube.terms"),
+				googlePrivacy: link(
+					GOOGLE_PRIVACY_URL,
+					"privacy.youtube.googlePrivacy",
+				),
+				googlePermissions: link(
+					GOOGLE_PERMISSIONS_URL,
+					"privacy.youtube.permissions",
+				),
+			})}</p>`
+		: ""
+}
 </div>`,
 	});
 }
@@ -65,6 +90,7 @@ ${
 export function createPrivacyRouter(
 	host: string,
 	selfServiceDeletion: boolean,
+	publishesToYoutube: boolean,
 ): Router {
 	const router = Router();
 	router.get(PRIVACY_PATH, (req, res) => {
@@ -74,7 +100,14 @@ export function createPrivacyRouter(
 			.vary("Cookie")
 			.vary("Accept-Language")
 			.type("html")
-			.send(renderPrivacyPage(host, pageContext(req), selfServiceDeletion));
+			.send(
+				renderPrivacyPage(
+					host,
+					pageContext(req),
+					selfServiceDeletion,
+					publishesToYoutube,
+				),
+			);
 	});
 	return router;
 }

@@ -36,4 +36,10 @@ export const viPrivacy: Translation<typeof enPrivacy> = {
 	"privacy.storage.title": "Lưu trữ",
 	"privacy.storage.body":
 		"Dữ liệu nằm trên máy chủ tại Việt Nam do chủ sở hữu dịch vụ quản lý, có sao lưu hằng ngày giữ 14 ngày.",
+	"privacy.youtube.title": "YouTube API Services",
+	"privacy.youtube.body":
+		"Chủ sở hữu dịch vụ đăng video về các ứng dụng của mình lên kênh YouTube của chính mình bằng một công cụ dùng YouTube API Services. Công cụ chỉ thao tác trên các kênh đó: không đọc, không lưu và không chia sẻ dữ liệu YouTube của người dùng dịch vụ này. Việc dùng YouTube API Services tuân theo {youtubeTerms}, và Google xử lý dữ liệu theo {googlePrivacy}. Quyền đã cấp cho công cụ có thể thu hồi trong {googlePermissions}.",
+	"privacy.youtube.terms": "Điều khoản dịch vụ của YouTube",
+	"privacy.youtube.googlePrivacy": "Chính sách quyền riêng tư của Google",
+	"privacy.youtube.permissions": "cài đặt bảo mật của tài khoản Google",
 };

@@ -201,7 +201,10 @@ describe("claiming a domain", () => {
 		]) {
 			expect((await client.request(path)).status, path).toBe(404);
 		}
-		expect((await client.request("/privacy")).status).toBe(200);
+		const privacy = await client.request("/privacy");
+		expect(privacy.status).toBe(200);
+		// Only the primary tenant's owner posts to YouTube through the API.
+		expect(await privacy.text()).not.toContain('data-id="privacy-youtube"');
 		const token = await fetchAs(server.origin, AUTH, "/token", {
 			method: "POST",
 			headers: { "content-type": "application/x-www-form-urlencoded" },

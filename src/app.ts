@@ -97,7 +97,12 @@ export function createTenantApp(options: TenantAppOptions): Express {
 	}
 	if (options.enrollmentChallenge) app.use(options.enrollmentChallenge);
 	app.use(
-		createPrivacyRouter(new URL(tenant.issuer).host, deletesOwnAccount(tenant)),
+		createPrivacyRouter(
+			new URL(tenant.issuer).host,
+			deletesOwnAccount(tenant),
+			// Only the primary tenant's owner posts to YouTube through the API.
+			tenant.id === PRIMARY_TENANT_ID,
+		),
 	);
 	app.use(createLanguageRouter(services));
 	// Until its owner adds a sign-in provider, a claimed tenant serves only

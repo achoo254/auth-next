@@ -501,6 +501,8 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /privacy the same w
 <p>If deleting does not work, contact quocdat254@gmail.com.</p>
 <h2>Storage</h2>
 <p>Data is stored on servers in Vietnam managed by the service owner, with daily backups kept for 14 days.</p>
+<h2>YouTube API Services</h2>
+<p data-id="privacy-youtube">The owner of this service publishes videos about its apps to its own YouTube channels with a tool that uses YouTube API Services. The tool acts only on those channels: it does not read, store or share the YouTube data of people who use this service. Use of YouTube API Services is subject to the <a href="https://www.youtube.com/t/terms" rel="noopener">YouTube Terms of Service</a>, and Google handles data under the <a href="https://policies.google.com/privacy" rel="noopener">Google Privacy Policy</a>. Access granted to the tool can be revoked in <a href="https://security.google.com/settings/security/permissions" rel="noopener">your Google account&#39;s security settings</a>.</p>
 </div>
 </div>
 </main>
@@ -543,6 +545,8 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /privacy the same w
 <p>Nếu không xoá được, liên hệ quocdat254@gmail.com.</p>
 <h2>Lưu trữ</h2>
 <p>Dữ liệu nằm trên máy chủ tại Việt Nam do chủ sở hữu dịch vụ quản lý, có sao lưu hằng ngày giữ 14 ngày.</p>
+<h2>YouTube API Services</h2>
+<p data-id="privacy-youtube">Chủ sở hữu dịch vụ đăng video về các ứng dụng của mình lên kênh YouTube của chính mình bằng một công cụ dùng YouTube API Services. Công cụ chỉ thao tác trên các kênh đó: không đọc, không lưu và không chia sẻ dữ liệu YouTube của người dùng dịch vụ này. Việc dùng YouTube API Services tuân theo <a href="https://www.youtube.com/t/terms" rel="noopener">Điều khoản dịch vụ của YouTube</a>, và Google xử lý dữ liệu theo <a href="https://policies.google.com/privacy" rel="noopener">Chính sách quyền riêng tư của Google</a>. Quyền đã cấp cho công cụ có thể thu hồi trong <a href="https://security.google.com/settings/security/permissions" rel="noopener">cài đặt bảo mật của tài khoản Google</a>.</p>
 </div>
 </div>
 </main>
@@ -585,6 +589,8 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /privacy the same w
 <p>如果无法删除，请联系 quocdat254@gmail.com。</p>
 <h2>存储</h2>
 <p>数据存放在越南的服务器上，由服务所有者管理，每日备份并保留 14 天。</p>
+<h2>YouTube API 服务</h2>
+<p data-id="privacy-youtube">本服务的所有者使用一个调用 YouTube API 服务的工具，将介绍其应用的视频发布到自己的 YouTube 频道。该工具只操作这些频道：不会读取、存储或分享本服务用户的 YouTube 数据。使用 YouTube API 服务须遵守<a href="https://www.youtube.com/t/terms" rel="noopener">YouTube 服务条款</a>，Google 按照<a href="https://policies.google.com/privacy" rel="noopener">Google 隐私权政策</a>处理数据。授予该工具的权限可在<a href="https://security.google.com/settings/security/permissions" rel="noopener">Google 账号的安全设置</a>中撤销。</p>
 </div>
 </div>
 </main>
@@ -1512,6 +1518,11 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in en 
   "privacy.stored.title": "Data we store",
   "privacy.subtitle": "Applies to the sign-in service auth.hoandat.com. Updated 24 October 2026.",
   "privacy.title": "Privacy policy",
+  "privacy.youtube.body": "The owner of this service publishes videos about its apps to its own YouTube channels with a tool that uses YouTube API Services. The tool acts only on those channels: it does not read, store or share the YouTube data of people who use this service. Use of YouTube API Services is subject to the {youtubeTerms}, and Google handles data under the {googlePrivacy}. Access granted to the tool can be revoked in {googlePermissions}.",
+  "privacy.youtube.googlePrivacy": "Google Privacy Policy",
+  "privacy.youtube.permissions": "your Google account's security settings",
+  "privacy.youtube.terms": "YouTube Terms of Service",
+  "privacy.youtube.title": "YouTube API Services",
   "providerError.accessDenied": "The request was denied.",
   "providerError.invalidClient": "The app asking you to sign in isn't valid.",
   "providerError.invalidRedirectUri": "The app's return address isn't valid.",
@@ -2046,6 +2057,11 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in vi 
   "privacy.stored.title": "Dữ liệu được lưu",
   "privacy.subtitle": "Áp dụng cho dịch vụ đăng nhập auth.hoandat.com. Cập nhật ngày 24/10/2026.",
   "privacy.title": "Chính sách quyền riêng tư",
+  "privacy.youtube.body": "Chủ sở hữu dịch vụ đăng video về các ứng dụng của mình lên kênh YouTube của chính mình bằng một công cụ dùng YouTube API Services. Công cụ chỉ thao tác trên các kênh đó: không đọc, không lưu và không chia sẻ dữ liệu YouTube của người dùng dịch vụ này. Việc dùng YouTube API Services tuân theo {youtubeTerms}, và Google xử lý dữ liệu theo {googlePrivacy}. Quyền đã cấp cho công cụ có thể thu hồi trong {googlePermissions}.",
+  "privacy.youtube.googlePrivacy": "Chính sách quyền riêng tư của Google",
+  "privacy.youtube.permissions": "cài đặt bảo mật của tài khoản Google",
+  "privacy.youtube.terms": "Điều khoản dịch vụ của YouTube",
+  "privacy.youtube.title": "YouTube API Services",
   "providerError.accessDenied": "Yêu cầu đã bị từ chối.",
   "providerError.invalidClient": "Ứng dụng yêu cầu đăng nhập không hợp lệ.",
   "providerError.invalidRedirectUri": "Địa chỉ quay về của ứng dụng không hợp lệ.",
@@ -2580,6 +2596,11 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in zh-
   "privacy.stored.title": "我们存储的数据",
   "privacy.subtitle": "适用于登录服务 auth.hoandat.com。更新于 2026年10月24日。",
   "privacy.title": "隐私政策",
+  "privacy.youtube.body": "本服务的所有者使用一个调用 YouTube API 服务的工具，将介绍其应用的视频发布到自己的 YouTube 频道。该工具只操作这些频道：不会读取、存储或分享本服务用户的 YouTube 数据。使用 YouTube API 服务须遵守{youtubeTerms}，Google 按照{googlePrivacy}处理数据。授予该工具的权限可在{googlePermissions}中撤销。",
+  "privacy.youtube.googlePrivacy": "Google 隐私权政策",
+  "privacy.youtube.permissions": "Google 账号的安全设置",
+  "privacy.youtube.terms": "YouTube 服务条款",
+  "privacy.youtube.title": "YouTube API 服务",
   "providerError.accessDenied": "请求已被拒绝。",
   "providerError.invalidClient": "请求登录的应用无效。",
   "providerError.invalidRedirectUri": "应用的返回地址无效。",

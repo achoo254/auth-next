@@ -34,4 +34,10 @@ export const zhPrivacy: Translation<typeof enPrivacy> = {
 	"privacy.storage.title": "存储",
 	"privacy.storage.body":
 		"数据存放在越南的服务器上，由服务所有者管理，每日备份并保留 14 天。",
+	"privacy.youtube.title": "YouTube API 服务",
+	"privacy.youtube.body":
+		"本服务的所有者使用一个调用 YouTube API 服务的工具，将介绍其应用的视频发布到自己的 YouTube 频道。该工具只操作这些频道：不会读取、存储或分享本服务用户的 YouTube 数据。使用 YouTube API 服务须遵守{youtubeTerms}，Google 按照{googlePrivacy}处理数据。授予该工具的权限可在{googlePermissions}中撤销。",
+	"privacy.youtube.terms": "YouTube 服务条款",
+	"privacy.youtube.googlePrivacy": "Google 隐私权政策",
+	"privacy.youtube.permissions": "Google 账号的安全设置",
 };

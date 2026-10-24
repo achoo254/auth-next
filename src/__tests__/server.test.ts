@@ -41,6 +41,9 @@ describe("Privacy policy", () => {
 		const body = await response.text();
 		expect(body).toContain("Privacy policy");
 		expect(body).toContain("argon2id");
+		expect(body).toContain('data-id="privacy-youtube"');
+		expect(body).toContain('href="https://www.youtube.com/t/terms"');
+		expect(body).toContain('href="https://policies.google.com/privacy"');
 	});
 });
 

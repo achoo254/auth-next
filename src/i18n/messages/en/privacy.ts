@@ -34,4 +34,10 @@ export const enPrivacy = {
 	"privacy.storage.title": "Storage",
 	"privacy.storage.body":
 		"Data is stored on servers in Vietnam managed by the service owner, with daily backups kept for 14 days.",
+	"privacy.youtube.title": "YouTube API Services",
+	"privacy.youtube.body":
+		"The owner of this service publishes videos about its apps to its own YouTube channels with a tool that uses YouTube API Services. The tool acts only on those channels: it does not read, store or share the YouTube data of people who use this service. Use of YouTube API Services is subject to the {youtubeTerms}, and Google handles data under the {googlePrivacy}. Access granted to the tool can be revoked in {googlePermissions}.",
+	"privacy.youtube.terms": "YouTube Terms of Service",
+	"privacy.youtube.googlePrivacy": "Google Privacy Policy",
+	"privacy.youtube.permissions": "your Google account's security settings",
 };
