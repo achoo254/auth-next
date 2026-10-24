@@ -1,9 +1,11 @@
 # ADR 0007: Tenant tự host, hoandat chỉ là gateway khi setup
 
-- Trạng thái: chấp nhận, đã triển khai: bật trên production 17/10/2026, nghiệm thu 19/10/2026 (chuyển trọn `hoandat.io.vn` sang VM công khai, bản phát hành 0.3.2)
+- Trạng thái: **superseded** (24/10/2026) bởi [ADR 0013](0013-single-tenant.md). Phần dưới là lịch sử, không còn mô tả code hiện tại. Trạng thái trước đó: chấp nhận, đã triển khai: bật trên production 17/10/2026, nghiệm thu 19/10/2026 (chuyển trọn `hoandat.io.vn` sang VM công khai, bản phát hành 0.3.2)
 - Ngày: 2026-10-17
 - Phạm vi: lựa chọn "tự host" khi nhận domain, gói enrollment, trạng thái `self_hosted` trong sổ tenant, bản cài đóng gói của IdP, Localman, Tunelo và Chat, chuyển tenant đang chạy trên hoandat sang hạ tầng của họ (plan `plans/dattqh/261017-0735-self-hosted-tenant/`)
 - Mở rộng ADR 0006; không thay quyết định nào của nó cho tenant chạy trên hoandat.
+
+> **Superseded.** Không còn chế độ tự host, gói enrollment, chuyển tenant, bundle `deploy/self-hosted/` hay workflow `selfhosted-release`.
 
 ## Bối cảnh
 

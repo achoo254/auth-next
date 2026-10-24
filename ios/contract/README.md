@@ -149,7 +149,7 @@ apps[]              other grants grouped per client (AuthorizedApp)
   firstParty        bool
   redirectHosts     string[]
   scopes            string[]
-canDelete           bool     tenant allows self-deletion (ADR 0009)
+canDelete           bool     always true: every account deletes itself (ADR 0009, 0013)
 ```
 
 Never included: `revocationToken`, raw `providerDetails`, `securityVersion`,

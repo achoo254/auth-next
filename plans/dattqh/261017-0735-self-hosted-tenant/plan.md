@@ -1,7 +1,8 @@
 ---
 title: "Tenant tự host: hoandat chỉ là gateway khi setup"
 description: "Chủ domain chọn tự host lúc nhận domain; hoandat xác minh TXT, cấp gói enrollment, rồi rời khỏi mọi đường đi của request và dữ liệu."
-status: completed
+status: superseded
+superseded: 2026-10-24
 priority: P2
 effort: "XL (6 phase: 2×XL, 2×L, 2×M)"
 branch: "main"
@@ -12,6 +13,8 @@ created: 2026-10-17
 ---
 
 # Tenant tự host
+
+> **Superseded 24/10/2026:** hệ sinh thái về đơn tenant ([ADR 0013](../../../docs/decisions/0013-single-tenant.md)); chế độ tự host, gói enrollment, chuyển tenant, bundle `deploy/self-hosted/` và workflow `selfhosted-release` đã gỡ. Plan này chỉ còn là lịch sử.
 
 ## Overview
 

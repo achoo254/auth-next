@@ -22,11 +22,11 @@ Người dùng xem danh sách này ở trang công khai `/apps` (mở `auth.hoan
 | Miu World app (repo `miu-world-next`) | app iPhone/Android | `miu-mobile` | Trình duyệt hệ thống, Code + PKCE; redirect private-use scheme (`MIU_MOBILE_REDIRECT_URI`, mặc định `com.hoandat.miu:/auth/callback`) |
 | Trang tài khoản | `https://auth.hoandat.com/account` | `hoandat-account` | Nội bộ IdP, không dành cho app bên ngoài |
 
-Địa chỉ trên là của production; môi trường khác đổi qua `LOCALMAN_WEB_URL`, `TUNELO_WEB_URL`, `CHAT_WEB_URL`, `SCRIBE_WEB_URL`, `MIU_WEB_URL`, `ISSUER`. Trang `/apps` liệt kê Chat ở mọi tenant, mỗi tenant với host `chat.<domain>` của nó. Scribe có ở tenant chính khi đã khai `SCRIBE_WEB_CLIENT_SECRET`, và ở tenant sổ đã nhập key chép lời ở `/admin` khi bật `SCRIBE_TENANTS`, từ lúc chứng chỉ `scribe.<domain>` đã cấp (ADR 0012, chỉ `scribe-web`; client có ngay khi bật) (client khai ở [`src/oidc/scribe-clients.ts`](src/oidc/scribe-clients.ts); `scribe-web-dev` cho máy dev không hiện ở `/apps`). Miu World như vậy với `MIU_WEB_CLIENT_SECRET` ([`src/oidc/miu-clients.ts`](src/oidc/miu-clients.ts); khung chung của hai app ở [`src/oidc/primary-app-clients.ts`](src/oidc/primary-app-clients.ts)). Localman còn nhận sự kiện audit từ IdP (mục **Audit** bên dưới). Client tĩnh chỉ khai ở [`src/oidc/clients.ts`](src/oidc/clients.ts); thêm app mới thì khai ở đó rồi cập nhật bảng này, trang `/apps`, mục [Client và audience](#client-và-audience) và [`docs/integration-guide.md`](docs/integration-guide.md) mục 2.
+Địa chỉ trên là của production; môi trường khác đổi qua `LOCALMAN_WEB_URL`, `TUNELO_WEB_URL`, `CHAT_WEB_URL`, `SCRIBE_WEB_URL`, `MIU_WEB_URL`, `ISSUER`. Trang `/apps` liệt kê Scribe khi đã khai `SCRIBE_WEB_CLIENT_SECRET` (client khai ở [`src/oidc/scribe-clients.ts`](src/oidc/scribe-clients.ts); `scribe-web-dev` cho máy dev không hiện ở `/apps`). Miu World như vậy với `MIU_WEB_CLIENT_SECRET` ([`src/oidc/miu-clients.ts`](src/oidc/miu-clients.ts); khung chung của hai app ở [`src/oidc/primary-app-clients.ts`](src/oidc/primary-app-clients.ts)). Localman còn nhận sự kiện audit từ IdP (mục **Audit** bên dưới). Client tĩnh chỉ khai ở [`src/oidc/clients.ts`](src/oidc/clients.ts); thêm app mới thì khai ở đó rồi cập nhật bảng này, trang `/apps`, mục [Client và audience](#client-và-audience) và [`docs/integration-guide.md`](docs/integration-guide.md) mục 2.
 
-## Domain riêng (tenant)
+## Một tenant
 
-Từ 13/10/2026 IdP phục vụ cả các domain khác: chủ domain nhận domain ở `https://auth.hoandat.com/claim` (TXT + bản ghi A), khai OAuth Google/GitHub và token Cloudflare ở `https://auth.<domain>/admin`; người dùng của domain đăng nhập ở `auth.<domain>`, dùng `chat.<domain>`, `localman.<domain>` và `tunnel.<domain>`, dữ liệu tách hẳn hoandat.com. Hướng dẫn cho chủ domain: [`docs/tenant-owner-guide.md`](docs/tenant-owner-guide.md). Thiết kế: ADR [0006](docs/decisions/0006-tenants-by-domain.md). Vận hành (env, provisioner chứng chỉ, nginx): [`docs/deployment-guide.md`](docs/deployment-guide.md). Tenant đầu tiên: `inetdev.io.vn`.
+IdP chỉ phục vụ `hoandat.com` (ADR [0013](docs/decisions/0013-single-tenant.md), 24/10/2026): tenant duy nhất dựng từ env (`TENANT_DOMAIN`, `TENANT_DISPLAY_NAME`, URL của từng app), id `primary`. Dữ liệu vẫn mang `tenantId` (luôn `primary`) và mọi truy vấn vẫn lọc theo nó; không còn nhận domain, `/admin` của tenant, tự host hay API nội bộ.
 
 ## Bắt đầu
 
@@ -73,7 +73,7 @@ Client phải đọc endpoint từ `/.well-known/openid-configuration`, không h
 | `scribe-mobile` | public, native | Code + PKCE, refresh | `openid profile email` | không có |
 | `miu-web`, `miu-web-dev` | confidential | Code + PKCE, không refresh | `openid email` | không có (Miu tự cấp phiên, đọc email đã xác minh ở userinfo) |
 | `miu-mobile` | public, native | Code + PKCE, không refresh | `openid email` | không có |
-| `account-ios` (chỉ tenant chính) | public, native | Code + PKCE, refresh (theo thiết bị, **giữ trần 90 ngày**), `require_auth_time` | `openid profile email account` | không có: token opaque, chỉ dùng cho `/api/account` (app iOS "Tài khoản") |
+| `account-ios` | public, native | Code + PKCE, refresh (theo thiết bị, **giữ trần 90 ngày**), `require_auth_time` | `openid profile email account` | không có: token opaque, chỉ dùng cho `/api/account` (app iOS "Tài khoản") |
 | Client MCP (DCR) | public hoặc confidential | Code + PKCE, refresh | chỉ `mock:read mock:write client:read client:write client:send`, cộng `credentials:write` nếu khai rõ lúc đăng ký | luôn `https://localman.hoandat.com/mcp` |
 | `hoandat-account` | public, nội bộ | Code + PKCE (code không bao giờ được đổi) | `openid` | không có |
 
@@ -109,13 +109,13 @@ Mọi trang là HTML render phía server, không có JavaScript (CSP `script-src
 
 | Đường dẫn | Việc |
 |---|---|
-| `/apps` | Trang công khai liệt kê ứng dụng đăng nhập qua IdP, địa chỉ lấy từ `LOCALMAN_WEB_URL`, `TUNELO_WEB_URL`, `CHAT_WEB_URL` (tenant khác: `chat.<domain>`), `ISSUER`; `/` chuyển hướng (302) tới đây |
+| `/apps` | Trang công khai liệt kê ứng dụng đăng nhập qua IdP, địa chỉ lấy từ `LOCALMAN_WEB_URL`, `TUNELO_WEB_URL`, `CHAT_WEB_URL`, `ISSUER`; `/` chuyển hướng (302) tới đây |
 | `/interaction/:uid` | Đăng nhập và đăng ký bằng Google/GitHub, consent, duyệt thiết bị. Gắn với cookie interaction của `oidc-provider` |
 | `/device` | Nhập mã thiết bị (trang của `oidc-provider` đã thay giao diện) |
 | `/session/end` | Đăng xuất (trang của `oidc-provider` đã thay giao diện) |
 | `/account` | Ba nhóm card: Tài khoản (hồ sơ, cách đăng nhập), Bảo mật (phiên đang mở, thiết bị: Tunelo CLI và app native `chat-mobile`, `scribe-mobile`, mỗi máy một dòng), Kết nối (ứng dụng đã cấp quyền, Telegram) |
 | `/account/apps/:clientId/revoke`, `/account/sessions/revoke-others` | Trang xác nhận (GET) trước khi gỡ quyền ứng dụng hoặc đăng xuất mọi phiên khác; POST cần CSRF và đăng nhập gần đây |
-| `/account/delete` | Xoá tài khoản (chỉ tenant chính, ADR 0009): trang xác nhận (GET), POST cần CSRF, đăng nhập gần đây và gõ lại username |
+| `/account/delete` | Xoá tài khoản (ADR 0009): trang xác nhận (GET), POST cần CSRF, đăng nhập gần đây và gõ lại username |
 | `/lang?set=<locale>&return=<path>` | Nút chuyển ngôn ngữ (English, 中文, Tiếng Việt), xem `docs/integration-guide.md` mục 4 |
 | `/oauth/:provider/callback` | Redirect URI đăng ký với Google/GitHub/Apple. Apple trả về bằng `POST` (form_post): IdP cất câu trả lời 2 phút theo state rồi 303 sang `GET` cùng path, nơi kiểm cookie state |
 | `POST /oauth/apple/notifications` | Thông báo server-to-server của Apple (JWS, kiểm chữ ký): `consent-revoked`, `account-deleted` bỏ token thu hồi đã lưu |
@@ -161,6 +161,7 @@ src/accounts/                 # model tài khoản, token dùng một lần,
 src/telegram/                 # bot client, deep link liên kết, webhook, thông báo
 src/app-directory/            # /apps: danh sách ứng dụng đăng nhập qua IdP
 src/usage/                    # client_usage: ghi lượt vào app, truy vấn của growth-report
+src/tenants/                  # tenant duy nhất từ env, lọc tenantId ở tầng dữ liệu, runtime và serving
 src/interactions/             # trang đăng nhập/đăng ký Google/GitHub, consent, thiết bị, logout, lỗi
 src/account-portal/           # /account: phiên, grant, thiết bị, ứng dụng
 src/i18n/                     # ngôn ngữ: chọn locale, từ điển en/zh-cn/vi, endpoint /lang

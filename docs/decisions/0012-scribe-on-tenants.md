@@ -1,8 +1,10 @@
 # ADR 0012: Scribe trên tenant sổ, key AI do owner nhập và niêm phong cho Scribe
 
-- Trạng thái: chấp nhận
+- Trạng thái: **superseded** (24/10/2026) bởi [ADR 0013](0013-single-tenant.md). Phần dưới là lịch sử, không còn mô tả code hiện tại. Trạng thái trước đó: chấp nhận
 - Ngày: 2026-10-24
 - Phạm vi: trang `/admin` của tenant sổ (mục Scribe), `tenant_secrets` (loại `scribe-*`), API nội bộ cho role `scribe`, client `scribe-web` của tenant sổ, chứng chỉ `scribe.<d>`. Mở rộng ADR 0006; không đổi gì của tenant chính, app di động hay bundle tự host (ADR 0007).
+
+> **Superseded.** Scribe chỉ chạy cho `hoandat.com` với client từ env; không còn key AI của tenant, niêm phong cho Scribe, vai `scribe` của API nội bộ, `scribe-web` của tenant sổ hay chứng chỉ `scribe.<d>`.
 
 ## Bối cảnh
 

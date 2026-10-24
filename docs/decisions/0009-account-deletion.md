@@ -2,7 +2,8 @@
 
 - Trạng thái: chấp nhận
 - Ngày: 2026-10-20
-- Phạm vi: `/account` của tenant chính trên mọi bản cài (`auth.hoandat.com` và bản tự host theo ADR 0007, nơi tenant của bản cài cũng là tenant chính), tầng tài khoản, audit. Tenant sổ (ADR 0006) không có tính năng này; trang `/privacy` của chúng vẫn ghi email liên hệ.
+- Phạm vi: `/account` của `auth.hoandat.com`, tầng tài khoản, audit.
+- Sửa 24/10/2026 (ADR 0013): IdP chỉ còn một tenant, nên mọi tài khoản tự xoá được; bỏ phần nói về tenant sổ, bản tự host và claim nhận domain.
 
 ## Bối cảnh
 
@@ -11,7 +12,7 @@ App iOS "Tài khoản" (plan `plans/dattqh/261020-0742-ios-account-app/`) phải
 - app cho tạo tài khoản thì phải cho xoá tài khoản ngay trong app;
 - tài khoản có Sign in with Apple thì khi xoá phải thu hồi ở Apple.
 
-Trước ADR này IdP không có chức năng xoá, trang `/privacy` chỉ ghi "liên hệ email". Cùng một chức năng sẽ phục vụ web `/account` (làm trong phase này) và API của app (phase sau). Người dùng bản tự host cũng có cùng quyền xoá tài khoản của mình.
+Trước ADR này IdP không có chức năng xoá, trang `/privacy` chỉ ghi "liên hệ email". Cùng một chức năng sẽ phục vụ web `/account` (làm trong phase này) và API của app (phase sau).
 
 ## Quyết định
 
@@ -29,8 +30,7 @@ Không có thời gian chờ hay cách khôi phục. Tài khoản bị xoá hẳ
 4. **Xoá dữ liệu theo `accountId`** ở tầng dữ liệu (`purgeAccountData`), không dựa vào danh sách đã lấy ở các bước trước. Gồm:
    - mọi model `oidc_*` gắn với grant, khớp theo cả `grantId` lẫn `payload.accountId`, nên bắt được cả grant đã hết hạn mà TTL chưa dọn;
    - `oidc_grant`, `oidc_session`, `oidc_interaction`;
-   - `session_meta`, `grant_meta`, `one_time_tokens`;
-   - claim nhận domain của tài khoản (`tenant_claims`).
+   - `session_meta`, `grant_meta`, `one_time_tokens`.
 
    Trong các sự kiện `audit_outbox` của `sub`, xoá IP, User-Agent và tên thiết bị.
 5. **Xoá document `accounts`**, chỉ khi tài khoản đã bị khoá.
@@ -49,14 +49,13 @@ Nếu lỗi giữa chừng:
 - **Access token JWT** đã cấp cho resource (Localman, Tunelo) vẫn hợp lệ tới khi hết hạn, tối đa 15 phút, giống như khi đăng xuất.
 - **Backup database** trên máy chủ vẫn giữ bản cũ cho tới khi xoay vòng (14 ngày trên .65).
 - **Dữ liệu trong các app khác** (project Localman, tin nhắn Chat...) không bị xoá ở bước này; trang xác nhận nói rõ. `account.deleted` đi qua kênh audit sẵn có, để mỗi app tự quyết cách xử lý khi kênh đó được bật.
-- **Quyền sở hữu domain** của tenant sổ gắn với danh tính Google/GitHub chứ không gắn với tài khoản, nên vẫn còn. Trang xác nhận nói rõ điều này khi bản cài có tính năng nhận domain.
 
 ### 4. Web `/account`
 
 - Card "Xoá tài khoản" nằm cuối trang, nút viền đỏ, mở `GET /account/delete`. Đây là trang xác nhận liệt kê hậu quả.
 - `POST /account/delete` dùng `portalRoute(..., { csrf: true, recentLogin: true })` và yêu cầu gõ lại username (có hoặc không có `@`, không phân biệt hoa thường). Gõ sai thì quay về `/account` kèm thông báo, không xoá gì.
 - Xoá xong, trình duyệt được chuyển 303 sang `GET /account/deleted`, một trang công khai không cần phiên.
-- Trên tenant chính, `/privacy` hướng dẫn tự xoá và vẫn ghi email liên hệ. Tenant sổ chỉ ghi email liên hệ.
+- `/privacy` hướng dẫn tự xoá và vẫn ghi email liên hệ.
 
 ### 5. Xoá và liên kết từ app iOS (23/10/2026)
 

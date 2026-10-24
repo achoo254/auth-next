@@ -1,7 +1,8 @@
 ---
 title: "Đưa app chat vào IdP: client, host theo tenant, API nội bộ"
 description: "IdP nhận app chat (chat.hoandat.com, chat.<domain>) là app first-party thứ ba sau Localman và Tunelo: client web và native, host chat theo tenant, vai chat ở API nội bộ, hạn mức refresh cho backend chat."
-status: completed
+status: superseded
+superseded: 2026-10-24
 priority: P1
 effort: "L (4 phase: 2×L, 2×M)"
 branch: "main"
@@ -12,6 +13,8 @@ created: 2026-10-14
 ---
 
 # Đưa app chat vào IdP
+
+> **Superseded 24/10/2026:** hệ sinh thái về đơn tenant ([ADR 0013](../../../docs/decisions/0013-single-tenant.md)); client `chat-web`, `chat-mobile` vẫn còn, nhưng host chat theo tenant, secret `chat-web` suy từ khoá gốc và API nội bộ đã gỡ. Plan này chỉ còn là lịch sử.
 
 > **Huỷ 20/10/2026: desktop = PWA.** Toàn hệ sinh thái không có app desktop native (quyết định của user, `docs/ecosystem-architecture.md` §3, §4 ở thư mục gốc `hoandat-app`). Client `chat-desktop` đã gỡ khỏi code (`src/oidc/chat-clients.ts`); máy tính dùng `chat-web` cài dạng PWA. Phần về `chat-desktop` bên dưới chỉ còn là lịch sử.
 

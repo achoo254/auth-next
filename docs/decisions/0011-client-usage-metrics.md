@@ -2,7 +2,8 @@
 
 - Trạng thái: chấp nhận
 - Ngày: 2026-10-24 (sửa cùng ngày: ghi ở một điểm, bỏ tài khoản người duyệt khỏi mọi chỉ số, thêm cửa sổ 28 ngày, `--weeks` tối đa 57)
-- Phạm vi: listener `authorization.success` của `oidc-provider`, tầng dữ liệu (collection `client_usage`), xoá tài khoản (ADR 0009), chuyển tenant (ADR 0007), trang `/privacy`, script `growth-report`. Áp dụng cho mọi tenant và mọi bản cài.
+- Phạm vi: listener `authorization.success` của `oidc-provider`, tầng dữ liệu (collection `client_usage`), xoá tài khoản (ADR 0009), trang `/privacy`, script `growth-report`.
+- Sửa 24/10/2026 (ADR 0013): IdP chỉ còn tenant `primary`; bỏ phần chuyển tenant tự host. Script vẫn đọc theo `tenantId` như cũ.
 
 ## Bối cảnh
 
@@ -50,12 +51,12 @@ Hệ quả nhỏ đã chấp nhận: authorization `prompt=none` (hiện chưa a
 
 ### 5. Tenant và xoá tài khoản
 
-- `client_usage` nằm trong `TENANT_COLLECTIONS` và `IDP_COLLECTIONS` của `deploy/self-hosted/migrate/export-tenant.sh`; mọi đọc ghi qua `inTenant`/`tenantTag`.
+- `client_usage` nằm trong `TENANT_COLLECTIONS`; mọi đọc ghi qua `inTenant`/`tenantTag`.
 - `purgeAccountData` xoá `client_usage` theo `sub` trong tenant (ADR 0009 bước 4), nên xoá tài khoản xoá luôn lịch sử dùng app. `account-deletion.test.ts` kiểm theo `sub`.
 
 ### 6. Script đọc số liệu
 
-`node --env-file=.env dist/growth-report.mjs [--weeks N] [--tenant <id>] [--json]` (local: `pnpm growth:report`). Chỉ đọc, không tạo chỉ mục. Tuần bắt đầu thứ Hai 00:00 Asia/Saigon (UTC+7 quanh năm, nên `$dateTrunc` dùng offset `+07:00`), mặc định 8 tuần gần nhất, tuần cuối là tuần đang chạy. Mỗi tenant có dữ liệu một khối. Tài khoản người duyệt App Store (`reviewLogin`, ADR 0010) bị bỏ khỏi **mọi** chỉ số dưới đây, kể cả lượt đăng nhập theo `client_id`.
+`node --env-file=.env dist/growth-report.mjs [--weeks N] [--tenant <id>] [--json]` (local: `pnpm growth:report`). Chỉ đọc, không tạo chỉ mục. Tuần bắt đầu thứ Hai 00:00 Asia/Saigon (UTC+7 quanh năm, nên `$dateTrunc` dùng offset `+07:00`), mặc định 8 tuần gần nhất, tuần cuối là tuần đang chạy. Mỗi tenant có dữ liệu một khối (từ ADR 0013 chỉ còn `primary`). Tài khoản người duyệt App Store (`reviewLogin`, ADR 0010) bị bỏ khỏi **mọi** chỉ số dưới đây, kể cả lượt đăng nhập theo `client_id`.
 
 - **Tài khoản mới:** tài khoản tạo trong tuần. Tài khoản đã xoá không còn được đếm.
 - **App đầu tiên:** với mỗi tài khoản mới, app của bản ghi `client_usage` sớm nhất; chưa vào app nào thì là `none`.

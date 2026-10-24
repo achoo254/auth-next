@@ -1,7 +1,8 @@
 ---
 title: "Mọi app chạy theo domain: IdP, Localman, Tunelo đa tenant"
 description: "Chủ một domain nhận domain bằng TXT và có auth., localman., tunnel. riêng trên domain của họ; hoandat.com là tenant số 1, chạy tiếp không gián đoạn."
-status: completed
+status: superseded
+superseded: 2026-10-24
 priority: P1
 effort: "XL (7 phase: 5×L, 1×XL, 1×M)"
 branch: "main"
@@ -12,6 +13,8 @@ created: 2026-10-13
 ---
 
 # Mọi app chạy theo domain
+
+> **Superseded 24/10/2026:** hệ sinh thái về đơn tenant ([ADR 0013](../../../docs/decisions/0013-single-tenant.md)); IdP, Localman và Tunelo về đơn tenant: sổ tenant, `/claim`, `/admin`, provisioner và API nội bộ đã gỡ; trường `tenantId` (luôn `primary`) và lọc theo tenant vẫn giữ. Plan này chỉ còn là lịch sử.
 
 ## Overview
 

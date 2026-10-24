@@ -1,8 +1,10 @@
 # ADR 0006: Tenant theo domain, dữ liệu gắn `tenantId`
 
-- Trạng thái: chấp nhận
+- Trạng thái: **superseded** (24/10/2026) bởi [ADR 0013](0013-single-tenant.md). Phần dưới là lịch sử, không còn mô tả code hiện tại. Trạng thái trước đó: chấp nhận
 - Ngày: 2026-10-13
 - Phạm vi: mô hình dữ liệu, resource/audience, client tĩnh và chuỗi hiển thị của IdP; nền cho Localman và Tunelo đa tenant (plan `plans/dattqh/261013-0043-multi-tenant-by-domain/`)
+
+> **Superseded.** IdP chỉ phục vụ một tenant dựng từ env. Còn giữ từ ADR này: trường `tenantId` (luôn `primary`) trên mọi document, `inTenant`/`tenantTag`, chỉ mục dẫn đầu bằng `tenantId`, `TENANT_COLLECTIONS`, resource và audience suy từ `TENANT_DOMAIN`, chuỗi hiển thị `{brand}`/`{brandDomain}`. Bỏ: sổ tenant, `/claim`, `/admin`, runtime theo Host, secret niêm phong, secret client suy từ khoá gốc, API nội bộ, provisioner, kiểm sở hữu.
 
 ## Bối cảnh
 
