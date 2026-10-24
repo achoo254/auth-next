@@ -69,6 +69,8 @@ describe("multi-tenant runtime", () => {
 		expect(page).toContain("<b>acme</b>");
 		expect(page).not.toContain("<b>hoandat</b>");
 		expect(page).toContain("https://localman.acme.example.org");
+		expect(page).toContain('href="https://chat.acme.example.org"');
+		expect(page).not.toContain("https://chat.hoandat.com");
 		const runtime = await server.serving.primary;
 		expect(runtime.services.upstreams.size).toBe(2);
 	});

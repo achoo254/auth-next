@@ -46,15 +46,20 @@ describe("app list page", () => {
 		expect(html).toContain("signs you in to Localman, Tunelo, and Chat.");
 	});
 
-	it("lists chat only for the primary tenant, the one with a chat host", () => {
+	it("lists chat for every tenant, at the tenant's own chat host", () => {
 		const html = renderAppsPage(
-			{ ...STAGING, id: "tenant-inetdev" },
+			{
+				...STAGING,
+				id: "tenant-inetdev",
+				webApps: { ...STAGING.webApps, chat: "https://chat.inetdev.example" },
+			},
 			testPage("en", "/apps"),
 		);
-		expect(html).not.toContain('data-id="app-chat-web"');
+		expect(html).toContain('data-id="app-open-chat-web"');
+		expect(html).toContain('href="https://chat.inetdev.example"');
 		expect(html).not.toContain("https://chat.staging.example");
-		expect(html).not.toContain(">Chat</text>");
-		expect(html).toContain("signs you in to Localman and Tunelo.");
+		expect(html).toContain(">Chat</text>");
+		expect(html).toContain("signs you in to Localman, Tunelo, and Chat.");
 	});
 
 	it("lists Scribe for the primary tenant once its client is configured", () => {

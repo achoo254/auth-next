@@ -135,7 +135,7 @@ App chat (repo `chat-next`, `https://chat.hoandat.com`, pm2 `chat-api` trên cù
 | `CHAT_WEB_CLIENT_SECRET` | ≥ 32 ký tự, **bắt buộc** (thiếu thì IdP không khởi động); sinh trên server, cùng giá trị ghi vào `/opt/chat/.env` dưới tên `OIDC_CLIENT_SECRET`. Hai bên lệch nhau thì chat nhận `invalid_client` ở `/token` |
 | `CHAT_MOBILE_REDIRECT_URI` | tuỳ chọn, mặc định `com.hoandat.chat:/auth/callback`; đổi khi app chat đổi `urlScheme` trong `brand.config.json` |
 
-Tenant khác: secret của `chat-web` suy từ `APP_CLIENT_SECRET_KEY` (mục trên), không nằm trong `.env`. Trang `/apps` chỉ hiện Chat ở tenant chính cho tới khi có host `chat.<domain>` theo tenant.
+Tenant khác: secret của `chat-web` suy từ `APP_CLIENT_SECRET_KEY` (mục trên), không nằm trong `.env`. Trang `/apps` của tenant hiện Chat với host `chat.<domain>` của nó.
 
 Kiểm từ ngoài: IdP biết client thì chuyển lỗi "PKCE required" về đúng redirect của nó, client lạ thì không chuyển hướng:
 

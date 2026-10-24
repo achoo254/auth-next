@@ -76,9 +76,10 @@ function code(value: string): SafeHtml {
 
 /**
  * The first-party apps of src/oidc/clients.ts, plus the MCP clients that
- * register themselves for Localman's MCP resource. Chat is listed only for
- * the primary tenant: other tenants have no chat host yet. Scribe and Miu
- * World likewise, once configured (`webApps.scribe`, `webApps.miu`).
+ * register themselves for Localman's MCP resource. Chat is listed for every
+ * tenant: each has its chat host (`webApps.chat`, chat.<domain>). Scribe and
+ * Miu World only for the primary tenant, once configured (`webApps.scribe`,
+ * `webApps.miu`).
  */
 export function listedApps(
 	tenant: AppDirectoryTenant,
@@ -129,7 +130,7 @@ export function listedApps(
 			signIn: html`${i18n.t("apps.tuneloWeb.signIn")}`,
 			href: tenant.webApps.tunelo,
 		},
-		...(tenant.id === PRIMARY_TENANT_ID ? [chatWeb(tenant, i18n)] : []),
+		chatWeb(tenant, i18n),
 		...(tenant.id === PRIMARY_TENANT_ID && tenant.webApps.scribe
 			? [scribeWeb(tenant.webApps.scribe, i18n)]
 			: []),

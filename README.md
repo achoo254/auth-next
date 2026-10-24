@@ -22,11 +22,11 @@ Người dùng xem danh sách này ở trang công khai `/apps` (mở `auth.hoan
 | Miu World app (repo `miu-world-next`) | app iPhone/Android | `miu-mobile` | Trình duyệt hệ thống, Code + PKCE; redirect private-use scheme (`MIU_MOBILE_REDIRECT_URI`, mặc định `com.hoandat.miu:/auth/callback`) |
 | Trang tài khoản | `https://auth.hoandat.com/account` | `hoandat-account` | Nội bộ IdP, không dành cho app bên ngoài |
 
-Địa chỉ trên là của production; môi trường khác đổi qua `LOCALMAN_WEB_URL`, `TUNELO_WEB_URL`, `CHAT_WEB_URL`, `SCRIBE_WEB_URL`, `MIU_WEB_URL`, `ISSUER`. Trang `/apps` chỉ liệt kê Chat ở tenant chính: tenant khác chưa có host `chat.<domain>`. Scribe cũng chỉ có ở tenant chính, và chỉ khi đã khai `SCRIBE_WEB_CLIENT_SECRET` (client khai ở [`src/oidc/scribe-clients.ts`](src/oidc/scribe-clients.ts); `scribe-web-dev` cho máy dev không hiện ở `/apps`). Miu World như vậy với `MIU_WEB_CLIENT_SECRET` ([`src/oidc/miu-clients.ts`](src/oidc/miu-clients.ts); khung chung của hai app ở [`src/oidc/primary-app-clients.ts`](src/oidc/primary-app-clients.ts)). Localman còn nhận sự kiện audit từ IdP (mục **Audit** bên dưới). Client tĩnh chỉ khai ở [`src/oidc/clients.ts`](src/oidc/clients.ts); thêm app mới thì khai ở đó rồi cập nhật bảng này, trang `/apps`, mục [Client và audience](#client-và-audience) và [`docs/integration-guide.md`](docs/integration-guide.md) mục 2.
+Địa chỉ trên là của production; môi trường khác đổi qua `LOCALMAN_WEB_URL`, `TUNELO_WEB_URL`, `CHAT_WEB_URL`, `SCRIBE_WEB_URL`, `MIU_WEB_URL`, `ISSUER`. Trang `/apps` liệt kê Chat ở mọi tenant, mỗi tenant với host `chat.<domain>` của nó. Scribe chỉ có ở tenant chính, và chỉ khi đã khai `SCRIBE_WEB_CLIENT_SECRET` (client khai ở [`src/oidc/scribe-clients.ts`](src/oidc/scribe-clients.ts); `scribe-web-dev` cho máy dev không hiện ở `/apps`). Miu World như vậy với `MIU_WEB_CLIENT_SECRET` ([`src/oidc/miu-clients.ts`](src/oidc/miu-clients.ts); khung chung của hai app ở [`src/oidc/primary-app-clients.ts`](src/oidc/primary-app-clients.ts)). Localman còn nhận sự kiện audit từ IdP (mục **Audit** bên dưới). Client tĩnh chỉ khai ở [`src/oidc/clients.ts`](src/oidc/clients.ts); thêm app mới thì khai ở đó rồi cập nhật bảng này, trang `/apps`, mục [Client và audience](#client-và-audience) và [`docs/integration-guide.md`](docs/integration-guide.md) mục 2.
 
 ## Domain riêng (tenant)
 
-Từ 13/10/2026 IdP phục vụ cả các domain khác: chủ domain nhận domain ở `https://auth.hoandat.com/claim` (TXT + bản ghi A), khai OAuth Google/GitHub và token Cloudflare ở `https://auth.<domain>/admin`; người dùng của domain đăng nhập ở `auth.<domain>`, dùng `localman.<domain>` và `tunnel.<domain>`, dữ liệu tách hẳn hoandat.com. Hướng dẫn cho chủ domain: [`docs/tenant-owner-guide.md`](docs/tenant-owner-guide.md). Thiết kế: ADR [0006](docs/decisions/0006-tenants-by-domain.md). Vận hành (env, provisioner chứng chỉ, nginx): [`docs/deployment-guide.md`](docs/deployment-guide.md). Tenant đầu tiên: `inetdev.io.vn`.
+Từ 13/10/2026 IdP phục vụ cả các domain khác: chủ domain nhận domain ở `https://auth.hoandat.com/claim` (TXT + bản ghi A), khai OAuth Google/GitHub và token Cloudflare ở `https://auth.<domain>/admin`; người dùng của domain đăng nhập ở `auth.<domain>`, dùng `chat.<domain>`, `localman.<domain>` và `tunnel.<domain>`, dữ liệu tách hẳn hoandat.com. Hướng dẫn cho chủ domain: [`docs/tenant-owner-guide.md`](docs/tenant-owner-guide.md). Thiết kế: ADR [0006](docs/decisions/0006-tenants-by-domain.md). Vận hành (env, provisioner chứng chỉ, nginx): [`docs/deployment-guide.md`](docs/deployment-guide.md). Tenant đầu tiên: `inetdev.io.vn`.
 
 ## Bắt đầu
 
@@ -109,7 +109,7 @@ Mọi trang là HTML render phía server, không có JavaScript (CSP `script-src
 
 | Đường dẫn | Việc |
 |---|---|
-| `/apps` | Trang công khai liệt kê ứng dụng đăng nhập qua IdP, địa chỉ lấy từ `LOCALMAN_WEB_URL`, `TUNELO_WEB_URL`, `CHAT_WEB_URL` (Chat chỉ ở tenant chính), `ISSUER`; `/` chuyển hướng (302) tới đây |
+| `/apps` | Trang công khai liệt kê ứng dụng đăng nhập qua IdP, địa chỉ lấy từ `LOCALMAN_WEB_URL`, `TUNELO_WEB_URL`, `CHAT_WEB_URL` (tenant khác: `chat.<domain>`), `ISSUER`; `/` chuyển hướng (302) tới đây |
 | `/interaction/:uid` | Đăng nhập và đăng ký bằng Google/GitHub, consent, duyệt thiết bị. Gắn với cookie interaction của `oidc-provider` |
 | `/device` | Nhập mã thiết bị (trang của `oidc-provider` đã thay giao diện) |
 | `/session/end` | Đăng xuất (trang của `oidc-provider` đã thay giao diện) |
