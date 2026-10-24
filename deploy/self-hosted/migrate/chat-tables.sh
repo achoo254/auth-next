@@ -83,6 +83,8 @@ LEFT=(
 	"hook_failures|hook_id IN ($HOOKS)"
 	"hook_dead_letters|hook_id IN ($HOOKS)"
 	"hook_idempotency|hook_id IN ($HOOKS)"
+	"client_errors|tenant_id = '$T'"
+	"ops_digests|tenant_id = '$T'"
 )
 
 # No row of any tenant in particular.
