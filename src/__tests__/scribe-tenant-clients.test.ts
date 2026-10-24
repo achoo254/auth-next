@@ -9,6 +9,7 @@ import {
 	getAs,
 	startMultiTenantServer,
 } from "./helpers/multi-tenant-server.js";
+import { writeScribeSealingKey } from "./helpers/scribe-sealing-key.js";
 
 /*
  * scribe-web on a registry tenant (ADR 0012): exactly one web client,
@@ -80,15 +81,21 @@ describe("scribe-web of a registry tenant", () => {
 describe("a registry tenant turning Scribe on and off", () => {
 	let server: MultiTenantServer;
 	let acme: TenantDocument;
+	let sealingKey: Awaited<ReturnType<typeof writeScribeSealingKey>>;
 	const host = "auth.acme.example.org";
 
 	beforeAll(async () => {
-		server = await startMultiTenantServer({ SCRIBE_TENANTS: "true" });
+		sealingKey = await writeScribeSealingKey();
+		server = await startMultiTenantServer({
+			SCRIBE_TENANTS: "true",
+			SCRIBE_SEALING_PUBLIC_KEY_PATH: sealingKey.path,
+		});
 		acme = await server.addTenant("acme.example.org");
 	});
 
 	afterAll(async () => {
 		await server?.close();
+		await sealingKey?.remove();
 	});
 
 	/** An authorization request of scribe-web: 303 when the client exists. */

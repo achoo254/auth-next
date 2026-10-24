@@ -73,24 +73,25 @@ export class TenantRegistry extends TenantLifecycle {
 
 	/**
 	 * Tenants the provisioner should issue (or remove) a certificate for:
-	 * their hosts certificate, or the `scribe.` one of a tenant served here.
+	 * their hosts certificate, or (`withScribe`) the `scribe.` one of a
+	 * tenant served here.
 	 */
-	listCertificateWork(now: Date): Promise<TenantDocument[]> {
+	listCertificateWork(
+		now: Date,
+		withScribe = false,
+	): Promise<TenantDocument[]> {
 		const work = ["pending", "failed", "removing"];
+		const hosts = {
+			"certificate.status": { $in: work },
+			"certificate.nextAttemptAt": { $not: { $gt: now } },
+		};
+		const scribe = {
+			status: { $in: [...SERVING_STATUSES] },
+			"scribeCertificate.status": { $in: work },
+			"scribeCertificate.nextAttemptAt": { $not: { $gt: now } },
+		};
 		return this.tenants
-			.find({
-				$or: [
-					{
-						"certificate.status": { $in: work },
-						"certificate.nextAttemptAt": { $not: { $gt: now } },
-					},
-					{
-						status: { $in: [...SERVING_STATUSES] },
-						"scribeCertificate.status": { $in: work },
-						"scribeCertificate.nextAttemptAt": { $not: { $gt: now } },
-					},
-				],
-			})
+			.find({ $or: withScribe ? [hosts, scribe] : [hosts] })
 			.limit(20)
 			.toArray();
 	}
@@ -157,13 +158,19 @@ export class TenantRegistry extends TenantLifecycle {
 		return result.modifiedCount === 1;
 	}
 
-	/** Replaces the `scribe.` certificate state; undefined removes it. */
+	/**
+	 * Replaces the `scribe.` certificate state; undefined removes it.
+	 * `ifAbsent` sets it only while the tenant has none (first queueing).
+	 */
 	async setScribeCertificate(
 		id: string,
 		certificate: TenantCertificate | undefined,
+		ifAbsent = false,
 	): Promise<void> {
 		await this.tenants.updateOne(
-			{ _id: id },
+			ifAbsent
+				? { _id: id, scribeCertificate: { $exists: false } }
+				: { _id: id },
 			certificate
 				? { $set: { scribeCertificate: certificate } }
 				: { $unset: { scribeCertificate: "" } },

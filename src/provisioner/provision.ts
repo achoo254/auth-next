@@ -139,10 +139,14 @@ export async function provisionOnce(
 ): Promise<{ readonly handled: number; readonly failed: number }> {
 	const base = deps.config.PROVISIONER_INTERNAL_URL.replace(/\/+$/, "");
 	const headers = { authorization: authorization(deps.config) };
-	const response = await deps.fetch(`${base}/internal/certificates/work`, {
-		headers,
-		redirect: "error",
-	});
+	// Asks for Scribe work too: an IdP serves it only to provisioners that ask.
+	const response = await deps.fetch(
+		`${base}/internal/certificates/work?kinds=hosts,scribe`,
+		{
+			headers,
+			redirect: "error",
+		},
+	);
 	if (!response.ok)
 		throw new Error(`work queue answered HTTP ${response.status}`);
 	const work = parseWork(await response.json());

@@ -12,7 +12,7 @@ import {
 } from "./integrations-env.js";
 import { iosEnvShape } from "./ios-env.js";
 import { checkMiuDevGroup, miuEnvShape } from "./miu-env.js";
-import { checkScribeDevGroup, scribeEnvShape } from "./scribe-env.js";
+import { checkScribeGroups, scribeEnvShape } from "./scribe-env.js";
 import { checkTenantsGroup, tenantsEnvShape } from "./tenants-env.js";
 import { type TrustProxy, parseTrustProxy } from "./trust-proxy.js";
 import { usageEnvShape } from "./usage-env.js";
@@ -157,7 +157,7 @@ const envSchema = z
 		checkIntegrationGroups(env, ctx);
 		checkAppleGroup(env, ctx);
 		checkTenantsGroup(env, ctx);
-		checkScribeDevGroup(env, ctx);
+		checkScribeGroups(env, ctx);
 		checkMiuDevGroup(env, ctx);
 		if (env.NODE_ENV !== "production") return;
 		for (const key of PRODUCTION_URLS) {

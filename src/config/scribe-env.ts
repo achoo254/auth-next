@@ -34,6 +34,23 @@ export const scribeEnvShape = {
 	SCRIBE_SEALING_PUBLIC_KEY_PATH: z.string().min(1).optional(),
 };
 
+/** SCRIBE_TENANTS without Scribe's sealing key would turn Scribe half on. */
+export function checkScribeTenantsGroup(
+	env: {
+		readonly SCRIBE_TENANTS: boolean;
+		readonly SCRIBE_SEALING_PUBLIC_KEY_PATH?: string;
+	},
+	ctx: z.RefinementCtx,
+): void {
+	if (env.SCRIBE_TENANTS && !env.SCRIBE_SEALING_PUBLIC_KEY_PATH) {
+		ctx.addIssue({
+			code: "custom",
+			path: ["SCRIBE_SEALING_PUBLIC_KEY_PATH"],
+			message: "must be set when SCRIBE_TENANTS is on",
+		});
+	}
+}
+
 /** Reports a development client that is only partly configured. */
 export function checkScribeDevGroup(
 	env: {
@@ -43,4 +60,14 @@ export function checkScribeDevGroup(
 	ctx: z.RefinementCtx,
 ): void {
 	checkDevPair(env, "SCRIBE_WEB_DEV_URL", "SCRIBE_WEB_DEV_CLIENT_SECRET", ctx);
+}
+
+/** Every cross-setting rule of Scribe's environment. */
+export function checkScribeGroups(
+	env: Parameters<typeof checkScribeDevGroup>[0] &
+		Parameters<typeof checkScribeTenantsGroup>[0],
+	ctx: z.RefinementCtx,
+): void {
+	checkScribeDevGroup(env, ctx);
+	checkScribeTenantsGroup(env, ctx);
 }

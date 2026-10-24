@@ -69,19 +69,26 @@ export interface ScribeSealingKey {
 /**
  * Reads Scribe's sealing key at startup; refuses anything but an RSA public
  * key of at least 3072 bits, so a wrong file stops the IdP at once rather
- * than when an owner saves a key.
+ * than when an owner saves a key. A private key is refused outright: with
+ * it the IdP could open every tenant's AI keys.
  */
 export async function readScribeSealingKey(
 	path: string,
 ): Promise<ScribeSealingKey> {
-	const publicKey = await readFile(path, "utf8");
-	const key = createPublicKey(publicKey);
+	const pem = await readFile(path, "utf8");
+	if (/PRIVATE KEY-----/.test(pem)) {
+		throw new Error(
+			"SCRIBE_SEALING_PUBLIC_KEY_PATH holds a private key: give the IdP Scribe's public key only",
+		);
+	}
+	const key = createPublicKey(pem);
 	const bits = key.asymmetricKeyDetails?.modulusLength ?? 0;
 	if (key.asymmetricKeyType !== "rsa" || bits < 3072) {
 		throw new Error(
 			"SCRIBE_SEALING_PUBLIC_KEY_PATH must hold an RSA public key of at least 3072 bits",
 		);
 	}
+	const publicKey = key.export({ type: "spki", format: "pem" }).toString();
 	return { publicKey, recipient: recipientOf(publicKey) };
 }
 

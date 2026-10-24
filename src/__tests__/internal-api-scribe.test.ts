@@ -7,6 +7,7 @@ import {
 	type MultiTenantServer,
 	startMultiTenantServer,
 } from "./helpers/multi-tenant-server.js";
+import { writeScribeSealingKey } from "./helpers/scribe-sealing-key.js";
 
 /*
  * What Scribe reads from the internal API: a host's tenant, its keys and
@@ -15,6 +16,7 @@ import {
 let server: MultiTenantServer;
 let acme: TenantDocument;
 let beta: TenantDocument;
+let sealingKey: Awaited<ReturnType<typeof writeScribeSealingKey>>;
 const scribePem = generateKeyPairSync("rsa", { modulusLength: 2048 })
 	.publicKey.export({ type: "spki", format: "pem" })
 	.toString();
@@ -23,7 +25,11 @@ const recipient = recipientOf(scribePem);
 const fakeKey = ["sk", "internal", "scribe", "0123456789", "Wxyz"].join("-");
 
 beforeAll(async () => {
-	server = await startMultiTenantServer({ SCRIBE_TENANTS: "true" });
+	sealingKey = await writeScribeSealingKey();
+	server = await startMultiTenantServer({
+		SCRIBE_TENANTS: "true",
+		SCRIBE_SEALING_PUBLIC_KEY_PATH: sealingKey.path,
+	});
 	acme = await server.addTenant("acme.example.org");
 	beta = await server.addTenant("beta.example.org");
 	await server.registry.setScribeEnabled(acme._id, true);
@@ -33,6 +39,7 @@ beforeAll(async () => {
 
 afterAll(async () => {
 	await server?.close();
+	await sealingKey?.remove();
 });
 
 const basic = (role: string, secret: string) => ({
@@ -192,13 +199,32 @@ describe("internal API for Scribe", () => {
 			recipient: "0123456789abcdef",
 		});
 		expect(stale.status).toBe(204);
+		const [stored] = await server.secrets.sealedForScribe(acme._id);
+		const tag = stored?.sealed.tag ?? "";
+		expect(
+			(
+				await report(acme._id, "openai", {
+					status: "invalid",
+					recipient,
+					tag: 1,
+				})
+			).status,
+		).toBe(400);
+		// A report about an earlier seal of this key (saved again since).
+		const earlier = await report(acme._id, "openai", {
+			status: "invalid",
+			recipient,
+			tag: "A".repeat(22),
+		});
+		expect(earlier.status).toBe(204);
 		const statusOf = async (id: string) =>
 			(await server.secrets.sealedForScribe(id)).find(
 				(key) => key.vendor === "openai",
 			)?.status;
 		expect(await statusOf(acme._id)).toBeUndefined();
 		expect(
-			(await report(acme._id, "openai", { status: "quota", recipient })).status,
+			(await report(acme._id, "openai", { status: "quota", recipient, tag }))
+				.status,
 		).toBe(204);
 		expect(await statusOf(acme._id)).toBe("quota");
 		// Scribe off on beta: nothing is recorded there.

@@ -60,7 +60,7 @@ function harness(
 			expect(new Headers(init?.headers).get("authorization")).toMatch(
 				/^Basic /,
 			);
-			if (url.endsWith("/internal/certificates/work"))
+			if (url.endsWith("/internal/certificates/work?kinds=hosts,scribe"))
 				return Response.json({ work });
 			const reportUrl = new URL(url);
 			const kind = reportUrl.searchParams.get("kind");

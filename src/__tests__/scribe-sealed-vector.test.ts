@@ -8,13 +8,13 @@ import {
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { secretContext } from "../tenants/sealed-for-others.js";
 import {
 	type RecipientSealedValue,
 	SecretKeyring,
 	recipientOf,
 	sealForRecipient,
 } from "../tenants/secret-keyring.js";
+import { secretContext } from "../tenants/tenant-secret-document.js";
 
 /*
  * Cross-language test vector for Scribe (ADR 0012): an AI key sealed by

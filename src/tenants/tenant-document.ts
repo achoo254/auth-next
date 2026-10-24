@@ -87,8 +87,9 @@ export function certificateDue(
 	now: Date,
 ): boolean {
 	if (!certificate || certificate.status === "issued") return false;
-	const next = certificate.nextAttemptAt;
-	return next === undefined || next.getTime() <= now.getTime();
+	// Not a date (absent, or null after a manual edit): due now.
+	const next: unknown = certificate.nextAttemptAt;
+	return !(next instanceof Date) || next.getTime() <= now.getTime();
 }
 
 /** Statuses that count against TENANT_MAX_ACTIVE and serve pages. */

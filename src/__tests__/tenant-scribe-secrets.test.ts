@@ -124,15 +124,37 @@ describe("AI keys sealed for Scribe", () => {
 			await secrets.setScribeStatus(
 				"ten_a",
 				"openai",
-				"0".repeat(16),
+				{ recipient: "0".repeat(16) },
 				"invalid",
 			),
 		).toBe(false);
 		expect(
-			await secrets.setScribeStatus("ten_b", "openai", recipient, "invalid"),
+			await secrets.setScribeStatus(
+				"ten_b",
+				"openai",
+				{ recipient },
+				"invalid",
+			),
+		).toBe(false);
+		const opened = (await secrets.sealedForScribe("ten_a")).find(
+			(k) => k.vendor === "openai",
+		);
+		const tag = opened?.sealed.tag ?? "";
+		expect(
+			await secrets.setScribeStatus(
+				"ten_a",
+				"openai",
+				{ recipient, tag: "A".repeat(22) },
+				"invalid",
+			),
 		).toBe(false);
 		expect(
-			await secrets.setScribeStatus("ten_a", "openai", recipient, "quota"),
+			await secrets.setScribeStatus(
+				"ten_a",
+				"openai",
+				{ recipient, tag },
+				"quota",
+			),
 		).toBe(true);
 		const reported = await secrets.sealedForScribe("ten_a");
 		expect(reported.find((k) => k.vendor === "openai")?.status).toBe("quota");
@@ -143,7 +165,27 @@ describe("AI keys sealed for Scribe", () => {
 		expect(openai?.status).toBeUndefined();
 		expect(openai?.sealed.recipient).toBe(recipientOf(otherPem));
 		expect(
-			await secrets.setScribeStatus("ten_a", "openai", recipient, "invalid"),
+			await secrets.setScribeStatus(
+				"ten_a",
+				"openai",
+				{ recipient },
+				"invalid",
+			),
+		).toBe(false);
+		// Saved again under the same sealing key: a report naming the old
+		// seal no longer marks the key the owner just entered.
+		await secrets.putForScribe("ten_a", "gemini", fakeKey("Gm01"), scribePem);
+		const first = (await secrets.sealedForScribe("ten_a")).find(
+			(k) => k.vendor === "gemini",
+		);
+		await secrets.putForScribe("ten_a", "gemini", fakeKey("Gm02"), scribePem);
+		expect(
+			await secrets.setScribeStatus(
+				"ten_a",
+				"gemini",
+				{ recipient, tag: first?.sealed.tag ?? "" },
+				"quota",
+			),
 		).toBe(false);
 	});
 });

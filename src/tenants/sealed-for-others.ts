@@ -1,7 +1,6 @@
 import type { Collection } from "mongodb";
 import {
 	SCRIBE_VENDORS,
-	type ScribeKeyKind,
 	type ScribeKeyStatus,
 	type ScribeVendor,
 	scribeKeyKind,
@@ -9,68 +8,14 @@ import {
 import {
 	type ProvisionerSealedValue,
 	type RecipientSealedValue,
-	type SealedValue,
 	sealForProvisioner,
 	sealForRecipient,
 } from "./secret-keyring.js";
-
-/**
- * What a tenant keeps secret. The IdP's own kinds are sealed with its
- * keyring; the DNS token is sealed for the provisioner and AI keys for
- * Scribe, so the IdP cannot read those back.
- */
-export type TenantSecretKind =
-	| "google"
-	| "github"
-	| "telegram"
-	| "signing-keys"
-	| "dns-cloudflare"
-	| ScribeKeyKind;
-
-/** Kinds the IdP itself seals and opens. */
-export type IdpSecretKind = Exclude<
-	TenantSecretKind,
-	"dns-cloudflare" | ScribeKeyKind
->;
-
-export interface TenantSecretDocument {
-	/** `<tenantId>:<kind>`. */
-	_id: string;
-	tenantId: string;
-	kind: TenantSecretKind;
-	sealed: SealedValue | ProvisionerSealedValue | RecipientSealedValue;
-	/**
-	 * True for values the IdP cannot open (sealed for the provisioner or for
-	 * Scribe). Every version of `get` and `resealStale` skips them.
-	 */
-	forProvisioner?: boolean;
-	/** Set on AI keys: the service they are sealed for. */
-	sealedFor?: "scribe";
-	/** Last 4 characters of an AI key, so the owner recognises it. */
-	hint?: string;
-	/** What Scribe last reported about an AI key, and when. */
-	status?: ScribeKeyStatus;
-	statusAt?: Date;
-	updatedAt: Date;
-}
-
-/** One AI key as Scribe receives it: sealed, never the plaintext. */
-export interface ScribeSealedKey {
-	readonly vendor: ScribeVendor;
-	readonly hint: string;
-	readonly updatedAt: Date;
-	readonly status?: ScribeKeyStatus;
-	readonly statusAt?: Date;
-	readonly sealed: RecipientSealedValue;
-}
-
-/** Additional data binding a sealed value to its tenant and kind. */
-export function secretContext(
-	tenantId: string,
-	kind: TenantSecretKind,
-): string {
-	return `${tenantId}\n${kind}`;
-}
+import {
+	type ScribeSealedKey,
+	type TenantSecretDocument,
+	secretContext,
+} from "./tenant-secret-document.js";
 
 function isRecipientSealed(
 	sealed: TenantSecretDocument["sealed"],
@@ -177,13 +122,15 @@ export class SealedForOthers {
 
 	/**
 	 * Records what Scribe reported about a key, only while the stored key is
-	 * the one it opened (same recipient): a report about a key the owner has
-	 * replaced since does not mark the new one. True when recorded.
+	 * the one it opened: same recipient (a sealing key rotated since does not
+	 * match) and, when Scribe names it, the same seal (`tag`, new at every
+	 * save, so a report about a key the owner replaced since never marks the
+	 * new one). True when recorded.
 	 */
 	async setScribeStatus(
 		tenantId: string,
 		vendor: ScribeVendor,
-		recipient: string,
+		opened: { readonly recipient: string; readonly tag?: string },
 		status: ScribeKeyStatus,
 	): Promise<boolean> {
 		const result = await this.secrets.updateOne(
@@ -191,7 +138,8 @@ export class SealedForOthers {
 				_id: `${tenantId}:${scribeKeyKind(vendor)}`,
 				tenantId,
 				sealedFor: "scribe",
-				"sealed.recipient": recipient,
+				"sealed.recipient": opened.recipient,
+				...(opened.tag ? { "sealed.tag": opened.tag } : {}),
 			},
 			{ $set: { status, statusAt: new Date() } },
 		);

@@ -201,7 +201,7 @@ describe("/admin Scribe section", () => {
 		await server.secrets.setScribeStatus(
 			tenant._id,
 			"openai",
-			saved?.sealed.recipient ?? "",
+			{ recipient: saved?.sealed.recipient ?? "", tag: saved?.sealed.tag },
 			"quota",
 		);
 		const { html } = await admin.page();

@@ -12,7 +12,7 @@ Scribe (`scribe-next`, chép lời, biên bản, hỏi đáp, dịch) chỉ ch�
 
 ### 1. Bật và tắt
 
-- `SCRIBE_TENANTS` (mặc định tắt, nhận `true`/`1`) và `SCRIBE_SEALING_PUBLIC_KEY_PATH` (PEM public key RSA ≥ 3072 bit của Scribe, đọc và kiểm lúc khởi động). Mục Scribe ở `/admin` và các route của nó chỉ có khi có cả hai; tắt cờ rồi restart thì mục, route, client `scribe-web` của tenant sổ, `webApps.scribe` và bản niêm phong qua API nội bộ đều biến mất.
+- `SCRIBE_TENANTS` (mặc định tắt, nhận `true`/`1`) và `SCRIBE_SEALING_PUBLIC_KEY_PATH` (PEM public key RSA ≥ 3072 bit của Scribe, đọc và kiểm lúc khởi động; tệp chứa private key bị từ chối để IdP không bao giờ giữ khoá mở được key AI). Bật cờ mà thiếu đường dẫn khoá thì IdP không khởi động, nên không có trạng thái "bật một nửa". Mục Scribe ở `/admin` và các route của nó chỉ có khi có cả hai; tắt cờ rồi restart thì mục, route, client `scribe-web` của tenant sổ, `webApps.scribe` và bản niêm phong qua API nội bộ đều biến mất.
 - Tenant bật Scribe khi có ít nhất một key **chép lời** (ElevenLabs, OpenAI, Gemini): lưu key chép lời đầu tiên đặt `tenant.scribe.enabledAt`, gỡ key chép lời cuối bỏ trường đó. Key Anthropic chỉ dùng cho model chữ nên một mình nó không bật Scribe. Mỗi thay đổi ghi `tenant.configured` (chỉ tên mục, `scribe-<vendor>`) và dựng lại runtime của tenant.
 
 ### 2. Key AI niêm phong cho Scribe
@@ -25,7 +25,7 @@ Scribe (`scribe-next`, chép lời, biên bản, hỏi đáp, dịch) chỉ ch�
 
 ### 3. Ngoại lệ có chủ đích của "không API nào trả secret"
 
-Route nội bộ `GET /internal/tenants/:id/scribe-keys` trả **bản niêm phong** (không bao giờ bản rõ) cho role `scribe`, cùng loại với token DNS mà `/internal/certificates/work` trả cho provisioner: người gọi chỉ nhận đúng thứ được niêm phong cho chính nó. `POST /internal/tenants/:id/scribe-keys/:vendor/status` cho Scribe báo key `invalid | quota | unreadable`; IdP chỉ ghi khi `recipient` khớp bản đang lưu, nên báo cáo về một key cũ không đè trạng thái của key owner vừa nhập lại. Không chọn để Scribe đọc thẳng `tenant_secrets` (hai database riêng, phá ranh giới sở hữu của ADR 0006) hay nhét key vào lookup (lookup mở cho Localman, Tunelo).
+Route nội bộ `GET /internal/tenants/:id/scribe-keys` trả **bản niêm phong** (không bao giờ bản rõ) cho role `scribe`, cùng loại với token DNS mà `/internal/certificates/work` trả cho provisioner: người gọi chỉ nhận đúng thứ được niêm phong cho chính nó. `POST /internal/tenants/:id/scribe-keys/:vendor/status` cho Scribe báo key `invalid | quota | unreadable` kèm `recipient` (vân tay khoá niêm phong đã mở) và tuỳ chọn `tag` (tag AES-GCM của bản niêm phong đã mở). IdP chỉ ghi khi `recipient` khớp bản đang lưu (báo cáo về bản niêm phong cho khoá đã xoay không đè trạng thái) và, khi có `tag`, khi `tag` khớp: mỗi lần owner lưu lại key là một lần niêm phong mới với `tag` mới, nên báo cáo muộn về key cũ không đánh dấu key owner vừa nhập. `recipient` một mình không làm được việc đó (cùng khoá niêm phong thì cùng `recipient`), nên Scribe nên luôn gửi `tag`. Không chọn để Scribe đọc thẳng `tenant_secrets` (hai database riêng, phá ranh giới sở hữu của ADR 0006) hay nhét key vào lookup (lookup mở cho Localman, Tunelo).
 
 ### 4. Phía Scribe: RUSTSEC-2023-0071 (Marvin)
 
@@ -39,7 +39,7 @@ Scribe mở bản niêm phong bằng crate `rsa` (thuần Rust), có cảnh báo
 ### 6. Client, chứng chỉ và danh mục
 
 - Tenant sổ đã bật có đúng một client `scribe-web` (web, back-channel logout; không mobile, không dev). Secret `base64url(HMAC-SHA256(appClientKey(APP_CLIENT_SECRET_KEY, "scribe-web"), tenantId))` như `localman-web`, `chat-web` (ADR 0006 §5).
-- `scribe.<d>` là lineage chứng chỉ riêng, không vào chứng chỉ `<d>` và không vào `APP_HOST_KEYS`: kiểm sở hữu đòi mọi host trong đó trỏ về máy và đình chỉ sau 3 lần sai, còn HTTP-01 hỏng một tên làm hỏng cả chứng chỉ chung. Thiếu bản ghi `scribe.` không bao giờ làm tenant bị đình chỉ.
+- `scribe.<d>` là lineage chứng chỉ riêng, không vào chứng chỉ `<d>` và không vào `APP_HOST_KEYS`: kiểm sở hữu đòi mọi host trong đó trỏ về máy và đình chỉ sau 3 lần sai, còn HTTP-01 hỏng một tên làm hỏng cả chứng chỉ chung. Thiếu bản ghi `scribe.` không bao giờ làm tenant bị đình chỉ. Hàng đợi chỉ đưa việc Scribe cho provisioner tự xin (`GET /internal/certificates/work?kinds=hosts,scribe`): provisioner cũ không hiểu `kind` sẽ coi việc Scribe là việc của chứng chỉ chung (cấp lại, hay tệ hơn là xoá `<d>` và `wildcard.<d>` khi việc là gỡ), nên nó không bao giờ thấy việc đó. Block 443 của Scribe tenant (repo `scribe-next`) phải đặt tên nhóm bắt `(?<tenant>` hoặc `(?<d>` trong regex `server_name`, nếu không provisioner coi block đó là xung đột tên và từ chối cấp.
 - Trang `/apps` của tenant hiện Scribe khi tenant đã bật. Nút chuyển app của Chat và Localman giữ Scribe chỉ cho tenant chính ở đợt này.
 
 ### 7. Tenant chuyển đi và bundle tự host

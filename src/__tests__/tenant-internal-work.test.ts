@@ -321,9 +321,11 @@ describe("certificate queue (provisioner)", () => {
 });
 
 describe("scribe.<domain> certificate queue (ADR 0012)", () => {
-	const work = async (): Promise<Record<string, unknown>[]> => {
+	const work = async (
+		kinds = "?kinds=hosts,scribe",
+	): Promise<Record<string, unknown>[]> => {
 		const response = await fetch(
-			`${server.internalOrigin}/internal/certificates/work`,
+			`${server.internalOrigin}/internal/certificates/work${kinds}`,
 			{ headers: provisioner },
 		);
 		return ((await response.json()) as { work: Record<string, unknown>[] })
@@ -356,6 +358,9 @@ describe("scribe.<domain> certificate queue (ADR 0012)", () => {
 				dns01: [],
 			}),
 		]);
+		// A provisioner that does not ask for Scribe work never sees it.
+		const older = await work("");
+		expect(older.map((item) => item.tenantId)).not.toContain(scribe._id);
 		const suspended = await server.addTenant(
 			"scribe-s.example.org",
 			"suspended",

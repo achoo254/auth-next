@@ -36,11 +36,16 @@ function actionOf(certificate: TenantCertificate | undefined) {
 	return certificate?.status === "removing" ? "remove" : "issue";
 }
 
-/** The due work of one tenant, hosts first. */
+/**
+ * The due work of one tenant, hosts first. Scribe work only for a
+ * provisioner that asks for it (`kinds=scribe`): an older one would treat
+ * it as hosts work.
+ */
 async function workOf(
 	tenant: TenantDocument,
 	secrets: TenantSecrets | undefined,
 	now: Date,
+	withScribe: boolean,
 ): Promise<object[]> {
 	const hosts = appHostsFor(tenant.domain);
 	const dnsCredential =
@@ -57,7 +62,7 @@ async function workOf(
 		});
 	}
 	const serving = SERVING_STATUSES.includes(tenant.status);
-	if (serving && certificateDue(tenant.scribeCertificate, now)) {
+	if (withScribe && serving && certificateDue(tenant.scribeCertificate, now)) {
 		const host = `scribe.${tenant.domain}`;
 		work.push({
 			...common,
@@ -113,12 +118,14 @@ export function certificateRouter(
 	const router = Router();
 	router.use(express.json({ limit: "4kb" }));
 
-	router.get("/work", async (_req, res, next) => {
+	router.get("/work", async (req, res, next) => {
 		try {
 			const now = new Date();
-			const due = await registry.listCertificateWork(now);
+			const kinds = typeof req.query.kinds === "string" ? req.query.kinds : "";
+			const withScribe = kinds.split(",").includes("scribe");
+			const due = await registry.listCertificateWork(now, withScribe);
 			const work = await Promise.all(
-				due.map((tenant) => workOf(tenant, secrets, now)),
+				due.map((tenant) => workOf(tenant, secrets, now, withScribe)),
 			);
 			res.json({ work: work.flat() });
 		} catch (error) {

@@ -25,10 +25,11 @@ export async function checkScribeHost(
 		tenancy.resolver,
 	);
 	if (result === "ok" && tenant.scribeCertificate === undefined) {
-		await tenancy.registry.setScribeCertificate(tenant._id, {
-			status: "pending",
-			attempts: 0,
-		});
+		await tenancy.registry.setScribeCertificate(
+			tenant._id,
+			{ status: "pending", attempts: 0 },
+			true,
+		);
 	}
 	return result;
 }

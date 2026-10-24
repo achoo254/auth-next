@@ -33,14 +33,18 @@ async function writeKey(name: string, pem: string | Buffer): Promise<string> {
 }
 
 describe("SCRIBE_TENANTS", () => {
-	it("is off unless set to true or 1", () => {
+	it("is off unless set to true or 1, and needs Scribe's key when on", () => {
+		const withKey = { ...REQUIRED, SCRIBE_SEALING_PUBLIC_KEY_PATH: "/k.pem" };
 		expect(parseEnv(REQUIRED).SCRIBE_TENANTS).toBe(false);
-		expect(parseEnv({ ...REQUIRED, SCRIBE_TENANTS: "1" }).SCRIBE_TENANTS).toBe(
+		expect(parseEnv({ ...withKey, SCRIBE_TENANTS: "1" }).SCRIBE_TENANTS).toBe(
 			true,
 		);
 		expect(
-			parseEnv({ ...REQUIRED, SCRIBE_TENANTS: "true" }).SCRIBE_TENANTS,
+			parseEnv({ ...withKey, SCRIBE_TENANTS: "true" }).SCRIBE_TENANTS,
 		).toBe(true);
+		expect(() => parseEnv({ ...REQUIRED, SCRIBE_TENANTS: "true" })).toThrow(
+			/SCRIBE_SEALING_PUBLIC_KEY_PATH/,
+		);
 		expect(() => parseEnv({ ...REQUIRED, SCRIBE_TENANTS: "yes" })).toThrow(
 			/SCRIBE_TENANTS/,
 		);
@@ -55,6 +59,14 @@ describe("readScribeSealingKey", () => {
 		expect(key.publicKey).toBe(pem);
 		expect(key.recipient).toBe(recipientOf(pem));
 		expect(key.recipient).toMatch(/^[0-9a-f]{16}$/);
+	});
+
+	it("refuses Scribe's private key", async () => {
+		const { privateKey } = generateKeyPairSync("rsa", { modulusLength: 3072 });
+		const pem = privateKey.export({ type: "pkcs8", format: "pem" }).toString();
+		await expect(
+			readScribeSealingKey(await writeKey("private.pem", pem)),
+		).rejects.toThrow(/private key/);
 	});
 
 	it("refuses a short RSA key or another kind of key", async () => {

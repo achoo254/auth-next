@@ -1,18 +1,18 @@
 import { type Db, MongoServerError } from "mongodb";
+import { SealedForOthers } from "./sealed-for-others.js";
+import type { SecretKeyring } from "./secret-keyring.js";
 import {
 	type IdpSecretKind,
-	SealedForOthers,
 	type TenantSecretDocument,
 	type TenantSecretKind,
 	secretContext as contextOf,
-} from "./sealed-for-others.js";
-import type { SecretKeyring } from "./secret-keyring.js";
+} from "./tenant-secret-document.js";
 
 export type {
 	IdpSecretKind,
 	ScribeSealedKey,
 	TenantSecretKind,
-} from "./sealed-for-others.js";
+} from "./tenant-secret-document.js";
 
 export const TENANT_SECRETS_COLLECTION = "tenant_secrets";
 
