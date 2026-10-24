@@ -1,3 +1,4 @@
+import { createPublicKey } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import { freemem } from "node:os";
@@ -13,6 +14,7 @@ import {
 	type OwnershipResolver,
 	SYSTEM_RESOLVER,
 } from "./ownership-records.js";
+import { recipientOf } from "./secret-keyring.js";
 import { TenantClaims } from "./tenant-claims.js";
 import type { TenantRegistry } from "./tenant-registry.js";
 import type { TenantSecrets } from "./tenant-secrets.js";
@@ -38,6 +40,11 @@ export interface Tenancy {
 	readonly blockedDomains: readonly string[];
 	/** PEM of the provisioner's key; DNS tokens can be saved only with it. */
 	readonly provisionerPublicKey?: string;
+	/**
+	 * Scribe's sealing key when SCRIBE_TENANTS is on and the key is set
+	 * (ADR 0012): /admin offers AI keys only then.
+	 */
+	readonly scribe?: ScribeSealingKey;
 	readonly telegramApiBaseUrl: string;
 	/** Where owners start and open /admin from: the primary tenant's /claim. */
 	readonly claimUrl: string;
@@ -51,6 +58,31 @@ export interface Tenancy {
 	availableMemoryMb(): number;
 	/** A tenant's settings or status changed: its runtime is rebuilt. */
 	changed(tenantId: string): void;
+}
+
+/** Scribe's RSA public key (PEM) and its fingerprint. */
+export interface ScribeSealingKey {
+	readonly publicKey: string;
+	readonly recipient: string;
+}
+
+/**
+ * Reads Scribe's sealing key at startup; refuses anything but an RSA public
+ * key of at least 3072 bits, so a wrong file stops the IdP at once rather
+ * than when an owner saves a key.
+ */
+export async function readScribeSealingKey(
+	path: string,
+): Promise<ScribeSealingKey> {
+	const publicKey = await readFile(path, "utf8");
+	const key = createPublicKey(publicKey);
+	const bits = key.asymmetricKeyDetails?.modulusLength ?? 0;
+	if (key.asymmetricKeyType !== "rsa" || bits < 3072) {
+		throw new Error(
+			"SCRIBE_SEALING_PUBLIC_KEY_PATH must hold an RSA public key of at least 3072 bits",
+		);
+	}
+	return { publicKey, recipient: recipientOf(publicKey) };
 }
 
 /**
@@ -68,12 +100,12 @@ export function availableMemoryMb(): number {
 	return Math.floor(freemem() / 1024 / 1024);
 }
 
-/** The Tenancy of a server whose registry tenants are enabled. */
 /** Network and machine facts tests replace (DNS, HTTP, free memory). */
 export type TenancyOverrides = Partial<
 	Pick<Tenancy, "resolver" | "fetch" | "availableMemoryMb" | "fetchChallenge">
 >;
 
+/** The Tenancy of a server whose registry tenants are enabled. */
 export async function createTenancy(
 	env: Env,
 	db: Db,
@@ -87,6 +119,9 @@ export async function createTenancy(
 	overrides: TenancyOverrides = {},
 ): Promise<Tenancy> {
 	const keyPath = env.PROVISIONER_PUBLIC_KEY_PATH;
+	const scribeKeyPath = env.SCRIBE_TENANTS
+		? env.SCRIBE_SEALING_PUBLIC_KEY_PATH
+		: undefined;
 	return {
 		db,
 		registry: stores.registry,
@@ -100,6 +135,9 @@ export async function createTenancy(
 		// The primary domain and everything around it is never a tenant.
 		blockedDomains: [env.TENANT_DOMAIN, ...env.CLAIM_BLOCKED_DOMAINS],
 		provisionerPublicKey: keyPath ? await readFile(keyPath, "utf8") : undefined,
+		scribe: scribeKeyPath
+			? await readScribeSealingKey(scribeKeyPath)
+			: undefined,
 		telegramApiBaseUrl: env.TELEGRAM_API_BASE_URL.replace(/\/+$/, ""),
 		claimUrl: `${env.ISSUER}/claim`,
 		issuer: env.ISSUER,

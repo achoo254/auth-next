@@ -18,7 +18,10 @@ export type SettingResult =
 	| "cloudflare-no-dns-edit"
 	| "cloudflare-unreachable"
 	| "dns-unavailable"
-	| "telegram-refused";
+	| "telegram-refused"
+	| "scribe-key-invalid"
+	| "scribe-key-no-credit"
+	| "scribe-key-unreachable";
 
 /** OAuth apps the tenant configured (no secret, just which ones). */
 export async function configuredProviders(
@@ -38,7 +41,7 @@ export async function configuredProviders(
  * once it has an owner and a sign-in provider, and drop its runtime so the
  * next request builds it with the new settings.
  */
-async function applied(
+export async function applied(
 	tenancy: Tenancy,
 	tenant: TenantDocument,
 	setting: TenantSetting,

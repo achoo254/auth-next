@@ -109,6 +109,25 @@ bắt tay TLS được; các trang chính vẫn chạy.
 - Bot Telegram (tuỳ chọn, trang quản trị): cho người dùng liên kết chat để nhận thông báo bảo
   mật; tạo bot bằng @BotFather.
 
+## 7. Scribe (chép lời, biên bản; ADR 0012)
+
+Chỉ có khi máy chủ bật Scribe cho domain riêng (mục **Scribe** hiện ở trang quản trị). Scribe
+chạy ở `https://scribe.<domain>` bằng key AI của **bạn**: mọi lượt chép lời, biên bản, hỏi
+đáp và dịch của người dùng domain tính vào tài khoản ở nhà cung cấp AI của bạn.
+
+- **Bật:** dán ít nhất một key chép lời (ElevenLabs, OpenAI hoặc Google Gemini) vào mục
+  **Scribe**. Key Anthropic Claude chỉ dùng cho biên bản, hỏi đáp và dịch nên một mình nó không
+  bật Scribe. Gỡ key chép lời cuối thì Scribe tắt.
+- **Kiểm và niêm phong:** trang gọi thử nhà cung cấp bằng một lượt không tốn credit trước khi
+  lưu (key bị từ chối, hết credit hay không kiểm được thì không lưu), rồi niêm phong key cho
+  Scribe: không ai đọc lại được, kể cả trang quản trị; trang chỉ hiện 4 ký tự cuối.
+- **Trạng thái:** khi Scribe gặp lỗi với key (bị từ chối, hết credit, không mở được), dòng của
+  nhà cung cấp đó hiện lỗi; nhập key mới để sửa.
+- **DNS:** thêm bản ghi `A scribe.<domain>` trỏ về cùng IP với các host khác (chỉ DNS hoặc
+  proxy Cloudflare như các host khác). Thiếu bản ghi này không làm domain bị đình chỉ.
+- Chỉ có Scribe web (cài được dạng PWA); app Scribe iPhone/Android chỉ dùng cho hoandat.com.
+  Chuyển domain sang máy chủ của bạn thì Scribe và dữ liệu Scribe không đi theo.
+
 ## Chạy trên máy chủ của bạn (ADR 0007)
 
 Chỉ có khi `/claim` có lựa chọn "Trên máy chủ của bạn" (`SELF_HOSTED_CLAIMS`); trang `/guide/domain` cũng chỉ hiện mục này khi đó.

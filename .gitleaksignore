@@ -2,3 +2,5 @@
 ios/contract/push-device.json:generic-api-key:2
 # Fake JWT ({"sub":"x"}, signature "sig") in an API guard test
 src/__tests__/account-api-guards.test.ts:generic-api-key:65
+# Test-only RSA key pair of the cross-language Scribe sealing vector (ADR 0012)
+src/__tests__/fixtures/scribe-sealed-vector.json:private-key:3

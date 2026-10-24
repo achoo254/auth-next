@@ -1,59 +1,38 @@
-import { type Collection, type Db, MongoServerError } from "mongodb";
+import { type Db, MongoServerError } from "mongodb";
 import {
-	type ProvisionerSealedValue,
-	type SealedValue,
-	type SecretKeyring,
-	sealForProvisioner,
-} from "./secret-keyring.js";
+	type IdpSecretKind,
+	SealedForOthers,
+	type TenantSecretDocument,
+	type TenantSecretKind,
+	secretContext as contextOf,
+} from "./sealed-for-others.js";
+import type { SecretKeyring } from "./secret-keyring.js";
 
-/**
- * What a tenant keeps secret. All but the DNS token are sealed with the
- * IdP's keyring; the DNS token is sealed for the provisioner only.
- */
-export type TenantSecretKind =
-	| "google"
-	| "github"
-	| "telegram"
-	| "signing-keys"
-	| "dns-cloudflare";
-
-interface TenantSecretDocument {
-	/** `<tenantId>:<kind>`. */
-	_id: string;
-	tenantId: string;
-	kind: TenantSecretKind;
-	sealed: SealedValue | ProvisionerSealedValue;
-	/** True for values only the provisioner can open. */
-	forProvisioner?: boolean;
-	updatedAt: Date;
-}
+export type {
+	IdpSecretKind,
+	ScribeSealedKey,
+	TenantSecretKind,
+} from "./sealed-for-others.js";
 
 export const TENANT_SECRETS_COLLECTION = "tenant_secrets";
 
-function contextOf(tenantId: string, kind: TenantSecretKind): string {
-	return `${tenantId}\n${kind}`;
-}
-
 /**
- * Encrypted per-tenant secrets (OAuth apps, bot token, signing keys, DNS
- * token). Values are never logged or returned by any API; reads decrypt
- * in memory for the tenant's own runtime only.
+ * Encrypted per-tenant secrets (OAuth apps, bot token, signing keys; the
+ * DNS token and AI keys sealed for others). Values are never logged; no
+ * API returns one except sealed to its own recipient. Reads decrypt in
+ * memory for the tenant's own runtime only.
  */
-export class TenantSecrets {
-	private readonly secrets: Collection<TenantSecretDocument>;
-
+export class TenantSecrets extends SealedForOthers {
 	constructor(
 		db: Db,
 		private readonly keyring: SecretKeyring,
 	) {
-		this.secrets = db.collection<TenantSecretDocument>(
-			TENANT_SECRETS_COLLECTION,
-		);
+		super(db.collection<TenantSecretDocument>(TENANT_SECRETS_COLLECTION));
 	}
 
 	async put(
 		tenantId: string,
-		kind: Exclude<TenantSecretKind, "dns-cloudflare">,
+		kind: IdpSecretKind,
 		value: string,
 	): Promise<void> {
 		const sealed = this.keyring.seal(value, contextOf(tenantId, kind));
@@ -70,7 +49,7 @@ export class TenantSecrets {
 	 */
 	async putIfAbsent(
 		tenantId: string,
-		kind: Exclude<TenantSecretKind, "dns-cloudflare">,
+		kind: IdpSecretKind,
 		value: string,
 	): Promise<string> {
 		const sealed = this.keyring.seal(value, contextOf(tenantId, kind));
@@ -95,7 +74,7 @@ export class TenantSecrets {
 
 	async get(
 		tenantId: string,
-		kind: Exclude<TenantSecretKind, "dns-cloudflare">,
+		kind: IdpSecretKind,
 	): Promise<string | undefined> {
 		const document = await this.secrets.findOne({
 			_id: `${tenantId}:${kind}`,
@@ -107,9 +86,10 @@ export class TenantSecrets {
 
 	/**
 	 * Re-seals every secret sealed with an older key of the ring (the IdP's
-	 * own; DNS tokens are the provisioner's). Run at startup, so after a new
-	 * key is put first and the IdP restarted once, the old key can go.
-	 * Returns how many were re-sealed.
+	 * own; DNS tokens and AI keys are sealed for others and marked
+	 * `forProvisioner`). Run at startup, so after a new key is put first and
+	 * the IdP restarted once, the old key can go. Returns how many were
+	 * re-sealed.
 	 */
 	async resealStale(): Promise<number> {
 		let resealed = 0;
@@ -125,38 +105,6 @@ export class TenantSecrets {
 			resealed += result.modifiedCount;
 		}
 		return resealed;
-	}
-
-	/** Seals the DNS API token for the provisioner; the IdP cannot read it back. */
-	async putForProvisioner(
-		tenantId: string,
-		value: string,
-		provisionerPublicKey: string,
-	): Promise<void> {
-		const kind = "dns-cloudflare";
-		const sealed = sealForProvisioner(
-			value,
-			contextOf(tenantId, kind),
-			provisionerPublicKey,
-		);
-		await this.secrets.replaceOne(
-			{ _id: `${tenantId}:${kind}` },
-			{ tenantId, kind, sealed, forProvisioner: true, updatedAt: new Date() },
-			{ upsert: true },
-		);
-	}
-
-	/** The sealed DNS token as stored, for the provisioner to open. */
-	async sealedForProvisioner(
-		tenantId: string,
-	): Promise<ProvisionerSealedValue | undefined> {
-		const document = await this.secrets.findOne({
-			_id: `${tenantId}:dns-cloudflare`,
-			tenantId,
-			forProvisioner: true,
-		});
-		const sealed = document?.sealed;
-		return sealed && "wrappedKey" in sealed ? sealed : undefined;
 	}
 
 	async has(tenantId: string, kind: TenantSecretKind): Promise<boolean> {

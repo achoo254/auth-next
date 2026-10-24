@@ -1,10 +1,12 @@
 import {
+	constants,
 	createCipheriv,
 	createDecipheriv,
+	createHash,
+	createPublicKey,
 	publicEncrypt,
 	randomBytes,
 } from "node:crypto";
-import { constants } from "node:crypto";
 
 /** AES-256-GCM output, every part base64url. */
 export interface SealedValue {
@@ -104,18 +106,34 @@ export interface ProvisionerSealedValue extends SealedValue {
 	readonly wrappedKey: string;
 }
 
+/** A value sealed for the holder of one RSA key, named by its fingerprint. */
+export interface RecipientSealedValue extends ProvisionerSealedValue {
+	/** `recipientOf` the public key it was sealed to (key rotation). */
+	readonly recipient: string;
+}
+
+/** The first 16 hex digits of SHA-256 over the key's SPKI DER encoding. */
+export function recipientOf(publicKeyPem: string): string {
+	const der = createPublicKey(publicKeyPem).export({
+		type: "spki",
+		format: "der",
+	});
+	return createHash("sha256").update(der).digest("hex").slice(0, 16);
+}
+
 /**
- * Seals `plaintext` for the provisioner: a fresh AES-256-GCM key encrypts
- * it, and that key is wrapped with the provisioner's RSA public key. The
- * IdP keeps the result but can never decrypt it (the DNS API token).
+ * Seals `plaintext` for the holder of an RSA private key: a fresh
+ * AES-256-GCM key encrypts it with `context` as additional data, and that
+ * key is wrapped with RSA-OAEP (SHA-256, MGF1 SHA-256). Whoever only has
+ * the public key, the IdP included, can never decrypt the result.
  */
-export function sealForProvisioner(
+export function sealForRecipient(
 	plaintext: string,
 	context: string,
 	publicKeyPem: string,
-): ProvisionerSealedValue {
+): RecipientSealedValue {
 	const key = randomBytes(32);
-	const sealed = new SecretKeyring([{ kid: "provisioner", key }]).seal(
+	const sealed = new SecretKeyring([{ kid: "recipient", key }]).seal(
 		plaintext,
 		context,
 	);
@@ -127,5 +145,26 @@ export function sealForProvisioner(
 		},
 		key,
 	);
-	return { ...sealed, wrappedKey: wrappedKey.toString("base64url") };
+	return {
+		...sealed,
+		wrappedKey: wrappedKey.toString("base64url"),
+		recipient: recipientOf(publicKeyPem),
+	};
+}
+
+/**
+ * Seals `plaintext` for the provisioner (the DNS API token), in the format
+ * it has always opened: kid `provisioner`, no recipient.
+ */
+export function sealForProvisioner(
+	plaintext: string,
+	context: string,
+	publicKeyPem: string,
+): ProvisionerSealedValue {
+	const { iv, ciphertext, tag, wrappedKey } = sealForRecipient(
+		plaintext,
+		context,
+		publicKeyPem,
+	);
+	return { kid: "provisioner", iv, ciphertext, tag, wrappedKey };
 }

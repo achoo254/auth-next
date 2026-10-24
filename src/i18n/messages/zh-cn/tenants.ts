@@ -102,6 +102,28 @@ export const zhTenants: Translation<typeof enTenants> = {
 	"admin.telegram.token": "机器人令牌",
 	"admin.telegram.username": "机器人用户名",
 	"admin.telegram.configured": "已连接 @{username}。",
+	"admin.scribe.title": "Scribe",
+	"admin.scribe.help":
+		"为 {domain} 的用户提供转写、会议纪要、问答和翻译。添加一个转写密钥（{providers}）后即开启。",
+	"admin.scribe.on": "已开启：用户在 {url} 登录 Scribe。",
+	"admin.scribe.off": "未开启：在下方添加一个转写密钥即可开启 Scribe。",
+	"admin.scribe.billing":
+		"此域名用户的每次转写、纪要、问答和翻译都计入你的 AI 账户。",
+	"admin.scribe.record":
+		"Scribe 还需要一条 DNS 记录：{record}。与其他地址一样，可设为仅 DNS 或经 Cloudflare 代理。",
+	"admin.scribe.sealed":
+		"密钥先向服务商验证，再为 Scribe 加密保存：任何人都无法读回，包括此页面。",
+	"admin.scribe.keyTitle": "{provider} 密钥",
+	"admin.scribe.uses.transcription": "用于转写。",
+	"admin.scribe.uses.both": "用于转写，以及纪要、问答和翻译。",
+	"admin.scribe.uses.text": "用于纪要、问答和翻译。",
+	"admin.scribe.key": "API 密钥",
+	"admin.scribe.saved": "已保存密钥 ••••{hint}，更新于 {date}。",
+	"admin.scribe.status.valid": "{provider} 已接受。",
+	"admin.scribe.status.invalid":
+		"Scribe 报告 {provider} 拒绝了此密钥：请输入新密钥。",
+	"admin.scribe.status.quota": "Scribe 报告此 {provider} 账户余额已用完。",
+	"admin.scribe.status.unreadable": "Scribe 已无法打开此密钥：请重新输入。",
 	"admin.save": "保存",
 	"admin.signOut": "离开管理页",
 	"admin.result.saved": "已保存。",
@@ -113,6 +135,9 @@ export const zhTenants: Translation<typeof enTenants> = {
 	"admin.result.cloudflareUnreachable": "无法连接 Cloudflare，请重试。",
 	"admin.result.dnsUnavailable": "此服务器暂时无法保存 DNS 令牌。",
 	"admin.result.telegramRefused": "Telegram 拒绝了此机器人令牌。",
+	"admin.result.scribeKeyInvalid": "服务商拒绝了此密钥。",
+	"admin.result.scribeKeyNoCredit": "此密钥可用，但账户余额已用完。",
+	"admin.result.scribeKeyUnreachable": "无法连接服务商，请重试。",
 	"inactive.title": "尚未设置",
 	"inactive.body": "{host} 的登录尚未设置。",
 };

@@ -1,10 +1,17 @@
-import { constants, generateKeyPairSync, privateDecrypt } from "node:crypto";
+import {
+	constants,
+	createHash,
+	generateKeyPairSync,
+	privateDecrypt,
+} from "node:crypto";
 import { describe, expect, it } from "vitest";
 import { appClientKey, derivedClientSecrets } from "./app-client-secrets.js";
 import {
 	SecretKeyring,
 	parseKeyring,
+	recipientOf,
 	sealForProvisioner,
+	sealForRecipient,
 } from "./secret-keyring.js";
 
 const key = (byte: number): Buffer => Buffer.alloc(32, byte);
@@ -63,6 +70,56 @@ describe("sealForProvisioner", () => {
 		);
 		const ring = new SecretKeyring([{ kid: "provisioner", key: aesKey }]);
 		expect(ring.open(sealed, "ten_a\ndns-cloudflare")).toBe("cf-token");
+	});
+});
+
+describe("sealForRecipient", () => {
+	const { publicKey, privateKey } = generateKeyPairSync("rsa", {
+		modulusLength: 2048,
+	});
+	const pem = publicKey.export({ type: "spki", format: "pem" }).toString();
+
+	function open(
+		sealed: ReturnType<typeof sealForRecipient>,
+		context: string,
+	): string {
+		const aesKey = privateDecrypt(
+			{
+				key: privateKey,
+				padding: constants.RSA_PKCS1_OAEP_PADDING,
+				oaepHash: "sha256",
+			},
+			Buffer.from(sealed.wrappedKey, "base64url"),
+		);
+		return new SecretKeyring([{ kid: sealed.kid, key: aesKey }]).open(
+			sealed,
+			context,
+		);
+	}
+
+	it("opens only with the private key and the same tenant and kind", () => {
+		const sealed = sealForRecipient("sk-key", "ten_a\nscribe-openai", pem);
+		expect(sealed.kid).toBe("recipient");
+		expect(Buffer.from(sealed.iv, "base64url")).toHaveLength(12);
+		expect(Buffer.from(sealed.tag, "base64url")).toHaveLength(16);
+		expect(open(sealed, "ten_a\nscribe-openai")).toBe("sk-key");
+		expect(() => open(sealed, "ten_b\nscribe-openai")).toThrow();
+		expect(() => open(sealed, "ten_a\nscribe-gemini")).toThrow();
+	});
+
+	it("names the recipient by the SHA-256 of its SPKI DER", () => {
+		const der = publicKey.export({ type: "spki", format: "der" });
+		const expected = createHash("sha256").update(der).digest("hex");
+		expect(recipientOf(pem)).toBe(expected.slice(0, 16));
+		expect(sealForRecipient("v", "c", pem).recipient).toBe(recipientOf(pem));
+	});
+
+	it("keeps the provisioner's format: kid provisioner, no recipient", () => {
+		const sealed = sealForProvisioner("cf", "ten_a\ndns-cloudflare", pem);
+		expect(sealed.kid).toBe("provisioner");
+		expect(Object.keys(sealed).sort()).toEqual(
+			["ciphertext", "iv", "kid", "tag", "wrappedKey"].sort(),
+		);
 	});
 });
 

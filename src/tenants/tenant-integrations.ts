@@ -1,4 +1,9 @@
+import {
+	TENANT_OAUTH_PROVIDERS,
+	type TenantOAuthProvider,
+} from "../accounts/user-model.js";
 import type { OAuthAppCredentials } from "../config/integrations-env.js";
+import type { TenantSecrets } from "./tenant-secrets.js";
 
 /** A tenant's sealed OAuth app (`{ clientId, clientSecret }`), parsed. */
 export function parseOAuthApp(
@@ -29,4 +34,17 @@ export function parseTelegramBot(
 		typeof webhookSecret === "string"
 		? { token, username, webhookSecret }
 		: undefined;
+}
+
+/** Client ids of the tenant's configured OAuth apps (never their secrets). */
+export async function oauthClientIds(
+	secrets: TenantSecrets,
+	tenantId: string,
+): Promise<Partial<Record<TenantOAuthProvider, string>>> {
+	const ids: Partial<Record<TenantOAuthProvider, string>> = {};
+	for (const provider of TENANT_OAUTH_PROVIDERS) {
+		const app = parseOAuthApp(await secrets.get(tenantId, provider));
+		if (app) ids[provider] = app.clientId;
+	}
+	return ids;
 }

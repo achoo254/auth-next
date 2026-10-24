@@ -129,6 +129,23 @@ export class TenantRegistry extends TenantLifecycle {
 		return result.modifiedCount === 1;
 	}
 
+	/**
+	 * Turns Scribe on (keeping the first `enabledAt`) or off; either change
+	 * rebuilds the runtime. True when the tenant changed.
+	 */
+	async setScribeEnabled(id: string, enabled: boolean): Promise<boolean> {
+		const result = await this.tenants.updateOne(
+			{ _id: id, scribe: { $exists: !enabled } },
+			enabled
+				? {
+						$set: { scribe: { enabledAt: new Date() } },
+						$inc: { configVersion: 1 },
+					}
+				: { $unset: { scribe: "" }, $inc: { configVersion: 1 } },
+		);
+		return result.modifiedCount === 1;
+	}
+
 	/** Replaces the certificate state; undefined removes it (certificates gone). */
 	async setCertificate(
 		id: string,

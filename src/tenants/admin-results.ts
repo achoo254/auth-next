@@ -14,6 +14,9 @@ export const SETTING_RESULT_MESSAGES: Readonly<
 	"cloudflare-unreachable": "admin.result.cloudflareUnreachable",
 	"dns-unavailable": "admin.result.dnsUnavailable",
 	"telegram-refused": "admin.result.telegramRefused",
+	"scribe-key-invalid": "admin.result.scribeKeyInvalid",
+	"scribe-key-no-credit": "admin.result.scribeKeyNoCredit",
+	"scribe-key-unreachable": "admin.result.scribeKeyUnreachable",
 };
 
 export function isSettingResult(

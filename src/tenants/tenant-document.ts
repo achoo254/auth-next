@@ -47,6 +47,11 @@ export interface TenantDocument {
 	/** The TXT value at `_auth-claim.<domain>` that proved ownership. */
 	claimTxt?: string;
 	certificate?: TenantCertificate;
+	/**
+	 * Scribe runs here since the owner saved its first transcription key
+	 * (ADR 0012); removed with the last one.
+	 */
+	scribe?: { readonly enabledAt: Date };
 	createdAt: Date;
 	claimedAt?: Date;
 	activatedAt?: Date;

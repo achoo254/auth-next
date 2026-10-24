@@ -113,6 +113,31 @@ export const enTenants = {
 	"admin.telegram.token": "Bot token",
 	"admin.telegram.username": "Bot username",
 	"admin.telegram.configured": "Connected to @{username}.",
+	"admin.scribe.title": "Scribe",
+	"admin.scribe.help":
+		"Transcription, meeting notes, questions and translation for the people of {domain}. It turns on once you add a transcription key ({providers}).",
+	"admin.scribe.on": "On: people sign in to Scribe at {url}.",
+	"admin.scribe.off": "Off: add a transcription key below to turn Scribe on.",
+	"admin.scribe.billing":
+		"Every transcription, summary, question and translation by the people of this domain is charged to your AI accounts.",
+	"admin.scribe.record":
+		"Scribe needs one more DNS record: {record}. Like the other addresses it can be DNS only or proxied by Cloudflare.",
+	"admin.scribe.sealed":
+		"Keys are checked with their provider, then sealed for Scribe: nobody can read them back, this page included.",
+	"admin.scribe.keyTitle": "{provider} key",
+	"admin.scribe.uses.transcription": "Used for transcription.",
+	"admin.scribe.uses.both":
+		"Used for transcription, and for notes, questions and translation.",
+	"admin.scribe.uses.text": "Used for notes, questions and translation.",
+	"admin.scribe.key": "API key",
+	"admin.scribe.saved": "Saved key ••••{hint}, updated {date}.",
+	"admin.scribe.status.valid": "Accepted by {provider}.",
+	"admin.scribe.status.invalid":
+		"Scribe reports that {provider} refused it: enter a new key.",
+	"admin.scribe.status.quota":
+		"Scribe reports that this {provider} account is out of credit.",
+	"admin.scribe.status.unreadable":
+		"Scribe can no longer open it: enter the key again.",
 	"admin.save": "Save",
 	"admin.signOut": "Leave admin",
 	"admin.result.saved": "Saved.",
@@ -129,6 +154,11 @@ export const enTenants = {
 	"admin.result.dnsUnavailable":
 		"DNS tokens cannot be saved on this server yet.",
 	"admin.result.telegramRefused": "Telegram refused this bot token.",
+	"admin.result.scribeKeyInvalid": "The provider refused this key.",
+	"admin.result.scribeKeyNoCredit":
+		"This key works, but its account is out of credit.",
+	"admin.result.scribeKeyUnreachable":
+		"The provider could not be reached. Try again.",
 	"inactive.title": "Not set up yet",
 	"inactive.body": "Sign-in at {host} is not set up yet.",
 };

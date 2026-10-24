@@ -33,6 +33,7 @@ const REDACT_PATHS = [
 	"*.subject_token",
 	"*.actor_token",
 	"*.password",
+	"*.apiKey",
 ];
 
 /** `destination` defaults to stdout; tests pass a stream to read the lines. */

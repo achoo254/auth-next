@@ -1,8 +1,4 @@
 import { type Request, type Response, Router } from "express";
-import {
-	TENANT_OAUTH_PROVIDERS,
-	type TenantOAuthProvider,
-} from "../accounts/user-model.js";
 import { DOMAIN_GUIDE_PATH } from "../guide/domain-guide-link.js";
 import {
 	formRateLimit,
@@ -17,6 +13,10 @@ import { renderAdminSignedOut } from "./admin-gate-pages.js";
 import { type AdminView, renderAdminPage } from "./admin-page.js";
 import { SETTING_RESULT_MESSAGES, isSettingResult } from "./admin-results.js";
 import {
+	addScribeAdminRoutes,
+	scribeAdminView,
+} from "./admin-scribe-routes.js";
+import {
 	type AdminSession,
 	endAdminSession,
 	readAdminSession,
@@ -24,7 +24,7 @@ import {
 	takeAdminHandoff,
 } from "./admin-session.js";
 import type { Tenancy } from "./tenancy.js";
-import { parseOAuthApp, parseTelegramBot } from "./tenant-integrations.js";
+import { oauthClientIds, parseTelegramBot } from "./tenant-integrations.js";
 import type { TenantDocument } from "./tenant-registry.js";
 import {
 	type SettingResult,
@@ -37,7 +37,7 @@ import {
 
 export const ADMIN_PATH = "/admin";
 
-type AdminHandler = (
+export type AdminHandler = (
 	req: Request,
 	res: Response,
 	context: { readonly tenant: TenantDocument; readonly session: AdminSession },
@@ -99,24 +99,18 @@ export function createAdminRouter(
 				return;
 			}
 			const result = queryValue(req, "result");
-			const oauth: Partial<Record<TenantOAuthProvider, string>> = {};
-			for (const provider of TENANT_OAUTH_PROVIDERS) {
-				const app = parseOAuthApp(
-					await tenancy.secrets.get(tenantId, provider),
-				);
-				if (app) oauth[provider] = app.clientId;
-			}
 			const view: AdminView = {
 				page,
 				csrf: services.csrf.token(req, res, scope(session)),
 				tenant,
 				guideUrl: new URL(DOMAIN_GUIDE_PATH, tenancy.claimUrl).href,
-				oauth,
+				oauth: await oauthClientIds(tenancy.secrets, tenantId),
 				dnsConfigured: await tenancy.secrets.has(tenantId, "dns-cloudflare"),
 				dnsAvailable: tenancy.provisionerPublicKey !== undefined,
 				telegramUsername: parseTelegramBot(
 					await tenancy.secrets.get(tenantId, "telegram"),
 				)?.username,
+				scribe: await scribeAdminView(tenancy, tenantId),
 				result: isSettingResult(result)
 					? {
 							tone: result === "saved" ? "success" : "error",
@@ -189,6 +183,7 @@ export function createAdminRouter(
 			removeOAuthApp(tenancy, tenant, provider),
 		);
 	}
+	addScribeAdminRoutes(post, tenancy);
 	post("/sign-out", async (_req, res) => {
 		endAdminSession(res, services.tenant);
 		res.redirect(303, ADMIN_PATH);

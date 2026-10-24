@@ -19,6 +19,10 @@ import {
 import { type SafeHtml, html } from "../ui/html.js";
 import { renderPage } from "../ui/layout.js";
 import type { PageContext } from "../ui/page-context.js";
+import {
+	type ScribeAdminView,
+	scribeAdminCard,
+} from "./admin-scribe-section.js";
 import type { TenantDocument } from "./tenant-registry.js";
 import { appHostsFor } from "./tenant.js";
 
@@ -33,6 +37,8 @@ export interface AdminView {
 	readonly dnsConfigured: boolean;
 	readonly dnsAvailable: boolean;
 	readonly telegramUsername?: string;
+	/** Present when Scribe on tenants is enabled (ADR 0012). */
+	readonly scribe?: ScribeAdminView;
 	readonly result?: {
 		readonly tone: "success" | "error";
 		readonly text: string;
@@ -168,6 +174,9 @@ export function renderAdminPage(view: AdminView): string {
 			description: i18n.t("admin.telegram.help"),
 			body: telegramForm(view),
 		}),
+		view.scribe
+			? scribeAdminCard(view.page, view.csrf, view.tenant, view.scribe)
+			: "",
 	];
 	const body = html`${pageTitle(i18n.t("admin.title"), i18n.t("admin.lead", { domain }))}
 <p class="help"><a class="link" href="${view.guideUrl}" data-id="admin-guide-link">${i18n.t("claim.guideLink")}</a></p>

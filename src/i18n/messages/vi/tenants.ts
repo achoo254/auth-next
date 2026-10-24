@@ -115,6 +115,30 @@ export const viTenants: Translation<typeof enTenants> = {
 	"admin.telegram.token": "Bot token",
 	"admin.telegram.username": "Username của bot",
 	"admin.telegram.configured": "Đã kết nối @{username}.",
+	"admin.scribe.title": "Scribe",
+	"admin.scribe.help":
+		"Chép lời, biên bản, hỏi đáp và dịch cho người dùng của {domain}. Scribe bật khi bạn thêm một key chép lời ({providers}).",
+	"admin.scribe.on": "Đang bật: người dùng đăng nhập Scribe tại {url}.",
+	"admin.scribe.off": "Đang tắt: thêm một key chép lời bên dưới để bật Scribe.",
+	"admin.scribe.billing":
+		"Mọi lượt chép lời, biên bản, hỏi đáp và dịch của người dùng domain này tính vào tài khoản AI của bạn.",
+	"admin.scribe.record":
+		"Scribe cần thêm một bản ghi DNS: {record}. Như các địa chỉ khác, bản ghi để Chỉ DNS hoặc bật proxy Cloudflare đều được.",
+	"admin.scribe.sealed":
+		"Key được kiểm với nhà cung cấp rồi niêm phong cho Scribe: không ai đọc lại được, kể cả trang này.",
+	"admin.scribe.keyTitle": "Key {provider}",
+	"admin.scribe.uses.transcription": "Dùng để chép lời.",
+	"admin.scribe.uses.both": "Dùng để chép lời, và cho biên bản, hỏi đáp, dịch.",
+	"admin.scribe.uses.text": "Dùng cho biên bản, hỏi đáp và dịch.",
+	"admin.scribe.key": "API key",
+	"admin.scribe.saved": "Đã lưu key ••••{hint}, cập nhật {date}.",
+	"admin.scribe.status.valid": "{provider} đã chấp nhận.",
+	"admin.scribe.status.invalid":
+		"Scribe báo {provider} từ chối key này: hãy nhập key mới.",
+	"admin.scribe.status.quota":
+		"Scribe báo tài khoản {provider} này đã hết credit.",
+	"admin.scribe.status.unreadable":
+		"Scribe không mở được key này nữa: hãy nhập lại key.",
 	"admin.save": "Lưu",
 	"admin.signOut": "Rời trang quản trị",
 	"admin.result.saved": "Đã lưu.",
@@ -129,6 +153,11 @@ export const viTenants: Translation<typeof enTenants> = {
 		"Không kết nối được Cloudflare. Hãy thử lại.",
 	"admin.result.dnsUnavailable": "Máy chủ này chưa lưu được token DNS.",
 	"admin.result.telegramRefused": "Telegram từ chối bot token này.",
+	"admin.result.scribeKeyInvalid": "Nhà cung cấp từ chối key này.",
+	"admin.result.scribeKeyNoCredit":
+		"Key dùng được nhưng tài khoản đã hết credit.",
+	"admin.result.scribeKeyUnreachable":
+		"Không kết nối được nhà cung cấp. Hãy thử lại.",
 	"inactive.title": "Chưa thiết lập",
 	"inactive.body": "Đăng nhập tại {host} chưa được thiết lập.",
 };

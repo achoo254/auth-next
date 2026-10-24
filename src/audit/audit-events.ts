@@ -1,4 +1,5 @@
 import type { UpstreamProvider } from "../accounts/user-model.js";
+import type { ScribeKeyKind } from "../tenants/scribe-vendors.js";
 import type { TenantHosting } from "../tenants/tenant.js";
 
 /** Ways to reach or vouch for an account that can be linked and unlinked. */
@@ -10,7 +11,8 @@ export type TenantSetting =
 	| "google"
 	| "github"
 	| "dns-cloudflare"
-	| "telegram";
+	| "telegram"
+	| ScribeKeyKind;
 
 /** Why sessions or grants were revoked. */
 export type RevocationCause = "account-page" | "token-revocation";
