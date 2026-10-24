@@ -1,17 +1,13 @@
 import { randomUUID } from "node:crypto";
-import type { Collection, Db, Filter } from "mongodb";
+import type { Collection, Filter } from "mongodb";
 import {
 	type AuditOutboxDocument,
 	CONTEXT_RETENTION_MS,
 	DELIVERED_RETENTION_MS,
 	type LeasedEvent,
-	auditOutboxCollection,
 } from "./audit-outbox-model.js";
 
-/**
- * Lease operations on outbox events matching `filter`: one tenant's (its
- * AuditOutbox) or every tenant's (the dispatcher's queue).
- */
+/** Lease operations on outbox events matching `filter` (the tenant's, AuditOutbox). */
 export class AuditQueue {
 	constructor(
 		protected readonly outbox: Collection<AuditOutboxDocument>,
@@ -95,12 +91,4 @@ export class AuditQueue {
 		);
 		return result.modifiedCount;
 	}
-}
-
-/**
- * Every tenant's events, for the single dispatcher of the process; each
- * event carries its `tenantId`, which picks its signer and target.
- */
-export function allTenantsAuditQueue(db: Db): AuditQueue {
-	return new AuditQueue(auditOutboxCollection(db), {});
 }

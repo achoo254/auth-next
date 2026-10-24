@@ -19,8 +19,6 @@ interface DeleteConfirmView {
 	readonly page: PageContext;
 	readonly csrf: string;
 	readonly username: string;
-	/** Domain claims exist here, so say that their ownership stays. */
-	readonly mentionDomains: boolean;
 }
 
 /**
@@ -34,7 +32,6 @@ export function renderDeleteConfirm(view: DeleteConfirmView): string {
 		"confirm.delete.signOut",
 		"confirm.delete.providers",
 		"confirm.delete.appData",
-		...(view.mentionDomains ? ["confirm.delete.owner" as const] : []),
 		"confirm.delete.securityLog",
 	];
 	const title = i18n.t("confirm.delete.title");

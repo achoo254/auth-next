@@ -14,9 +14,6 @@ import {
 import { ensureOidcIndexes } from "./oidc/oidc-indexes.js";
 import { ensureAccountLayerIndexes } from "./services.js";
 import { type Serving, createServing } from "./tenants/serving.js";
-import { ensureTenantClaimIndexes } from "./tenants/tenant-claims.js";
-import { migrateToTenants } from "./tenants/tenant-migration.js";
-import { ensureTenantRegistryIndexes } from "./tenants/tenant-registry.js";
 
 const SHUTDOWN_TIMEOUT_MS = 10_000;
 /**
@@ -60,7 +57,6 @@ function closeServer(server: Server): Promise<void> {
 const env = loadEnvOrExit();
 const logger: Logger = createLogger(env.LOG_LEVEL);
 let server: Server | undefined;
-let internalServer: Server | undefined;
 let mongo: MongoClient | undefined;
 let serving: Serving | undefined;
 let shuttingDown = false;
@@ -76,7 +72,6 @@ async function shutdown(reason: string, exitCode: number): Promise<void> {
 	forceExit.unref();
 	try {
 		if (server) await closeServer(server);
-		if (internalServer) await closeServer(internalServer);
 		// Stops before MongoDB closes; an attempt in flight is handed back.
 		if (serving) await serving.stop();
 		if (mongo) await mongo.close();
@@ -115,10 +110,7 @@ try {
 	mongo = connection.client;
 	await ensureOidcIndexes(connection.db);
 	await ensureAccountLayerIndexes(connection.db);
-	await ensureTenantRegistryIndexes(connection.db);
-	await ensureTenantClaimIndexes(connection.db);
-	await migrateToTenants(connection.db, logger);
-	serving = await createServing(env, connection.db, jwks, logger);
+	serving = createServing(env, connection.db, jwks, logger);
 	const { services } = serving.primary;
 	logger.info(
 		{
@@ -133,23 +125,12 @@ try {
 		"Audit events",
 	);
 	server = await listen(serving.app, env.HOST, env.PORT);
-	if (serving.internalApp) {
-		internalServer = await listen(
-			serving.internalApp,
-			env.INTERNAL_HOST,
-			env.INTERNAL_PORT,
-		);
-	}
 	serving.start();
 	logger.info(
 		{
 			host: env.HOST,
 			port: env.PORT,
 			issuer: serving.primary.tenant.issuer,
-			internalApi: serving.internalApp
-				? `${env.INTERNAL_HOST}:${env.INTERNAL_PORT}`
-				: "off",
-			tenants: env.TENANT_SECRETS_KEY ? "registry" : "primary only",
 		},
 		"hoandat-auth listening",
 	);

@@ -34,8 +34,6 @@ export interface AccountView {
 	readonly sessions: readonly OpenSession[];
 	readonly devices: readonly DeviceGrant[];
 	readonly apps: readonly AuthorizedApp[];
-	/** The tenant lets people delete their own account (ADR 0009). */
-	readonly canDelete: boolean;
 	readonly notice?: string;
 }
 
@@ -97,7 +95,7 @@ export function renderAccountPage(view: AccountView): string {
 ${alerts(view)}
 <div class="account-layout">
 ${accountNav(view)}
-<div class="account-sections">${groups}${view.canDelete ? deleteCard(view) : ""}</div>
+<div class="account-sections">${groups}${deleteCard(view)}</div>
 </div>`;
 	return renderPage({
 		title: i18n.t("account.pageTitle"),

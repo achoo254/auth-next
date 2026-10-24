@@ -4,10 +4,7 @@ import {
 	signOutSessions,
 	unlinkSignInProvider,
 } from "../account-portal/account-actions.js";
-import {
-	deleteAccount,
-	deletesOwnAccount,
-} from "../account-portal/account-deletion.js";
+import { deleteAccount } from "../account-portal/account-deletion.js";
 import { sessionUidsOf } from "../account-portal/revoke-access.js";
 import {
 	isUpstreamProvider,
@@ -161,9 +158,7 @@ export function registerSensitiveRoutes(
 					typeof body === "object" && body !== null
 						? Reflect.get(body, "username")
 						: undefined;
-				if (!deletesOwnAccount(services.tenant)) {
-					sendApiError(res, 404, "not_found");
-				} else if (
+				if (
 					typeof typed !== "string" ||
 					normalizeUsername(typed.slice(0, 100)) !== account.username
 				) {

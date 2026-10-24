@@ -14,8 +14,7 @@ export const PRIMARY_TENANT_ID = "primary";
  * before (any shape, so the conformance harness keeps working), its domain
  * `TENANT_DOMAIN` (resources and audiences follow from it), its web apps
  * `LOCALMAN_WEB_URL`, `TUNELO_WEB_URL`, `CHAT_WEB_URL` and, once their client
- * secrets are set, `SCRIBE_WEB_URL` and `MIU_WEB_URL`. It is always active; documents written
- * before tenants existed are tagged as its own at startup.
+ * secrets are set, `SCRIBE_WEB_URL` and `MIU_WEB_URL`.
  */
 export function envTenant(
 	env: Pick<
@@ -37,7 +36,6 @@ export function envTenant(
 		domain: env.TENANT_DOMAIN,
 		displayName: env.TENANT_DISPLAY_NAME,
 		issuer: env.ISSUER,
-		status: "active",
 		webApps: {
 			localman: env.LOCALMAN_WEB_URL,
 			tunelo: env.TUNELO_WEB_URL,
@@ -79,10 +77,7 @@ function appClients(
 	};
 }
 
-/**
- * The primary tenant's Scribe clients, from the environment. Registry
- * tenants never get one (Scribe is not derived per tenant).
- */
+/** The primary tenant's Scribe clients, from the environment. */
 export function envScribeClients(
 	env: Pick<
 		Env,
@@ -102,10 +97,7 @@ export function envScribeClients(
 	);
 }
 
-/**
- * The primary tenant's Miu World clients, from the environment. Registry
- * tenants never get one (Miu World is not derived per tenant).
- */
+/** The primary tenant's Miu World clients, from the environment. */
 export function envMiuClients(
 	env: Pick<
 		Env,

@@ -29,7 +29,6 @@ export const zhPrivacy: Translation<typeof enPrivacy> = {
 		"在{account}页面，你可以查看和编辑个人资料，取消关联 Google、GitHub、Apple 或 Telegram，退出会话并撤销已授权的应用。",
 	"privacy.rights.deleteHere":
 		"你可以在{account}页面（删除账号）自行删除账号。账号会立即删除：会话、设备、关联、应用登录记录和个人资料都会被移除，安全日志只保留事件类型、时间和账号 ID。",
-	"privacy.rights.deleteContact": "如需删除账号，请联系 {email}。",
 	"privacy.rights.deleteHelp": "如果无法删除，请联系 {email}。",
 	"privacy.storage.title": "存储",
 	"privacy.storage.body":

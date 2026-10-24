@@ -27,8 +27,6 @@ export const zhAccountActions: Translation<typeof enAccountActions> = {
 		"与 Google、GitHub、Apple 和 Telegram 的关联会被移除。以后再次登录会创建一个新的、不同的账号。",
 	"confirm.delete.appData":
 		"你在使用此账号的应用中保存的数据（如 Localman 项目和 Chat 消息）不会在这一步删除。",
-	"confirm.delete.owner":
-		"你认领的域名仍归你所有：所有权属于你的 Google 或 GitHub 账号，而不是此账号。",
 	"confirm.delete.securityLog":
 		"安全日志只保留事件类型、时间和账号 ID，不再包含 IP 地址、浏览器或设备名称。",
 	"confirm.delete.typeUsername": "输入 {username} 以确认",

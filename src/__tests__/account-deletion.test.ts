@@ -2,14 +2,12 @@ import * as client from "openid-client";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import {
 	deleteAccount,
-	deletesOwnAccount,
 	finishAccountDeletion,
 } from "../account-portal/account-deletion.js";
 import { decideUpstreamLogin } from "../accounts/account-linking.js";
 import { accountsCollection } from "../accounts/user-model.js";
 import { auditOutboxCollection } from "../audit/audit-outbox.js";
 import { collectionNameFor } from "../oidc/mongo-adapter.js";
-import { TenantClaims } from "../tenants/tenant-claims.js";
 import { TENANT_COLLECTIONS } from "../tenants/tenant-collections.js";
 import { sharedFakeApple } from "./helpers/fake-apple.js";
 import { FAKE_UPSTREAM_ENV } from "./helpers/fake-upstreams.js";
@@ -234,25 +232,16 @@ describe("delete my account at /account", () => {
 });
 
 describe("finishing a deletion that stopped half way", () => {
-	it("removes the claims and the disabled account, and can run twice", async () => {
+	it("removes the disabled account, and can run twice", async () => {
 		const accounts = repositoryOf(idp);
 		const account = await createTestAccount(accounts);
-		const claims = new TenantClaims(idp.db);
-		await claims.create({
-			domain: `del-${account._id.slice(-6).toLowerCase()}.example`,
-			owner: { provider: "google", providerId: account.providers.google ?? "" },
-			accountId: account._id,
-			hosting: "hoandat",
-		});
 		expect(await accounts.disable(account._id)).toBe("disabled");
 		expect(await accounts.findActiveById(account._id)).toBeUndefined();
 		expect(await accounts.disable(account._id)).toBe("was-disabled");
 
-		const deps = { db: idp.db, tenant: idp.tenant, accounts, claims };
+		const deps = { db: idp.db, tenant: idp.tenant, accounts };
 		const first = await finishAccountDeletion(deps, account._id);
-		expect(first).toContainEqual({ collection: "tenant_claims", count: 1 });
 		expect(first).toContainEqual({ collection: "accounts", count: 1 });
-		expect(await claims.countFor(account._id)).toBe(0);
 		const second = await finishAccountDeletion(deps, account._id);
 		expect(second.every(({ count }) => count === 0)).toBe(true);
 		expect(await accounts.disable(account._id)).toBe("missing");
@@ -269,12 +258,5 @@ describe("finishing a deletion that stopped half way", () => {
 			),
 		).rejects.toThrow(/still in use/);
 		expect(await accounts.findActiveById(account._id)).toBeDefined();
-	});
-});
-
-describe("which tenants offer it", () => {
-	it("an install's primary tenant only, not a registry tenant", () => {
-		expect(deletesOwnAccount(idp.tenant)).toBe(true);
-		expect(deletesOwnAccount({ id: "t_registry" })).toBe(false);
 	});
 });

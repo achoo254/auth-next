@@ -47,18 +47,6 @@ describe("normalizeTenantDomain", () => {
 	])("refuses %j", (input) => {
 		expect(normalizeTenantDomain(input)).toBeUndefined();
 	});
-
-	it("refuses a blocked domain and everything under it", () => {
-		const blocked = ["HoanDat.com.", "inetdev.io.vn"];
-		expect(normalizeTenantDomain("hoandat.com", blocked)).toBeUndefined();
-		expect(normalizeTenantDomain("x.hoandat.com", blocked)).toBeUndefined();
-		expect(
-			normalizeTenantDomain("TUNNEL.inetdev.io.vn", blocked),
-		).toBeUndefined();
-		expect(normalizeTenantDomain("nothoandat.com", blocked)).toBe(
-			"nothoandat.com",
-		);
-	});
 });
 
 describe("appHostsFor", () => {
@@ -67,9 +55,7 @@ describe("appHostsFor", () => {
 			auth: "auth.example.org",
 			chat: "chat.example.org",
 			localman: "localman.example.org",
-			localmanWildcard: "*.localman.example.org",
 			tunnel: "tunnel.example.org",
-			tunnelWildcard: "*.tunnel.example.org",
 		});
 	});
 });

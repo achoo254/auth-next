@@ -1,50 +1,31 @@
 import type { AuditDeliveryConfig } from "../config/integrations-env.js";
 import type { SigningJwks } from "../oidc/jwks.js";
-import { PRIMARY_TENANT_ID } from "../tenants/env-tenant.js";
-import type { Tenant } from "../tenants/tenant.js";
-import type {
-	AuditDelivery,
-	AuditDeliveryResolver,
-} from "./audit-dispatcher.js";
+import type { AuditDeliveryResolver } from "./audit-dispatcher.js";
 import { createSecurityEventSigner } from "./security-event-token.js";
 
 export interface AuditDeliveryResolverOptions {
-	/** The intake (AUDIT_EVENTS_URL) and the primary tenant's issuer and keys. */
-	readonly primary: {
-		readonly config: AuditDeliveryConfig;
-		readonly issuer: string;
-		readonly jwks: SigningJwks;
-	};
-	/** A serving registry tenant and its signing keys, or undefined. */
-	readonly tenantKeys: (
-		tenantId: string,
-	) => Promise<{ tenant: Tenant; jwks: SigningJwks } | undefined>;
+	/** The intake (AUDIT_EVENTS_URL). */
+	readonly config: AuditDeliveryConfig;
+	/** The tenant's issuer and signing keys: every event is signed as it. */
+	readonly issuer: string;
+	readonly jwks: SigningJwks;
 }
 
 /**
- * Who signs each event: the tenant it belongs to, as its own issuer with
- * its own keys. Every event goes to the one intake, AUDIT_EVENTS_URL (one
- * Localman process serves every tenant and tells them apart by `iss`), so
- * the Basic credentials never follow a tenant's DNS. A suspended tenant's
- * events still go out (its keys are kept); a tenant that no longer exists
- * gets no delivery and its events wait with backoff.
+ * Who signs each event and where it goes: the tenant, as its issuer with
+ * its keys, to AUDIT_EVENTS_URL. The dispatcher only leases the tenant's
+ * own events (its AuditOutbox), so one signer serves them all.
  */
 export function createAuditDeliveryResolver(
 	options: AuditDeliveryResolverOptions,
 ): AuditDeliveryResolver {
-	const { primary } = options;
-	const signedBy = (issuer: string, jwks: SigningJwks): AuditDelivery => ({
-		config: primary.config,
+	const delivery = {
+		config: options.config,
 		sign: createSecurityEventSigner({
-			issuer,
-			audience: primary.config.url,
-			jwks,
+			issuer: options.issuer,
+			audience: options.config.url,
+			jwks: options.jwks,
 		}),
-	});
-	const primaryDelivery = signedBy(primary.issuer, primary.jwks);
-	return async (event) => {
-		if (event.tenantId === PRIMARY_TENANT_ID) return primaryDelivery;
-		const found = await options.tenantKeys(event.tenantId);
-		return found ? signedBy(found.tenant.issuer, found.jwks) : undefined;
 	};
+	return async () => delivery;
 }

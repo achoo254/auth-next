@@ -71,6 +71,7 @@ export interface AccountView {
 		readonly redirectHosts: readonly string[];
 		readonly scopes: readonly string[];
 	}[];
+	/** Always true: everyone deletes their own account (ADR 0009). Kept for the app. */
 	readonly canDelete: boolean;
 }
 
@@ -88,7 +89,6 @@ export interface AccountViewInput {
 	readonly apps: readonly AuthorizedApp[];
 	/** The grant of the calling app: its row is `current`. */
 	readonly currentGrantId: string;
-	readonly canDelete: boolean;
 }
 
 function providerRows(
@@ -166,6 +166,6 @@ export function accountView(input: AccountViewInput): AccountView {
 			redirectHosts: [...app.redirectHosts],
 			scopes: [...app.scopes],
 		})),
-		canDelete: input.canDelete,
+		canDelete: true,
 	};
 }

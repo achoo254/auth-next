@@ -39,14 +39,13 @@ import type { SigningJwks } from "./oidc/jwks.js";
 import { ApnsClient, type PushSender } from "./push/apns-client.js";
 import { PushDevices, ensurePushDeviceIndexes } from "./push/push-devices.js";
 import { type TelegramBot, createTelegramBot } from "./telegram/bot-client.js";
-import type { Tenancy } from "./tenants/tenancy.js";
 import type { Tenant } from "./tenants/tenant.js";
 import { ensureClientUsageIndexes } from "./usage/client-usage-model.js";
 import { ClientUsageRecorder } from "./usage/client-usage-recorder.js";
 
 /**
- * Everything the server-rendered pages of one tenant need, built once per
- * tenant. Every store in it is bound to `tenant`.
+ * Everything the server-rendered pages need, built once. Every store in it
+ * is bound to `tenant`.
  */
 export interface AppServices {
 	readonly tenant: Tenant;
@@ -71,15 +70,13 @@ export interface AppServices {
 	readonly reviewLogin?: ReviewLoginConfig;
 	/** Per-IP budget for form POSTs and Google/GitHub sign-in starts. */
 	readonly formPostsPerMinute: number;
-	/** Claiming domains (/claim) and tenant administration (/admin), when enabled. */
-	readonly tenancy?: Tenancy;
 	/** Verifies the tenant's own ID tokens (re-authentication on /api/account). */
 	readonly idTokenKeys: JWTVerifyGetKey;
 	/** Budgets of /api/account. */
 	readonly accountApiLimits: AccountApiLimits;
 	/** Phones of the iOS account app that receive security notices. */
 	readonly pushDevices: PushDevices;
-	/** APNs; undefined when push is off (primary tenant with APNS_* only). */
+	/** APNs; undefined when push is off (APNS_* unset). */
 	readonly pushSender?: PushSender;
 }
 
@@ -94,16 +91,7 @@ export interface ServiceDependencies {
 	readonly telegram?: TelegramBot;
 	/** Replaces the env-derived Google/GitHub clients (tests). */
 	readonly upstreams?: Upstreams;
-	/**
-	 * A registry tenant's own sign-in providers and bot. When given, nothing
-	 * falls back to the environment, which configures the primary tenant.
-	 */
-	readonly integrations?: {
-		readonly upstreams: Upstreams;
-		readonly telegram?: TelegramBot;
-	};
 	readonly formPostsPerMinute?: number;
-	readonly tenancy?: Tenancy;
 	/** The tenant's signing keys (only their public half is kept). */
 	readonly jwks: SigningJwks;
 	/** Replaces the env-derived APNs sender (tests). */
@@ -111,9 +99,8 @@ export interface ServiceDependencies {
 	readonly accountApiLimits?: AccountApiLimits;
 }
 
-/** APNs for the primary tenant, from APNS_*; never for a registry tenant. */
+/** APNs, from APNS_*. */
 function envPushSender(deps: ServiceDependencies): PushSender | undefined {
-	if (deps.integrations) return undefined;
 	const partial = partialApnsSettings(deps.env);
 	if (partial.length > 0) {
 		deps.logger.warn(
@@ -158,24 +145,17 @@ export function createServices(deps: ServiceDependencies): AppServices {
 		accountTokens: new AccountTokens(db, deps.accounts),
 		csrf: createCsrf(env.COOKIE_KEYS, secureCookies),
 		cookieKeys: env.COOKIE_KEYS,
-		upstreams:
-			deps.integrations?.upstreams ??
-			deps.upstreams ??
-			createUpstreams(env, tenant.issuer),
-		// Never for a registry tenant; reads the hash file (a bad one stops startup).
-		reviewLogin: deps.integrations ? undefined : reviewLoginConfig(env),
+		upstreams: deps.upstreams ?? createUpstreams(env, tenant.issuer),
+		// Reads the hash file (a bad one stops startup).
+		reviewLogin: reviewLoginConfig(env),
 		formPostsPerMinute: deps.formPostsPerMinute ?? 30,
-		tenancy: deps.tenancy,
 		idTokenKeys: idTokenVerificationKeys(deps.jwks),
 		accountApiLimits: deps.accountApiLimits ?? DEFAULT_ACCOUNT_API_LIMITS,
 		pushDevices,
-		pushSender: deps.integrations
-			? undefined
-			: (deps.pushSender ?? envPushSender(deps)),
-		telegram: deps.integrations
-			? deps.integrations.telegram
-			: (deps.telegram ??
-				(telegramConfig ? createTelegramBot(telegramConfig) : undefined)),
+		pushSender: deps.pushSender ?? envPushSender(deps),
+		telegram:
+			deps.telegram ??
+			(telegramConfig ? createTelegramBot(telegramConfig) : undefined),
 	};
 }
 

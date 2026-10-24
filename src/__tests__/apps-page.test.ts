@@ -1,10 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { renderAppsPage } from "../app-directory/apps-page.js";
-import { PRIMARY_TENANT_ID } from "../tenants/env-tenant.js";
 import { testPage } from "./helpers/test-page.js";
 
 const STAGING = {
-	id: PRIMARY_TENANT_ID,
 	issuer: "https://auth.staging.example",
 	domain: "hoandat.com",
 	webApps: {
@@ -46,11 +44,10 @@ describe("app list page", () => {
 		expect(html).toContain("signs you in to Localman, Tunelo, and Chat.");
 	});
 
-	it("lists chat for every tenant, at the tenant's own chat host", () => {
+	it("lists chat at the configured chat host", () => {
 		const html = renderAppsPage(
 			{
 				...STAGING,
-				id: "tenant-inetdev",
 				webApps: { ...STAGING.webApps, chat: "https://chat.inetdev.example" },
 			},
 			testPage("en", "/apps"),
@@ -62,7 +59,7 @@ describe("app list page", () => {
 		expect(html).toContain("signs you in to Localman, Tunelo, and Chat.");
 	});
 
-	it("lists Scribe for a tenant once it has Scribe", () => {
+	it("lists Scribe once its client is configured", () => {
 		const scribe = "https://scribe.staging.example";
 		const withScribe = { ...STAGING, webApps: { ...STAGING.webApps, scribe } };
 		const html = renderAppsPage(withScribe, testPage("en", "/apps"));
@@ -77,39 +74,9 @@ describe("app list page", () => {
 
 		const unconfigured = renderAppsPage(STAGING, testPage("en", "/apps"));
 		expect(unconfigured).not.toContain('data-id="app-scribe-web"');
-		// A registry tenant has webApps.scribe only once it turned Scribe on.
-		const other = renderAppsPage(
-			{ ...STAGING, id: "tenant-inetdev" },
-			testPage("en", "/apps"),
-		);
-		expect(other).not.toContain('data-id="app-scribe-web"');
 	});
 
-	it("lists a registry tenant's Scribe only once its certificate is issued", () => {
-		const scribe = "https://scribe.inetdev.example";
-		const tenant = {
-			...STAGING,
-			id: "tenant-inetdev",
-			webApps: { ...STAGING.webApps, scribe },
-		};
-		// Turned on, scribe.<domain> certificate still pending: a link would
-		// fail on TLS, so neither the card nor the hub shows Scribe.
-		const pending = renderAppsPage(tenant, testPage("en", "/apps"));
-		expect(pending).not.toContain('data-id="app-scribe-web"');
-		expect(pending).not.toContain(scribe);
-		expect(pending).not.toContain(">Scribe</text>");
-		expect(pending).toContain("signs you in to Localman, Tunelo, and Chat.");
-
-		const issued = renderAppsPage(
-			{ ...tenant, scribeCertificateIssued: true },
-			testPage("en", "/apps"),
-		);
-		expect(issued).toContain('data-id="app-open-scribe-web"');
-		expect(issued).toContain(`href="${scribe}"`);
-		expect(issued).toContain(">Scribe</text>");
-	});
-
-	it("lists Miu World for the primary tenant once its client is configured", () => {
+	it("lists Miu World once its client is configured", () => {
 		const miu = "https://miu.staging.example";
 		const withMiu = { ...STAGING, webApps: { ...STAGING.webApps, miu } };
 		const html = renderAppsPage(withMiu, testPage("en", "/apps"));
@@ -122,12 +89,9 @@ describe("app list page", () => {
 		const vi = renderAppsPage(withMiu, testPage("vi", "/apps"));
 		expect(vi).toContain("vừa chơi vừa học Toán và Tiếng Việt");
 
-		const other = renderAppsPage(
-			{ ...withMiu, id: "tenant-inetdev" },
-			testPage("en", "/apps"),
-		);
-		expect(other).not.toContain('data-id="app-miu-web"');
-		expect(other).not.toContain(miu);
+		const unconfigured = renderAppsPage(STAGING, testPage("en", "/apps"));
+		expect(unconfigured).not.toContain('data-id="app-miu-web"');
+		expect(unconfigured).not.toContain(miu);
 	});
 
 	it("links the sign-in steps from the hero", () => {

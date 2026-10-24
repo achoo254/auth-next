@@ -1,18 +1,15 @@
 import type { ClientMetadata } from "oidc-provider";
-import { PRIMARY_TENANT_ID } from "../tenants/env-tenant.js";
 import type { Tenant } from "../tenants/tenant.js";
 import {
 	type PrimaryAppClientsConfig,
 	type PrimaryAppSpec,
 	type PrimaryWebApp,
 	buildPrimaryAppClients,
-	webClient,
 } from "./primary-app-clients.js";
 
 /**
  * Clients of the Scribe app (repo scribe-next): web, mobile and an optional
- * web client for local development on the primary tenant; the web client
- * alone on a registry tenant that turned Scribe on (ADR 0012).
+ * web client for local development.
  */
 export const SCRIBE_CLIENT_IDS = {
 	scribeWeb: "scribe-web",
@@ -59,32 +56,14 @@ const SCRIBE_SPEC: PrimaryAppSpec = {
 };
 
 /**
- * The Scribe clients of `tenant`. Scribe runs its own sessions and only
- * reads the ID token and userinfo; its refresh tokens (no offline_access)
- * live with the IdP session on the web and with the device on mobile
- * (`refreshesPerDevice`). The primary tenant's come from `config`. A
- * registry tenant has exactly `scribe-web` (back-channel logout, secret
- * derived like chat-web's) once its `webApps.scribe` is set, and never the
- * mobile or development client.
+ * The Scribe clients of `tenant`, from `config`. Scribe runs its own
+ * sessions and only reads the ID token and userinfo; its refresh tokens (no
+ * offline_access) live with the IdP session on the web and with the device
+ * on mobile (`refreshesPerDevice`).
  */
 export function buildScribeClients(
-	tenant: Pick<Tenant, "id"> & {
-		readonly webApps?: Pick<Tenant["webApps"], "scribe">;
-	},
+	tenant: Pick<Tenant, "id">,
 	config: ScribeClientsConfig | undefined,
-	registrySecret?: string,
 ): ClientMetadata[] {
-	if (tenant.id === PRIMARY_TENANT_ID) {
-		return buildPrimaryAppClients(SCRIBE_SPEC, tenant, config);
-	}
-	const url = tenant.webApps?.scribe;
-	if (!url || !registrySecret) return [];
-	return [
-		webClient(
-			SCRIBE_SPEC,
-			SCRIBE_CLIENT_IDS.scribeWeb,
-			{ url, secret: registrySecret },
-			true,
-		),
-	];
+	return buildPrimaryAppClients(SCRIBE_SPEC, tenant, config);
 }

@@ -1,4 +1,4 @@
-import { z } from "zod";
+import type { z } from "zod";
 import { SCRIBE_MOBILE_REDIRECT_URI } from "../oidc/scribe-clients.js";
 import {
 	appClientSecret,
@@ -9,9 +9,8 @@ import {
 } from "./primary-app-env.js";
 
 /**
- * Scribe on the primary tenant, and on registry tenants once enabled.
- * Optional: without SCRIBE_WEB_CLIENT_SECRET the primary tenant registers
- * no Scribe client and boots as before. The development client is
+ * Scribe on the primary tenant. Optional: without SCRIBE_WEB_CLIENT_SECRET
+ * the primary tenant registers no Scribe client and boots as before. The development client is
  * all-or-nothing and only ever redirects to a loopback origin.
  */
 export const scribeEnvShape = {
@@ -21,35 +20,7 @@ export const scribeEnvShape = {
 	/** Origin of a developer's local Scribe, e.g. http://localhost:5174. */
 	SCRIBE_WEB_DEV_URL: appDevUrl,
 	SCRIBE_WEB_DEV_CLIENT_SECRET: appClientSecret.optional(),
-	/**
-	 * Scribe on registry tenants (ADR 0012): off by default. With it on and
-	 * SCRIBE_SEALING_PUBLIC_KEY_PATH set, owners add AI keys at /admin and a
-	 * tenant with a transcription key gets `scribe-web` and `scribe.<d>`.
-	 */
-	SCRIBE_TENANTS: z
-		.enum(["true", "false", "1", "0"], { error: "must be true or false" })
-		.default("false")
-		.transform((value) => value === "true" || value === "1"),
-	/** PEM of Scribe's RSA public key (≥ 3072 bits): AI keys are sealed to it. */
-	SCRIBE_SEALING_PUBLIC_KEY_PATH: z.string().min(1).optional(),
 };
-
-/** SCRIBE_TENANTS without Scribe's sealing key would turn Scribe half on. */
-export function checkScribeTenantsGroup(
-	env: {
-		readonly SCRIBE_TENANTS: boolean;
-		readonly SCRIBE_SEALING_PUBLIC_KEY_PATH?: string;
-	},
-	ctx: z.RefinementCtx,
-): void {
-	if (env.SCRIBE_TENANTS && !env.SCRIBE_SEALING_PUBLIC_KEY_PATH) {
-		ctx.addIssue({
-			code: "custom",
-			path: ["SCRIBE_SEALING_PUBLIC_KEY_PATH"],
-			message: "must be set when SCRIBE_TENANTS is on",
-		});
-	}
-}
 
 /** Reports a development client that is only partly configured. */
 export function checkScribeDevGroup(
@@ -60,14 +31,4 @@ export function checkScribeDevGroup(
 	ctx: z.RefinementCtx,
 ): void {
 	checkDevPair(env, "SCRIBE_WEB_DEV_URL", "SCRIBE_WEB_DEV_CLIENT_SECRET", ctx);
-}
-
-/** Every cross-setting rule of Scribe's environment. */
-export function checkScribeGroups(
-	env: Parameters<typeof checkScribeDevGroup>[0] &
-		Parameters<typeof checkScribeTenantsGroup>[0],
-	ctx: z.RefinementCtx,
-): void {
-	checkScribeDevGroup(env, ctx);
-	checkScribeTenantsGroup(env, ctx);
 }

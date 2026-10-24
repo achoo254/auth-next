@@ -1,5 +1,4 @@
 import { stylesheetHref } from "../assets.js";
-import { DOMAIN_GUIDE_PATH } from "../guide/domain-guide-link.js";
 import type { MessageKey } from "../i18n/dictionaries.js";
 import { LOCALES, LOCALE_NAMES } from "../i18n/locales.js";
 import { type HtmlValue, type SafeHtml, html } from "./html.js";
@@ -18,12 +17,6 @@ export interface PageOptions {
 	readonly layout?: "card" | "wide" | "portal";
 	/** Extra stylesheets of static/css by file name, after app.css (one page's own styles). */
 	readonly stylesheets?: readonly string[];
-	/**
-	 * Home and Account links in the topbar, plus the domain guide where it is
-	 * served (default true). Off on /admin,
-	 * which a tenant serves before it has a home page or accounts.
-	 */
-	readonly nav?: boolean;
 }
 
 const FONT_STYLESHEETS = [
@@ -65,11 +58,6 @@ const HOME_LINK: NavLink = {
 	key: "layout.home",
 	dataId: "nav-home",
 };
-const GUIDE_LINK: NavLink = {
-	href: DOMAIN_GUIDE_PATH,
-	key: "layout.guide",
-	dataId: "nav-guide",
-};
 const ACCOUNT_LINK: NavLink = {
 	href: "/account",
 	key: "layout.brand",
@@ -79,9 +67,7 @@ const ACCOUNT_LINK: NavLink = {
 /** The page's own link is marked current; /account/... counts as Account. */
 function topbarNav(page: PageContext): SafeHtml {
 	const path = page.path.split("?")[0] ?? "";
-	const links = page.domainGuide
-		? [HOME_LINK, GUIDE_LINK, ACCOUNT_LINK]
-		: [HOME_LINK, ACCOUNT_LINK];
+	const links = [HOME_LINK, ACCOUNT_LINK];
 	return html`<nav class="topbar-nav" aria-label="${page.i18n.t("layout.nav")}">${links.map(
 		(link) =>
 			html`<a class="topbar-link" href="${link.href}"${
@@ -126,12 +112,12 @@ ${["tokens.css", "app.css", ...(options.stylesheets ?? [])].map(
 </head>
 <body>
 <header class="topbar"><div class="topbar-inner container">
-<a class="idp-brand" href="${options.nav === false ? "/account" : "/apps"}" data-id="idp-brand"><span><b>${i18n.brand.name}</b><span class="idp-brand-suffix"> · ${i18n.t("layout.brand")}</span></span>${
+<a class="idp-brand" href="/apps" data-id="idp-brand"><span><b>${i18n.brand.name}</b><span class="idp-brand-suffix"> · ${i18n.t("layout.brand")}</span></span>${
 		options.host
 			? html` <span class="badge badge-neutral hide-sm">${options.host}</span>`
 			: ""
 	}</a>
-${options.nav === false ? "" : topbarNav(options.page)}
+${topbarNav(options.page)}
 </div></header>
 ${main(options)}
 <footer class="page-foot container">${languageSwitcher(options.page)}</footer>

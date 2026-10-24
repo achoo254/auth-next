@@ -13,7 +13,6 @@ export const PRIMARY_TEST_TENANT: Tenant = {
 	domain: "hoandat.com",
 	displayName: "Auth Next",
 	issuer: "http://localhost:4500",
-	status: "active",
 	webApps: {
 		localman: "https://localman.hoandat.com",
 		tunelo: "https://tunnel.hoandat.com",
@@ -33,7 +32,6 @@ export const OTHER_TEST_TENANT: Tenant = {
 	domain: "example.org",
 	displayName: "Example",
 	issuer: "http://localhost:4600",
-	status: "active",
 	webApps: {
 		localman: "https://localman.example.org",
 		tunelo: "https://tunnel.example.org",

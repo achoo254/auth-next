@@ -21,26 +21,19 @@ export function resourcesFor(domain: string): TenantResources {
 }
 
 /**
- * Web app origins of a tenant (where its redirect and logout URIs point).
- * Chat and Scribe have no API resource (they run their own sessions and
- * only read the ID token and userinfo), so their origins are not among
- * `resourcesFor`. Scribe is there only when `scribe` is true: Scribe on
- * tenants is enabled and the tenant turned it on (ADR 0012).
+ * Web app origins of a domain by convention (where redirect and logout URIs
+ * point). Chat has no API resource (it runs its own sessions and only reads
+ * the ID token and userinfo), so its origin is not among `resourcesFor`.
  */
-export function webAppsFor(
-	domain: string,
-	options: { readonly scribe: boolean } = { scribe: false },
-): {
+export function webAppsFor(domain: string): {
 	readonly localman: string;
 	readonly tunelo: string;
 	readonly chat: string;
-	readonly scribe?: string;
 } {
 	const resources = resourcesFor(domain);
 	return {
 		localman: resources.localman,
 		tunelo: resources.tunnel,
 		chat: `https://${appHostsFor(domain).chat}`,
-		...(options.scribe ? { scribe: `https://scribe.${domain}` } : {}),
 	};
 }

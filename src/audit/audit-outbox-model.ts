@@ -52,7 +52,8 @@ export async function ensureAuditOutboxIndexes(db: Db): Promise<void> {
 	const outbox = auditOutboxCollection(db);
 	await Promise.all([
 		outbox.createIndex({ tenantId: 1, status: 1, occurredAt: 1 }),
-		// The process-wide dispatcher reads every tenant's due events.
+		// Left from when one dispatcher read every tenant's due events; kept
+		// rather than dropped, as no index changes with single tenancy.
 		outbox.createIndex({ status: 1, occurredAt: 1 }),
 		outbox.createIndex(
 			{ expiresAt: 1 },

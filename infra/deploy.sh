@@ -17,11 +17,9 @@ echo "== build"
 pnpm build
 
 echo "== sync release files (no owner/group: files land owned by the remote root)"
-# --relative keeps deploy/self-hosted/migrate (moving a tenant to its own
-# install, run on the server) at that path; the others are top-level.
-rsync -rlptzR --delete -e "$SSH" \
+rsync -rlptz --delete -e "$SSH" \
 	--exclude .env --exclude secrets/ --exclude node_modules/ --exclude backups/ \
-	dist static infra package.json pnpm-lock.yaml pnpm-workspace.yaml deploy/self-hosted/migrate \
+	dist static infra package.json pnpm-lock.yaml pnpm-workspace.yaml \
 	"$SSH_TARGET:$REMOTE_DIR/"
 
 echo "== install runtime dependencies, create indexes, restart"
@@ -30,7 +28,7 @@ $SSH "$SSH_TARGET" "set -euo pipefail
 	cd $REMOTE_DIR
 	MONGOMS_DISABLE_POSTINSTALL=1 $PNPM install --prod --frozen-lockfile --reporter=silent
 	# Indexes first (idempotent), so the new release starts without building them.
-	node --env-file=.env dist/create-tenant-indexes.mjs
+	node --env-file=.env dist/create-indexes.mjs
 	pm2 startOrReload infra/ecosystem.config.cjs --update-env
 	pm2 save >/dev/null
 	for i in \$(seq 1 20); do

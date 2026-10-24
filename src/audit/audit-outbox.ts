@@ -35,9 +35,8 @@ function errorName(error: unknown): string {
  * Localman; the dispatcher delivers it later. Recording never throws: the
  * security step it follows has already happened and must not fail because
  * of the audit trail, so a failed write is logged (type and account only).
- * One outbox per tenant; its lease operations see only that tenant's
- * events. The process-wide dispatcher leases from every tenant through
- * `allTenantsAuditQueue` and signs each event as its own tenant's issuer.
+ * Its lease operations see only the tenant's events; the dispatcher leases
+ * from it and signs each event as the tenant's issuer.
  */
 export class AuditOutbox extends AuditQueue {
 	constructor(

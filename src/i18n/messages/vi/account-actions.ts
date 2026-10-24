@@ -28,8 +28,6 @@ export const viAccountActions: Translation<typeof enAccountActions> = {
 		"Liên kết Google, GitHub, Apple và Telegram bị gỡ. Đăng nhập lại sau này sẽ tạo một tài khoản mới, khác tài khoản này.",
 	"confirm.delete.appData":
 		"Dữ liệu bạn lưu trong các ứng dụng dùng tài khoản này (như project Localman, tin nhắn Chat) không bị xoá ở bước này.",
-	"confirm.delete.owner":
-		"Domain bạn đã nhận vẫn là của bạn: quyền sở hữu gắn với tài khoản Google hoặc GitHub, không gắn với tài khoản này.",
 	"confirm.delete.securityLog":
 		"Nhật ký bảo mật chỉ giữ loại sự kiện, thời điểm và mã tài khoản; không còn địa chỉ IP, trình duyệt hay tên thiết bị.",
 	"confirm.delete.typeUsername": "Gõ {username} để xác nhận",

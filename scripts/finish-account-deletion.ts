@@ -17,7 +17,6 @@ import { parseEnv } from "../src/config/env.js";
 import { connectMongo } from "../src/db/connect-mongo.js";
 import { createLogger } from "../src/logger.js";
 import { PRIMARY_TENANT_ID } from "../src/tenants/env-tenant.js";
-import { TenantClaims } from "../src/tenants/tenant-claims.js";
 
 async function main(): Promise<number> {
 	const [accountId] = process.argv.slice(2);
@@ -56,7 +55,7 @@ async function main(): Promise<number> {
 			return 0;
 		}
 		const counts = await finishAccountDeletion(
-			{ db, tenant, accounts, claims: new TenantClaims(db) },
+			{ db, tenant, accounts },
 			accountId,
 		);
 		for (const { collection, count } of counts) {

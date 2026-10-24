@@ -5,7 +5,6 @@ import {
 	signOutSessions,
 	updateProfileName,
 } from "../account-portal/account-actions.js";
-import { deletesOwnAccount } from "../account-portal/account-deletion.js";
 import { listDeviceGrants } from "../account-portal/device-grants.js";
 import {
 	listAuthorizedApps,
@@ -63,7 +62,6 @@ export function createAccountApiRouter(services: AppServices): Router {
 					devices,
 					apps,
 					currentGrantId: api.grantId,
-					canDelete: deletesOwnAccount(services.tenant),
 				}),
 			);
 		}),

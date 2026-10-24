@@ -1,5 +1,4 @@
 import type { ClientMetadata } from "oidc-provider";
-import type { StaticClientSecrets } from "../tenants/app-client-secrets.js";
 import type { TenantResources } from "../tenants/tenant-resources.js";
 import type { Tenant } from "../tenants/tenant.js";
 import {
@@ -17,7 +16,12 @@ import {
 } from "./resources.js";
 import { SCRIBE_CLIENT_IDS, buildScribeClients } from "./scribe-clients.js";
 
-export type { StaticClientSecrets } from "../tenants/app-client-secrets.js";
+/** Secrets of the tenant's confidential first-party clients (from the environment). */
+export interface StaticClientSecrets {
+	readonly localmanWeb: string;
+	readonly tuneloWeb: string;
+	readonly chatWeb: string;
+}
 
 export const DEVICE_CODE_GRANT = "urn:ietf:params:oauth:grant-type:device_code";
 /** RFC 8693; only localman-web may use it (see token-exchange.ts). */
@@ -107,9 +111,9 @@ function appUrl(base: string, path: string): string {
 }
 
 /**
- * The first-party clients of a tenant: same ids everywhere, origins,
- * resources, names and secrets the tenant's. Miu World's, the iOS account
- * app's and Scribe's mobile and development clients: primary tenant only.
+ * The first-party clients of the tenant: origins, resources, names and
+ * secrets the tenant's. Scribe's, Miu World's and the iOS account app's
+ * exist only when configured, and on the primary tenant only.
  */
 export function buildStaticClients(
 	tenant: Pick<Tenant, "id" | "issuer" | "displayName" | "webApps">,
@@ -189,7 +193,7 @@ export function buildStaticClients(
 			secrets.chatWeb,
 			chatMobileRedirectUri,
 		),
-		...buildScribeClients(tenant, scribe, secrets.scribeWeb),
+		...buildScribeClients(tenant, scribe),
 		...buildMiuClients(tenant, miu),
 		...buildAccountIosClients(tenant),
 	];

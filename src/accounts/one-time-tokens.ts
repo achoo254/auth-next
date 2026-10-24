@@ -19,8 +19,6 @@ export type FreeTokenKind =
 	/** A provider's form_post answer, until the same-site GET that reads it. */
 	| "upstream-form-post"
 	| "upstream-pending"
-	/** Opens a tenant's /admin for its owner; issued by the primary tenant. */
-	| "tenant-admin-handoff"
 	/** An ID token already spent on re-authenticating an /api/account call. */
 	| "reauth-id-token"
 	/** An app link state already opened in a browser (it opens once). */

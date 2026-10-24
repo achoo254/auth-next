@@ -31,7 +31,6 @@ export const viPrivacy: Translation<typeof enPrivacy> = {
 		"Tại trang {account}, bạn xem và sửa hồ sơ, gỡ liên kết Google, GitHub, Apple hoặc Telegram, thu hồi phiên và ứng dụng đã cấp quyền.",
 	"privacy.rights.deleteHere":
 		"Bạn tự xoá tài khoản tại trang {account} (mục Xoá tài khoản). Tài khoản bị xoá ngay: phiên, thiết bị, liên kết, lịch sử đăng nhập ứng dụng và hồ sơ bị xoá; nhật ký bảo mật chỉ giữ loại sự kiện, thời điểm và mã tài khoản.",
-	"privacy.rights.deleteContact": "Để xoá tài khoản, liên hệ {email}.",
 	"privacy.rights.deleteHelp": "Nếu không xoá được, liên hệ {email}.",
 	"privacy.storage.title": "Lưu trữ",
 	"privacy.storage.body":

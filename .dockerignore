@@ -7,5 +7,3 @@ secrets
 .git
 *.md
 docs
-# The self-hosted bundle and its secrets (deploy/self-hosted/data, .env)
-deploy

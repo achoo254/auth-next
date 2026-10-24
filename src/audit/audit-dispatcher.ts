@@ -21,7 +21,7 @@ export {
 const SCRUB_INTERVAL_MS = 60 * 60 * 1000;
 
 export interface AuditDispatcherOptions {
-	/** One tenant's outbox, or every tenant's (allTenantsAuditQueue). */
+	/** The tenant's outbox (AuditOutbox). */
 	readonly outbox: AuditQueue;
 	/** Absent: delivery is off and the dispatcher only scrubs old events. */
 	readonly deliveryFor?: AuditDeliveryResolver;

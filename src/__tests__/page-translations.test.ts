@@ -12,7 +12,6 @@ import {
 	renderAccountPage,
 } from "../account-portal/account-page.js";
 import { renderAppsPage } from "../app-directory/apps-page.js";
-import { renderDomainGuide } from "../guide/domain-guide-page.js";
 import type { Locale } from "../i18n/locales.js";
 import { renderConsent } from "../interactions/consent-page.js";
 import { renderDeviceApproval } from "../interactions/device-verify-page.js";
@@ -20,13 +19,11 @@ import { renderErrorPage } from "../interactions/error-page.js";
 import { renderLogin, renderSignup } from "../interactions/login-page.js";
 import { renderChooseUsername } from "../interactions/upstream-pages.js";
 import { renderPrivacyPage } from "../legal/privacy-page.js";
-import { PRIMARY_TENANT_ID } from "../tenants/env-tenant.js";
 import { testPage } from "./helpers/test-page.js";
 
 const HOST = "auth.example.test";
 const NOW = new Date("2026-10-10T01:00:00Z");
 const APP_URLS = {
-	id: PRIMARY_TENANT_ID,
 	issuer: `https://${HOST}`,
 	domain: "hoandat.com",
 	webApps: {
@@ -58,7 +55,6 @@ function accountView(locale: Locale): AccountView {
 			{ uid: "s-2", loginAt: NOW },
 		],
 		devices: [],
-		canDelete: true,
 		apps: [
 			{
 				clientId: "mcp-1",
@@ -112,9 +108,7 @@ function pages(locale: Locale): Record<string, string> {
 			reclaiming: true,
 		}),
 		error: renderErrorPage({ host: HOST, page, message: "x", code: "c" }),
-		privacy: renderPrivacyPage(HOST, page, true, true),
-		privacyContact: renderPrivacyPage(HOST, page, false, false),
-		guide: renderDomainGuide(HOST, "/claim", page),
+		privacy: renderPrivacyPage(HOST, page),
 		apps: renderAppsPage(APP_URLS, page),
 		account: renderAccountPage(view),
 		confirmApp: renderRemoveAppConfirm({
@@ -125,7 +119,6 @@ function pages(locale: Locale): Record<string, string> {
 		confirmDelete: renderDeleteConfirm({
 			...base,
 			username: "minh_anh",
-			mentionDomains: true,
 		}),
 		deleted: renderAccountDeleted(HOST, page),
 		confirmSessions: renderRevokeOthersConfirm({

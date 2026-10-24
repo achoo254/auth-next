@@ -29,7 +29,6 @@ export const enPrivacy = {
 		"On your {account} page you can see and edit your profile, unlink Google, GitHub, Apple or Telegram, and sign out sessions and apps you allowed.",
 	"privacy.rights.deleteHere":
 		"You can delete your account yourself on the {account} page (Delete account). It is deleted right away: sessions, devices, links, app sign-in history and your profile are removed, and the security log keeps only the event type, its time and the account ID.",
-	"privacy.rights.deleteContact": "To delete your account, contact {email}.",
 	"privacy.rights.deleteHelp": "If deleting does not work, contact {email}.",
 	"privacy.storage.title": "Storage",
 	"privacy.storage.body":

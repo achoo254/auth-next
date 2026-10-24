@@ -16,7 +16,6 @@ export const enCommon = {
 	"layout.language": "Language",
 	"layout.nav": "Site",
 	"layout.home": "Home",
-	"layout.guide": "Guide",
 	"client.external": "External app",
 	"client.quoted": "“{name}”",
 	"client.externalNamed": "{name} (external app)",

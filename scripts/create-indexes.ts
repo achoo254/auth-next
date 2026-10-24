@@ -1,21 +1,19 @@
 /**
- * Creates every index the server needs (the per-tenant ones included)
- * before a deploy, so the server's own startup index pass is a no-op and
- * the new release starts within the release switch's wait:
+ * Creates every index the server needs (oidc_* and the account layer, all
+ * led by `tenantId`) before a deploy, so the server's own startup index
+ * pass is a no-op and the new release starts within the release switch's
+ * wait:
  *
- *   node dist/create-tenant-indexes.mjs     (reads the same env as the server)
+ *   node --env-file=.env dist/create-indexes.mjs   (reads the same env as the server)
  *
  * Idempotent: indexes that exist are left as they are. Prints how long each
- * group took; never prints a secret. Old single-tenant unique indexes are
- * not touched here.
+ * group took; never prints a secret.
  */
 import { parseEnv } from "../src/config/env.js";
 import { connectMongo } from "../src/db/connect-mongo.js";
 import { createLogger } from "../src/logger.js";
 import { ensureOidcIndexes } from "../src/oidc/oidc-indexes.js";
 import { ensureAccountLayerIndexes } from "../src/services.js";
-import { ensureTenantClaimIndexes } from "../src/tenants/tenant-claims.js";
-import { ensureTenantRegistryIndexes } from "../src/tenants/tenant-registry.js";
 
 async function timed(label: string, run: () => Promise<void>): Promise<void> {
 	const started = performance.now();
@@ -32,10 +30,6 @@ async function main(): Promise<void> {
 		await timed("account layer indexes", () =>
 			ensureAccountLayerIndexes(connection.db),
 		);
-		await timed("tenant registry indexes", async () => {
-			await ensureTenantRegistryIndexes(connection.db);
-			await ensureTenantClaimIndexes(connection.db);
-		});
 	} finally {
 		await connection.client.close();
 	}
@@ -45,7 +39,7 @@ main().then(
 	() => process.exit(0),
 	(error: unknown) => {
 		const message = error instanceof Error ? error.message : String(error);
-		process.stderr.write(`create-tenant-indexes failed: ${message}\n`);
+		process.stderr.write(`create-indexes failed: ${message}\n`);
 		process.exit(1);
 	},
 );

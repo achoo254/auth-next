@@ -27,15 +27,6 @@ const DATA_ACCESS_MODULES = new Set([
 	// The growth report lists every tenant with data, then reads each one.
 	"src/usage/growth-report-queries.ts",
 	"src/tenants/tenant-collections.ts",
-	"src/tenants/tenant-migration.ts",
-	// The registry and sealed secrets are keyed by tenant id themselves;
-	// the audit queue is the one deliberate all-tenants reader (dispatcher).
-	"src/tenants/tenant-registry.ts",
-	"src/tenants/tenant-lifecycle.ts",
-	"src/tenants/tenant-secrets.ts",
-	// Claims wait outside any tenant until verified, keyed by account.
-	"src/tenants/tenant-claims.ts",
-	"src/audit/audit-queue.ts",
 	"src/services.ts",
 ]);
 

@@ -3,13 +3,10 @@ import {
 	ACCOUNT_API_PATH,
 	createAccountApiRouter,
 } from "./account-api/account-api-routes.js";
-import { deletesOwnAccount } from "./account-portal/account-deletion.js";
 import { createAccountRouter } from "./account-portal/account-routes.js";
 import { createAppsRouter } from "./app-directory/apps-page.js";
 import { createAssetsRouter } from "./assets.js";
 import type { Env } from "./config/env.js";
-import { offerDomainGuide } from "./guide/domain-guide-link.js";
-import { createDomainGuideRouter } from "./guide/domain-guide-page.js";
 import { createAasaRouter } from "./http/apple-app-site-association.js";
 import { createErrorHandler } from "./http/error-handler.js";
 import { createIosCallbackRouter } from "./http/ios-callback-page.js";
@@ -28,12 +25,7 @@ import { INTERACTION_PATH } from "./oidc/provider.js";
 import type { AppServices } from "./services.js";
 import { createTelegramLinkRouter } from "./telegram/link-routes.js";
 import { createTelegramWebhookRouter } from "./telegram/webhook-routes.js";
-import { inactiveTenant } from "./tenants/admin-gate-pages.js";
-import { createAdminRouter } from "./tenants/admin-routes.js";
-import { CLAIM_PATH, createClaimRouter } from "./tenants/claim-routes.js";
-import { createEnrollmentRouter } from "./tenants/enrollment-routes.js";
 import { PRIMARY_TENANT_ID } from "./tenants/env-tenant.js";
-import { createMigrationRouter } from "./tenants/migration-routes.js";
 import { bindRequestTenant } from "./tenants/request-tenant.js";
 
 export interface TenantAppOptions {
@@ -51,12 +43,10 @@ export interface TenantAppOptions {
 	 * automatic sign-in helper never ships in production wiring.
 	 */
 	readonly interactions?: RequestHandler;
-	/** A self-hosted install waiting to enroll answers its gateway here (ADR 0007). */
-	readonly enrollmentChallenge?: RequestHandler;
 }
 
 /**
- * One tenant's pages behind the dispatcher: security headers, static
+ * The tenant's pages behind the dispatcher: security headers, static
  * assets, the server-rendered pages (the app list at /apps, interactions,
  * /account, Google/GitHub callbacks, Telegram webhook), then the tenant's
  * provider for everything else.
@@ -78,43 +68,8 @@ export function createTenantApp(options: TenantAppOptions): Express {
 	// read the same forwarded headers as the provider itself.
 	app.use(forwardTrustedClientInfo);
 	app.use("/assets", createAssetsRouter());
-	const { tenancy } = services;
-	if (tenancy && tenant.id === PRIMARY_TENANT_ID) {
-		app.use(offerDomainGuide);
-		app.use(createClaimRouter(services, tenancy));
-		app.use(createEnrollmentRouter(services, tenancy));
-		app.use(createMigrationRouter(services, tenancy));
-		app.use(
-			createDomainGuideRouter(
-				new URL(tenant.issuer).host,
-				CLAIM_PATH,
-				tenancy.selfHostedClaims,
-			),
-		);
-	}
-	if (tenancy && tenant.id !== PRIMARY_TENANT_ID) {
-		app.use(createAdminRouter(services, tenancy));
-	}
-	if (options.enrollmentChallenge) app.use(options.enrollmentChallenge);
-	app.use(
-		createPrivacyRouter(
-			new URL(tenant.issuer).host,
-			deletesOwnAccount(tenant),
-			// Only the primary tenant's owner posts to YouTube through the API.
-			tenant.id === PRIMARY_TENANT_ID,
-		),
-	);
+	app.use(createPrivacyRouter(new URL(tenant.issuer).host));
 	app.use(createLanguageRouter(services));
-	// Until its owner adds a sign-in provider, a claimed tenant serves only
-	// /admin, its assets, the language switch and the privacy page: no
-	// sign-in page, no provider endpoint.
-	if (
-		tenancy &&
-		tenant.id !== PRIMARY_TENANT_ID &&
-		tenant.status !== "active"
-	) {
-		app.use(inactiveTenant(tenant));
-	}
 	app.use(createAppsRouter(tenant));
 	// The iOS account app (primary tenant only, like its client).
 	if (tenant.id === PRIMARY_TENANT_ID) {
@@ -154,9 +109,9 @@ export interface AppOptions extends TenantAppOptions {
 }
 
 /**
- * A server for one tenant only: the dispatcher serves it at its issuer's
- * host and ALLOWED_HOSTS. Tests and the conformance harness use this; the
- * server process dispatches across every tenant (server.ts).
+ * The tenant's app behind the dispatcher, served at its issuer's host and
+ * ALLOWED_HOSTS. Tests and the conformance harness use this; the server
+ * process builds the same through createServing (server.ts).
  */
 export function createApp(options: AppOptions): Express {
 	const { services, env } = options;
@@ -174,9 +129,7 @@ export function createApp(options: AppOptions): Express {
 			services.tenant.issuer,
 			nativeRedirectSchemes(env),
 		),
-		lookup: async (host) =>
-			host && hosts.has(host.toLowerCase())
-				? { kind: "found", runtime }
-				: { kind: "unknown" },
+		runtime,
+		servesHost: (host) => host !== undefined && hosts.has(host.toLowerCase()),
 	});
 }

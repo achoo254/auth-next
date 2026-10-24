@@ -6,7 +6,7 @@ import { TEST_BRAND } from "./test-tenant.js";
 
 /** Page context for rendering a page directly in a test. */
 export function testPage(locale: Locale = "en", path = "/"): PageContext {
-	return { i18n: translator(locale, TEST_BRAND), path, domainGuide: false };
+	return { i18n: translator(locale, TEST_BRAND), path };
 }
 
 /** A message as a page in `locale` shows it (HTML-escaped). */

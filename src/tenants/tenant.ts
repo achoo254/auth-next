@@ -2,30 +2,10 @@ import { domainToASCII } from "node:url";
 import { parse } from "tldts";
 
 /**
- * Lifecycle of a tenant: a domain is claimed (TXT proven), becomes active
- * once it has an owner and a sign-in provider, and is suspended when its
- * ownership no longer checks out. A self-hosted one (ADR 0007) is
- * `enrolling` once its TXT is proven, then `self_hosted` once its own
- * install has enrolled: it never serves anything here. An active tenant
- * moving to its own servers is `migrating` (nothing served here, its data
- * kept for the export) until its install enrolls.
- */
-export type TenantStatus =
-	| "pending_claim"
-	| "claimed"
-	| "active"
-	| "suspended"
-	| "enrolling"
-	| "self_hosted"
-	| "migrating";
-
-/** Where a tenant runs: on this service, or on its owner's servers (ADR 0007). */
-export type TenantHosting = "hoandat" | "self";
-
-/**
- * One claimed domain and everything served under it: `auth.<domain>`
- * (this IdP), `localman.<domain>` and `tunnel.<domain>`. Accounts, sessions,
- * grants and tokens of one tenant never work in another.
+ * The one tenant this IdP serves (ADR 0013): `auth.<domain>` (this IdP),
+ * `localman.<domain>`, `tunnel.<domain>`, `chat.<domain>` and the apps
+ * configured beside them. Its id is stamped on every document as
+ * `tenantId`, so data stays scoped exactly as before domain tenants went.
  */
 export interface Tenant {
 	/** Stamped as `tenantId` on every document the tenant owns. */
@@ -35,49 +15,16 @@ export interface Tenant {
 	/** Brand shown in every page and message instead of a fixed name. */
 	readonly displayName: string;
 	readonly issuer: string;
-	readonly status: TenantStatus;
 	/** Where the tenant's web apps live (redirect and logout URIs). */
 	readonly webApps: {
 		readonly localman: string;
 		readonly tunelo: string;
 		readonly chat: string;
-		/**
-		 * Scribe: the primary tenant when configured; a registry tenant once
-		 * SCRIBE_TENANTS is on and it saved a transcription key (ADR 0012).
-		 */
+		/** Scribe, once its client secret is configured. */
 		readonly scribe?: string;
-		/** Miu World: the primary tenant only, and only when it is configured. */
+		/** Miu World, once its client secret is configured. */
 		readonly miu?: string;
 	};
-	/**
-	 * A registry tenant whose `scribe.<domain>` certificate is issued: only
-	 * then does /apps link to its Scribe (a link before that fails on TLS).
-	 * The scribe-web client and the internal lookup never wait for it, since
-	 * Scribe sets itself up through them before the certificate exists.
-	 */
-	readonly scribeCertificateIssued?: boolean;
-}
-
-/**
- * First labels of a tenant's app hosts (auth.<d>, chat.<d>, localman.<d>,
- * tunnel.<d>, scribe.<d>). `scribe.` has its own certificate and is not
- * among the hosts whose DNS the ownership check requires.
- */
-const APP_LABELS: ReadonlySet<string> = new Set([
-	"auth",
-	"chat",
-	"localman",
-	"tunnel",
-	"scribe",
-]);
-
-/**
- * True when `domain` reads as an app host of another domain (auth.x,
- * chat.x, localman.x, tunnel.x, scribe.x): nginx maps hosts to certificates
- * by those labels, so such a domain can never be a tenant.
- */
-export function looksLikeAppHost(domain: string): boolean {
-	return APP_LABELS.has(domain.split(".")[0] ?? "");
 }
 
 /** The hostnames of a tenant, fixed by convention under its domain. */
@@ -85,9 +32,7 @@ export interface TenantAppHosts {
 	readonly auth: string;
 	readonly chat: string;
 	readonly localman: string;
-	readonly localmanWildcard: string;
 	readonly tunnel: string;
-	readonly tunnelWildcard: string;
 }
 
 export function appHostsFor(domain: string): TenantAppHosts {
@@ -95,9 +40,7 @@ export function appHostsFor(domain: string): TenantAppHosts {
 		auth: `auth.${domain}`,
 		chat: `chat.${domain}`,
 		localman: `localman.${domain}`,
-		localmanWildcard: `*.localman.${domain}`,
 		tunnel: `tunnel.${domain}`,
-		tunnelWildcard: `*.tunnel.${domain}`,
 	};
 }
 
@@ -120,24 +63,15 @@ const RESERVED_TLDS: ReadonlySet<string> = new Set([
 	"test",
 ]);
 
-/** True when `domain` is `blocked` or lies under it. */
-function isUnder(domain: string, blocked: string): boolean {
-	return domain === blocked || domain.endsWith(`.${blocked}`);
-}
-
 /**
- * The canonical form of a domain someone wants to claim, or undefined when
- * it can never be a tenant. Domains end up in DNS lookups, certbot
- * arguments and nginx certificate paths, so only plain hostnames pass:
- * lowercase LDH or punycode labels, no port, no trailing dot, at most 253
- * characters, not an IP, under a delegated public suffix (not a reserved
- * or unknown TLD) without being one (`com.vn`, `github.io`), and neither
- * equal to nor under a `blocked` domain (normalised the same way).
+ * The canonical form of the tenant's domain (TENANT_DOMAIN), or undefined
+ * when it is not a plain public hostname: lowercase LDH or punycode
+ * labels, no port, no trailing dot, at most 253 characters, not an IP,
+ * under a delegated public suffix (not a reserved or unknown TLD) without
+ * being one (`com.vn`, `github.io`). Resources and audiences are built
+ * from it.
  */
-export function normalizeTenantDomain(
-	input: string,
-	blocked: readonly string[] = [],
-): string | undefined {
+export function normalizeTenantDomain(input: string): string | undefined {
 	const trimmed = input.trim().toLowerCase();
 	// A port or a trailing dot is a harmless spelling; anything else odd is not.
 	const withoutPort = trimmed.replace(/:\d{1,5}$/, "").replace(/\.$/, "");
@@ -154,12 +88,5 @@ export function normalizeTenantDomain(
 	const parsed = parse(ascii, { allowPrivateDomains: true });
 	if (parsed.isIp || !parsed.domain || !parsed.publicSuffix) return undefined;
 	if (!parsed.isIcann && !parsed.isPrivate) return undefined;
-	const blockedDomains = blocked.flatMap((domain) => {
-		const normalized = normalizeTenantDomain(domain);
-		return normalized ? [normalized] : [];
-	});
-	if (blockedDomains.some((domain) => isUnder(ascii, domain))) {
-		return undefined;
-	}
 	return ascii;
 }

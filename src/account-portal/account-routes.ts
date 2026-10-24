@@ -18,7 +18,6 @@ import { registerAccessRoutes } from "./account-access-routes.js";
 import { updateProfileName } from "./account-actions.js";
 import { registerConfirmRoutes } from "./account-confirm-routes.js";
 import { registerDeleteRoutes } from "./account-delete-routes.js";
-import { deletesOwnAccount } from "./account-deletion.js";
 import { renderAccountPage } from "./account-page.js";
 import { listDeviceGrants } from "./device-grants.js";
 import { listAuthorizedApps, listGrants } from "./grant-directory.js";
@@ -88,7 +87,6 @@ export function createAccountRouter(services: AppServices): Router {
 						sessions,
 						devices,
 						apps,
-						canDelete: deletesOwnAccount(services.tenant),
 						notice: queryValue(req, "notice"),
 					}),
 				);
@@ -135,8 +133,6 @@ export function createAccountRouter(services: AppServices): Router {
 	const page = (handler: PortalHandler): RequestHandler =>
 		portalRoute(services, handler, { csrf: false });
 	registerConfirmRoutes(router, services, page, sensitive);
-	if (deletesOwnAccount(services.tenant)) {
-		registerDeleteRoutes(router, services, page, sensitive);
-	}
+	registerDeleteRoutes(router, services, page, sensitive);
 	return router;
 }

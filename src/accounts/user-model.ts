@@ -11,20 +11,6 @@ export function isUpstreamProvider(value: unknown): value is UpstreamProvider {
 	return UPSTREAM_PROVIDERS.some((provider) => provider === value);
 }
 
-/**
- * The providers a registry tenant configures with its own OAuth app on
- * /admin, and so the identities that may own a tenant. Apple needs a paid
- * developer account and a signed key, so it serves the primary tenant only.
- */
-export const TENANT_OAUTH_PROVIDERS = ["google", "github"] as const;
-export type TenantOAuthProvider = (typeof TENANT_OAUTH_PROVIDERS)[number];
-
-export function isTenantOAuthProvider(
-	value: unknown,
-): value is TenantOAuthProvider {
-	return TENANT_OAUTH_PROVIDERS.some((provider) => provider === value);
-}
-
 export interface ProviderDetail {
 	/** The email the provider verified when the link was made. */
 	email?: string;

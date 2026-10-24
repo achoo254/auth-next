@@ -46,7 +46,7 @@ export interface PrimaryAppSpec {
  * A confidential web client: Code + PKCE (oidc-provider requires PKCE for
  * every client here), no API resource.
  */
-export function webClient(
+function webClient(
 	spec: PrimaryAppSpec,
 	clientId: string,
 	app: PrimaryWebApp,

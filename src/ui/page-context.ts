@@ -1,6 +1,5 @@
 import type { Request } from "express";
 import type { KoaContextWithOIDC } from "oidc-provider";
-import { offersDomainGuide } from "../guide/domain-guide-link.js";
 import { requestLocale } from "../i18n/request-locale.js";
 import { type Translator, brandOf, translator } from "../i18n/translator.js";
 import { requestTenant } from "../tenants/request-tenant.js";
@@ -16,8 +15,6 @@ export interface PageContext {
 	 * for a GET, otherwise a page that can be opened again with a GET.
 	 */
 	readonly path: string;
-	/** The topbar links the domain guide (only where it is served). */
-	readonly domainGuide: boolean;
 }
 
 /** Longer return paths fall back to the bare path (no query string). */
@@ -49,7 +46,6 @@ export function pageContext(
 			brandOf(requestTenant(req)),
 		),
 		path: isGet ? returnPath(req.originalUrl, fallback) : fallback,
-		domainGuide: offersDomainGuide(req),
 	};
 }
 
@@ -70,6 +66,5 @@ export function koaPageContext(
 			brandOf(requestTenant(ctx.req)),
 		),
 		path: isGet ? returnPath(ctx.originalUrl, fallback) : fallback,
-		domainGuide: offersDomainGuide(ctx.req),
 	};
 }

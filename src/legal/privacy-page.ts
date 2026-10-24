@@ -29,12 +29,7 @@ const STORED: readonly MessageKey[] = [
  * Public privacy policy. Google requires one before a "Sign in with Google"
  * app can leave testing; it states only what this service actually stores.
  */
-export function renderPrivacyPage(
-	host: string,
-	page: PageContext,
-	selfServiceDeletion: boolean,
-	publishesToYoutube: boolean,
-): string {
+export function renderPrivacyPage(host: string, page: PageContext): string {
 	const { i18n } = page;
 	const link = (href: string, key: MessageKey) =>
 		html`<a href="${href}" rel="noopener">${i18n.t(key)}</a>`;
@@ -55,30 +50,19 @@ export function renderPrivacyPage(
 <p>${i18n.t("privacy.sharing.body")}</p>
 <h2>${i18n.t("privacy.rights.title")}</h2>
 <p>${i18n.rich("privacy.rights.body", { account })}</p>
-${
-	selfServiceDeletion
-		? html`<p data-id="privacy-delete">${i18n.rich("privacy.rights.deleteHere", { account })}</p>
-<p>${i18n.t("privacy.rights.deleteHelp", { email: CONTACT_EMAIL })}</p>`
-		: html`<p data-id="privacy-delete">${i18n.t("privacy.rights.deleteContact", { email: CONTACT_EMAIL })}</p>`
-}
+<p data-id="privacy-delete">${i18n.rich("privacy.rights.deleteHere", { account })}</p>
+<p>${i18n.t("privacy.rights.deleteHelp", { email: CONTACT_EMAIL })}</p>
 <h2>${i18n.t("privacy.storage.title")}</h2>
 <p>${i18n.t("privacy.storage.body")}</p>
-${
-	publishesToYoutube
-		? html`<h2>${i18n.t("privacy.youtube.title")}</h2>
+<h2>${i18n.t("privacy.youtube.title")}</h2>
 <p data-id="privacy-youtube">${i18n.rich("privacy.youtube.body", {
-				youtubeTerms: link(YOUTUBE_TERMS_URL, "privacy.youtube.terms"),
-				googlePrivacy: link(
-					GOOGLE_PRIVACY_URL,
-					"privacy.youtube.googlePrivacy",
-				),
-				googlePermissions: link(
-					GOOGLE_PERMISSIONS_URL,
-					"privacy.youtube.permissions",
-				),
-			})}</p>`
-		: ""
-}
+			youtubeTerms: link(YOUTUBE_TERMS_URL, "privacy.youtube.terms"),
+			googlePrivacy: link(GOOGLE_PRIVACY_URL, "privacy.youtube.googlePrivacy"),
+			googlePermissions: link(
+				GOOGLE_PERMISSIONS_URL,
+				"privacy.youtube.permissions",
+			),
+		})}</p>
 </div>`,
 	});
 }
@@ -87,11 +71,7 @@ ${
  * The page depends on the visitor's language (cookie, Accept-Language),
  * so caches must revalidate rather than serve one language to everyone.
  */
-export function createPrivacyRouter(
-	host: string,
-	selfServiceDeletion: boolean,
-	publishesToYoutube: boolean,
-): Router {
+export function createPrivacyRouter(host: string): Router {
 	const router = Router();
 	router.get(PRIVACY_PATH, (req, res) => {
 		res
@@ -100,14 +80,7 @@ export function createPrivacyRouter(
 			.vary("Cookie")
 			.vary("Accept-Language")
 			.type("html")
-			.send(
-				renderPrivacyPage(
-					host,
-					pageContext(req),
-					selfServiceDeletion,
-					publishesToYoutube,
-				),
-			);
+			.send(renderPrivacyPage(host, pageContext(req)));
 	});
 	return router;
 }

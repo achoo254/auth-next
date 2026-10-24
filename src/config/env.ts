@@ -12,8 +12,7 @@ import {
 } from "./integrations-env.js";
 import { iosEnvShape } from "./ios-env.js";
 import { checkMiuDevGroup, miuEnvShape } from "./miu-env.js";
-import { checkScribeGroups, scribeEnvShape } from "./scribe-env.js";
-import { checkTenantsGroup, tenantsEnvShape } from "./tenants-env.js";
+import { checkScribeDevGroup, scribeEnvShape } from "./scribe-env.js";
 import { type TrustProxy, parseTrustProxy } from "./trust-proxy.js";
 import { usageEnvShape } from "./usage-env.js";
 
@@ -90,10 +89,7 @@ const envSchema = z
 				}
 				return domain;
 			}),
-		/**
-		 * Brand of the primary tenant, shown in pages and messages: by default
-		 * the product name, since hoandat.com is one tenant like the others.
-		 */
+		/** Brand of the primary tenant, shown in pages and messages. */
 		TENANT_DISPLAY_NAME: z
 			.string()
 			.trim()
@@ -147,7 +143,6 @@ const envSchema = z
 			.default("info"),
 		...integrationEnvShape,
 		...appleEnvShape,
-		...tenantsEnvShape,
 		...scribeEnvShape,
 		...miuEnvShape,
 		...iosEnvShape,
@@ -156,8 +151,7 @@ const envSchema = z
 	.superRefine((env, ctx) => {
 		checkIntegrationGroups(env, ctx);
 		checkAppleGroup(env, ctx);
-		checkTenantsGroup(env, ctx);
-		checkScribeGroups(env, ctx);
+		checkScribeDevGroup(env, ctx);
 		checkMiuDevGroup(env, ctx);
 		if (env.NODE_ENV !== "production") return;
 		for (const key of PRODUCTION_URLS) {
@@ -204,8 +198,10 @@ export class EnvError extends Error {
 
 /**
  * Validates configuration from the environment. Empty values count as unset
- * so `KEY=` in a .env file falls back to the default. Error messages name the
- * variable but never echo its value, which may be a secret.
+ * so `KEY=` in a .env file falls back to the default. Variables the schema
+ * does not know are ignored (the object strips them), so a setting left in
+ * .env after its feature is removed never stops startup. Error messages
+ * name the variable but never echo its value, which may be a secret.
  */
 export function parseEnv(source: NodeJS.ProcessEnv = process.env): Env {
 	const defined = Object.fromEntries(

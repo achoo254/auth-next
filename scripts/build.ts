@@ -13,22 +13,17 @@ const manifest = z
 
 // Runtime dependencies stay external and load from node_modules; only the
 // application source is bundled. The client check ships too, so it runs in
-// the production image: `node dist/seed-clients.mjs`, and so does the key
-// generator, so signing keys are created on the server and never travel,
-// the tenant migration steps (indexes before a deploy, backfill after)
-// and the read-only growth report.
+// the production image: `node dist/seed-clients.mjs`, and so do the key
+// generator (signing keys are created on the server and never travel), the
+// index pass run before a deploy, the read-only growth report and the
+// finish-account-deletion repair script.
 rmSync(distDir, { recursive: true, force: true });
 await build({
 	entryPoints: {
 		server: resolve(root, "src/server.ts"),
 		"seed-clients": resolve(root, "scripts/seed-clients.ts"),
 		"generate-signing-key": resolve(root, "scripts/generate-signing-key.ts"),
-		"create-tenant-indexes": resolve(root, "scripts/create-tenant-indexes.ts"),
-		"backfill-tenant-id": resolve(root, "scripts/backfill-tenant-id.ts"),
-		"app-client-key": resolve(root, "scripts/app-client-key.ts"),
-		"export-tenant-secrets": resolve(root, "scripts/export-tenant-secrets.ts"),
-		"import-tenant": resolve(root, "scripts/import-tenant.ts"),
-		"purge-tenant": resolve(root, "scripts/purge-tenant.ts"),
+		"create-indexes": resolve(root, "scripts/create-indexes.ts"),
 		"growth-report": resolve(root, "scripts/growth-report.ts"),
 		"finish-account-deletion": resolve(
 			root,
@@ -43,21 +38,5 @@ await build({
 	format: "esm",
 	sourcemap: true,
 	external: Object.keys(manifest.dependencies),
-	logLevel: "info",
-});
-
-// The provisioner runs as root from a root-owned copy outside this tree, so
-// it carries its dependencies instead of loading this app's node_modules.
-await build({
-	entryPoints: {
-		"tenant-provisioner": resolve(root, "scripts/tenant-provisioner.ts"),
-	},
-	outdir: distDir,
-	outExtension: { ".js": ".mjs" },
-	bundle: true,
-	platform: "node",
-	target: "node22",
-	format: "esm",
-	sourcemap: false,
 	logLevel: "info",
 });
