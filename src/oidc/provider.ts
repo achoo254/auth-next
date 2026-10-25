@@ -25,7 +25,10 @@ import {
 } from "./interaction-policy.js";
 import { SIGNING_ALG, type SigningJwks, idTokenSigningAlgs } from "./jwks.js";
 import { createMongoAdapterFactory } from "./mongo-adapter.js";
-import type { PrimaryAppClientsConfig } from "./primary-app-clients.js";
+import type {
+	PrimaryAppClientsConfig,
+	PrimaryWebApp,
+} from "./primary-app-clients.js";
 import { buildProviderFeatures } from "./provider-features.js";
 import { logProviderEvents } from "./provider-logging.js";
 import { createClientMetadataValidator } from "./registration-policy.js";
@@ -90,6 +93,8 @@ export interface ProviderDependencies {
 	/** Scribe's and Miu World's clients; primary tenant only. */
 	readonly scribeClients?: PrimaryAppClientsConfig;
 	readonly miuClients?: PrimaryAppClientsConfig;
+	/** Tiểu Đệ's web client; primary tenant only. */
+	readonly tieudeClient?: PrimaryWebApp;
 	readonly accountStore: AccountStore;
 	readonly logger: Logger;
 }
@@ -138,6 +143,7 @@ export function buildProviderConfiguration(
 			deps.chatMobileRedirectUri,
 			deps.scribeClients,
 			deps.miuClients,
+			deps.tieudeClient,
 		),
 		findAccount: createFindAccount(accountStore),
 		jwks: { keys: jwks.keys.map((key) => ({ ...key })) },

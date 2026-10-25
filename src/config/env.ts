@@ -13,6 +13,7 @@ import {
 import { iosEnvShape } from "./ios-env.js";
 import { checkMiuDevGroup, miuEnvShape } from "./miu-env.js";
 import { checkScribeDevGroup, scribeEnvShape } from "./scribe-env.js";
+import { checkTieudeGroup, tieudeEnvShape } from "./tieude-env.js";
 import { type TrustProxy, parseTrustProxy } from "./trust-proxy.js";
 import { usageEnvShape } from "./usage-env.js";
 
@@ -47,6 +48,12 @@ const PRODUCTION_URLS = [
 	"CHAT_WEB_URL",
 	"SCRIBE_WEB_URL",
 	"MIU_WEB_URL",
+] as const;
+
+/** Optional URLs that, when set in production, must be public https. */
+const OPTIONAL_PRODUCTION_URLS = [
+	"AUDIT_EVENTS_URL",
+	"TIEUDE_WEB_URL",
 ] as const;
 
 const envSchema = z
@@ -145,6 +152,7 @@ const envSchema = z
 		...appleEnvShape,
 		...scribeEnvShape,
 		...miuEnvShape,
+		...tieudeEnvShape,
 		...iosEnvShape,
 		...usageEnvShape,
 	})
@@ -153,6 +161,7 @@ const envSchema = z
 		checkAppleGroup(env, ctx);
 		checkScribeDevGroup(env, ctx);
 		checkMiuDevGroup(env, ctx);
+		checkTieudeGroup(env, ctx);
 		if (env.NODE_ENV !== "production") return;
 		for (const key of PRODUCTION_URLS) {
 			if (!isPublicHttpsUrl(env[key])) {
@@ -163,15 +172,15 @@ const envSchema = z
 				});
 			}
 		}
-		if (
-			env.AUDIT_EVENTS_URL !== undefined &&
-			!isPublicHttpsUrl(env.AUDIT_EVENTS_URL)
-		) {
-			ctx.addIssue({
-				code: "custom",
-				path: ["AUDIT_EVENTS_URL"],
-				message: "must be a public https URL in production",
-			});
+		for (const key of OPTIONAL_PRODUCTION_URLS) {
+			const value = env[key];
+			if (value !== undefined && !isPublicHttpsUrl(value)) {
+				ctx.addIssue({
+					code: "custom",
+					path: [key],
+					message: "must be a public https URL in production",
+				});
+			}
 		}
 		const proxies = env.TRUST_PROXY;
 		if (

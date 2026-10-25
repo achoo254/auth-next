@@ -11,6 +11,7 @@ import {
 	envMiuClients,
 	envScribeClients,
 	envTenant,
+	envTieudeClient,
 } from "./env-tenant.js";
 import type { Tenant } from "./tenant.js";
 
@@ -45,6 +46,7 @@ export function buildPrimaryRuntime(
 		chatMobileRedirectUri: env.CHAT_MOBILE_REDIRECT_URI,
 		scribeClients: envScribeClients(env),
 		miuClients: envMiuClients(env),
+		tieudeClient: envTieudeClient(env),
 		clientSecrets: envClientSecrets(env),
 		accountStore: accounts,
 		logger,

@@ -1,6 +1,7 @@
 import type { Env } from "../config/env.js";
 import type { StaticClientSecrets } from "../oidc/clients.js";
 import type { PrimaryAppClientsConfig } from "../oidc/primary-app-clients.js";
+import type { TieudeClientConfig } from "../oidc/tieude-client.js";
 import type { Tenant } from "./tenant.js";
 
 /**
@@ -95,6 +96,18 @@ export function envScribeClients(
 		env.SCRIBE_WEB_DEV_URL,
 		env.SCRIBE_WEB_DEV_CLIENT_SECRET,
 	);
+}
+
+/**
+ * The primary tenant's Tiểu Đệ client, from the environment: undefined
+ * unless both its origin and its secret are set (parseEnv rejects one alone).
+ */
+export function envTieudeClient(
+	env: Pick<Env, "TIEUDE_WEB_URL" | "TIEUDE_WEB_CLIENT_SECRET">,
+): TieudeClientConfig | undefined {
+	const url = env.TIEUDE_WEB_URL;
+	const secret = env.TIEUDE_WEB_CLIENT_SECRET;
+	return url && secret ? { url, secret } : undefined;
 }
 
 /** The primary tenant's Miu World clients, from the environment. */

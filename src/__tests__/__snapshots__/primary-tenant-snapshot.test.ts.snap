@@ -1088,6 +1088,32 @@ exports[`primary tenant (hoandat.com) is unchanged > serves the same static clie
     "subject_type": "public",
     "token_endpoint_auth_method": "none",
   },
+  {
+    "allowed_resources": [],
+    "application_type": "web",
+    "backchannel_logout_session_required": false,
+    "client_id": "tieude-web",
+    "client_name": "Tiểu Đệ",
+    "dpop_bound_access_tokens": false,
+    "grant_types": [
+      "authorization_code",
+    ],
+    "id_token_signed_response_alg": "ES256",
+    "post_logout_redirect_uris": [
+      "https://tieude.hoandat.com/",
+    ],
+    "redirect_uris": [
+      "https://tieude.hoandat.com/auth/callback",
+    ],
+    "require_auth_time": false,
+    "require_pushed_authorization_requests": false,
+    "response_types": [
+      "code",
+    ],
+    "scope": "openid",
+    "subject_type": "public",
+    "token_endpoint_auth_method": "client_secret_basic",
+  },
 ]
 `;
 

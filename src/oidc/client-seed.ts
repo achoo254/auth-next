@@ -7,6 +7,7 @@ import {
 	envMiuClients,
 	envScribeClients,
 	envTenant,
+	envTieudeClient,
 } from "../tenants/env-tenant.js";
 import { inTenant } from "../tenants/tenant-data.js";
 import { createInMemoryAccountStore } from "./claims.js";
@@ -16,6 +17,7 @@ import { isMiuClientId } from "./miu-clients.js";
 import { collectionNameFor } from "./mongo-adapter.js";
 import { createProvider } from "./provider.js";
 import { isScribeClientId } from "./scribe-clients.js";
+import { isTieudeClientId } from "./tieude-client.js";
 
 /** One static client as oidc-provider validated it; never its secret. */
 export interface StaticClientSummary {
@@ -51,6 +53,15 @@ function text(value: unknown): string {
 	return typeof value === "string" ? value : "";
 }
 
+/** Static clients that exist only when the environment configures them. */
+function isOptionalClientId(clientId: string): boolean {
+	return (
+		isScribeClientId(clientId) ||
+		isMiuClientId(clientId) ||
+		isTieudeClientId(clientId)
+	);
+}
+
 /**
  * Static clients live in code (`clients.ts`) and are built from the
  * environment, so a deployment never has to write them to MongoDB. This
@@ -72,6 +83,7 @@ export async function inspectStaticClients(deps: {
 		chatMobileRedirectUri: deps.env.CHAT_MOBILE_REDIRECT_URI,
 		scribeClients: envScribeClients(deps.env),
 		miuClients: envMiuClients(deps.env),
+		tieudeClient: envTieudeClient(deps.env),
 		clientSecrets: envClientSecrets(deps.env),
 		accountStore: createInMemoryAccountStore([]),
 		logger: createLogger("silent"),
@@ -79,9 +91,8 @@ export async function inspectStaticClients(deps: {
 	const clients: StaticClientSummary[] = [];
 	for (const clientId of Object.values(STATIC_CLIENT_IDS)) {
 		const client = await provider.Client.find(clientId);
-		// Scribe's and Miu's clients exist only when configured.
-		if (!client && (isScribeClientId(clientId) || isMiuClientId(clientId)))
-			continue;
+		// Scribe's, Miu's and Tiểu Đệ's clients exist only when configured.
+		if (!client && isOptionalClientId(clientId)) continue;
 		if (!client) throw new Error(`Static client ${clientId} is missing`);
 		const metadata = client.metadata();
 		const backchannel = text(metadata.backchannel_logout_uri);

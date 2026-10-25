@@ -7,7 +7,10 @@ import {
 } from "./account-ios-client.js";
 import { CHAT_CLIENT_IDS, buildChatClients } from "./chat-clients.js";
 import { MIU_CLIENT_IDS, buildMiuClients } from "./miu-clients.js";
-import type { PrimaryAppClientsConfig } from "./primary-app-clients.js";
+import type {
+	PrimaryAppClientsConfig,
+	PrimaryWebApp,
+} from "./primary-app-clients.js";
 import {
 	ALLOWED_RESOURCES_PROPERTY,
 	LOCALMAN_SCOPES,
@@ -15,6 +18,7 @@ import {
 	TUNNEL_SCOPES,
 } from "./resources.js";
 import { SCRIBE_CLIENT_IDS, buildScribeClients } from "./scribe-clients.js";
+import { TIEUDE_CLIENT_IDS, buildTieudeClients } from "./tieude-client.js";
 
 /** Secrets of the tenant's confidential first-party clients (from the environment). */
 export interface StaticClientSecrets {
@@ -38,6 +42,7 @@ export const STATIC_CLIENT_IDS = {
 	...SCRIBE_CLIENT_IDS,
 	...MIU_CLIENT_IDS,
 	...ACCOUNT_IOS_CLIENT_IDS,
+	...TIEUDE_CLIENT_IDS,
 } as const;
 
 /** Where the IdP sends the browser back after signing in for /account. */
@@ -100,6 +105,7 @@ export const CLIENTS_WITHOUT_RESOURCES: ReadonlySet<string> = new Set([
 	...Object.values(SCRIBE_CLIENT_IDS),
 	...Object.values(MIU_CLIENT_IDS),
 	...Object.values(ACCOUNT_IOS_CLIENT_IDS),
+	...Object.values(TIEUDE_CLIENT_IDS),
 ]);
 
 function scopeOf(...groups: readonly (readonly string[])[]): string {
@@ -112,8 +118,8 @@ function appUrl(base: string, path: string): string {
 
 /**
  * The first-party clients of the tenant: origins, resources, names and
- * secrets the tenant's. Scribe's, Miu World's and the iOS account app's
- * exist only when configured, and on the primary tenant only.
+ * secrets the tenant's. Scribe's, Miu World's, Tiểu Đệ's and the iOS
+ * account app's exist only when configured, on the primary tenant only.
  */
 export function buildStaticClients(
 	tenant: Pick<Tenant, "id" | "issuer" | "displayName" | "webApps">,
@@ -122,6 +128,7 @@ export function buildStaticClients(
 	chatMobileRedirectUri: string,
 	scribe?: PrimaryAppClientsConfig,
 	miu?: PrimaryAppClientsConfig,
+	tieude?: PrimaryWebApp,
 ): ClientMetadata[] {
 	const localman = tenant.webApps.localman;
 	const tunelo = tenant.webApps.tunelo;
@@ -196,5 +203,6 @@ export function buildStaticClients(
 		...buildScribeClients(tenant, scribe),
 		...buildMiuClients(tenant, miu),
 		...buildAccountIosClients(tenant),
+		...buildTieudeClients(tenant, tieude),
 	];
 }
