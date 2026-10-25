@@ -1,12 +1,12 @@
 # Deploy auth.hoandat.com
 
-IdP chạy trên server dùng chung `103.72.98.65` theo quy ước của server đó: process pm2 ở `/var/www/hoandat-auth`, nginx một file cho mỗi hostname, MongoDB native dùng chung (mỗi app một database và một user). Không dùng Docker Compose trên server này vì máy từng thiếu RAM và mongod đã giữ cổng 27017 (Jev `jev-1.13.0`, 1.00). `Dockerfile` và `docker-compose.yml` vẫn dùng được cho chạy local hoặc host khác.
+IdP chạy trên server dùng chung `<SERVER_65_IP>` theo quy ước của server đó: process pm2 ở `/var/www/hoandat-auth`, nginx một file cho mỗi hostname, MongoDB native dùng chung (mỗi app một database và một user). Không dùng Docker Compose trên server này vì máy từng thiếu RAM và mongod đã giữ cổng 27017 (Jev `jev-1.13.0`, 1.00). `Dockerfile` và `docker-compose.yml` vẫn dùng được cho chạy local hoặc host khác.
 
 ## Thành phần
 
 | Thành phần | Vị trí |
 |---|---|
-| DNS | Cloudflare, bản ghi `A auth.hoandat.com → 103.72.98.65`, proxied; zone `hoandat.com` để SSL mode "full" |
+| DNS | Cloudflare, bản ghi `A auth.hoandat.com → <SERVER_65_IP>`, proxied; zone `hoandat.com` để SSL mode "full" |
 | TLS phía origin | chứng chỉ tự ký dùng chung `/etc/pki/nginx/server.{crt,key}` (Cloudflare "full" chấp nhận) |
 | nginx | `/etc/nginx/conf.d/auth.hoandat.com.conf`, bản gốc ở `infra/nginx/` |
 | IP client thật | `set_real_ip_from` của Cloudflare đã đặt ở cấp `http` trên server; site chỉ chuyển `X-Forwarded-For $remote_addr`, IdP tin proxy `127.0.0.1` (`TRUST_PROXY=127.0.0.1`) |
@@ -163,8 +163,8 @@ Tắt mặc định; chỉ bật trong thời gian App Store duyệt app (tài k
 
    ```bash
    printf '%s' "$REVIEW_PASSWORD" | pnpm -s review-login:hash \
-     | ssh -p 24700 <user>@103.72.98.65 'umask 077; cat > /var/www/hoandat-auth/secrets/review-login.hash'
-   ssh -p 24700 <user>@103.72.98.65 'chmod 600 /var/www/hoandat-auth/secrets/review-login.hash && ls -l /var/www/hoandat-auth/secrets/review-login.hash'
+     | ssh -p 24700 <user>@<SERVER_65_IP> 'umask 077; cat > /var/www/hoandat-auth/secrets/review-login.hash'
+   ssh -p 24700 <user>@<SERVER_65_IP> 'chmod 600 /var/www/hoandat-auth/secrets/review-login.hash && ls -l /var/www/hoandat-auth/secrets/review-login.hash'
    ```
 
    File phải mode 600 và thuộc user chạy pm2 (`<user>` ở trên); thư mục `secrets/` không bị `infra/deploy.sh` đồng bộ. Mật khẩu dài 12–256 ký tự.

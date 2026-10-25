@@ -62,7 +62,7 @@ None found (no cross-tenant data, session or token leak in the request paths I r
 - Scenario, loop:
   - Tenant A's mock X has upstream `https://localman.B/m/<Y>`, where B is a second tenant of the same attacker.
   - B's mock Y has upstream `https://localman.A/m/<X>`.
-  - The attacker points `localman.A` and `localman.B` at a CDN or proxy in front of 103.72.98.65. The SSRF guard sees a public CDN address and does not block it (the own-address rule does not apply).
+  - The attacker points `localman.A` and `localman.B` at a CDN or proxy in front of <SERVER_65_IP>. The SSRF guard sees a public CDN address and does not block it (the own-address rule does not apply).
   - The same works towards the primary through its Cloudflare-proxied `https://localman.hoandat.com/m/<secret>` fallback.
   - Each request bounces between the two runtimes until timeouts or per-secret limits stop it. Callbacks can chain the same way. The upstream path has no hop marker that the runtime refuses.
 - Scenario, logs: a tenant user who proxies `https://<primary-secret>.localman.hoandat.com/` gets the full host, secret included, in the proxy log line. This breaks the "never log secrets" rule.

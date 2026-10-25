@@ -20,7 +20,7 @@ created: 2026-10-14
 
 ## Overview
 
-App chat (repo `chat-next`) là sản phẩm tiếp theo trong hệ sinh thái hoandat, sau Localman và Tunelo. Nó đăng nhập chỉ qua IdP này, có tenant theo domain như hai app kia, và backend chạy chung server `103.72.98.65` với IdP. Plan này làm phần phía IdP để app chat dùng được.
+App chat (repo `chat-next`) là sản phẩm tiếp theo trong hệ sinh thái hoandat, sau Localman và Tunelo. Nó đăng nhập chỉ qua IdP này, có tenant theo domain như hai app kia, và backend chạy chung server `<SERVER_65_IP>` với IdP. Plan này làm phần phía IdP để app chat dùng được.
 
 Nguồn yêu cầu là plan của app chat: `chat-next/plans/dattqh/261013-0448-chat-platform-v1/plan.md` (mục "Hệ sinh thái hoandat" và "Thay đổi cần làm ở `hoandat-auth`"), ADR 0006 và 0010 trong Phase 1 của plan đó. Vị trí code cần sửa đã được scout ngày 2026-10-14 và ghi trong từng phase.
 
