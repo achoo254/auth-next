@@ -50,14 +50,17 @@ async function registerMcpClient(scope: string): Promise<client.Configuration> {
 }
 
 describe("Dynamic Client Registration policy (MCP clients)", () => {
-	it("registers a loopback MCP client bound to the /mcp resource", async () => {
+	it("registers a loopback MCP client bound to both /mcp resources", async () => {
 		const registered = await register({ scope: "mock:read client:send" });
 		const metadata = registered.clientMetadata();
 		expect(metadata.scope).toBe("mock:read client:send");
-		expect(metadata.allowed_resources).toEqual([RESOURCES.localmanMcp]);
+		expect(metadata.allowed_resources).toEqual([
+			RESOURCES.localmanMcp,
+			RESOURCES.chatMcp,
+		]);
 	});
 
-	it("defaults the scope to the Localman API scopes", async () => {
+	it("defaults the scope to the Localman API and Chat MCP scopes", async () => {
 		const metadata = (await register({})).clientMetadata();
 		expect(String(metadata.scope).split(" ")).toEqual([
 			"mock:read",
@@ -65,6 +68,10 @@ describe("Dynamic Client Registration policy (MCP clients)", () => {
 			"client:read",
 			"client:write",
 			"client:send",
+			"chat:read",
+			"chat:write",
+			"bots:read",
+			"bots:write",
 		]);
 	});
 

@@ -25,6 +25,10 @@ export const zhApps: Translation<typeof enApps> = {
 		"让 Claude Code 等 AI 工具操作你的 Localman 项目。",
 	"apps.localmanMcp.signIn":
 		"在 AI 工具中把 {address} 添加为 MCP 服务器，然后在授权页面批准它可以执行的操作。",
+	"apps.chatMcp.description":
+		"让 Claude Code 等 AI 工具读取和发送消息，并管理你在 Chat 上的机器人。",
+	"apps.chatMcp.signIn":
+		"在 AI 工具中把 {address} 添加为 MCP 服务器，然后在授权页面批准它可以执行的操作。",
 	"apps.tuneloCli.description": "从你的电脑向互联网打开隧道。",
 	"apps.tuneloCli.signIn":
 		"在终端运行 {command}，然后在 {device} 输入它显示的代码。",

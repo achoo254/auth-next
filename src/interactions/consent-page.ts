@@ -1,6 +1,6 @@
 import type { MessageKey } from "../i18n/dictionaries.js";
 import type { Translator } from "../i18n/translator.js";
-import { CREDENTIALS_SCOPE } from "../oidc/resources.js";
+import { BOTS_ADMIN_SCOPE, CREDENTIALS_SCOPE } from "../oidc/resources.js";
 import {
 	alertBox,
 	csrfField,
@@ -27,7 +27,43 @@ const SCOPE_TEXT: ReadonlyMap<string, MessageKey> = new Map([
 	[CREDENTIALS_SCOPE, "scope.credentialsWrite"],
 	["tunnels:open", "scope.tunnelsOpen"],
 	["tunnels:read", "scope.tunnelsRead"],
+	["chat:read", "scope.chatRead"],
+	["chat:write", "scope.chatWrite"],
+	["bots:read", "scope.botsRead"],
+	["bots:write", "scope.botsWrite"],
+	[BOTS_ADMIN_SCOPE, "scope.botsAdmin"],
 ]);
+
+/**
+ * Sensitive scopes, each shown with its own red warning under the list:
+ * no client holds them by default, a DCR client must declare them.
+ */
+const SCOPE_WARNINGS: readonly {
+	readonly scope: string;
+	readonly text: MessageKey;
+	readonly dataId: string;
+}[] = [
+	{
+		scope: CREDENTIALS_SCOPE,
+		text: "consent.credentialsWarning",
+		dataId: "consent-credentials-warning",
+	},
+	{
+		scope: BOTS_ADMIN_SCOPE,
+		text: "consent.botsAdminWarning",
+		dataId: "consent-bots-admin-warning",
+	},
+];
+
+function scopeWarnings(
+	i18n: Translator,
+	scopes: readonly string[],
+): SafeHtml[] {
+	return SCOPE_WARNINGS.filter(({ scope }) => scopes.includes(scope)).map(
+		({ text, dataId }) =>
+			alertBox("error", html`<span data-id="${dataId}">${i18n.t(text)}</span>`),
+	);
+}
 
 export function describeScopes(
 	i18n: Translator,
@@ -101,14 +137,7 @@ export function renderConsent(view: ConsentView): string {
 ${clientBlock(view)}
 <p class="label">${i18n.t("consent.willBeAbleTo")}</p>
 <ul class="scope-list" data-id="consent-scopes">${describeScopes(i18n, view.scopes).map((text) => html`<li>${text}</li>`)}</ul>
-${
-	view.scopes.includes(CREDENTIALS_SCOPE)
-		? alertBox(
-				"error",
-				html`<span data-id="consent-credentials-warning">${i18n.t("consent.credentialsWarning")}</span>`,
-			)
-		: ""
-}
+${scopeWarnings(i18n, view.scopes)}
 <div class="auth-form">
 <form method="post" action="/interaction/${view.uid}/consent">${csrfField(view.csrf)}${submitButton(i18n.t("consent.allow"), { block: true, dataId: "consent-allow" })}</form>
 <form method="post" action="/interaction/${view.uid}/abort">${csrfField(view.csrf)}${submitButton(i18n.t("consent.deny"), { block: true, variant: "secondary", dataId: "consent-deny" })}</form>

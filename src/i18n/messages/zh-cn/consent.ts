@@ -17,6 +17,8 @@ export const zhConsent: Translation<typeof enConsent> = {
 		"该应用名称看起来像 {brandDomain} 的产品，但并不是，而且它会把你带回一个网站，而不是你自己的电脑。仅当你认出上面的地址属于你刚刚亲自连接的应用时才允许；否则请拒绝。",
 	"consent.credentialsWarning":
 		"允许该应用代你创建新的访问密钥和 secret。只授权给你信任的应用。",
+	"consent.botsAdminWarning":
+		"允许该应用把发给你的机器人的所有消息转发到其他地址（webhook）、重新签发机器人 token 并删除机器人。只授权给你信任的应用。",
 	"scope.openid": "知道你是谁（你的 {brand} 账号 ID）",
 	"scope.profile": "查看你的姓名、用户名和头像",
 	"scope.email": "查看你的邮箱地址",
@@ -36,6 +38,16 @@ export const zhConsent: Translation<typeof enConsent> = {
 		"在 Localman 上创建个人访问 token、service account secret 和访问密钥",
 	"scope.tunnelsOpen": "使用你的账号打开新的 tunnel",
 	"scope.tunnelsRead": "查看你的 tunnel 列表",
+	"scope.chatRead":
+		"查看你在 Chat 上的会话列表，阅读和搜索其中的消息，以及用户和成员信息",
+	"scope.chatWrite":
+		"以你的身份在 Chat 上发送、编辑、删除消息，标记已读并添加表情回应",
+	"scope.botsRead":
+		"查看你在 Chat 上的机器人、其 webhook 配置和消息投递状态（包括投递失败的消息）",
+	"scope.botsWrite":
+		"在 Chat 上创建机器人，编辑机器人的信息和命令，重新投递或丢弃投递失败的消息",
+	"scope.botsAdmin":
+		"在 Chat 上设置或移除 webhook、重新签发 token 并删除你的机器人",
 	"scope.unknown": "权限“{scope}”",
 	"device.input.title": "设备登录",
 	"device.input.subtitle":

@@ -19,6 +19,8 @@ export const viConsent: Translation<typeof enConsent> = {
 		"Tên ứng dụng giống sản phẩm của {brandDomain} nhưng không phải, và nó chuyển bạn về một website chứ không phải máy của bạn. Chỉ cho phép nếu bạn nhận ra địa chỉ ở trên là của ứng dụng chính bạn vừa kết nối; nếu không, hãy từ chối.",
 	"consent.credentialsWarning":
 		"Cho phép tạo khoá truy cập và secret mới thay bạn. Chỉ cấp cho ứng dụng bạn tin tưởng.",
+	"consent.botsAdminWarning":
+		"Cho phép chuyển mọi tin gửi tới bot sang địa chỉ khác (webhook), cấp lại token và xoá bot. Chỉ cấp cho ứng dụng bạn tin tưởng.",
 	"scope.openid": "Biết bạn là ai (mã định danh tài khoản {brand})",
 	"scope.profile": "Xem tên, username và ảnh đại diện",
 	"scope.email": "Xem địa chỉ email",
@@ -39,6 +41,16 @@ export const viConsent: Translation<typeof enConsent> = {
 		"Tạo token truy cập cá nhân, secret của service account và access key trên Localman",
 	"scope.tunnelsOpen": "Mở tunnel mới bằng tài khoản của bạn",
 	"scope.tunnelsRead": "Xem danh sách tunnel của bạn",
+	"scope.chatRead":
+		"Xem danh sách cuộc trò chuyện, đọc và tìm tin nhắn trong các cuộc trò chuyện của bạn trên Chat, cùng thông tin người dùng và thành viên",
+	"scope.chatWrite":
+		"Gửi, sửa, xoá tin nhắn, đánh dấu đã đọc và thả cảm xúc trên Chat với tư cách của bạn",
+	"scope.botsRead":
+		"Xem bot của bạn trên Chat, cấu hình webhook và tình trạng giao tin (kể cả tin giao lỗi)",
+	"scope.botsWrite":
+		"Tạo bot, sửa thông tin và lệnh của bot, gửi lại hoặc bỏ các tin giao lỗi trên Chat",
+	"scope.botsAdmin":
+		"Đặt hoặc gỡ webhook, cấp lại token và xoá bot của bạn trên Chat",
 	"scope.unknown": "Quyền “{scope}”",
 	"device.input.title": "Đăng nhập thiết bị",
 	"device.input.subtitle":

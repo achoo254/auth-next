@@ -30,6 +30,23 @@ export const LOCALMAN_MCP_SCOPES = [...LOCALMAN_SCOPES, CREDENTIALS_SCOPE];
 export const TUNNEL_SCOPES = ["tunnels:open", "tunnels:read"] as const;
 
 /**
+ * Lets an MCP client point a Chat bot's webhook elsewhere, rotate its token
+ * and delete it. Like `credentials:write`, no client holds it by default: a
+ * DCR client must register it explicitly, and consent shows it with a
+ * warning.
+ */
+export const BOTS_ADMIN_SCOPE = "bots:admin";
+
+/** Scopes the Chat MCP endpoint accepts. */
+export const CHAT_MCP_SCOPES = [
+	"chat:read",
+	"chat:write",
+	"bots:read",
+	"bots:write",
+	BOTS_ADMIN_SCOPE,
+] as const;
+
+/**
  * The linked Telegram chat, at userinfo only; just `localman-web` may ask
  * (its own bot sends the user's notifications there).
  */
@@ -52,6 +69,7 @@ export const SUPPORTED_SCOPES = [
 	ACCOUNT_SCOPE,
 	...LOCALMAN_MCP_SCOPES,
 	...TUNNEL_SCOPES,
+	...CHAT_MCP_SCOPES,
 ];
 
 const ACCESS_TOKEN_TTL_SECONDS = 15 * 60;
@@ -91,6 +109,7 @@ export function createResourcePolicy(
 		[resources.localman, LOCALMAN_SCOPES],
 		[resources.localmanMcp, LOCALMAN_MCP_SCOPES],
 		[resources.tunnel, TUNNEL_SCOPES],
+		[resources.chatMcp, CHAT_MCP_SCOPES],
 	]);
 	const isResourceIndicator = (value: unknown): value is string =>
 		typeof value === "string" && scopesByResource.has(value);
@@ -128,26 +147,27 @@ export function createResourcePolicy(
 			return resourceServerInfo(resourceIndicator);
 		},
 		/**
-		 * When a request names no resource but asks for a scope of the
-		 * client's only allowed resource, that resource is implied; so a
-		 * Tunelo or MCP token is always audience-bound. A plain OpenID request
-		 * (`openid profile email`) gets no resource and therefore an opaque
-		 * access token for /me.
+		 * When a request names no resource but asks for scopes of exactly
+		 * one of the client's allowed resources, that resource is implied;
+		 * so a Tunelo or MCP token is always audience-bound (a DCR client
+		 * holding both MCP resources is routed by the scopes it asks for).
+		 * A plain OpenID request (`openid profile email`) gets no resource
+		 * and therefore an opaque access token for /me; a request whose
+		 * scopes span several resources gets none either, so it never gets
+		 * a token for an audience it did not name.
 		 */
 		async defaultResource(ctx, client, oneOf) {
 			if (oneOf) return oneOf;
-			const allowed = allowedResourcesOf(client);
-			const only = allowed.length === 1 ? allowed[0] : undefined;
-			if (!only) return undefined;
 			const scope = ctx.oidc.params?.scope;
 			const requested = new Set(
 				typeof scope === "string" ? scope.split(" ") : [],
 			);
-			return (scopesByResource.get(only) ?? []).some((value) =>
-				requested.has(value),
-			)
-				? only
-				: undefined;
+			const matching = allowedResourcesOf(client).filter((resource) =>
+				(scopesByResource.get(resource) ?? []).some((value) =>
+					requested.has(value),
+				),
+			);
+			return matching.length === 1 ? matching[0] : undefined;
 		},
 	};
 }

@@ -137,6 +137,15 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <p class="app-card-desc">Fast messaging with searchable history and bots.</p>
 <div class="app-card-how"><p class="app-card-how-label">How to sign in</p><p>Choose Sign in on the site.</p></div>
 <div class="app-card-foot"><a class="btn btn-secondary" href="https://chat.hoandat.com" data-id="app-open-chat-web">Open</a></div>
+</li><li class="app-card tone-blue" data-id="app-chat-mcp">
+<div class="app-card-head">
+<span class="app-card-icon"><svg class="icon" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M9 3v4M15 3v4M7 7h10v4a5 5 0 0 1-10 0V7zM12 16v5"/></svg></span>
+<div class="app-card-heading"><h3 class="app-card-name">Chat MCP</h3>
+<p class="app-card-meta"><span class="badge badge-neutral">MCP server</span></p></div>
+</div>
+<p class="app-card-desc">Lets AI tools such as Claude Code read and send messages and manage your bots on Chat.</p>
+<div class="app-card-how"><p class="app-card-how-label">How to sign in</p><p>Add <code class="mono">https://chat.hoandat.com/mcp</code> to your AI tool as an MCP server, then approve what it may do on the consent page.</p></div>
+
 </li><li class="app-card tone-red" data-id="app-scribe-web">
 <div class="app-card-head">
 <span class="app-card-icon"><svg class="icon" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3M8 21h8"/></svg></span>
@@ -287,6 +296,15 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <p class="app-card-desc">Nhắn tin nhanh, tìm lại lịch sử tin nhắn và dùng bot.</p>
 <div class="app-card-how"><p class="app-card-how-label">Cách đăng nhập</p><p>Chọn Đăng nhập trên trang.</p></div>
 <div class="app-card-foot"><a class="btn btn-secondary" href="https://chat.hoandat.com" data-id="app-open-chat-web">Mở</a></div>
+</li><li class="app-card tone-blue" data-id="app-chat-mcp">
+<div class="app-card-head">
+<span class="app-card-icon"><svg class="icon" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M9 3v4M15 3v4M7 7h10v4a5 5 0 0 1-10 0V7zM12 16v5"/></svg></span>
+<div class="app-card-heading"><h3 class="app-card-name">Chat MCP</h3>
+<p class="app-card-meta"><span class="badge badge-neutral">MCP server</span></p></div>
+</div>
+<p class="app-card-desc">Cho công cụ AI như Claude Code đọc, gửi tin nhắn và quản lý bot của bạn trên Chat.</p>
+<div class="app-card-how"><p class="app-card-how-label">Cách đăng nhập</p><p>Thêm <code class="mono">https://chat.hoandat.com/mcp</code> vào công cụ AI làm MCP server, rồi duyệt những gì nó được làm ở trang cấp quyền.</p></div>
+
 </li><li class="app-card tone-red" data-id="app-scribe-web">
 <div class="app-card-head">
 <span class="app-card-icon"><svg class="icon" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3M8 21h8"/></svg></span>
@@ -437,6 +455,15 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <p class="app-card-desc">快速聊天，可搜索历史消息并使用机器人。</p>
 <div class="app-card-how"><p class="app-card-how-label">登录方式</p><p>在网站上选择登录。</p></div>
 <div class="app-card-foot"><a class="btn btn-secondary" href="https://chat.hoandat.com" data-id="app-open-chat-web">打开</a></div>
+</li><li class="app-card tone-blue" data-id="app-chat-mcp">
+<div class="app-card-head">
+<span class="app-card-icon"><svg class="icon" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M9 3v4M15 3v4M7 7h10v4a5 5 0 0 1-10 0V7zM12 16v5"/></svg></span>
+<div class="app-card-heading"><h3 class="app-card-name">Chat MCP</h3>
+<p class="app-card-meta"><span class="badge badge-neutral">MCP 服务器</span></p></div>
+</div>
+<p class="app-card-desc">让 Claude Code 等 AI 工具读取和发送消息，并管理你在 Chat 上的机器人。</p>
+<div class="app-card-how"><p class="app-card-how-label">登录方式</p><p>在 AI 工具中把 <code class="mono">https://chat.hoandat.com/mcp</code> 添加为 MCP 服务器，然后在授权页面批准它可以执行的操作。</p></div>
+
 </li><li class="app-card tone-red" data-id="app-scribe-web">
 <div class="app-card-head">
 <span class="app-card-icon"><svg class="icon" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3M8 21h8"/></svg></span>
@@ -681,6 +708,11 @@ exports[`primary tenant (hoandat.com) is unchanged > serves the same discovery d
     "credentials:write",
     "tunnels:open",
     "tunnels:read",
+    "chat:read",
+    "chat:write",
+    "bots:read",
+    "bots:write",
+    "bots:admin",
   ],
   "subject_types_supported": [
     "public",
@@ -1127,6 +1159,8 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in en 
   "account.telegram.title": "Telegram",
   "account.telegram.unlink": "Unlink Telegram",
   "account.title": "Auth Next account",
+  "apps.chatMcp.description": "Lets AI tools such as Claude Code read and send messages and manage your bots on Chat.",
+  "apps.chatMcp.signIn": "Add {address} to your AI tool as an MCP server, then approve what it may do on the consent page.",
   "apps.chatWeb.description": "Fast messaging with searchable history and bots.",
   "apps.chatWeb.signIn": "Choose Sign in on the site.",
   "apps.cta.account": "Manage your account",
@@ -1203,6 +1237,7 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in en 
   "confirm.sessions.lead": "Every browser below is signed out of your Auth Next account. This browser stays signed in.",
   "confirm.sessions.title": "Sign out every other session?",
   "consent.allow": "Allow",
+  "consent.botsAdminWarning": "Lets the app send every message addressed to your bots to another address (webhook), issue new bot tokens and delete bots. Only allow apps you trust.",
   "consent.credentialsWarning": "Lets the app create new access keys and secrets for you. Only allow apps you trust.",
   "consent.deny": "Deny",
   "consent.externalNotice": "External app, not published by hoandat.com. The app chose its own name and Auth Next doesn't check who is behind it. Only allow it if you just connected it yourself (for example a coding agent using MCP).",
@@ -1340,6 +1375,11 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in en 
   "review.submit": "Sign in",
   "review.subtitle": "Only for app store reviewers, with the demo account from the review notes.",
   "review.title": "App reviewer sign-in",
+  "scope.botsAdmin": "Set or remove webhooks, issue new tokens and delete your bots on Chat",
+  "scope.botsRead": "See your bots on Chat, their webhook settings and delivery status (including failed deliveries)",
+  "scope.botsWrite": "Create bots, edit their details and commands, retry or discard failed deliveries on Chat",
+  "scope.chatRead": "See your conversations on Chat, read and search their messages, and see users and members",
+  "scope.chatWrite": "Send, edit and delete messages, mark them as read and add reactions on Chat as you",
   "scope.clientRead": "See workspaces and their members, collections, requests and environments in the Localman API client you can access, and how they are shared (secret variables stay masked)",
   "scope.clientSend": "Send requests for you through the Localman proxy, including to localhost through Tunelo (counts toward your proxy quota)",
   "scope.clientWrite": "Create, edit, delete and import collections and requests, set environment variables and manage workspaces in the Localman API client",
@@ -1455,6 +1495,8 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in vi 
   "account.telegram.title": "Telegram",
   "account.telegram.unlink": "Huỷ liên kết Telegram",
   "account.title": "Tài khoản Auth Next",
+  "apps.chatMcp.description": "Cho công cụ AI như Claude Code đọc, gửi tin nhắn và quản lý bot của bạn trên Chat.",
+  "apps.chatMcp.signIn": "Thêm {address} vào công cụ AI làm MCP server, rồi duyệt những gì nó được làm ở trang cấp quyền.",
   "apps.chatWeb.description": "Nhắn tin nhanh, tìm lại lịch sử tin nhắn và dùng bot.",
   "apps.chatWeb.signIn": "Chọn Đăng nhập trên trang.",
   "apps.cta.account": "Quản lý tài khoản",
@@ -1531,6 +1573,7 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in vi 
   "confirm.sessions.lead": "Mọi trình duyệt bên dưới sẽ bị đăng xuất khỏi tài khoản Auth Next. Trình duyệt này vẫn giữ đăng nhập.",
   "confirm.sessions.title": "Đăng xuất mọi phiên khác?",
   "consent.allow": "Cho phép",
+  "consent.botsAdminWarning": "Cho phép chuyển mọi tin gửi tới bot sang địa chỉ khác (webhook), cấp lại token và xoá bot. Chỉ cấp cho ứng dụng bạn tin tưởng.",
   "consent.credentialsWarning": "Cho phép tạo khoá truy cập và secret mới thay bạn. Chỉ cấp cho ứng dụng bạn tin tưởng.",
   "consent.deny": "Từ chối",
   "consent.externalNotice": "Ứng dụng bên ngoài, không do hoandat.com phát hành. Tên ứng dụng do chính nó tự khai và Auth Next không kiểm tra ai đứng sau nó; chỉ cho phép nếu chính bạn vừa kết nối nó (ví dụ một coding agent dùng MCP).",
@@ -1668,6 +1711,11 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in vi 
   "review.submit": "Đăng nhập",
   "review.subtitle": "Chỉ dành cho người duyệt của kho ứng dụng, với tài khoản demo trong ghi chú duyệt.",
   "review.title": "Đăng nhập cho người duyệt ứng dụng",
+  "scope.botsAdmin": "Đặt hoặc gỡ webhook, cấp lại token và xoá bot của bạn trên Chat",
+  "scope.botsRead": "Xem bot của bạn trên Chat, cấu hình webhook và tình trạng giao tin (kể cả tin giao lỗi)",
+  "scope.botsWrite": "Tạo bot, sửa thông tin và lệnh của bot, gửi lại hoặc bỏ các tin giao lỗi trên Chat",
+  "scope.chatRead": "Xem danh sách cuộc trò chuyện, đọc và tìm tin nhắn trong các cuộc trò chuyện của bạn trên Chat, cùng thông tin người dùng và thành viên",
+  "scope.chatWrite": "Gửi, sửa, xoá tin nhắn, đánh dấu đã đọc và thả cảm xúc trên Chat với tư cách của bạn",
   "scope.clientRead": "Xem workspace và thành viên, collection, request và environment trong API client của Localman mà bạn có quyền truy cập, cùng cách chúng được chia sẻ (biến secret luôn bị che)",
   "scope.clientSend": "Gửi request thay bạn qua proxy của Localman, kể cả tới localhost qua Tunelo (tính vào hạn mức proxy)",
   "scope.clientWrite": "Tạo, sửa, xoá, import collection và request, đặt biến environment và quản lý workspace trong API client của Localman",
@@ -1783,6 +1831,8 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in zh-
   "account.telegram.title": "Telegram",
   "account.telegram.unlink": "取消关联 Telegram",
   "account.title": "Auth Next 账号",
+  "apps.chatMcp.description": "让 Claude Code 等 AI 工具读取和发送消息，并管理你在 Chat 上的机器人。",
+  "apps.chatMcp.signIn": "在 AI 工具中把 {address} 添加为 MCP 服务器，然后在授权页面批准它可以执行的操作。",
   "apps.chatWeb.description": "快速聊天，可搜索历史消息并使用机器人。",
   "apps.chatWeb.signIn": "在网站上选择登录。",
   "apps.cta.account": "管理你的账号",
@@ -1859,6 +1909,7 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in zh-
   "confirm.sessions.lead": "下面的每个浏览器都会退出你的 Auth Next 账号。此浏览器保持登录。",
   "confirm.sessions.title": "退出其他所有会话？",
   "consent.allow": "允许",
+  "consent.botsAdminWarning": "允许该应用把发给你的机器人的所有消息转发到其他地址（webhook）、重新签发机器人 token 并删除机器人。只授权给你信任的应用。",
   "consent.credentialsWarning": "允许该应用代你创建新的访问密钥和 secret。只授权给你信任的应用。",
   "consent.deny": "拒绝",
   "consent.externalNotice": "外部应用，并非由 hoandat.com 发布。应用名称由其自行填写，Auth Next 不核实其背后是谁；仅当你刚刚亲自连接它时才允许（例如使用 MCP 的 coding agent）。",
@@ -1996,6 +2047,11 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in zh-
   "review.submit": "登录",
   "review.subtitle": "仅供应用商店审核人员使用审核备注中的演示账号登录。",
   "review.title": "应用审核人员登录",
+  "scope.botsAdmin": "在 Chat 上设置或移除 webhook、重新签发 token 并删除你的机器人",
+  "scope.botsRead": "查看你在 Chat 上的机器人、其 webhook 配置和消息投递状态（包括投递失败的消息）",
+  "scope.botsWrite": "在 Chat 上创建机器人，编辑机器人的信息和命令，重新投递或丢弃投递失败的消息",
+  "scope.chatRead": "查看你在 Chat 上的会话列表，阅读和搜索其中的消息，以及用户和成员信息",
+  "scope.chatWrite": "以你的身份在 Chat 上发送、编辑、删除消息，标记已读并添加表情回应",
   "scope.clientRead": "查看你可访问的 Localman API client 中的 workspace 及其成员、collection、request 和 environment，以及它们的共享设置（secret 变量始终隐藏）",
   "scope.clientSend": "通过 Localman proxy 代你发送 request，包括经 Tunelo 发往 localhost（计入 proxy 额度）",
   "scope.clientWrite": "在 Localman API client 中创建、编辑、删除、导入 collection 和 request，设置 environment 变量并管理 workspace",

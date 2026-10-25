@@ -24,6 +24,10 @@ export const enApps = {
 		"Lets AI tools such as Claude Code work with your Localman projects.",
 	"apps.localmanMcp.signIn":
 		"Add {address} to your AI tool as an MCP server, then approve what it may do on the consent page.",
+	"apps.chatMcp.description":
+		"Lets AI tools such as Claude Code read and send messages and manage your bots on Chat.",
+	"apps.chatMcp.signIn":
+		"Add {address} to your AI tool as an MCP server, then approve what it may do on the consent page.",
 	"apps.tuneloCli.description":
 		"Opens tunnels from your computer to the internet.",
 	"apps.tuneloCli.signIn":

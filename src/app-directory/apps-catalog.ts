@@ -72,8 +72,8 @@ function code(value: string): SafeHtml {
 
 /**
  * The first-party apps of src/oidc/clients.ts, plus the MCP clients that
- * register themselves for Localman's MCP resource. Scribe and Miu World
- * once configured (`webApps.scribe`, `webApps.miu`).
+ * register themselves for the MCP resources of Localman and Chat. Scribe
+ * and Miu World once configured (`webApps.scribe`, `webApps.miu`).
  */
 export function listedApps(
 	tenant: AppDirectoryTenant,
@@ -125,6 +125,7 @@ export function listedApps(
 			href: tenant.webApps.tunelo,
 		},
 		chatWeb(tenant, i18n),
+		chatMcp(tenant, i18n),
 		...(tenant.webApps.scribe ? [scribeWeb(tenant.webApps.scribe, i18n)] : []),
 		...(tenant.webApps.miu ? [miuWeb(tenant.webApps.miu, i18n)] : []),
 	];
@@ -140,6 +141,20 @@ function chatWeb(tenant: AppDirectoryTenant, i18n: Translator): ListedApp {
 		description: "apps.chatWeb.description",
 		signIn: html`${i18n.t("apps.chatWeb.signIn")}`,
 		href: tenant.webApps.chat,
+	};
+}
+
+function chatMcp(tenant: AppDirectoryTenant, i18n: Translator): ListedApp {
+	return {
+		id: "chat-mcp",
+		name: "Chat MCP",
+		tone: "blue",
+		icon: "mcp",
+		kind: "apps.kind.mcp",
+		description: "apps.chatMcp.description",
+		signIn: i18n.rich("apps.chatMcp.signIn", {
+			address: code(resourcesFor(tenant.domain).chatMcp),
+		}),
 	};
 }
 

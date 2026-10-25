@@ -1,18 +1,35 @@
 import { type ClientMetadata, type Configuration, errors } from "oidc-provider";
+import type { TenantResources } from "../tenants/tenant-resources.js";
 import { CLIENTS_WITHOUT_RESOURCES, isStaticClientId } from "./clients.js";
 import { withoutOfflineAccess } from "./dynamic-client-scopes.js";
 import {
 	ALLOWED_RESOURCES_PROPERTY,
+	BOTS_ADMIN_SCOPE,
+	CHAT_MCP_SCOPES,
 	LOCALMAN_MCP_SCOPES,
 	LOCALMAN_SCOPES,
 	type ResourcePolicy,
 } from "./resources.js";
 
 /** Scopes a dynamically registered (MCP) client may hold. */
-export const DCR_ALLOWED_SCOPES: readonly string[] = LOCALMAN_MCP_SCOPES;
+export const DCR_ALLOWED_SCOPES: readonly string[] = [
+	...LOCALMAN_MCP_SCOPES,
+	...CHAT_MCP_SCOPES,
+];
 
-/** Scope of a DCR client that registers none: `credentials:write` is opt-in. */
-export const DCR_DEFAULT_SCOPES: readonly string[] = LOCALMAN_SCOPES;
+/**
+ * Scope of a DCR client that registers none: the sensitive scopes
+ * (`credentials:write`, `bots:admin`) are opt-in.
+ */
+export const DCR_DEFAULT_SCOPES: readonly string[] = [
+	...LOCALMAN_SCOPES,
+	...CHAT_MCP_SCOPES.filter((scope) => scope !== BOTS_ADMIN_SCOPE),
+];
+
+/** The MCP endpoints a DCR client may get tokens for: Localman's and Chat's. */
+function mcpResourcesOf(resources: TenantResources): string[] {
+	return [resources.localmanMcp, resources.chatMcp];
+}
 
 const DCR_GRANT_TYPES = new Set(["authorization_code", "refresh_token"]);
 const DCR_RESPONSE_TYPES = new Set(["code"]);
@@ -99,23 +116,31 @@ function rejectOutside(
 }
 
 /**
- * MCP clients: Localman MCP scopes only, loopback or https redirects, the
- * tenant's /mcp resource only.
+ * MCP clients: MCP scopes only, loopback or https redirects, the tenant's
+ * MCP resources only. `allowed_resources` is assigned by the server: a
+ * client may send it only as a non-empty subset of the MCP resources, and
+ * it always ends up as all of them. Clients stored before Chat MCP existed
+ * carry `[localmanMcp]` and are validated again when loaded, so they load
+ * with both resources too.
  */
 function enforceDynamicClientPolicy(
 	metadata: ClientMetadata,
-	mcpResource: string,
+	mcpResources: readonly string[],
 ): void {
-	const resources = stringList(metadata[ALLOWED_RESOURCES_PROPERTY]);
+	const declared: unknown = metadata[ALLOWED_RESOURCES_PROPERTY];
 	if (
-		metadata[ALLOWED_RESOURCES_PROPERTY] !== undefined &&
-		(resources.length !== 1 || resources[0] !== mcpResource)
+		declared !== undefined &&
+		(!Array.isArray(declared) ||
+			declared.length === 0 ||
+			!declared.every(
+				(value) => typeof value === "string" && mcpResources.includes(value),
+			))
 	) {
 		throw new errors.InvalidClientMetadata(
 			`${ALLOWED_RESOURCES_PROPERTY} is assigned by the authorization server`,
 		);
 	}
-	metadata[ALLOWED_RESOURCES_PROPERTY] = [mcpResource];
+	metadata[ALLOWED_RESOURCES_PROPERTY] = [...mcpResources];
 
 	for (const property of DCR_FORBIDDEN_METADATA) {
 		if (metadata[property] !== undefined) {
@@ -187,7 +212,7 @@ function validateResources(
 	metadata: ClientMetadata,
 ): void {
 	if (!isStaticClientId(metadata.client_id)) {
-		enforceDynamicClientPolicy(metadata, policy.resources.localmanMcp);
+		enforceDynamicClientPolicy(metadata, mcpResourcesOf(policy.resources));
 		return;
 	}
 	// Static clients list known resources; only those that never use an API

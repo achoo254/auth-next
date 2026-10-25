@@ -9,6 +9,7 @@ export interface TenantResources {
 	readonly localman: string;
 	readonly localmanMcp: string;
 	readonly tunnel: string;
+	readonly chatMcp: string;
 }
 
 export function resourcesFor(domain: string): TenantResources {
@@ -17,13 +18,16 @@ export function resourcesFor(domain: string): TenantResources {
 		localman: `https://${hosts.localman}`,
 		localmanMcp: `https://${hosts.localman}/mcp`,
 		tunnel: `https://${hosts.tunnel}`,
+		chatMcp: `https://${hosts.chat}/mcp`,
 	};
 }
 
 /**
  * Web app origins of a domain by convention (where redirect and logout URIs
- * point). Chat has no API resource (it runs its own sessions and only reads
- * the ID token and userinfo), so its origin is not among `resourcesFor`.
+ * point). The chat web app has no API resource (it runs its own sessions and
+ * only reads the ID token and userinfo); its only resource is the MCP
+ * endpoint (`chatMcp`), so its origin comes from the host, not from
+ * `resourcesFor`.
  */
 export function webAppsFor(domain: string): {
 	readonly localman: string;

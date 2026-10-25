@@ -16,6 +16,8 @@ export const enConsent = {
 		"This app's name looks like a {brandDomain} product, but it isn't one, and it sends you back to a website rather than to your own machine. Only allow it if you recognize the address above as the app you just connected yourself; otherwise, deny.",
 	"consent.credentialsWarning":
 		"Lets the app create new access keys and secrets for you. Only allow apps you trust.",
+	"consent.botsAdminWarning":
+		"Lets the app send every message addressed to your bots to another address (webhook), issue new bot tokens and delete bots. Only allow apps you trust.",
 	"scope.openid": "Know who you are (your {brand} account ID)",
 	"scope.profile": "See your name, username and profile picture",
 	"scope.email": "See your email address",
@@ -36,6 +38,16 @@ export const enConsent = {
 		"Create personal access tokens, service account secrets and access keys on Localman",
 	"scope.tunnelsOpen": "Open new tunnels with your account",
 	"scope.tunnelsRead": "See your list of tunnels",
+	"scope.chatRead":
+		"See your conversations on Chat, read and search their messages, and see users and members",
+	"scope.chatWrite":
+		"Send, edit and delete messages, mark them as read and add reactions on Chat as you",
+	"scope.botsRead":
+		"See your bots on Chat, their webhook settings and delivery status (including failed deliveries)",
+	"scope.botsWrite":
+		"Create bots, edit their details and commands, retry or discard failed deliveries on Chat",
+	"scope.botsAdmin":
+		"Set or remove webhooks, issue new tokens and delete your bots on Chat",
 	"scope.unknown": "Permission “{scope}”",
 	"device.input.title": "Device sign-in",
 	"device.input.subtitle":
