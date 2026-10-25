@@ -117,6 +117,14 @@ Bật trên production (không in secret ra terminal):
 
 Rollback: xoá dòng `MIU_WEB_CLIENT_SECRET` rồi reload; IdP không còn client Miu (Miu sẽ báo đăng nhập không khả dụng).
 
+## Client của Tiểu Đệ
+
+Tiểu Đệ (repo `tieu-de-next`, `https://tieude.hoandat.com`) dùng `tieude-web` (confidential, `client_secret_basic`, scope chỉ `openid`, chỉ để biết `sub`; không refresh token) — `src/oidc/tieude-client.ts`. Redirect `/auth/callback`. Bật khi đặt **cả hai** `TIEUDE_WEB_URL` + `TIEUDE_WEB_CLIENT_SECRET` (≥ 32 ký tự); cùng secret nằm ở `AUTH_CLIENT_SECRET` trong `/var/www/tieude/.env`.
+
+**Trạng thái production (26/10/2026):** đã bật, deploy commit `7e8a14d`. Kiểm từ ngoài: `curl -s -o /dev/null -w '%{http_code}\n' "https://tieude.hoandat.com/auth/login?lang=vi&cid=probe1234567890abcdef"` → 302 sang `auth.hoandat.com/auth`, và authorize của `tieude-web` trả 303 (như `chat-web`). Gặp `invalid_client` dù `seed-clients` liệt kê client ⟹ bản `dist` trên server cũ: `grep -c tieude-web /var/www/hoandat-auth/dist/server.mjs` phải ≥ 1, không thì chạy lại `infra/deploy.sh` (lần đầu đã gặp đúng chuyện này).
+
+Rollback: xoá hai dòng `TIEUDE_WEB_*` rồi reload; nút đăng nhập ở Tiểu Đệ trả `login=fail`, phần còn lại của Tiểu Đệ chạy bình thường.
+
 ## App iOS "Tài khoản" (`account-ios`, AASA, APNs)
 
 Client `account-ios` (`src/oidc/account-ios-client.ts`) và API `/api/account` có sẵn ở tenant chính, không cần biến nào: chưa có app thì không ai dùng. Hai phần tuỳ chọn, bật khi phase 00 của plan `261020-0742-ios-account-app` xong (App ID `com.hoandat.account` với Push Notifications và Associated Domains):
