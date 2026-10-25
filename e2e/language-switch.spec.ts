@@ -69,7 +69,7 @@ test("/apps fits a 375 px phone without sideways scrolling", async ({
 	await page.setViewportSize({ width: 375, height: 812 });
 	await page.goto("/apps");
 	await expect(page.locator('[data-id="apps-hub"]')).toBeVisible();
-	await expect(page.locator('[data-id="app-list"] > li')).toHaveCount(5);
+	await expect(page.locator('[data-id="app-list"] > li')).toHaveCount(6);
 	const overflow = await page.evaluate(
 		() => document.documentElement.scrollWidth - window.innerWidth,
 	);
