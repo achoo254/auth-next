@@ -46,6 +46,7 @@ export function renderPrivacyPage(host: string, page: PageContext): string {
 <ul>${STORED.map((key) => html`<li>${i18n.t(key)}</li>`)}</ul>
 <h2>${i18n.t("privacy.purpose.title")}</h2>
 <p>${i18n.t("privacy.purpose.body")}</p>
+<p data-id="privacy-analytics">${i18n.t("privacy.analytics")}</p>
 <h2>${i18n.t("privacy.sharing.title")}</h2>
 <p>${i18n.t("privacy.sharing.body")}</p>
 <h2>${i18n.t("privacy.rights.title")}</h2>

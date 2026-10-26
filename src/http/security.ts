@@ -76,12 +76,13 @@ function contentSecurityPolicy(
 			directives: {
 				defaultSrc: ["'self'"],
 				baseUri: ["'self'"],
-				scriptSrc: ["'self'"],
+				// Cloudflare Web Analytics: its beacon script and where it reports.
+				scriptSrc: ["'self'", "https://static.cloudflareinsights.com"],
 				scriptSrcAttr: ["'none'"],
 				styleSrc: ["'self'"],
 				imgSrc: ["'self'", "data:", "https:"],
 				fontSrc: ["'self'"],
-				connectSrc: ["'self'"],
+				connectSrc: ["'self'", "https://cloudflareinsights.com"],
 				formAction: [
 					"'self'",
 					"https:",

@@ -21,6 +21,8 @@ export const zhPrivacy: Translation<typeof enPrivacy> = {
 	"privacy.purpose.title": "使用目的",
 	"privacy.purpose.body":
 		"数据仅用于验证你的身份、保持登录、恢复账号、发现异常访问，以及汇总统计各应用的用户人数。本服务不发送邮件、不展示广告，不出售也不共享你的数据或这些统计。",
+	"privacy.analytics":
+		"页面使用 Cloudflare Web Analytics 汇总统计访问量，它不设置 Cookie。",
 	"privacy.sharing.title": "共享",
 	"privacy.sharing.body":
 		"个人资料只提供给同一所有者运营的应用（{brandDomain} 的应用）或你已授权的应用，且仅限你同意的范围。不与任何其他第三方共享。",

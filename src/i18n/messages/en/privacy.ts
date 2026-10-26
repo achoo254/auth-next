@@ -21,6 +21,8 @@ export const enPrivacy = {
 	"privacy.purpose.title": "How we use it",
 	"privacy.purpose.body":
 		"Data is used only to authenticate you, keep you signed in, recover your account, detect unusual access and count, in aggregate, how many people use each app. The service sends no email, shows no ads, and never sells or shares your data or these statistics.",
+	"privacy.analytics":
+		"The pages use Cloudflare Web Analytics to count visits in aggregate; it sets no cookies.",
 	"privacy.sharing.title": "Sharing",
 	"privacy.sharing.body":
 		"Profile information goes only to apps run by the same owner (the {brandDomain} apps) or to apps you allowed, within what you allowed. It is not shared with anyone else.",
