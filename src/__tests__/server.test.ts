@@ -80,14 +80,15 @@ describe("App list", () => {
 		const body = await response.text();
 		expect(body).toContain("One account for every hoandat.com app");
 		expect(body).toMatch(/href="\/assets\/css\/apps\.css\?v=[0-9a-f]{12}"/);
-		for (const name of ["Localman", "Localman MCP", "Tunelo CLI", "Tunelo"]) {
+		// Only apps with a web page of their own are showcased.
+		for (const name of ["Localman", "Tunelo"]) {
 			expect(body).toContain(`class="app-card-name">${name}</h3>`);
 		}
 		// Addresses come from the environment (the defaults here).
 		expect(body).toContain('href="https://localman.hoandat.com"');
 		expect(body).toContain('href="https://tunnel.hoandat.com"');
-		expect(body).toContain(`${idp.issuer}/device`);
-		expect(body).toContain("https://localman.hoandat.com/mcp");
+		expect(body).not.toContain('class="app-card-name">Localman MCP</h3>');
+		expect(body).not.toContain('class="app-card-name">Tunelo CLI</h3>');
 	});
 
 	it("sends the bare domain to the app list", async () => {
