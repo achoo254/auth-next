@@ -36,13 +36,13 @@ Access log của nginx che token trong đường dẫn `/reset/...` (link đặt
 SSH_TARGET=<alias> [SSH_OPTS="-F ssh_config"] bash infra/deploy.sh
 ```
 
-Script build, rsync `dist/ static/ infra/ package.json pnpm-lock.yaml pnpm-workspace.yaml` (chủ sở hữu `root`), cài dependency production bằng pnpm 11.9, `pm2 startOrReload`, `pm2 save`, rồi đợi `/healthz`.
+Script build, sao lưu bản đang chạy (mục Rollback), rsync `dist/ static/ infra/ package.json pnpm-lock.yaml pnpm-workspace.yaml` (chủ sở hữu `root`), cài dependency production bằng pnpm 11.9, `pm2 startOrReload`, `pm2 save`, rồi đợi `/healthz`.
 
 ## Dữ liệu có `tenantId` (ADR 0006, 0013)
 
 Mọi document của IdP mang `tenantId`, giá trị luôn `primary` (tenant duy nhất, dựng từ env). Chỉ mục ghép dẫn đầu bằng `tenantId` do `infra/deploy.sh` tạo trước khi reload (`node --env-file=.env dist/create-indexes.mjs`, idempotent, in thời gian từng nhóm); script lỗi thì deploy dừng trước reload, process cũ chạy tiếp. Server không còn tự gắn `tenantId` cho document cũ lúc khởi động: lần chuyển dữ liệu đã chạy trên production 13/10/2026 (commit `7ae6161`, backup trước đó `auth-20261013-141933`, gắn 126 document cũ, không còn document nào chưa gắn).
 
-`.env` production không đặt `TENANT_DOMAIN` (mặc định `hoandat.com`) hay `TENANT_DISPLAY_NAME` (mặc định `Auth Next`, từ 19/10/2026, trước đó `hoandat`). Đặt `TENANT_DOMAIN` khác thì audience đổi ngay khi deploy: kiểm trước bằng `grep -c '^TENANT_' .env` (phải ra 0).
+`.env` production không đặt `TENANT_DOMAIN` (mặc định `hoandat.com`) hay `TENANT_DISPLAY_NAME` (mặc định `appName` của `brand.config.json`: `hoandat.com` từ 26/10/2026, `Auth Next` từ 19/10/2026, trước đó `hoandat`). Đặt `TENANT_DOMAIN` khác thì audience đổi ngay khi deploy: kiểm trước bằng `grep -c '^TENANT_' .env` (phải ra 0).
 
 ## Gỡ đa tenant (ADR 0013)
 
@@ -205,4 +205,15 @@ Ngoài server, mọi secret của IdP (Google/GitHub client, bot Telegram, admin
 
 ## Rollback
 
-`pm2 stop hoandat-auth` và xoá file nginx của site (rồi `nginx -t` và reload). Database `auth` độc lập với các app khác; khôi phục từ backup: `mongorestore --gzip --archive=backups/auth-<stamp>.archive.gz --nsInclude='auth.*' --drop` với URI của user `auth`.
+**Quay về bản phát hành trước** (cách thường dùng). Trước khi rsync, [`infra/deploy.sh`](../infra/deploy.sh) chép `dist static infra package.json pnpm-lock.yaml pnpm-workspace.yaml` của thư mục app vào `/root/hoandat-auth-backup-<YYYYMMDD-HHMMSS>/` và chỉ giữ 3 bản mới nhất (`.env`, `secrets/` không bị deploy đụng tới nên không nằm trong đó). Deploy tay thì sao lưu đúng các mục đó trước. Quay lại, trong thư mục app:
+
+```bash
+B=/root/hoandat-auth-backup-<YYYYMMDD-HHMMSS>
+rm -rf dist static infra && cp -a "$B"/. .
+source /root/.nvm/nvm.sh && npx --yes pnpm@11.9.0 install --prod --frozen-lockfile
+pm2 reload hoandat-auth
+```
+
+Rồi kiểm `/healthz` và `/.well-known/openid-configuration` (200) qua `https://auth.hoandat.com`.
+
+**Tắt hẳn IdP** (phương án cuối cùng, mọi app mất đăng nhập): `pm2 stop hoandat-auth` và xoá file nginx của site (rồi `nginx -t` và reload). Database `auth` độc lập với các app khác; khôi phục từ backup: `mongorestore --gzip --archive=backups/auth-<stamp>.archive.gz --nsInclude='auth.*' --drop` với URI của user `auth`.

@@ -16,6 +16,18 @@ SSH="ssh ${SSH_OPTS:-}"
 echo "== build"
 pnpm build
 
+echo "== back up the running release (rollback: docs/deployment-guide.md), keep the 3 newest"
+$SSH "$SSH_TARGET" "set -euo pipefail
+	cd $REMOTE_DIR
+	if [ ! -d dist ]; then echo 'no release yet, nothing to back up'; exit 0; fi
+	backup=/root/hoandat-auth-backup-\$(date +%Y%m%d-%H%M%S)
+	mkdir -p \"\$backup\"
+	cp -a dist static infra package.json pnpm-lock.yaml pnpm-workspace.yaml \"\$backup\"/
+	echo \"backup: \$backup\"
+	ls -1d /root/hoandat-auth-backup-[0-9]*-[0-9]* | sort | head -n -3 | while read -r old; do
+		echo \"remove old backup: \$old\"; rm -rf -- \"\$old\"
+	done"
+
 echo "== sync release files (no owner/group: files land owned by the remote root)"
 rsync -rlptz --delete -e "$SSH" \
 	--exclude .env --exclude secrets/ --exclude node_modules/ --exclude backups/ \
