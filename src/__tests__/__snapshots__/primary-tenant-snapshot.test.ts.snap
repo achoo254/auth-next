@@ -136,7 +136,7 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <div class="app-card-foot"><a class="btn btn-secondary" href="https://scribe.hoandat.com" data-id="app-open-scribe-web">Open</a></div>
 </li></ul>
 </section><section class="apps-section apps-group" aria-labelledby="apps-group-fun" data-id="apps-group-fun">
-<div class="apps-group-head"><h2 class="apps-group-title" id="apps-group-fun">Apps for fun</h2><p class="apps-group-lead">Learning games, a bot with a story, horoscopes and short videos.</p></div>
+<div class="apps-group-head"><h2 class="apps-group-title" id="apps-group-fun">Apps for fun</h2><p class="apps-group-lead">Play, learn and have fun with the same account.</p></div>
 <ul class="apps-grid" data-id="app-list-fun"><li class="app-card tone-cyan" data-id="app-miu-web">
 <div class="app-card-head">
 <span class="app-card-icon"><img class="app-mark" src="/assets/img/apps/miu-mark-128.webp" width="44" height="44" alt=""></span>
@@ -304,7 +304,7 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <div class="app-card-foot"><a class="btn btn-secondary" href="https://scribe.hoandat.com" data-id="app-open-scribe-web">Mở</a></div>
 </li></ul>
 </section><section class="apps-section apps-group" aria-labelledby="apps-group-fun" data-id="apps-group-fun">
-<div class="apps-group-head"><h2 class="apps-group-title" id="apps-group-fun">Ứng dụng giải trí</h2><p class="apps-group-lead">Game học tập, bot có câu chuyện riêng, tử vi và video ngắn.</p></div>
+<div class="apps-group-head"><h2 class="apps-group-title" id="apps-group-fun">Ứng dụng giải trí</h2><p class="apps-group-lead">Chơi, học và giải trí với cùng một tài khoản.</p></div>
 <ul class="apps-grid" data-id="app-list-fun"><li class="app-card tone-cyan" data-id="app-miu-web">
 <div class="app-card-head">
 <span class="app-card-icon"><img class="app-mark" src="/assets/img/apps/miu-mark-128.webp" width="44" height="44" alt=""></span>
@@ -472,7 +472,7 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <div class="app-card-foot"><a class="btn btn-secondary" href="https://scribe.hoandat.com" data-id="app-open-scribe-web">打开</a></div>
 </li></ul>
 </section><section class="apps-section apps-group" aria-labelledby="apps-group-fun" data-id="apps-group-fun">
-<div class="apps-group-head"><h2 class="apps-group-title" id="apps-group-fun">娱乐应用</h2><p class="apps-group-lead">学习游戏、有故事的机器人、紫微斗数和短视频。</p></div>
+<div class="apps-group-head"><h2 class="apps-group-title" id="apps-group-fun">娱乐应用</h2><p class="apps-group-lead">用同一个账号玩、学、娱乐。</p></div>
 <ul class="apps-grid" data-id="app-list-fun"><li class="app-card tone-cyan" data-id="app-miu-web">
 <div class="app-card-head">
 <span class="app-card-icon"><img class="app-mark" src="/assets/img/apps/miu-mark-128.webp" width="44" height="44" alt=""></span>
@@ -1322,7 +1322,7 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in en 
   "apps.cta.how": "How sign-in works",
   "apps.diagram.label": "Your hoandat.com account, reached with Google or GitHub, signs you in to {apps}.",
   "apps.eyebrow": "hoandat.com sign-in",
-  "apps.group.fun.lead": "Learning games, a bot with a story, horoscopes and short videos.",
+  "apps.group.fun.lead": "Play, learn and have fun with the same account.",
   "apps.group.fun.title": "Apps for fun",
   "apps.group.work.lead": "Build, test and share faster: mock APIs, tunnels, chat and transcripts.",
   "apps.group.work.title": "Apps for work",
@@ -1669,7 +1669,7 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in vi 
   "apps.cta.how": "Đăng nhập diễn ra thế nào",
   "apps.diagram.label": "Tài khoản hoandat.com, vào bằng Google hoặc GitHub, đăng nhập cho bạn vào {apps}.",
   "apps.eyebrow": "Đăng nhập hoandat.com",
-  "apps.group.fun.lead": "Game học tập, bot có câu chuyện riêng, tử vi và video ngắn.",
+  "apps.group.fun.lead": "Chơi, học và giải trí với cùng một tài khoản.",
   "apps.group.fun.title": "Ứng dụng giải trí",
   "apps.group.work.lead": "Làm, thử và chia sẻ nhanh hơn: mock API, tunnel, nhắn tin và chép lời.",
   "apps.group.work.title": "Ứng dụng cho công việc",
@@ -2016,7 +2016,7 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in zh-
   "apps.cta.how": "登录如何进行",
   "apps.diagram.label": "通过 Google 或 GitHub 进入你的 hoandat.com 账号，即可登录 {apps}。",
   "apps.eyebrow": "hoandat.com 登录",
-  "apps.group.fun.lead": "学习游戏、有故事的机器人、紫微斗数和短视频。",
+  "apps.group.fun.lead": "用同一个账号玩、学、娱乐。",
   "apps.group.fun.title": "娱乐应用",
   "apps.group.work.lead": "更快地构建、测试和分享：模拟 API、隧道、聊天和转写。",
   "apps.group.work.title": "工作应用",

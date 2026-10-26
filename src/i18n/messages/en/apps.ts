@@ -16,7 +16,7 @@ export const enApps = {
 		"Build, test and share faster: mock APIs, tunnels, chat and transcripts.",
 	"apps.group.fun.title": "Apps for fun",
 	"apps.group.fun.lead":
-		"Learning games, a bot with a story, horoscopes and short videos.",
+		"Play, learn and have fun with the same account.",
 	"apps.kind.web": "Web app",
 	"apps.kind.mcp": "MCP server",
 	"apps.kind.cli": "Command line",

@@ -18,7 +18,7 @@ export const viApps: Translation<typeof enApps> = {
 		"Làm, thử và chia sẻ nhanh hơn: mock API, tunnel, nhắn tin và chép lời.",
 	"apps.group.fun.title": "Ứng dụng giải trí",
 	"apps.group.fun.lead":
-		"Game học tập, bot có câu chuyện riêng, tử vi và video ngắn.",
+		"Chơi, học và giải trí với cùng một tài khoản.",
 	"apps.kind.web": "Ứng dụng web",
 	"apps.kind.mcp": "MCP server",
 	"apps.kind.cli": "Dòng lệnh",

@@ -17,7 +17,7 @@ export const zhApps: Translation<typeof enApps> = {
 	"apps.group.work.lead":
 		"更快地构建、测试和分享：模拟 API、隧道、聊天和转写。",
 	"apps.group.fun.title": "娱乐应用",
-	"apps.group.fun.lead": "学习游戏、有故事的机器人、紫微斗数和短视频。",
+	"apps.group.fun.lead": "用同一个账号玩、学、娱乐。",
 	"apps.kind.web": "网页应用",
 	"apps.kind.mcp": "MCP 服务器",
 	"apps.kind.cli": "命令行",
