@@ -40,23 +40,9 @@ Script build, sao lưu bản đang chạy (mục Rollback), rsync `dist/ static/
 
 ## Dữ liệu có `tenantId` (ADR 0006, 0013)
 
-Mọi document của IdP mang `tenantId`, giá trị luôn `primary` (tenant duy nhất, dựng từ env). Chỉ mục ghép dẫn đầu bằng `tenantId` do `infra/deploy.sh` tạo trước khi reload (`node --env-file=.env dist/create-indexes.mjs`, idempotent, in thời gian từng nhóm); script lỗi thì deploy dừng trước reload, process cũ chạy tiếp. Server không còn tự gắn `tenantId` cho document cũ lúc khởi động: lần chuyển dữ liệu đã chạy trên production 13/10/2026 (commit `7ae6161`, backup trước đó `auth-20261013-141933`, gắn 126 document cũ, không còn document nào chưa gắn).
+Mọi document của IdP mang `tenantId`, giá trị luôn `primary` (tenant duy nhất, dựng từ env). Chỉ mục ghép dẫn đầu bằng `tenantId` do `infra/deploy.sh` tạo trước khi reload (`node --env-file=.env dist/create-indexes.mjs`, idempotent, in thời gian từng nhóm); script lỗi thì deploy dừng trước reload, process cũ chạy tiếp. Server không tự gắn `tenantId` cho document cũ lúc khởi động.
 
-`.env` production không đặt `TENANT_DOMAIN` (mặc định `hoandat.com`) hay `TENANT_DISPLAY_NAME` (mặc định `appName` của `brand.config.json`: `hoandat.com` từ 26/10/2026, `Auth Next` từ 19/10/2026, trước đó `hoandat`). Đặt `TENANT_DOMAIN` khác thì audience đổi ngay khi deploy: kiểm trước bằng `grep -c '^TENANT_' .env` (phải ra 0).
-
-## Gỡ đa tenant (ADR 0013)
-
-Bản gỡ tenant theo domain, tự host và Scribe trên tenant: IdP chỉ dựng runtime `primary` từ env, không còn `/claim`, `/admin`, `/guide/domain`, `/.well-known/hoandat-enrollment`, API nội bộ (cổng `4501`) hay provisioner. Thứ tự: deploy code, rồi gỡ env, rồi gỡ nginx và file trên server.
-
-1. Backup `dist`, `static`, `package.json`, `.env` và database (`infra/backup-auth-db.sh`) vào thư mục backup ngoài vòng xoay, rồi `infra/deploy.sh`. `rsync --delete` tự gỡ khỏi `/var/www/hoandat-auth` các file đã xoá trong `dist/` và `infra/` (`infra/provisioner/`, `infra/nginx/tenant*.conf`); thư mục `deploy/` (bundle tự host cũ) không còn được đồng bộ nên phải xoá tay.
-2. `.env` còn biến cũ thì IdP vẫn khởi động (schema bỏ qua biến lạ). Sau deploy, xoá khỏi `.env`: `TENANT_SECRETS_KEY`, `APP_CLIENT_SECRET_KEY`, `TENANT_MAX_ACTIVE`, `INTERNAL_API_CREDENTIALS`, `INTERNAL_HOST`, `INTERNAL_PORT`, `SERVICE_IPV4`, `PROVISIONER_PUBLIC_KEY_PATH`, `CLAIM_BLOCKED_DOMAINS`, `CLAIM_MIN_AVAILABLE_MB`, `SELF_HOSTED_CLAIMS`, `ENROLLMENT_GATEWAY`, `ENROLLMENT_BUNDLE_PATH`, `ENROLLMENT_KEY_PATH`, `SCRIBE_TENANTS`, `SCRIBE_SEALING_PUBLIC_KEY_PATH`, rồi `pm2 startOrReload infra/ecosystem.config.cjs --update-env`. Kiểm: `ss -ltnp | grep 4501` rỗng; `/claim`, `/admin`, `/.well-known/hoandat-enrollment` trả 404; discovery, JWKS và client tĩnh không đổi (`node --env-file=.env dist/seed-clients.mjs`).
-3. nginx: gỡ `00-tenants-http.conf` khi `nginx -T | grep -nE '\$tenant_(cert|key)' | grep -v 'map '` rỗng; file gỡ chuyển ra ngoài `conf.d`, `nginx -t`, reload.
-4. Xoá trên server: unit `hoandat-tenant-provisioner.{service,timer}`, `hoandat-tenant-certbot-renew.{service,timer}`, `/usr/local/lib/hoandat-tenant-provisioner/`, `/var/lib/hoandat-tenant-acme`, `/etc/letsencrypt-tenants`; huỷ (`shred -u`, không lưu trữ) `/etc/hoandat-tenant-provisioner/`, `secrets/provisioner.pub.pem`, `secrets/scribe-sealing.pub.pem`; xoá `/var/www/hoandat-auth/deploy/`.
-5. Database: `mongodump` ngay trước, rồi đếm và drop `tenants`, `tenant_claims`, `tenant_secrets` (không còn code nào đọc; primary không có bản ghi trong `tenant_secrets`).
-
-Rollback: chép lại `dist`, `static`, `package.json`, `.env` từ thư mục backup rồi reload; collection khôi phục từ `mongodump` của bước 5.
-
-**Bản ghi deploy (24/10/2026):** bản `c2aa9cb` (đơn tenant) lên production lúc 23:31 qua `infra/deploy.sh`, từ một phiên làm việc khác (đi cùng commit `99b6b04` về privacy YouTube), trước khi Scribe, Localman, Tunelo kịp bỏ API nội bộ; Scribe chuyển bản mới cùng phút đó, Localman 23:33, Tunelo ngay sau. Sau deploy: `/claim`, `/admin`, `/.well-known/hoandat-enrollment` trả 404, discovery và `/jwks` 200 với cùng hai `kid`, không còn tiến trình nghe cổng 4501, log không có lỗi. 23:4x dọn server: bỏ 13 biến env của tính năng đã gỡ (`.env` cũ ở `/root/backup-261024-single-tenant/hoandat-auth.env.before-phase07`), reload, healthz ok; chuyển `00-tenants-http.conf` sang `/root/nginx-bak-261024/` (`nginx -T` không còn `$tenant_`), gỡ bốn unit `hoandat-tenant-*` (file unit cất trong thư mục backup), xoá `/usr/local/lib/hoandat-tenant-provisioner`, `/var/lib/hoandat-tenant-acme`, `/etc/letsencrypt-tenants`, `/var/www/hoandat-auth/deploy`; `shred` `/etc/hoandat-tenant-provisioner/`, `secrets/provisioner.pub.pem`, `secrets/scribe-sealing.pub.pem`. MongoDB: `mongodump` (`db/auth-before-drop.archive.gz`) rồi drop `tenants` (2 document), `tenant_claims` (0), `tenant_secrets` (0, đã purge trước đó). Bản sao `.env` trên iCloud cập nhật, khoá provisioner trên iCloud đã xoá. Quay lại: chép `dist`, `static`, `package.json`, `.env` từ thư mục backup rồi reload; collection khôi phục bằng `mongorestore` từ dump trên.
+`.env` production không đặt `TENANT_DOMAIN` (mặc định `hoandat.com`) hay `TENANT_DISPLAY_NAME` (mặc định `appName` của `brand.config.json`). Đặt `TENANT_DOMAIN` khác thì audience đổi ngay khi deploy: kiểm trước bằng `grep -c '^TENANT_' .env` (phải ra 0).
 
 ## Xoá tài khoản dừng giữa chừng
 
@@ -64,7 +50,7 @@ Xoá tài khoản (ADR 0009) khoá tài khoản trước (`disabledAt`) rồi m�
 
 ## Client của app chat
 
-App chat (repo `chat-next`, `https://chat.hoandat.com`, pm2 `chat-api` trên cùng máy) đăng nhập qua hai client `chat-web`, `chat-mobile` (`src/oidc/chat-clients.ts`). Không có client desktop: desktop dùng Chat web dạng PWA; `chat-desktop` đã gỡ ngày 20/10/2026. Deploy và vận hành phía chat ở `chat-next/docs/deployment-guide.md`; bước đầu của nó là đặt `.env` của IdP:
+App chat (repo `chat-next`, `https://chat.hoandat.com`, pm2 `chat-api` trên cùng máy) đăng nhập qua hai client `chat-web`, `chat-mobile` (`src/oidc/chat-clients.ts`). Không có client desktop: desktop dùng Chat web dạng PWA; client `chat-desktop` đã gỡ. Deploy và vận hành phía chat ở `chat-next/docs/deployment-guide.md`; bước đầu của nó là đặt `.env` của IdP:
 
 | Env | Ý nghĩa |
 |---|---|
@@ -80,8 +66,6 @@ for c in chat-web chat-mobile chat-desktop; do  # chat-desktop đã gỡ: phải
 done
 ```
 
-**Trạng thái production (15/10/2026):** đã đặt `CHAT_WEB_URL`, `CHAT_WEB_CLIENT_SECRET` (chưa đặt `CHAT_MOBILE_REDIRECT_URI`, dùng mặc định); `/opt/chat/.env` có `OIDC_ISSUER`, `OIDC_CLIENT_ID`, `OIDC_CLIENT_SECRET`; cả ba client có trên IdP (build 14/10/2026 15:57). 19/10/2026: deploy `84c169d` (`/account` liệt kê từng máy `chat-mobile`, `chat-desktop`), backup trước đó `auth-20261019-143353`. 20/10/2026: gỡ client `chat-desktop` trong code (desktop = PWA). 17:46 cùng ngày: deploy `0801e08` (gỡ `chat-desktop`, tên sản phẩm từ `brand.config.json`, `<meta name="description">`), backup trước đó `auth-20261020-174548` và `/root/hoandat-auth-backup-20261020-174549`; `chat-desktop` giờ trả 400 `invalid_client`, các client khác vẫn tới trang đăng nhập "Auth Next", discovery và JWKS không đổi. Rollback: deploy lại `34c70a1`.
-
 ## Client của app Scribe
 
 App Scribe (repo `scribe-next`, thư mục local `one-scribe`, `https://scribe.hoandat.com`, systemd trên cùng máy) đăng nhập qua `scribe-web` (confidential, BFF: backend đổi code, cookie phiên của Scribe), `scribe-mobile` (public native, scheme riêng) và `scribe-web-dev` (tuỳ chọn, chỉ cho dev local) — `src/oidc/scribe-clients.ts`. Các client này đến từ env bên dưới.
@@ -94,8 +78,6 @@ App Scribe (repo `scribe-next`, thư mục local `one-scribe`, `https://scribe.h
 | `SCRIBE_WEB_DEV_URL` + `SCRIBE_WEB_DEV_CLIENT_SECRET` | đặt cả hai hoặc không: bật `scribe-web-dev` (redirect loopback, cổng khớp chính xác, vd `http://localhost:5174/api/auth/callback`, không back-channel) và `scribe-mobile`, để thử dev local + iOS simulator trước khi site prod có |
 
 Kiểm từ ngoài (cùng cách như chat): `for c in scribe-web scribe-mobile scribe-web-dev; do curl -s -o /dev/null -w "$c %{redirect_url}\n" "https://auth.hoandat.com/auth?client_id=$c&response_type=code&scope=openid" | cut -d'?' -f1; done`.
-
-**Trạng thái production (16/10/2026):** deploy commit `e1a7c96`; `.env` có `SCRIBE_WEB_DEV_URL=http://localhost:5174` + `SCRIBE_WEB_DEV_CLIENT_SECRET` (bản sao ở máy dev của chủ sở hữu, `~/.onescribe-dev/.oidc-web-dev-secret`) ⟹ `scribe-web-dev`, `scribe-mobile` đang bật; `SCRIBE_WEB_CLIENT_SECRET` chưa đặt (bật khi `scribe.hoandat.com` có site, Phase 7b của plan Scribe).
 
 ## Client của Miu World
 
@@ -121,7 +103,7 @@ Rollback: xoá dòng `MIU_WEB_CLIENT_SECRET` rồi reload; IdP không còn clien
 
 Tiểu Đệ (repo `tieu-de-next`, `https://tieude.hoandat.com`) dùng `tieude-web` (confidential, `client_secret_basic`, scope chỉ `openid`, chỉ để biết `sub`; không refresh token) — `src/oidc/tieude-client.ts`. Redirect `/auth/callback`. Bật khi đặt **cả hai** `TIEUDE_WEB_URL` + `TIEUDE_WEB_CLIENT_SECRET` (≥ 32 ký tự); cùng secret nằm ở `AUTH_CLIENT_SECRET` trong `/var/www/tieude/.env`.
 
-**Trạng thái production (26/10/2026):** đã bật, deploy commit `7e8a14d`. Kiểm từ ngoài: `curl -s -o /dev/null -w '%{http_code}\n' "https://tieude.hoandat.com/auth/login?lang=vi&cid=probe1234567890abcdef"` → 302 sang `auth.hoandat.com/auth`, và authorize của `tieude-web` trả 303 (như `chat-web`). Gặp `invalid_client` dù `seed-clients` liệt kê client ⟹ bản `dist` trên server cũ: `grep -c tieude-web /var/www/hoandat-auth/dist/server.mjs` phải ≥ 1, không thì chạy lại `infra/deploy.sh` (lần đầu đã gặp đúng chuyện này).
+Gặp `invalid_client` dù `seed-clients` liệt kê client ⟹ bản `dist` trên server cũ: `grep -c tieude-web /var/www/hoandat-auth/dist/server.mjs` phải ≥ 1, không thì chạy lại `infra/deploy.sh`. Kiểm từ ngoài: `curl -s -o /dev/null -w '%{http_code}\n' "https://tieude.hoandat.com/auth/login?lang=vi&cid=probe1234567890abcdef"` → 302 sang `auth.hoandat.com/auth`, và authorize của `tieude-web` trả 303 (như `chat-web`).
 
 Rollback: xoá hai dòng `TIEUDE_WEB_*` rồi reload; nút đăng nhập ở Tiểu Đệ trả `login=fail`, phần còn lại của Tiểu Đệ chạy bình thường.
 
@@ -189,8 +171,6 @@ Tắt mặc định; chỉ bật trong thời gian App Store duyệt app (tài k
 
 Lần sai: 5 lần/IP/15 phút, 30 lần/giờ cho mọi IP; mỗi lần ghi `login.failed` (audit) và log `Review sign-in failed`.
 
-**Trạng thái production (20/10/2026 11:05):** deploy `2199161` (kèm `8cd497f` Apple chưa bật, `9714b07`, `2de2bd5` xoá tài khoản), backup trước đó `auth-20261020-110303` và `/root/hoandat-auth-backup-20261020-110302` (dist, static, `.env` cũ). Đã bật: `REVIEW_LOGIN_EMAIL=appreview@hoandat.com`, tệp hash 600 (root); mật khẩu ở iCloud access-tokens, service `apple-app-review-demo`. pm2 restart 56 → 57, log lỗi trống; mọi client (`scribe-web`, `scribe-mobile`, `localman-web`, `chat-web`, `tunelo-web`) vẫn chuyển hướng đúng. Rollback: deploy lại `84c169d`.
-
 **Tắt** (sau khi app được duyệt): xoá hai dòng `REVIEW_LOGIN_*` khỏi `.env`, restart như bước 3, xoá `secrets/review-login.hash`. Link biến mất, `/interaction/:uid/review` trả 404; tài khoản `app_review` còn nhưng không còn cách đăng nhập (xoá ở `/account` trước khi tắt nếu không cần giữ).
 
 ## Xoay khoá ký
@@ -217,3 +197,5 @@ pm2 reload hoandat-auth
 Rồi kiểm `/healthz` và `/.well-known/openid-configuration` (200) qua `https://auth.hoandat.com`.
 
 **Tắt hẳn IdP** (phương án cuối cùng, mọi app mất đăng nhập): `pm2 stop hoandat-auth` và xoá file nginx của site (rồi `nginx -t` và reload). Database `auth` độc lập với các app khác; khôi phục từ backup: `mongorestore --gzip --archive=backups/auth-<stamp>.archive.gz --nsInclude='auth.*' --drop` với URI của user `auth`.
+
+Bản ghi deploy cũ: git log của file này.

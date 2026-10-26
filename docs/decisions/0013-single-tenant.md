@@ -48,7 +48,7 @@ Ngày 24/10/2026 lúc 21:00, user quyết định: bỏ đa tenant, giữ trư�
 
 - Dữ liệu của hai tenant phụ đã backup (thư mục riêng ngoài vòng xoay, có hạn xoá) rồi xoá ở IdP, Localman, Tunelo, Chat; Scribe vốn không có. DNS của `inetdev.io.vn` (phần tenant) và `hoandat.io.vn` đã gỡ, chứng chỉ tenant đã xoá.
 - Bản sao token Cloudflare và key AI của tenant bị xoá (không thu hồi, theo quyết định của user). Khoá provisioner và khoá niêm phong của Scribe bị huỷ, không lưu trữ. Image `selfhosted-*` trên GHCR bị xoá.
-- Collection `tenants`, `tenant_claims`, `tenant_secrets` của IdP drop sau khi code mới chạy (dump ngay trước đó). Trình tự deploy ở `docs/deployment-guide.md`, mục "Gỡ đa tenant".
+- Collection `tenants`, `tenant_claims`, `tenant_secrets` của IdP drop sau khi code mới chạy (dump ngay trước đó). Trình tự đã chạy: git log của `docs/deployment-guide.md`.
 
 ## Phương án đã cân nhắc
 
