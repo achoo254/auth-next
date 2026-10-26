@@ -11,7 +11,12 @@ export const enApps = {
 	"apps.cta.how": "How sign-in works",
 	"apps.diagram.label":
 		"Your {brand} account, reached with Google or GitHub, signs you in to {apps}.",
-	"apps.list.title": "Apps you can open",
+	"apps.group.work.title": "Apps for work",
+	"apps.group.work.lead":
+		"Build, test and share faster: mock APIs, tunnels, chat and transcripts.",
+	"apps.group.fun.title": "Apps for fun",
+	"apps.group.fun.lead":
+		"Learning games, a bot with a story, horoscopes and short videos.",
 	"apps.kind.web": "Web app",
 	"apps.kind.mcp": "MCP server",
 	"apps.kind.cli": "Command line",

@@ -121,9 +121,13 @@ describe("app list page", () => {
 		const html = renderAppsPage(withMiu, testPage("en", "/apps"));
 		expect(html).toContain('data-id="app-open-miu-web"');
 		expect(html).toContain(`href="${miu}"`);
-		expect(html).toContain(">Miu World</text>");
-		expect(html).toContain(
-			"signs you in to Localman, Tunelo, Chat, and Miu World.",
+		// Apps for fun are listed in their own group, not drawn in the work diagram.
+		expect(html).not.toContain(">Miu World</text>");
+		expect(html).toContain("signs you in to Localman, Tunelo, and Chat.");
+		const fun = html.slice(html.indexOf('data-id="apps-group-fun"'));
+		expect(fun).toContain('data-id="app-miu-web"');
+		expect(html.indexOf('data-id="apps-group-work"')).toBeLessThan(
+			html.indexOf('data-id="apps-group-fun"'),
 		);
 		const vi = renderAppsPage(withMiu, testPage("vi", "/apps"));
 		expect(vi).toContain("vừa chơi vừa học Toán và Tiếng Việt");

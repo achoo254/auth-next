@@ -61,60 +61,44 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <a class="btn btn-secondary" href="#how-sign-in-works" data-id="apps-how">How sign-in works</a>
 </div>
 </div>
-<div class="apps-hero-art"><svg class="hub" viewBox="0 0 544 400" role="img" aria-label="Your hoandat.com account, reached with Google or GitHub, signs you in to Localman, Tunelo, Chat, Scribe, Miu World, Tiểu Đệ, Tử Vi, and Clip." data-id="apps-hub">
-<path class="hub-line" d="M132 160 C156 160 156 200 180 200"/><path class="hub-flow tone-primary" d="M132 160 C156 160 156 200 180 200"/><path class="hub-line" d="M132 240 C156 240 156 200 180 200"/><path class="hub-flow tone-primary" d="M132 240 C156 240 156 200 180 200"/><path class="hub-line" d="M340 200 C366 200 366 25 392 25"/><path class="hub-flow tone-violet" d="M340 200 C366 200 366 25 392 25"/><path class="hub-line" d="M340 200 C366 200 366 75 392 75"/><path class="hub-flow tone-amber" d="M340 200 C366 200 366 75 392 75"/><path class="hub-line" d="M340 200 C366 200 366 125 392 125"/><path class="hub-flow tone-blue" d="M340 200 C366 200 366 125 392 125"/><path class="hub-line" d="M340 200 C366 200 366 175 392 175"/><path class="hub-flow tone-red" d="M340 200 C366 200 366 175 392 175"/><path class="hub-line" d="M340 200 C366 200 366 225 392 225"/><path class="hub-flow tone-cyan" d="M340 200 C366 200 366 225 392 225"/><path class="hub-line" d="M340 200 C366 200 366 275 392 275"/><path class="hub-flow tone-amber" d="M340 200 C366 200 366 275 392 275"/><path class="hub-line" d="M340 200 C366 200 366 325 392 325"/><path class="hub-flow tone-violet" d="M340 200 C366 200 366 325 392 325"/><path class="hub-line" d="M340 200 C366 200 366 375 392 375"/><path class="hub-flow tone-green" d="M340 200 C366 200 366 375 392 375"/>
+<div class="apps-hero-art"><svg class="hub" viewBox="0 0 544 300" role="img" aria-label="Your hoandat.com account, reached with Google or GitHub, signs you in to Localman, Tunelo, Chat, and Scribe." data-id="apps-hub">
+<path class="hub-line" d="M132 110 C156 110 156 150 180 150"/><path class="hub-flow tone-primary" d="M132 110 C156 110 156 150 180 150"/><path class="hub-line" d="M132 190 C156 190 156 150 180 150"/><path class="hub-flow tone-primary" d="M132 190 C156 190 156 150 180 150"/><path class="hub-line" d="M340 150 C366 150 366 38 392 38"/><path class="hub-flow tone-violet" d="M340 150 C366 150 366 38 392 38"/><path class="hub-line" d="M340 150 C366 150 366 113 392 113"/><path class="hub-flow tone-amber" d="M340 150 C366 150 366 113 392 113"/><path class="hub-line" d="M340 150 C366 150 366 188 392 188"/><path class="hub-flow tone-blue" d="M340 150 C366 150 366 188 392 188"/><path class="hub-line" d="M340 150 C366 150 366 263 392 263"/><path class="hub-flow tone-red" d="M340 150 C366 150 366 263 392 263"/>
 <g class="hub-node">
-<rect x="8" y="140" width="124" height="40" rx="10"/>
-<svg x="20" y="152" width="16" height="16" viewBox="0 0 24 24"><path class="hub-mark" d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"/></svg>
-<text class="hub-text" x="46" y="165">Google</text>
+<rect x="8" y="90" width="124" height="40" rx="10"/>
+<svg x="20" y="102" width="16" height="16" viewBox="0 0 24 24"><path class="hub-mark" d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"/></svg>
+<text class="hub-text" x="46" y="115">Google</text>
 </g><g class="hub-node">
-<rect x="8" y="220" width="124" height="40" rx="10"/>
-<svg x="20" y="232" width="16" height="16" viewBox="0 0 24 24"><path class="hub-mark" d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
-<text class="hub-text" x="46" y="245">GitHub</text>
+<rect x="8" y="170" width="124" height="40" rx="10"/>
+<svg x="20" y="182" width="16" height="16" viewBox="0 0 24 24"><path class="hub-mark" d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+<text class="hub-text" x="46" y="195">GitHub</text>
 </g>
 <g class="hub-node hub-core">
-<rect x="180" y="160" width="160" height="80" rx="16"/>
-<text class="hub-text hub-brand" x="260" y="198" text-anchor="middle">hoandat.com</text>
-<text class="hub-text hub-sub" x="260" y="218" text-anchor="middle">ISSUER_HOST</text>
+<rect x="180" y="110" width="160" height="80" rx="16"/>
+<text class="hub-text hub-brand" x="260" y="148" text-anchor="middle">hoandat.com</text>
+<text class="hub-text hub-sub" x="260" y="168" text-anchor="middle">ISSUER_HOST</text>
 </g>
 <g class="hub-node tone-violet">
-<rect x="392" y="5" width="148" height="40" rx="10"/>
-<image href="/assets/img/apps/localman-mark-128.webp" x="398" y="11" width="28" height="28" aria-hidden="true"/>
-<text class="hub-text hub-app" x="434" y="30">Localman</text>
+<rect x="392" y="18" width="148" height="40" rx="10"/>
+<image href="/assets/img/apps/localman-mark-128.webp" x="398" y="24" width="28" height="28" aria-hidden="true"/>
+<text class="hub-text hub-app" x="434" y="43">Localman</text>
 </g><g class="hub-node tone-amber">
-<rect x="392" y="55" width="148" height="40" rx="10"/>
-<image href="/assets/img/apps/tunelo-mark-128.webp" x="398" y="61" width="28" height="28" aria-hidden="true"/>
-<text class="hub-text hub-app" x="434" y="80">Tunelo</text>
+<rect x="392" y="93" width="148" height="40" rx="10"/>
+<image href="/assets/img/apps/tunelo-mark-128.webp" x="398" y="99" width="28" height="28" aria-hidden="true"/>
+<text class="hub-text hub-app" x="434" y="118">Tunelo</text>
 </g><g class="hub-node tone-blue">
-<rect x="392" y="105" width="148" height="40" rx="10"/>
-<image href="/assets/img/apps/chat-mark-128.webp" x="398" y="111" width="28" height="28" aria-hidden="true"/>
-<text class="hub-text hub-app" x="434" y="130">Chat</text>
+<rect x="392" y="168" width="148" height="40" rx="10"/>
+<image href="/assets/img/apps/chat-mark-128.webp" x="398" y="174" width="28" height="28" aria-hidden="true"/>
+<text class="hub-text hub-app" x="434" y="193">Chat</text>
 </g><g class="hub-node tone-red">
-<rect x="392" y="155" width="148" height="40" rx="10"/>
-<image href="/assets/img/apps/scribe-mark-128.webp" x="398" y="161" width="28" height="28" aria-hidden="true"/>
-<text class="hub-text hub-app" x="434" y="180">Scribe</text>
-</g><g class="hub-node tone-cyan">
-<rect x="392" y="205" width="148" height="40" rx="10"/>
-<image href="/assets/img/apps/miu-mark-128.webp" x="398" y="211" width="28" height="28" aria-hidden="true"/>
-<text class="hub-text hub-app" x="434" y="230">Miu World</text>
-</g><g class="hub-node tone-amber">
-<rect x="392" y="255" width="148" height="40" rx="10"/>
-<image href="/assets/img/apps/tieude-mark-128.webp" x="398" y="261" width="28" height="28" aria-hidden="true"/>
-<text class="hub-text hub-app" x="434" y="280">Tiểu Đệ</text>
-</g><g class="hub-node tone-violet">
-<rect x="392" y="305" width="148" height="40" rx="10"/>
-<image href="/assets/img/apps/tuvi-mark-128.webp" x="398" y="311" width="28" height="28" aria-hidden="true"/>
-<text class="hub-text hub-app" x="434" y="330">Tử Vi</text>
-</g><g class="hub-node tone-green">
-<rect x="392" y="355" width="148" height="40" rx="10"/>
-<image href="/assets/img/apps/clip-mark-128.webp" x="398" y="361" width="28" height="28" aria-hidden="true"/>
-<text class="hub-text hub-app" x="434" y="380">Clip</text>
+<rect x="392" y="243" width="148" height="40" rx="10"/>
+<image href="/assets/img/apps/scribe-mark-128.webp" x="398" y="249" width="28" height="28" aria-hidden="true"/>
+<text class="hub-text hub-app" x="434" y="268">Scribe</text>
 </g>
 </svg></div>
 </section>
-<section class="apps-section" aria-labelledby="apps-list-title">
-<h2 class="apps-section-title" id="apps-list-title">Apps you can open</h2>
-<ul class="apps-grid" data-id="app-list"><li class="app-card tone-violet" data-id="app-localman-web">
+<section class="apps-section apps-group" aria-labelledby="apps-group-work" data-id="apps-group-work">
+<div class="apps-group-head"><h2 class="apps-group-title" id="apps-group-work">Apps for work</h2><p class="apps-group-lead">Build, test and share faster: mock APIs, tunnels, chat and transcripts.</p></div>
+<ul class="apps-grid" data-id="app-list-work"><li class="app-card tone-violet" data-id="app-localman-web">
 <div class="app-card-head">
 <span class="app-card-icon"><img class="app-mark" src="/assets/img/apps/localman-mark-128.webp" width="44" height="44" alt=""></span>
 <div class="app-card-heading"><h3 class="app-card-name">Localman</h3>
@@ -177,7 +161,10 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <p class="app-card-desc">Record audio and turn it into searchable, editable transcripts.</p>
 <div class="app-card-how"><p class="app-card-how-label">How to sign in</p><p>Choose Sign in on the site.</p></div>
 <div class="app-card-foot"><a class="btn btn-secondary" href="https://scribe.hoandat.com" data-id="app-open-scribe-web">Open</a></div>
-</li><li class="app-card tone-cyan" data-id="app-miu-web">
+</li></ul>
+</section><section class="apps-section apps-group" aria-labelledby="apps-group-fun" data-id="apps-group-fun">
+<div class="apps-group-head"><h2 class="apps-group-title" id="apps-group-fun">Apps for fun</h2><p class="apps-group-lead">Learning games, a bot with a story, horoscopes and short videos.</p></div>
+<ul class="apps-grid" data-id="app-list-fun"><li class="app-card tone-cyan" data-id="app-miu-web">
 <div class="app-card-head">
 <span class="app-card-icon"><img class="app-mark" src="/assets/img/apps/miu-mark-128.webp" width="44" height="44" alt=""></span>
 <div class="app-card-heading"><h3 class="app-card-name">Miu World</h3>
@@ -269,60 +256,44 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <a class="btn btn-secondary" href="#how-sign-in-works" data-id="apps-how">Đăng nhập diễn ra thế nào</a>
 </div>
 </div>
-<div class="apps-hero-art"><svg class="hub" viewBox="0 0 544 400" role="img" aria-label="Tài khoản hoandat.com, vào bằng Google hoặc GitHub, đăng nhập cho bạn vào Localman, Tunelo, Chat, Scribe, Miu World, Tiểu Đệ, Tử Vi và Clip." data-id="apps-hub">
-<path class="hub-line" d="M132 160 C156 160 156 200 180 200"/><path class="hub-flow tone-primary" d="M132 160 C156 160 156 200 180 200"/><path class="hub-line" d="M132 240 C156 240 156 200 180 200"/><path class="hub-flow tone-primary" d="M132 240 C156 240 156 200 180 200"/><path class="hub-line" d="M340 200 C366 200 366 25 392 25"/><path class="hub-flow tone-violet" d="M340 200 C366 200 366 25 392 25"/><path class="hub-line" d="M340 200 C366 200 366 75 392 75"/><path class="hub-flow tone-amber" d="M340 200 C366 200 366 75 392 75"/><path class="hub-line" d="M340 200 C366 200 366 125 392 125"/><path class="hub-flow tone-blue" d="M340 200 C366 200 366 125 392 125"/><path class="hub-line" d="M340 200 C366 200 366 175 392 175"/><path class="hub-flow tone-red" d="M340 200 C366 200 366 175 392 175"/><path class="hub-line" d="M340 200 C366 200 366 225 392 225"/><path class="hub-flow tone-cyan" d="M340 200 C366 200 366 225 392 225"/><path class="hub-line" d="M340 200 C366 200 366 275 392 275"/><path class="hub-flow tone-amber" d="M340 200 C366 200 366 275 392 275"/><path class="hub-line" d="M340 200 C366 200 366 325 392 325"/><path class="hub-flow tone-violet" d="M340 200 C366 200 366 325 392 325"/><path class="hub-line" d="M340 200 C366 200 366 375 392 375"/><path class="hub-flow tone-green" d="M340 200 C366 200 366 375 392 375"/>
+<div class="apps-hero-art"><svg class="hub" viewBox="0 0 544 300" role="img" aria-label="Tài khoản hoandat.com, vào bằng Google hoặc GitHub, đăng nhập cho bạn vào Localman, Tunelo, Chat và Scribe." data-id="apps-hub">
+<path class="hub-line" d="M132 110 C156 110 156 150 180 150"/><path class="hub-flow tone-primary" d="M132 110 C156 110 156 150 180 150"/><path class="hub-line" d="M132 190 C156 190 156 150 180 150"/><path class="hub-flow tone-primary" d="M132 190 C156 190 156 150 180 150"/><path class="hub-line" d="M340 150 C366 150 366 38 392 38"/><path class="hub-flow tone-violet" d="M340 150 C366 150 366 38 392 38"/><path class="hub-line" d="M340 150 C366 150 366 113 392 113"/><path class="hub-flow tone-amber" d="M340 150 C366 150 366 113 392 113"/><path class="hub-line" d="M340 150 C366 150 366 188 392 188"/><path class="hub-flow tone-blue" d="M340 150 C366 150 366 188 392 188"/><path class="hub-line" d="M340 150 C366 150 366 263 392 263"/><path class="hub-flow tone-red" d="M340 150 C366 150 366 263 392 263"/>
 <g class="hub-node">
-<rect x="8" y="140" width="124" height="40" rx="10"/>
-<svg x="20" y="152" width="16" height="16" viewBox="0 0 24 24"><path class="hub-mark" d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"/></svg>
-<text class="hub-text" x="46" y="165">Google</text>
+<rect x="8" y="90" width="124" height="40" rx="10"/>
+<svg x="20" y="102" width="16" height="16" viewBox="0 0 24 24"><path class="hub-mark" d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"/></svg>
+<text class="hub-text" x="46" y="115">Google</text>
 </g><g class="hub-node">
-<rect x="8" y="220" width="124" height="40" rx="10"/>
-<svg x="20" y="232" width="16" height="16" viewBox="0 0 24 24"><path class="hub-mark" d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
-<text class="hub-text" x="46" y="245">GitHub</text>
+<rect x="8" y="170" width="124" height="40" rx="10"/>
+<svg x="20" y="182" width="16" height="16" viewBox="0 0 24 24"><path class="hub-mark" d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+<text class="hub-text" x="46" y="195">GitHub</text>
 </g>
 <g class="hub-node hub-core">
-<rect x="180" y="160" width="160" height="80" rx="16"/>
-<text class="hub-text hub-brand" x="260" y="198" text-anchor="middle">hoandat.com</text>
-<text class="hub-text hub-sub" x="260" y="218" text-anchor="middle">ISSUER_HOST</text>
+<rect x="180" y="110" width="160" height="80" rx="16"/>
+<text class="hub-text hub-brand" x="260" y="148" text-anchor="middle">hoandat.com</text>
+<text class="hub-text hub-sub" x="260" y="168" text-anchor="middle">ISSUER_HOST</text>
 </g>
 <g class="hub-node tone-violet">
-<rect x="392" y="5" width="148" height="40" rx="10"/>
-<image href="/assets/img/apps/localman-mark-128.webp" x="398" y="11" width="28" height="28" aria-hidden="true"/>
-<text class="hub-text hub-app" x="434" y="30">Localman</text>
+<rect x="392" y="18" width="148" height="40" rx="10"/>
+<image href="/assets/img/apps/localman-mark-128.webp" x="398" y="24" width="28" height="28" aria-hidden="true"/>
+<text class="hub-text hub-app" x="434" y="43">Localman</text>
 </g><g class="hub-node tone-amber">
-<rect x="392" y="55" width="148" height="40" rx="10"/>
-<image href="/assets/img/apps/tunelo-mark-128.webp" x="398" y="61" width="28" height="28" aria-hidden="true"/>
-<text class="hub-text hub-app" x="434" y="80">Tunelo</text>
+<rect x="392" y="93" width="148" height="40" rx="10"/>
+<image href="/assets/img/apps/tunelo-mark-128.webp" x="398" y="99" width="28" height="28" aria-hidden="true"/>
+<text class="hub-text hub-app" x="434" y="118">Tunelo</text>
 </g><g class="hub-node tone-blue">
-<rect x="392" y="105" width="148" height="40" rx="10"/>
-<image href="/assets/img/apps/chat-mark-128.webp" x="398" y="111" width="28" height="28" aria-hidden="true"/>
-<text class="hub-text hub-app" x="434" y="130">Chat</text>
+<rect x="392" y="168" width="148" height="40" rx="10"/>
+<image href="/assets/img/apps/chat-mark-128.webp" x="398" y="174" width="28" height="28" aria-hidden="true"/>
+<text class="hub-text hub-app" x="434" y="193">Chat</text>
 </g><g class="hub-node tone-red">
-<rect x="392" y="155" width="148" height="40" rx="10"/>
-<image href="/assets/img/apps/scribe-mark-128.webp" x="398" y="161" width="28" height="28" aria-hidden="true"/>
-<text class="hub-text hub-app" x="434" y="180">Scribe</text>
-</g><g class="hub-node tone-cyan">
-<rect x="392" y="205" width="148" height="40" rx="10"/>
-<image href="/assets/img/apps/miu-mark-128.webp" x="398" y="211" width="28" height="28" aria-hidden="true"/>
-<text class="hub-text hub-app" x="434" y="230">Miu World</text>
-</g><g class="hub-node tone-amber">
-<rect x="392" y="255" width="148" height="40" rx="10"/>
-<image href="/assets/img/apps/tieude-mark-128.webp" x="398" y="261" width="28" height="28" aria-hidden="true"/>
-<text class="hub-text hub-app" x="434" y="280">Tiểu Đệ</text>
-</g><g class="hub-node tone-violet">
-<rect x="392" y="305" width="148" height="40" rx="10"/>
-<image href="/assets/img/apps/tuvi-mark-128.webp" x="398" y="311" width="28" height="28" aria-hidden="true"/>
-<text class="hub-text hub-app" x="434" y="330">Tử Vi</text>
-</g><g class="hub-node tone-green">
-<rect x="392" y="355" width="148" height="40" rx="10"/>
-<image href="/assets/img/apps/clip-mark-128.webp" x="398" y="361" width="28" height="28" aria-hidden="true"/>
-<text class="hub-text hub-app" x="434" y="380">Clip</text>
+<rect x="392" y="243" width="148" height="40" rx="10"/>
+<image href="/assets/img/apps/scribe-mark-128.webp" x="398" y="249" width="28" height="28" aria-hidden="true"/>
+<text class="hub-text hub-app" x="434" y="268">Scribe</text>
 </g>
 </svg></div>
 </section>
-<section class="apps-section" aria-labelledby="apps-list-title">
-<h2 class="apps-section-title" id="apps-list-title">Ứng dụng bạn dùng được</h2>
-<ul class="apps-grid" data-id="app-list"><li class="app-card tone-violet" data-id="app-localman-web">
+<section class="apps-section apps-group" aria-labelledby="apps-group-work" data-id="apps-group-work">
+<div class="apps-group-head"><h2 class="apps-group-title" id="apps-group-work">Ứng dụng cho công việc</h2><p class="apps-group-lead">Làm, thử và chia sẻ nhanh hơn: mock API, tunnel, nhắn tin và chép lời.</p></div>
+<ul class="apps-grid" data-id="app-list-work"><li class="app-card tone-violet" data-id="app-localman-web">
 <div class="app-card-head">
 <span class="app-card-icon"><img class="app-mark" src="/assets/img/apps/localman-mark-128.webp" width="44" height="44" alt=""></span>
 <div class="app-card-heading"><h3 class="app-card-name">Localman</h3>
@@ -385,7 +356,10 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <p class="app-card-desc">Ghi âm và chuyển thành bản chép lời để tìm kiếm, chỉnh sửa.</p>
 <div class="app-card-how"><p class="app-card-how-label">Cách đăng nhập</p><p>Chọn Đăng nhập trên trang.</p></div>
 <div class="app-card-foot"><a class="btn btn-secondary" href="https://scribe.hoandat.com" data-id="app-open-scribe-web">Mở</a></div>
-</li><li class="app-card tone-cyan" data-id="app-miu-web">
+</li></ul>
+</section><section class="apps-section apps-group" aria-labelledby="apps-group-fun" data-id="apps-group-fun">
+<div class="apps-group-head"><h2 class="apps-group-title" id="apps-group-fun">Ứng dụng giải trí</h2><p class="apps-group-lead">Game học tập, bot có câu chuyện riêng, tử vi và video ngắn.</p></div>
+<ul class="apps-grid" data-id="app-list-fun"><li class="app-card tone-cyan" data-id="app-miu-web">
 <div class="app-card-head">
 <span class="app-card-icon"><img class="app-mark" src="/assets/img/apps/miu-mark-128.webp" width="44" height="44" alt=""></span>
 <div class="app-card-heading"><h3 class="app-card-name">Miu World</h3>
@@ -477,60 +451,44 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <a class="btn btn-secondary" href="#how-sign-in-works" data-id="apps-how">登录如何进行</a>
 </div>
 </div>
-<div class="apps-hero-art"><svg class="hub" viewBox="0 0 544 400" role="img" aria-label="通过 Google 或 GitHub 进入你的 hoandat.com 账号，即可登录 Localman、Tunelo、Chat、Scribe、Miu World、Tiểu Đệ、Tử Vi和Clip。" data-id="apps-hub">
-<path class="hub-line" d="M132 160 C156 160 156 200 180 200"/><path class="hub-flow tone-primary" d="M132 160 C156 160 156 200 180 200"/><path class="hub-line" d="M132 240 C156 240 156 200 180 200"/><path class="hub-flow tone-primary" d="M132 240 C156 240 156 200 180 200"/><path class="hub-line" d="M340 200 C366 200 366 25 392 25"/><path class="hub-flow tone-violet" d="M340 200 C366 200 366 25 392 25"/><path class="hub-line" d="M340 200 C366 200 366 75 392 75"/><path class="hub-flow tone-amber" d="M340 200 C366 200 366 75 392 75"/><path class="hub-line" d="M340 200 C366 200 366 125 392 125"/><path class="hub-flow tone-blue" d="M340 200 C366 200 366 125 392 125"/><path class="hub-line" d="M340 200 C366 200 366 175 392 175"/><path class="hub-flow tone-red" d="M340 200 C366 200 366 175 392 175"/><path class="hub-line" d="M340 200 C366 200 366 225 392 225"/><path class="hub-flow tone-cyan" d="M340 200 C366 200 366 225 392 225"/><path class="hub-line" d="M340 200 C366 200 366 275 392 275"/><path class="hub-flow tone-amber" d="M340 200 C366 200 366 275 392 275"/><path class="hub-line" d="M340 200 C366 200 366 325 392 325"/><path class="hub-flow tone-violet" d="M340 200 C366 200 366 325 392 325"/><path class="hub-line" d="M340 200 C366 200 366 375 392 375"/><path class="hub-flow tone-green" d="M340 200 C366 200 366 375 392 375"/>
+<div class="apps-hero-art"><svg class="hub" viewBox="0 0 544 300" role="img" aria-label="通过 Google 或 GitHub 进入你的 hoandat.com 账号，即可登录 Localman、Tunelo、Chat和Scribe。" data-id="apps-hub">
+<path class="hub-line" d="M132 110 C156 110 156 150 180 150"/><path class="hub-flow tone-primary" d="M132 110 C156 110 156 150 180 150"/><path class="hub-line" d="M132 190 C156 190 156 150 180 150"/><path class="hub-flow tone-primary" d="M132 190 C156 190 156 150 180 150"/><path class="hub-line" d="M340 150 C366 150 366 38 392 38"/><path class="hub-flow tone-violet" d="M340 150 C366 150 366 38 392 38"/><path class="hub-line" d="M340 150 C366 150 366 113 392 113"/><path class="hub-flow tone-amber" d="M340 150 C366 150 366 113 392 113"/><path class="hub-line" d="M340 150 C366 150 366 188 392 188"/><path class="hub-flow tone-blue" d="M340 150 C366 150 366 188 392 188"/><path class="hub-line" d="M340 150 C366 150 366 263 392 263"/><path class="hub-flow tone-red" d="M340 150 C366 150 366 263 392 263"/>
 <g class="hub-node">
-<rect x="8" y="140" width="124" height="40" rx="10"/>
-<svg x="20" y="152" width="16" height="16" viewBox="0 0 24 24"><path class="hub-mark" d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"/></svg>
-<text class="hub-text" x="46" y="165">Google</text>
+<rect x="8" y="90" width="124" height="40" rx="10"/>
+<svg x="20" y="102" width="16" height="16" viewBox="0 0 24 24"><path class="hub-mark" d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"/></svg>
+<text class="hub-text" x="46" y="115">Google</text>
 </g><g class="hub-node">
-<rect x="8" y="220" width="124" height="40" rx="10"/>
-<svg x="20" y="232" width="16" height="16" viewBox="0 0 24 24"><path class="hub-mark" d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
-<text class="hub-text" x="46" y="245">GitHub</text>
+<rect x="8" y="170" width="124" height="40" rx="10"/>
+<svg x="20" y="182" width="16" height="16" viewBox="0 0 24 24"><path class="hub-mark" d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+<text class="hub-text" x="46" y="195">GitHub</text>
 </g>
 <g class="hub-node hub-core">
-<rect x="180" y="160" width="160" height="80" rx="16"/>
-<text class="hub-text hub-brand" x="260" y="198" text-anchor="middle">hoandat.com</text>
-<text class="hub-text hub-sub" x="260" y="218" text-anchor="middle">ISSUER_HOST</text>
+<rect x="180" y="110" width="160" height="80" rx="16"/>
+<text class="hub-text hub-brand" x="260" y="148" text-anchor="middle">hoandat.com</text>
+<text class="hub-text hub-sub" x="260" y="168" text-anchor="middle">ISSUER_HOST</text>
 </g>
 <g class="hub-node tone-violet">
-<rect x="392" y="5" width="148" height="40" rx="10"/>
-<image href="/assets/img/apps/localman-mark-128.webp" x="398" y="11" width="28" height="28" aria-hidden="true"/>
-<text class="hub-text hub-app" x="434" y="30">Localman</text>
+<rect x="392" y="18" width="148" height="40" rx="10"/>
+<image href="/assets/img/apps/localman-mark-128.webp" x="398" y="24" width="28" height="28" aria-hidden="true"/>
+<text class="hub-text hub-app" x="434" y="43">Localman</text>
 </g><g class="hub-node tone-amber">
-<rect x="392" y="55" width="148" height="40" rx="10"/>
-<image href="/assets/img/apps/tunelo-mark-128.webp" x="398" y="61" width="28" height="28" aria-hidden="true"/>
-<text class="hub-text hub-app" x="434" y="80">Tunelo</text>
+<rect x="392" y="93" width="148" height="40" rx="10"/>
+<image href="/assets/img/apps/tunelo-mark-128.webp" x="398" y="99" width="28" height="28" aria-hidden="true"/>
+<text class="hub-text hub-app" x="434" y="118">Tunelo</text>
 </g><g class="hub-node tone-blue">
-<rect x="392" y="105" width="148" height="40" rx="10"/>
-<image href="/assets/img/apps/chat-mark-128.webp" x="398" y="111" width="28" height="28" aria-hidden="true"/>
-<text class="hub-text hub-app" x="434" y="130">Chat</text>
+<rect x="392" y="168" width="148" height="40" rx="10"/>
+<image href="/assets/img/apps/chat-mark-128.webp" x="398" y="174" width="28" height="28" aria-hidden="true"/>
+<text class="hub-text hub-app" x="434" y="193">Chat</text>
 </g><g class="hub-node tone-red">
-<rect x="392" y="155" width="148" height="40" rx="10"/>
-<image href="/assets/img/apps/scribe-mark-128.webp" x="398" y="161" width="28" height="28" aria-hidden="true"/>
-<text class="hub-text hub-app" x="434" y="180">Scribe</text>
-</g><g class="hub-node tone-cyan">
-<rect x="392" y="205" width="148" height="40" rx="10"/>
-<image href="/assets/img/apps/miu-mark-128.webp" x="398" y="211" width="28" height="28" aria-hidden="true"/>
-<text class="hub-text hub-app" x="434" y="230">Miu World</text>
-</g><g class="hub-node tone-amber">
-<rect x="392" y="255" width="148" height="40" rx="10"/>
-<image href="/assets/img/apps/tieude-mark-128.webp" x="398" y="261" width="28" height="28" aria-hidden="true"/>
-<text class="hub-text hub-app" x="434" y="280">Tiểu Đệ</text>
-</g><g class="hub-node tone-violet">
-<rect x="392" y="305" width="148" height="40" rx="10"/>
-<image href="/assets/img/apps/tuvi-mark-128.webp" x="398" y="311" width="28" height="28" aria-hidden="true"/>
-<text class="hub-text hub-app" x="434" y="330">Tử Vi</text>
-</g><g class="hub-node tone-green">
-<rect x="392" y="355" width="148" height="40" rx="10"/>
-<image href="/assets/img/apps/clip-mark-128.webp" x="398" y="361" width="28" height="28" aria-hidden="true"/>
-<text class="hub-text hub-app" x="434" y="380">Clip</text>
+<rect x="392" y="243" width="148" height="40" rx="10"/>
+<image href="/assets/img/apps/scribe-mark-128.webp" x="398" y="249" width="28" height="28" aria-hidden="true"/>
+<text class="hub-text hub-app" x="434" y="268">Scribe</text>
 </g>
 </svg></div>
 </section>
-<section class="apps-section" aria-labelledby="apps-list-title">
-<h2 class="apps-section-title" id="apps-list-title">可使用的应用</h2>
-<ul class="apps-grid" data-id="app-list"><li class="app-card tone-violet" data-id="app-localman-web">
+<section class="apps-section apps-group" aria-labelledby="apps-group-work" data-id="apps-group-work">
+<div class="apps-group-head"><h2 class="apps-group-title" id="apps-group-work">工作应用</h2><p class="apps-group-lead">更快地构建、测试和分享：模拟 API、隧道、聊天和转写。</p></div>
+<ul class="apps-grid" data-id="app-list-work"><li class="app-card tone-violet" data-id="app-localman-web">
 <div class="app-card-head">
 <span class="app-card-icon"><img class="app-mark" src="/assets/img/apps/localman-mark-128.webp" width="44" height="44" alt=""></span>
 <div class="app-card-heading"><h3 class="app-card-name">Localman</h3>
@@ -593,7 +551,10 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <p class="app-card-desc">录音并转写为可搜索、可编辑的文字稿。</p>
 <div class="app-card-how"><p class="app-card-how-label">登录方式</p><p>在网站上选择登录。</p></div>
 <div class="app-card-foot"><a class="btn btn-secondary" href="https://scribe.hoandat.com" data-id="app-open-scribe-web">打开</a></div>
-</li><li class="app-card tone-cyan" data-id="app-miu-web">
+</li></ul>
+</section><section class="apps-section apps-group" aria-labelledby="apps-group-fun" data-id="apps-group-fun">
+<div class="apps-group-head"><h2 class="apps-group-title" id="apps-group-fun">娱乐应用</h2><p class="apps-group-lead">学习游戏、有故事的机器人、紫微斗数和短视频。</p></div>
+<ul class="apps-grid" data-id="app-list-fun"><li class="app-card tone-cyan" data-id="app-miu-web">
 <div class="app-card-head">
 <span class="app-card-icon"><img class="app-mark" src="/assets/img/apps/miu-mark-128.webp" width="44" height="44" alt=""></span>
 <div class="app-card-heading"><h3 class="app-card-name">Miu World</h3>
@@ -1442,10 +1403,13 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in en 
   "apps.cta.how": "How sign-in works",
   "apps.diagram.label": "Your hoandat.com account, reached with Google or GitHub, signs you in to {apps}.",
   "apps.eyebrow": "hoandat.com sign-in",
+  "apps.group.fun.lead": "Learning games, a bot with a story, horoscopes and short videos.",
+  "apps.group.fun.title": "Apps for fun",
+  "apps.group.work.lead": "Build, test and share faster: mock APIs, tunnels, chat and transcripts.",
+  "apps.group.work.title": "Apps for work",
   "apps.kind.cli": "Command line",
   "apps.kind.mcp": "MCP server",
   "apps.kind.web": "Web app",
-  "apps.list.title": "Apps you can open",
   "apps.localmanMcp.description": "Lets AI tools such as Claude Code work with your Localman projects.",
   "apps.localmanMcp.signIn": "Add {address} to your AI tool as an MCP server, then approve what it may do on the consent page.",
   "apps.localmanWeb.description": "Mock APIs and an API client in your browser.",
@@ -1786,10 +1750,13 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in vi 
   "apps.cta.how": "Đăng nhập diễn ra thế nào",
   "apps.diagram.label": "Tài khoản hoandat.com, vào bằng Google hoặc GitHub, đăng nhập cho bạn vào {apps}.",
   "apps.eyebrow": "Đăng nhập hoandat.com",
+  "apps.group.fun.lead": "Game học tập, bot có câu chuyện riêng, tử vi và video ngắn.",
+  "apps.group.fun.title": "Ứng dụng giải trí",
+  "apps.group.work.lead": "Làm, thử và chia sẻ nhanh hơn: mock API, tunnel, nhắn tin và chép lời.",
+  "apps.group.work.title": "Ứng dụng cho công việc",
   "apps.kind.cli": "Dòng lệnh",
   "apps.kind.mcp": "MCP server",
   "apps.kind.web": "Ứng dụng web",
-  "apps.list.title": "Ứng dụng bạn dùng được",
   "apps.localmanMcp.description": "Cho công cụ AI như Claude Code làm việc với project Localman của bạn.",
   "apps.localmanMcp.signIn": "Thêm {address} vào công cụ AI làm MCP server, rồi duyệt những gì nó được làm ở trang cấp quyền.",
   "apps.localmanWeb.description": "Mock API và API client ngay trên trình duyệt.",
@@ -2130,10 +2097,13 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in zh-
   "apps.cta.how": "登录如何进行",
   "apps.diagram.label": "通过 Google 或 GitHub 进入你的 hoandat.com 账号，即可登录 {apps}。",
   "apps.eyebrow": "hoandat.com 登录",
+  "apps.group.fun.lead": "学习游戏、有故事的机器人、紫微斗数和短视频。",
+  "apps.group.fun.title": "娱乐应用",
+  "apps.group.work.lead": "更快地构建、测试和分享：模拟 API、隧道、聊天和转写。",
+  "apps.group.work.title": "工作应用",
   "apps.kind.cli": "命令行",
   "apps.kind.mcp": "MCP 服务器",
   "apps.kind.web": "网页应用",
-  "apps.list.title": "可使用的应用",
   "apps.localmanMcp.description": "让 Claude Code 等 AI 工具操作你的 Localman 项目。",
   "apps.localmanMcp.signIn": "在 AI 工具中把 {address} 添加为 MCP 服务器，然后在授权页面批准它可以执行的操作。",
   "apps.localmanWeb.description": "在浏览器中使用 Mock API 和 API 客户端。",

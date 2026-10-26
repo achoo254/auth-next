@@ -1,6 +1,7 @@
 import { Router } from "express";
 import type { MessageKey } from "../i18n/dictionaries.js";
 import type { Translator } from "../i18n/translator.js";
+import { STATIC_CLIENT_IDS } from "../oidc/clients.js";
 import { actionLink } from "../ui/components.js";
 import { type SafeHtml, html } from "../ui/html.js";
 import { renderPage } from "../ui/layout.js";
@@ -26,11 +27,53 @@ const TRUST: readonly MessageKey[] = [
 
 const CHECK = html`<svg class="icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12l4 4 10-10"/></svg>`;
 
+/** Apps for fun; every other app is listed under work. */
+const FUN_APP_IDS: ReadonlySet<string> = new Set([
+	STATIC_CLIENT_IDS.miuWeb,
+	STATIC_CLIENT_IDS.tieudeWeb,
+	STATIC_CLIENT_IDS.tuviWeb,
+	STATIC_CLIENT_IDS.clipWeb,
+]);
+const isFunApp = (app: ListedApp): boolean => FUN_APP_IDS.has(app.id);
+
 /**
- * The diagram draws the main apps only: Localman MCP and Tunelo CLI are
- * other ways into Localman and Tunelo, listed below with how to sign in.
+ * The diagram draws the main work apps only: Localman MCP and Tunelo CLI are
+ * other ways into Localman and Tunelo, listed below with how to sign in, and
+ * apps for fun have their own group in the list.
  */
-const isMainApp = (app: ListedApp): boolean => app.kind === "apps.kind.web";
+const isMainApp = (app: ListedApp): boolean =>
+	app.kind === "apps.kind.web" && !isFunApp(app);
+
+const GROUPS = [
+	{
+		key: "work",
+		title: "apps.group.work.title",
+		lead: "apps.group.work.lead",
+		fun: false,
+	},
+	{
+		key: "fun",
+		title: "apps.group.fun.title",
+		lead: "apps.group.fun.lead",
+		fun: true,
+	},
+] as const satisfies readonly {
+	key: string;
+	title: MessageKey;
+	lead: MessageKey;
+	fun: boolean;
+}[];
+
+function appGroups(apps: readonly ListedApp[], i18n: Translator): SafeHtml {
+	return html`${GROUPS.map((group) => {
+		const members = apps.filter((app) => isFunApp(app) === group.fun);
+		if (members.length === 0) return html``;
+		return html`<section class="apps-section apps-group" aria-labelledby="apps-group-${group.key}" data-id="apps-group-${group.key}">
+<div class="apps-group-head"><h2 class="apps-group-title" id="apps-group-${group.key}">${i18n.t(group.title)}</h2><p class="apps-group-lead">${i18n.t(group.lead)}</p></div>
+<ul class="apps-grid" data-id="app-list-${group.key}">${members.map((app) => appCard(app, i18n))}</ul>
+</section>`;
+	})}`;
+}
 
 function hero(
 	tenant: AppDirectoryTenant,
@@ -98,10 +141,7 @@ export function renderAppsPage(
 		layout: "portal",
 		stylesheets: ["apps.css"],
 		body: html`${hero(tenant, i18n, apps)}
-<section class="apps-section" aria-labelledby="apps-list-title">
-<h2 class="apps-section-title" id="apps-list-title">${i18n.t("apps.list.title")}</h2>
-<ul class="apps-grid" data-id="app-list">${apps.map((app) => appCard(app, i18n))}</ul>
-</section>
+${appGroups(apps, i18n)}
 ${steps(i18n)}
 <p class="apps-manage" data-id="apps-manage">${i18n.rich("apps.manage", { account: html`<a class="link" href="/account">${i18n.t("layout.brand")}</a>` })}</p>`,
 	});

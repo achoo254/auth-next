@@ -13,7 +13,11 @@ export const zhApps: Translation<typeof enApps> = {
 	"apps.cta.how": "登录如何进行",
 	"apps.diagram.label":
 		"通过 Google 或 GitHub 进入你的 {brand} 账号，即可登录 {apps}。",
-	"apps.list.title": "可使用的应用",
+	"apps.group.work.title": "工作应用",
+	"apps.group.work.lead":
+		"更快地构建、测试和分享：模拟 API、隧道、聊天和转写。",
+	"apps.group.fun.title": "娱乐应用",
+	"apps.group.fun.lead": "学习游戏、有故事的机器人、紫微斗数和短视频。",
 	"apps.kind.web": "网页应用",
 	"apps.kind.mcp": "MCP 服务器",
 	"apps.kind.cli": "命令行",

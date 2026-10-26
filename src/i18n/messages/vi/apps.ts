@@ -13,7 +13,12 @@ export const viApps: Translation<typeof enApps> = {
 	"apps.cta.how": "Đăng nhập diễn ra thế nào",
 	"apps.diagram.label":
 		"Tài khoản {brand}, vào bằng Google hoặc GitHub, đăng nhập cho bạn vào {apps}.",
-	"apps.list.title": "Ứng dụng bạn dùng được",
+	"apps.group.work.title": "Ứng dụng cho công việc",
+	"apps.group.work.lead":
+		"Làm, thử và chia sẻ nhanh hơn: mock API, tunnel, nhắn tin và chép lời.",
+	"apps.group.fun.title": "Ứng dụng giải trí",
+	"apps.group.fun.lead":
+		"Game học tập, bot có câu chuyện riêng, tử vi và video ngắn.",
 	"apps.kind.web": "Ứng dụng web",
 	"apps.kind.mcp": "MCP server",
 	"apps.kind.cli": "Dòng lệnh",

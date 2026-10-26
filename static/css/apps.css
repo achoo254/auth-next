@@ -202,6 +202,24 @@
 	color: var(--c-text-muted);
 }
 
+/* app groups: work and fun, each with a prominent heading */
+.apps-group-head {
+	display: grid;
+	gap: var(--space-1);
+	padding-bottom: var(--space-3);
+	border-bottom: 1px solid var(--c-border);
+}
+.apps-group-title {
+	font-family: var(--font-sans);
+	font-size: clamp(1.375rem, 1.1rem + 1vw, 1.75rem);
+	font-weight: 700;
+	line-height: 1.2;
+	color: var(--c-text);
+}
+.apps-group-lead {
+	color: var(--c-text-muted);
+}
+
 /* app cards */
 .apps-grid {
 	list-style: none;
