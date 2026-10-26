@@ -25,7 +25,7 @@ Apple yêu cầu website dùng Sign in with Apple phải gắn với một app t
 
 ## 2. Services ID cho IdP
 
-Identifiers → **+** → **Services IDs** → Description `Auth Next`, Identifier `com.hoandat.auth.signin` → Register. Mở lại nó:
+Identifiers → **+** → **Services IDs** → Description `hoandat.com` (tên người dùng thấy trong mục Đăng nhập bằng Apple trên iPhone), Identifier `com.hoandat.auth.signin` → Register. Mở lại nó:
 
 1. Tick **Sign in with Apple** → Configure.
 2. Primary App ID: `com.hoandat.scribe`.
@@ -37,7 +37,7 @@ Nếu portal hiện bước **Download/Verify** cho domain (tệp `apple-develop
 
 ## 3. Khoá Sign in with Apple (.p8)
 
-Keys → **+** → tên `Auth Next Sign in with Apple` → tick **Sign in with Apple** → Configure → Primary App ID `com.hoandat.scribe` → Save → Continue → Register → **Download** (chỉ tải được một lần) → ghi lại **Key ID** (10 ký tự). **Team ID** ở góc phải trên của portal hoặc trang Membership.
+Keys → **+** → tên `hoandat.com Sign in with Apple` → tick **Sign in with Apple** → Configure → Primary App ID `com.hoandat.scribe` → Save → Continue → Register → **Download** (chỉ tải được một lần) → ghi lại **Key ID** (10 ký tự). **Team ID** ở góc phải trên của portal hoặc trang Membership.
 
 Tài liệu: [Create a Sign in with Apple private key](https://developer.apple.com/help/account/configure-app-capabilities/create-a-sign-in-with-apple-private-key), [Get a key identifier](https://developer.apple.com/help/account/manage-keys/get-a-key-identifier). Mỗi primary App ID có tối đa hai khoá; khoá lộ thì tạo khoá mới, đổi `APPLE_KEY_ID` + file, restart, rồi revoke khoá cũ.
 
@@ -76,7 +76,7 @@ Người dùng chọn "Ẩn email" thì IdP nhận địa chỉ dạng `…@priv
 3. `https://auth.hoandat.com/account` → "Cách đăng nhập": Apple "Đã liên kết (…@privaterelay.appleid.com)".
 4. Đăng xuất, đăng nhập lại bằng Apple: vào thẳng, không hỏi username (Apple không gửi lại tên/email; IdP nhận theo `sub`).
 5. Liên kết Google ở `/account`, rồi **Huỷ liên kết Apple** → Apple ID đó biến mất khỏi Cài đặt → Apple ID → Đăng nhập bằng Apple (IdP đã gọi revoke). Log: không có dòng `Revocation at the provider failed`.
-6. Thông báo: ở iPhone, Cài đặt → Apple ID → Đăng nhập bằng Apple → Auth Next → Ngừng sử dụng Apple ID. Log có `Apple account event` với `type: consent-revoked`. Có dòng `Apple notification rejected` thì kiểm `APPLE_PRIMARY_APP_ID` (aud của thông báo là bundle ID của primary App ID).
+6. Thông báo: ở iPhone, Cài đặt → Apple ID → Đăng nhập bằng Apple → hoandat.com → Ngừng sử dụng Apple ID. Log có `Apple account event` với `type: consent-revoked`. Có dòng `Apple notification rejected` thì kiểm `APPLE_PRIMARY_APP_ID` (aud của thông báo là bundle ID của primary App ID).
 7. App iPhone Scribe: đăng nhập qua `ASWebAuthenticationSession` thấy cùng nút Apple. Đó là bằng chứng cho Guideline 4.8 khi nộp review; nêu trong App Review notes "Sign in with Apple is offered on our sign-in page (web flow in ASWebAuthenticationSession)".
 
 ## 7. Ghi chú
