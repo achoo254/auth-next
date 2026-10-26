@@ -2,7 +2,8 @@ import type { UpstreamProvider } from "../accounts/user-model.js";
 import type { Translator } from "../i18n/translator.js";
 import { type SafeHtml, html } from "../ui/html.js";
 import { providerPath } from "../ui/provider-logos.js";
-import { type ListedApp, appIcon } from "./apps-catalog.js";
+import { appIcon } from "./app-marks.js";
+import type { ListedApp } from "./apps-catalog.js";
 
 /*
  * The hero diagram: Google and GitHub lead into one account of the tenant, which

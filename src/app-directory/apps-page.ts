@@ -5,10 +5,10 @@ import { actionLink } from "../ui/components.js";
 import { type SafeHtml, html } from "../ui/html.js";
 import { renderPage } from "../ui/layout.js";
 import { type PageContext, pageContext } from "../ui/page-context.js";
+import { appIcon } from "./app-marks.js";
 import {
 	type AppDirectoryTenant,
 	type ListedApp,
-	appIcon,
 	listedApps,
 } from "./apps-catalog.js";
 import { hubDiagram } from "./apps-illustration.js";
