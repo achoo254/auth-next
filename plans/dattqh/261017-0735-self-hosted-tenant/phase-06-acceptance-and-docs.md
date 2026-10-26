@@ -57,7 +57,7 @@ Chưa thử được (cần VM IP công khai và domain thử): bản cài đổ
 
 ## Chuyển trọn hoandat.io.vn sang VM công khai (19/10/2026)
 
-User chọn chạy trọn một lượt chuyển (Jev 0,38 / nhận mới tự host 0,62, user quyết). VM iNET Cloud Server dùng thử 1 vCPU, 1 GB, 20 GB, Ubuntu 22.04, SSH cổng 24700; cài bằng `init.sh --release 0.3.1` (không build, 1 phút 25 giây) + 2 GB swap. Domain `hoandat.io.vn` (Cloudflare; prod bỏ khỏi `CLAIM_BLOCKED_DOMAINS` và `PROVISIONER_BLOCKED_DOMAINS`, backup `*.bak-261019-094947`).
+User chọn chạy trọn một lượt chuyển (Jev 0,38 / nhận mới tự host 0,62, user quyết). VM iNET Cloud Server dùng thử 1 vCPU, 1 GB, 20 GB, Ubuntu 22.04, SSH cổng riêng; cài bằng `init.sh --release 0.3.1` (không build, 1 phút 25 giây) + 2 GB swap. Domain `hoandat.io.vn` (Cloudflare; prod bỏ khỏi `CLAIM_BLOCKED_DOMAINS` và `PROVISIONER_BLOCKED_DOMAINS`, backup `*.bak-261019-094947`).
 
 - Nhận domain chạy trên hoandat: xác minh DNS chập chờn ~1,5 giờ vì zone cũ còn trên ns1–ns3.inet.vn (trả NXDOMAIN có `aa`) và Google DNS nhớ delegation cũ (TTL 12 giờ); hết khi nhập cùng bản ghi vào DNS iNET. GitHub OAuth App riêng; tenant `active`, chứng chỉ provisioner cấp 11:23.
 - Dữ liệu thử: Tunelo CLI đăng nhập bằng device flow (tài khoản đầu tiên, refresh token giữ trong HOME riêng), Localman 1 workspace/1 project/10 record. Tenant không có Chat trên .65.

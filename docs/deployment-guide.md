@@ -171,8 +171,8 @@ Tắt mặc định; chỉ bật trong thời gian App Store duyệt app (tài k
 
    ```bash
    printf '%s' "$REVIEW_PASSWORD" | pnpm -s review-login:hash \
-     | ssh -p 24700 <user>@<SERVER_65_IP> 'umask 077; cat > /var/www/hoandat-auth/secrets/review-login.hash'
-   ssh -p 24700 <user>@<SERVER_65_IP> 'chmod 600 /var/www/hoandat-auth/secrets/review-login.hash && ls -l /var/www/hoandat-auth/secrets/review-login.hash'
+     | ssh -p <SSH_PORT> <user>@<SERVER_65_IP> 'umask 077; cat > /var/www/hoandat-auth/secrets/review-login.hash'
+   ssh -p <SSH_PORT> <user>@<SERVER_65_IP> 'chmod 600 /var/www/hoandat-auth/secrets/review-login.hash && ls -l /var/www/hoandat-auth/secrets/review-login.hash'
    ```
 
    File phải mode 600 và thuộc user chạy pm2 (`<user>` ở trên); thư mục `secrets/` không bị `infra/deploy.sh` đồng bộ. Mật khẩu dài 12–256 ký tự.

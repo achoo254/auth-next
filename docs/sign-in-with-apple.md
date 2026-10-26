@@ -46,8 +46,8 @@ Tài liệu: [Create a Sign in with Apple private key](https://developer.apple.c
 Không gửi file `.p8` qua chat hay commit. Chép thẳng từ máy chủ sở hữu (thư mục `secrets/` không bị `infra/deploy.sh` đồng bộ, nên deploy không ghi đè hay xoá nó):
 
 ```bash
-scp -P 24700 AuthKey_<KEYID>.p8 <user>@<SERVER_65_IP>:/var/www/hoandat-auth/secrets/apple-signin-key.p8
-ssh -p 24700 <user>@<SERVER_65_IP> 'chmod 600 /var/www/hoandat-auth/secrets/apple-signin-key.p8'
+scp -P <SSH_PORT> AuthKey_<KEYID>.p8 <user>@<SERVER_65_IP>:/var/www/hoandat-auth/secrets/apple-signin-key.p8
+ssh -p <SSH_PORT> <user>@<SERVER_65_IP> 'chmod 600 /var/www/hoandat-auth/secrets/apple-signin-key.p8'
 ```
 
 Thêm vào `/var/www/hoandat-auth/.env` (mode 600):
