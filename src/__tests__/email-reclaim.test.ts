@@ -66,7 +66,7 @@ describe("emails from Google/GitHub", () => {
 					// No language stored with the link: English.
 					(m) =>
 						m.chatId === "6006" &&
-						/was removed from Auth Next account/.test(m.text),
+						/was removed from hoandat\.com account/.test(m.text),
 				),
 			)
 			.toBe(true);

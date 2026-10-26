@@ -34,7 +34,7 @@ test("signs in, reads /account in English, then switches to 中文 without scrip
 	await expect(page).toHaveURL(/\/account$/);
 	await expect(page.locator("html")).toHaveAttribute("lang", "zh-CN");
 	await expect(page.getByRole("heading", { level: 1 })).toHaveText(
-		"Auth Next 账号",
+		"hoandat.com 账号",
 	);
 	await expect(page.locator('[data-id="lang-zh-CN"]')).toHaveAttribute(
 		"aria-current",

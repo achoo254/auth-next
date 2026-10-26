@@ -2,7 +2,7 @@
 export const enSignIn = {
 	"login.title": "Sign in",
 	"login.titleForApp": "Sign in to continue to {app}",
-	"login.tagline": "One {brand} account for Localman and Tunelo.",
+	"login.tagline": "One {brand} account for every app.",
 	"login.forDevice": "Sign in to approve a device.",
 	"login.continueTo": "To continue to {app}.",
 	"login.with": "Sign in with {provider}",
@@ -14,7 +14,7 @@ export const enSignIn = {
 	"signup.title": "Create your {brand} account",
 	"signup.pageTitle": "Sign up",
 	"signup.subtitle":
-		"One account for Localman and Tunelo. Sign up with one of the accounts below: {brand} uses no passwords and sends no email.",
+		"One account for every {brandDomain} app. Sign up with one of the accounts below: {brand} uses no passwords and sends no email.",
 	"signup.with": "Sign up with {provider}",
 	"signup.haveAccount": "Already have an account? {link}",
 	"username.title": "Choose a username",
@@ -52,7 +52,7 @@ export const enSignIn = {
 	"logout.confirm": "Sign out",
 	"logout.keep": "No, stay signed in",
 	"logout.help":
-		"Signing out here also signs you out of Localman and Tunelo on the web in this browser.",
+		"Signing out here also signs you out of the {brandDomain} web apps in this browser. Devices (CLI and phone apps) stay signed in.",
 	"logout.doneTitle": "Signed out",
 	"logout.done": "You signed out of your {brand} account in this browser.",
 	"logout.signInAgain": "Sign in again",

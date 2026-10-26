@@ -22,7 +22,7 @@ export const zhAccountActions: Translation<typeof enAccountActions> = {
 	"confirm.delete.lead":
 		"账号 {username} 以及它在 {brand} 的所有关联内容将立即删除，无法恢复。",
 	"confirm.delete.signOut":
-		"所有会话、设备和已授权的应用都会退出；你将无法再用此账号登录 Localman、Tunelo 或 Chat。",
+		"所有会话、设备和已授权的应用都会退出；你将无法再用此账号登录任何 {brandDomain} 应用。",
 	"confirm.delete.providers":
 		"与 Google、GitHub、Apple 和 Telegram 的关联会被移除。以后再次登录会创建一个新的、不同的账号。",
 	"confirm.delete.appData":
@@ -42,7 +42,7 @@ export const zhAccountActions: Translation<typeof enAccountActions> = {
 	"confirm.sessions.lead":
 		"下面的每个浏览器都会退出你的 {brand} 账号。此浏览器保持登录。",
 	"confirm.sessions.effect":
-		"通过这些浏览器登录的应用（例如网页版 Localman 和 Tunelo）也会退出。设备（Tunelo CLI、手机应用）保持登录。",
+		"通过这些浏览器登录的网页应用也会退出。设备（CLI、手机应用）保持登录。",
 	"telegram.title": "关联 Telegram",
 	"telegram.subtitle":
 		"在 Telegram 中打开 {brand} bot，点击 Start，然后在 10 分钟内点击“{button}”。",

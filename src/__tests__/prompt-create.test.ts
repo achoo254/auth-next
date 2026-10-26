@@ -19,7 +19,7 @@ import { RESOURCES } from "./helpers/test-tenant.js";
 import { linkedGoogleProfile } from "./helpers/upstream-sign-in.js";
 
 const MCP_REDIRECT = "http://127.0.0.1:33422/callback";
-const SIGNUP_TITLE = "Create your Auth Next account";
+const SIGNUP_TITLE = "Create your hoandat.com account";
 
 let idp: TestIdp;
 

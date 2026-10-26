@@ -23,7 +23,7 @@ export const enPrivacy = {
 		"Data is used only to authenticate you, keep you signed in, recover your account, detect unusual access and count, in aggregate, how many people use each app. The service sends no email, shows no ads, and never sells or shares your data or these statistics.",
 	"privacy.sharing.title": "Sharing",
 	"privacy.sharing.body":
-		"Profile information goes only to apps run by the same owner (Localman, Tunelo) or to apps you allowed, within what you allowed. It is not shared with anyone else.",
+		"Profile information goes only to apps run by the same owner (the {brandDomain} apps) or to apps you allowed, within what you allowed. It is not shared with anyone else.",
 	"privacy.rights.title": "Your rights",
 	"privacy.rights.body":
 		"On your {account} page you can see and edit your profile, unlink Google, GitHub, Apple or Telegram, and sign out sessions and apps you allowed.",

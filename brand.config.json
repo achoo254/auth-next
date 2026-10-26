@@ -1,7 +1,7 @@
 {
 	"$schema": "./node_modules/@shared-next/brand/brand.config.schema.json",
-	"appName": "Auth Next",
-	"shortName": "Auth Next",
+	"appName": "hoandat.com",
+	"shortName": "hoandat.com",
 	"description": "Sign in to your account and manage the apps and devices connected to it.",
 	"colors": {
 		"primary": "#6e56cf",

@@ -25,7 +25,7 @@ export const viPrivacy: Translation<typeof enPrivacy> = {
 		"Dữ liệu chỉ dùng để xác thực bạn, giữ phiên đăng nhập, khôi phục tài khoản, phát hiện truy cập bất thường và thống kê tổng hợp số người dùng theo ứng dụng. Dịch vụ không gửi email, không hiển thị quảng cáo, không bán và không chia sẻ dữ liệu hay số liệu thống kê này.",
 	"privacy.sharing.title": "Chia sẻ",
 	"privacy.sharing.body":
-		"Thông tin hồ sơ chỉ được cấp cho các ứng dụng do cùng chủ sở hữu vận hành (Localman, Tunelo) hoặc ứng dụng bạn đã đồng ý cấp quyền, trong phạm vi bạn đồng ý. Không chia sẻ cho bên thứ ba nào khác.",
+		"Thông tin hồ sơ chỉ được cấp cho các ứng dụng do cùng chủ sở hữu vận hành (các ứng dụng của {brandDomain}) hoặc ứng dụng bạn đã đồng ý cấp quyền, trong phạm vi bạn đồng ý. Không chia sẻ cho bên thứ ba nào khác.",
 	"privacy.rights.title": "Quyền của bạn",
 	"privacy.rights.body":
 		"Tại trang {account}, bạn xem và sửa hồ sơ, gỡ liên kết Google, GitHub, Apple hoặc Telegram, thu hồi phiên và ứng dụng đã cấp quyền.",

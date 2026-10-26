@@ -21,7 +21,7 @@ export const zhAccount: Translation<typeof enAccount> = {
 	"account.stat.devices": "设备",
 	"account.stat.apps": "已授权的应用",
 	"account.profile.title": "个人资料",
-	"account.profile.description": "Localman 和 Tunelo 中显示的你的名字。",
+	"account.profile.description": "{brandDomain} 应用中显示的你的名字。",
 	"account.profile.empty": "尚未设置显示名称，应用会显示 @{username}。",
 	"account.profile.nameLabel": "显示名称",
 	"account.profile.save": "保存",

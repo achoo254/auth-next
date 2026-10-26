@@ -22,7 +22,7 @@ export const enAccountActions = {
 	"confirm.delete.lead":
 		"Account {username} and everything tied to it at {brand} are deleted right away. This cannot be undone.",
 	"confirm.delete.signOut":
-		"Every session, device and app you allowed is signed out; you can no longer sign in to Localman, Tunelo or Chat with this account.",
+		"Every session, device and app you allowed is signed out; you can no longer sign in to any {brandDomain} app with this account.",
 	"confirm.delete.providers":
 		"Your Google, GitHub, Apple and Telegram links are removed. Signing in again later creates a new, different account.",
 	"confirm.delete.appData":
@@ -44,7 +44,7 @@ export const enAccountActions = {
 	"confirm.sessions.lead":
 		"Every browser below is signed out of your {brand} account. This browser stays signed in.",
 	"confirm.sessions.effect":
-		"Apps signed in through those browsers, such as Localman and Tunelo on the web, are signed out too. Devices (the Tunelo CLI and phone apps) stay signed in.",
+		"Web apps signed in through those browsers are signed out too. Devices (CLI and phone apps) stay signed in.",
 	"telegram.title": "Link Telegram",
 	"telegram.subtitle":
 		"Open the {brand} bot in Telegram, press Start, then press “{button}” within 10 minutes.",

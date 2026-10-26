@@ -19,7 +19,7 @@ export const enAccount = {
 	"account.stat.devices": "Devices",
 	"account.stat.apps": "Authorized apps",
 	"account.profile.title": "Profile",
-	"account.profile.description": "The name Localman and Tunelo show for you.",
+	"account.profile.description": "The name {brandDomain} apps show for you.",
 	"account.profile.empty": "No display name yet, so apps show @{username}.",
 	"account.profile.nameLabel": "Display name",
 	"account.profile.save": "Save",

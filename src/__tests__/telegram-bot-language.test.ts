@@ -71,7 +71,7 @@ describe("the Telegram bot's language", () => {
 			message: { text: `/start ${code}`, chat, from },
 		});
 		const ask = idp.fake.telegramMessages.at(-1);
-		expect(ask?.text).toContain(`关联到 Auth Next 账号 @${account.username}`);
+		expect(ask?.text).toContain(`关联到 hoandat.com 账号 @${account.username}`);
 		expect(ask?.callbackData).toBe(`link:${code}`);
 
 		await webhook({
@@ -84,7 +84,7 @@ describe("the Telegram bot's language", () => {
 			},
 		});
 		expect(lastTo("9100")).toContain(
-			`已将 Telegram 关联到 Auth Next 账号 @${account.username}`,
+			`已将 Telegram 关联到 hoandat.com 账号 @${account.username}`,
 		);
 		const linked = await repositoryOf(idp).findActiveById(account._id);
 		expect(linked?.telegram?.chatId).toBe("9100");

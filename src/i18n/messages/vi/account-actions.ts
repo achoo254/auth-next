@@ -23,7 +23,7 @@ export const viAccountActions: Translation<typeof enAccountActions> = {
 	"confirm.delete.lead":
 		"Tài khoản {username} và mọi thứ gắn với nó ở {brand} bị xoá ngay. Không khôi phục được.",
 	"confirm.delete.signOut":
-		"Mọi phiên, thiết bị và ứng dụng đã cấp quyền bị đăng xuất; bạn không đăng nhập Localman, Tunelo hay Chat bằng tài khoản này được nữa.",
+		"Mọi phiên, thiết bị và ứng dụng đã cấp quyền bị đăng xuất; bạn không đăng nhập ứng dụng nào của {brandDomain} bằng tài khoản này được nữa.",
 	"confirm.delete.providers":
 		"Liên kết Google, GitHub, Apple và Telegram bị gỡ. Đăng nhập lại sau này sẽ tạo một tài khoản mới, khác tài khoản này.",
 	"confirm.delete.appData":
@@ -43,7 +43,7 @@ export const viAccountActions: Translation<typeof enAccountActions> = {
 	"confirm.sessions.lead":
 		"Mọi trình duyệt bên dưới sẽ bị đăng xuất khỏi tài khoản {brand}. Trình duyệt này vẫn giữ đăng nhập.",
 	"confirm.sessions.effect":
-		"Ứng dụng đăng nhập qua các trình duyệt đó, như Localman và Tunelo bản web, cũng bị đăng xuất. Thiết bị (Tunelo CLI, ứng dụng trên điện thoại) vẫn giữ đăng nhập.",
+		"Các ứng dụng web đăng nhập qua các trình duyệt đó cũng bị đăng xuất. Thiết bị (CLI, ứng dụng trên điện thoại) vẫn giữ đăng nhập.",
 	"telegram.title": "Liên kết Telegram",
 	"telegram.subtitle":
 		"Mở bot {brand} trên Telegram, bấm Start rồi bấm “{button}” trong 10 phút.",

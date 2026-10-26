@@ -4,7 +4,7 @@ import type { Translation } from "../translation.js";
 export const viSignIn: Translation<typeof enSignIn> = {
 	"login.title": "Đăng nhập",
 	"login.titleForApp": "Đăng nhập để tiếp tục tới {app}",
-	"login.tagline": "Một tài khoản {brand} cho Localman và Tunelo.",
+	"login.tagline": "Một tài khoản {brand} cho mọi ứng dụng.",
 	"login.forDevice": "Đăng nhập để duyệt thiết bị.",
 	"login.continueTo": "Để tiếp tục tới {app}.",
 	"login.with": "Đăng nhập với {provider}",
@@ -16,7 +16,7 @@ export const viSignIn: Translation<typeof enSignIn> = {
 	"signup.title": "Tạo tài khoản {brand}",
 	"signup.pageTitle": "Đăng ký",
 	"signup.subtitle":
-		"Dùng chung cho Localman và Tunelo. Đăng ký bằng một trong các tài khoản dưới đây; {brand} không dùng mật khẩu và không gửi email.",
+		"Dùng chung cho mọi ứng dụng của {brandDomain}. Đăng ký bằng một trong các tài khoản dưới đây; {brand} không dùng mật khẩu và không gửi email.",
 	"signup.with": "Đăng ký với {provider}",
 	"signup.haveAccount": "Đã có tài khoản? {link}",
 	"username.title": "Chọn username",
@@ -55,7 +55,7 @@ export const viSignIn: Translation<typeof enSignIn> = {
 	"logout.confirm": "Đăng xuất",
 	"logout.keep": "Không, giữ đăng nhập",
 	"logout.help":
-		"Đăng xuất ở đây cũng đăng xuất Localman và Tunelo web trên trình duyệt này.",
+		"Đăng xuất ở đây cũng đăng xuất các ứng dụng web của {brandDomain} trên trình duyệt này. Thiết bị (CLI, ứng dụng trên điện thoại) vẫn giữ đăng nhập.",
 	"logout.doneTitle": "Đã đăng xuất",
 	"logout.done":
 		"Bạn đã đăng xuất khỏi tài khoản {brand} trên trình duyệt này.",

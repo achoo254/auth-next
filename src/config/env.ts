@@ -87,7 +87,7 @@ const envSchema = z
 		 */
 		TENANT_DOMAIN: z
 			.string()
-			.default("hoandat.com")
+			.default(brand.primaryTenant.domain)
 			.transform((value, ctx) => {
 				const domain = normalizeTenantDomain(value);
 				if (!domain) {

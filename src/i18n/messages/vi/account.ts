@@ -21,7 +21,8 @@ export const viAccount: Translation<typeof enAccount> = {
 	"account.stat.devices": "Thiết bị",
 	"account.stat.apps": "Ứng dụng được cấp quyền",
 	"account.profile.title": "Hồ sơ",
-	"account.profile.description": "Tên Localman và Tunelo hiển thị cho bạn.",
+	"account.profile.description":
+		"Tên các ứng dụng của {brandDomain} hiển thị cho bạn.",
 	"account.profile.empty":
 		"Chưa có tên hiển thị, nên ứng dụng hiện @{username}.",
 	"account.profile.nameLabel": "Tên hiển thị",

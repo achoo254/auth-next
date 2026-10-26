@@ -127,7 +127,7 @@ describe("logout", () => {
 			await browser.request(`${idp.issuer}/session/end`)
 		).text();
 		expect(ask).toContain('id="op.logoutForm"');
-		expect(ask).toContain("Sign out of your Auth Next account");
+		expect(ask).toContain("Sign out of your hoandat.com account");
 		const done = await submitForm(
 			browser,
 			`${idp.issuer}/session/end/confirm`,
