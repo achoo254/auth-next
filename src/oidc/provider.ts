@@ -25,10 +25,7 @@ import {
 } from "./interaction-policy.js";
 import { SIGNING_ALG, type SigningJwks, idTokenSigningAlgs } from "./jwks.js";
 import { createMongoAdapterFactory } from "./mongo-adapter.js";
-import type {
-	PrimaryAppClientsConfig,
-	PrimaryWebApp,
-} from "./primary-app-clients.js";
+import type { PrimaryAppClientsConfig } from "./primary-app-clients.js";
 import { buildProviderFeatures } from "./provider-features.js";
 import { logProviderEvents } from "./provider-logging.js";
 import { createClientMetadataValidator } from "./registration-policy.js";
@@ -38,6 +35,7 @@ import {
 	SUPPORTED_SCOPES,
 	createResourcePolicy,
 } from "./resources.js";
+import type { SignInOnlyApps } from "./sign-in-only-clients.js";
 import {
 	GRANT_IDLE_SECONDS,
 	createRotateAndSlideGrant,
@@ -93,8 +91,8 @@ export interface ProviderDependencies {
 	/** Scribe's and Miu World's clients; primary tenant only. */
 	readonly scribeClients?: PrimaryAppClientsConfig;
 	readonly miuClients?: PrimaryAppClientsConfig;
-	/** Tiểu Đệ's web client; primary tenant only. */
-	readonly tieudeClient?: PrimaryWebApp;
+	/** Tiểu Đệ's, Tử Vi's and Clip's web clients; primary tenant only. */
+	readonly signInOnlyApps?: SignInOnlyApps;
 	readonly accountStore: AccountStore;
 	readonly logger: Logger;
 }
@@ -143,7 +141,7 @@ export function buildProviderConfiguration(
 			deps.chatMobileRedirectUri,
 			deps.scribeClients,
 			deps.miuClients,
-			deps.tieudeClient,
+			deps.signInOnlyApps ?? {},
 		),
 		findAccount: createFindAccount(accountStore),
 		jwks: { keys: jwks.keys.map((key) => ({ ...key })) },

@@ -13,7 +13,11 @@ import {
 import { iosEnvShape } from "./ios-env.js";
 import { checkMiuDevGroup, miuEnvShape } from "./miu-env.js";
 import { checkScribeDevGroup, scribeEnvShape } from "./scribe-env.js";
-import { checkTieudeGroup, tieudeEnvShape } from "./tieude-env.js";
+import {
+	SIGN_IN_ONLY_URL_KEYS,
+	checkSignInOnlyGroups,
+	signInOnlyEnvShape,
+} from "./sign-in-only-env.js";
 import { type TrustProxy, parseTrustProxy } from "./trust-proxy.js";
 import { usageEnvShape } from "./usage-env.js";
 
@@ -53,7 +57,7 @@ const PRODUCTION_URLS = [
 /** Optional URLs that, when set in production, must be public https. */
 const OPTIONAL_PRODUCTION_URLS = [
 	"AUDIT_EVENTS_URL",
-	"TIEUDE_WEB_URL",
+	...SIGN_IN_ONLY_URL_KEYS,
 ] as const;
 
 const envSchema = z
@@ -152,7 +156,7 @@ const envSchema = z
 		...appleEnvShape,
 		...scribeEnvShape,
 		...miuEnvShape,
-		...tieudeEnvShape,
+		...signInOnlyEnvShape,
 		...iosEnvShape,
 		...usageEnvShape,
 	})
@@ -161,7 +165,7 @@ const envSchema = z
 		checkAppleGroup(env, ctx);
 		checkScribeDevGroup(env, ctx);
 		checkMiuDevGroup(env, ctx);
-		checkTieudeGroup(env, ctx);
+		checkSignInOnlyGroups(env, ctx);
 		if (env.NODE_ENV !== "production") return;
 		for (const key of PRODUCTION_URLS) {
 			if (!isPublicHttpsUrl(env[key])) {

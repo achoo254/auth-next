@@ -99,13 +99,21 @@ Bật trên production (không in secret ra terminal):
 
 Rollback: xoá dòng `MIU_WEB_CLIENT_SECRET` rồi reload; IdP không còn client Miu (Miu sẽ báo đăng nhập không khả dụng).
 
-## Client của Tiểu Đệ
+## Client của Tiểu Đệ, Tử Vi và Clip
 
-Tiểu Đệ (repo `tieu-de-next`, `https://tieude.hoandat.com`) dùng `tieude-web` (confidential, `client_secret_basic`, scope chỉ `openid`, chỉ để biết `sub`; không refresh token) — `src/oidc/tieude-client.ts`. Redirect `/auth/callback`. Bật khi đặt **cả hai** `TIEUDE_WEB_URL` + `TIEUDE_WEB_CLIENT_SECRET` (≥ 32 ký tự); cùng secret nằm ở `AUTH_CLIENT_SECRET` trong `/var/www/tieude/.env`.
+Ba app chỉ cần biết khách có tài khoản dùng chung một kiểu client (`src/oidc/sign-in-only-clients.ts`): confidential, `client_secret_basic`, scope chỉ `openid`, không refresh token, redirect `/auth/callback`.
+
+| App | Repo, origin | Client | Biến (đặt **cả hai**, secret ≥ 32 ký tự) | Secret phía app |
+|---|---|---|---|---|
+| Tiểu Đệ | `tieu-de-next`, `https://tieude.hoandat.com` | `tieude-web` | `TIEUDE_WEB_URL`, `TIEUDE_WEB_CLIENT_SECRET` | `AUTH_CLIENT_SECRET` trong `/var/www/tieude/.env` |
+| Tử Vi | `tu-vi-next`, `https://tuvi.hoandat.com` | `tuvi-web` | `TUVI_WEB_URL`, `TUVI_WEB_CLIENT_SECRET` | `AUTH_CLIENT_SECRET` trong `/var/www/tuvi/.env` |
+| Clip | `clip-next`, `https://clip.hoandat.com` | `clip-web` | `CLIP_WEB_URL`, `CLIP_WEB_CLIENT_SECRET` | `AUTH_CLIENT_SECRET` trong `/var/www/clip/.env` |
+
+Khi đã bật, app hiện trên `/apps`.
 
 Gặp `invalid_client` dù `seed-clients` liệt kê client ⟹ bản `dist` trên server cũ: `grep -c tieude-web /var/www/hoandat-auth/dist/server.mjs` phải ≥ 1, không thì chạy lại `infra/deploy.sh`. Kiểm từ ngoài: `curl -s -o /dev/null -w '%{http_code}\n' "https://tieude.hoandat.com/auth/login?lang=vi&cid=probe1234567890abcdef"` → 302 sang `auth.hoandat.com/auth`, và authorize của `tieude-web` trả 303 (như `chat-web`).
 
-Rollback: xoá hai dòng `TIEUDE_WEB_*` rồi reload; nút đăng nhập ở Tiểu Đệ trả `login=fail`, phần còn lại của Tiểu Đệ chạy bình thường.
+Rollback: xoá hai dòng `<APP>_WEB_*` của app đó rồi reload; nút đăng nhập ở app trả lỗi, phần còn lại của app chạy bình thường.
 
 ## App iOS "Tài khoản" (`account-ios`, AASA, APNs)
 

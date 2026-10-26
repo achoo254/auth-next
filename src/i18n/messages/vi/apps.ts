@@ -49,6 +49,12 @@ export const viApps: Translation<typeof enApps> = {
 		"Bot AI làm giúp miễn phí các việc viết nhỏ, sống nhờ tiền ủng hộ tự nguyện.",
 	"apps.tieudeWeb.signIn":
 		"Chọn Đăng nhập trên trang để có thêm lượt dùng miễn phí.",
+	"apps.tuviWeb.description":
+		"Lập lá số tử vi bằng tiếng Việt, xuất ảnh để chia sẻ; mang tính giải trí.",
+	"apps.tuviWeb.signIn": "Chọn Đăng nhập trên trang để lưu lá số.",
+	"apps.clipWeb.description":
+		"Chọn mẫu, gõ vài dòng, thêm ảnh để có video dọc ngắn.",
+	"apps.clipWeb.signIn": "Chọn Đăng nhập trên trang để làm video.",
 	"apps.steps.title": "Đăng nhập diễn ra thế nào",
 	"apps.steps.choose.title": "Chọn một ứng dụng",
 	"apps.steps.choose.body":

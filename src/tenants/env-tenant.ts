@@ -1,7 +1,7 @@
 import type { Env } from "../config/env.js";
 import type { StaticClientSecrets } from "../oidc/clients.js";
 import type { PrimaryAppClientsConfig } from "../oidc/primary-app-clients.js";
-import type { TieudeClientConfig } from "../oidc/tieude-client.js";
+import type { SignInOnlyApps } from "../oidc/sign-in-only-clients.js";
 import type { Tenant } from "./tenant.js";
 
 /**
@@ -15,7 +15,8 @@ export const PRIMARY_TENANT_ID = "primary";
  * before (any shape, so the conformance harness keeps working), its domain
  * `TENANT_DOMAIN` (resources and audiences follow from it), its web apps
  * `LOCALMAN_WEB_URL`, `TUNELO_WEB_URL`, `CHAT_WEB_URL` and, once their client
- * secrets are set, `SCRIBE_WEB_URL`, `MIU_WEB_URL` and `TIEUDE_WEB_URL`.
+ * secrets are set, `SCRIBE_WEB_URL`, `MIU_WEB_URL`, `TIEUDE_WEB_URL`,
+ * `TUVI_WEB_URL` and `CLIP_WEB_URL`.
  */
 export function envTenant(
 	env: Pick<
@@ -32,6 +33,10 @@ export function envTenant(
 		| "MIU_WEB_CLIENT_SECRET"
 		| "TIEUDE_WEB_URL"
 		| "TIEUDE_WEB_CLIENT_SECRET"
+		| "TUVI_WEB_URL"
+		| "TUVI_WEB_CLIENT_SECRET"
+		| "CLIP_WEB_URL"
+		| "CLIP_WEB_CLIENT_SECRET"
 	>,
 ): Tenant {
 	return {
@@ -45,9 +50,7 @@ export function envTenant(
 			chat: env.CHAT_WEB_URL,
 			...(env.SCRIBE_WEB_CLIENT_SECRET ? { scribe: env.SCRIBE_WEB_URL } : {}),
 			...(env.MIU_WEB_CLIENT_SECRET ? { miu: env.MIU_WEB_URL } : {}),
-			...(env.TIEUDE_WEB_URL && env.TIEUDE_WEB_CLIENT_SECRET
-				? { tieude: env.TIEUDE_WEB_URL }
-				: {}),
+			...signInOnlyOrigins(envSignInOnlyApps(env)),
 		},
 	};
 }
@@ -104,15 +107,40 @@ export function envScribeClients(
 }
 
 /**
- * The primary tenant's Tiểu Đệ client, from the environment: undefined
- * unless both its origin and its secret are set (parseEnv rejects one alone).
+ * The primary tenant's Tiểu Đệ, Tử Vi and Clip clients, from the
+ * environment: an app is left out unless both its origin and its secret
+ * are set (parseEnv rejects one alone).
  */
-export function envTieudeClient(
-	env: Pick<Env, "TIEUDE_WEB_URL" | "TIEUDE_WEB_CLIENT_SECRET">,
-): TieudeClientConfig | undefined {
-	const url = env.TIEUDE_WEB_URL;
-	const secret = env.TIEUDE_WEB_CLIENT_SECRET;
-	return url && secret ? { url, secret } : undefined;
+export function envSignInOnlyApps(
+	env: Pick<
+		Env,
+		| "TIEUDE_WEB_URL"
+		| "TIEUDE_WEB_CLIENT_SECRET"
+		| "TUVI_WEB_URL"
+		| "TUVI_WEB_CLIENT_SECRET"
+		| "CLIP_WEB_URL"
+		| "CLIP_WEB_CLIENT_SECRET"
+	>,
+): SignInOnlyApps {
+	const app = (url?: string, secret?: string) =>
+		url && secret ? { url, secret } : undefined;
+	const apps = {
+		tieude: app(env.TIEUDE_WEB_URL, env.TIEUDE_WEB_CLIENT_SECRET),
+		tuvi: app(env.TUVI_WEB_URL, env.TUVI_WEB_CLIENT_SECRET),
+		clip: app(env.CLIP_WEB_URL, env.CLIP_WEB_CLIENT_SECRET),
+	};
+	return Object.fromEntries(
+		Object.entries(apps).filter(([, value]) => value !== undefined),
+	);
+}
+
+/** The origins of the configured apps, for `Tenant.webApps`. */
+function signInOnlyOrigins(
+	apps: SignInOnlyApps,
+): Pick<Tenant["webApps"], "tieude" | "tuvi" | "clip"> {
+	return Object.fromEntries(
+		Object.entries(apps).map(([key, app]) => [key, app.url]),
+	);
 }
 
 /** The primary tenant's Miu World clients, from the environment. */

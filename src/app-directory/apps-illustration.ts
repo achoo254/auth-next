@@ -13,6 +13,8 @@ import type { ListedApp } from "./apps-catalog.js";
  */
 
 const VIEW = { width: 544, height: 300 } as const;
+/** Height given to each app node; the view grows when the apps need more. */
+const APP_SLOT = 50;
 const KEY = { x: 8, width: 124, height: 40 } as const;
 const HUB = {
 	cx: 260,
@@ -49,12 +51,13 @@ function connector(d: string, tone: string): SafeHtml {
 	return html`<path class="hub-line" d="${d}"/><path class="hub-flow tone-${tone}" d="${d}"/>`;
 }
 
-function keyNode(key: (typeof KEYS)[number]): SafeHtml {
-	const y = key.cy - KEY.height / 2;
+function keyNode(key: (typeof KEYS)[number], shift: number): SafeHtml {
+	const cy = key.cy + shift;
+	const y = cy - KEY.height / 2;
 	return html`<g class="hub-node">
 <rect x="${KEY.x}" y="${y}" width="${KEY.width}" height="${KEY.height}" rx="10"/>
-<svg x="${KEY.x + 12}" y="${key.cy - 8}" width="16" height="16" viewBox="0 0 24 24"><path class="hub-mark" d="${providerPath(key.provider)}"/></svg>
-<text class="hub-text" x="${KEY.x + 38}" y="${key.cy + 5}">${key.label}</text>
+<svg x="${KEY.x + 12}" y="${cy - 8}" width="16" height="16" viewBox="0 0 24 24"><path class="hub-mark" d="${providerPath(key.provider)}"/></svg>
+<text class="hub-text" x="${KEY.x + 38}" y="${cy + 5}">${key.label}</text>
 </g>`;
 }
 
@@ -67,9 +70,14 @@ ${appIcon(app.icon, { size: 28, x: APP.x + 6, y: y + 6 })}
 </g>`;
 }
 
+/** Height of the view: the default, or more when the apps need it. */
+function viewHeight(count: number): number {
+	return Math.max(VIEW.height, count * APP_SLOT);
+}
+
 /** Vertical centres of the app nodes, spread evenly over the view. */
 function appCentres(count: number): number[] {
-	const step = VIEW.height / count;
+	const step = viewHeight(count) / count;
 	return Array.from({ length: count }, (_, i) => Math.round(step * (i + 0.5)));
 }
 
@@ -109,7 +117,11 @@ export function hubDiagram(
 	apps: readonly ListedApp[],
 	host: string,
 ): SafeHtml {
-	const hubCy = HUB.y + HUB.height / 2;
+	// Keep the providers and the hub centred when the view grows.
+	const height = viewHeight(apps.length);
+	const shift = (height - VIEW.height) / 2;
+	const hubY = HUB.y + shift;
+	const hubCy = hubY + HUB.height / 2;
 	// The hub grows with the tenant's name and host, within the space
 	// between the provider and app columns.
 	const natural =
@@ -120,7 +132,7 @@ export function hubDiagram(
 	const room = hubWidth - HUB_PAD * 2;
 	const centres = appCentres(apps.length);
 	const inbound = KEYS.map((key) =>
-		connector(link(KEY.x + KEY.width, key.cy, hubX, hubCy), "primary"),
+		connector(link(KEY.x + KEY.width, key.cy + shift, hubX, hubCy), "primary"),
 	);
 	const outbound = apps.map((app, i) =>
 		connector(
@@ -128,11 +140,11 @@ export function hubDiagram(
 			app.tone,
 		),
 	);
-	return html`<svg class="hub" viewBox="0 0 ${VIEW.width} ${VIEW.height}" role="img" aria-label="${i18n.t("apps.diagram.label", { apps: appNames(i18n, apps) })}" data-id="apps-hub">
+	return html`<svg class="hub" viewBox="0 0 ${VIEW.width} ${height}" role="img" aria-label="${i18n.t("apps.diagram.label", { apps: appNames(i18n, apps) })}" data-id="apps-hub">
 ${inbound}${outbound}
-${KEYS.map(keyNode)}
+${KEYS.map((key) => keyNode(key, shift))}
 <g class="hub-node hub-core">
-<rect x="${hubX}" y="${HUB.y}" width="${hubWidth}" height="${HUB.height}" rx="16"/>
+<rect x="${hubX}" y="${hubY}" width="${hubWidth}" height="${HUB.height}" rx="16"/>
 ${hubLabel(i18n.brand.name, BRAND_PX, hubCy - 2, room, "hub-brand")}
 ${hubLabel(host, HOST_PX, hubCy + 18, room, "hub-sub")}
 </g>

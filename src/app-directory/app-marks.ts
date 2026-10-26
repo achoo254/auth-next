@@ -9,7 +9,9 @@ export type AppIconName =
 	| "chat"
 	| "scribe"
 	| "miu"
-	| "tieude";
+	| "tieude"
+	| "tuvi"
+	| "clip";
 
 /**
  * The AI-drawn app marks (rounded, transparent corners), served from
@@ -24,6 +26,8 @@ const ICON_FILES: Readonly<Record<AppIconName, string>> = {
 	scribe: "scribe-mark-128.webp",
 	miu: "miu-mark-128.webp",
 	tieude: "tieude-mark-128.webp",
+	tuvi: "tuvi-mark-128.webp",
+	clip: "clip-mark-128.webp",
 };
 
 /**

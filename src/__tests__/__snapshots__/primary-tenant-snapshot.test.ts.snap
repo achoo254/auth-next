@@ -61,21 +61,21 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <a class="btn btn-secondary" href="#how-sign-in-works" data-id="apps-how">How sign-in works</a>
 </div>
 </div>
-<div class="apps-hero-art"><svg class="hub" viewBox="0 0 544 300" role="img" aria-label="Your hoandat.com account, reached with Google or GitHub, signs you in to Localman, Tunelo, Chat, Scribe, Miu World, and Tiểu Đệ." data-id="apps-hub">
-<path class="hub-line" d="M132 110 C156 110 156 150 180 150"/><path class="hub-flow tone-primary" d="M132 110 C156 110 156 150 180 150"/><path class="hub-line" d="M132 190 C156 190 156 150 180 150"/><path class="hub-flow tone-primary" d="M132 190 C156 190 156 150 180 150"/><path class="hub-line" d="M340 150 C366 150 366 25 392 25"/><path class="hub-flow tone-violet" d="M340 150 C366 150 366 25 392 25"/><path class="hub-line" d="M340 150 C366 150 366 75 392 75"/><path class="hub-flow tone-amber" d="M340 150 C366 150 366 75 392 75"/><path class="hub-line" d="M340 150 C366 150 366 125 392 125"/><path class="hub-flow tone-blue" d="M340 150 C366 150 366 125 392 125"/><path class="hub-line" d="M340 150 C366 150 366 175 392 175"/><path class="hub-flow tone-red" d="M340 150 C366 150 366 175 392 175"/><path class="hub-line" d="M340 150 C366 150 366 225 392 225"/><path class="hub-flow tone-cyan" d="M340 150 C366 150 366 225 392 225"/><path class="hub-line" d="M340 150 C366 150 366 275 392 275"/><path class="hub-flow tone-amber" d="M340 150 C366 150 366 275 392 275"/>
+<div class="apps-hero-art"><svg class="hub" viewBox="0 0 544 400" role="img" aria-label="Your hoandat.com account, reached with Google or GitHub, signs you in to Localman, Tunelo, Chat, Scribe, Miu World, Tiểu Đệ, Tử Vi, and Clip." data-id="apps-hub">
+<path class="hub-line" d="M132 160 C156 160 156 200 180 200"/><path class="hub-flow tone-primary" d="M132 160 C156 160 156 200 180 200"/><path class="hub-line" d="M132 240 C156 240 156 200 180 200"/><path class="hub-flow tone-primary" d="M132 240 C156 240 156 200 180 200"/><path class="hub-line" d="M340 200 C366 200 366 25 392 25"/><path class="hub-flow tone-violet" d="M340 200 C366 200 366 25 392 25"/><path class="hub-line" d="M340 200 C366 200 366 75 392 75"/><path class="hub-flow tone-amber" d="M340 200 C366 200 366 75 392 75"/><path class="hub-line" d="M340 200 C366 200 366 125 392 125"/><path class="hub-flow tone-blue" d="M340 200 C366 200 366 125 392 125"/><path class="hub-line" d="M340 200 C366 200 366 175 392 175"/><path class="hub-flow tone-red" d="M340 200 C366 200 366 175 392 175"/><path class="hub-line" d="M340 200 C366 200 366 225 392 225"/><path class="hub-flow tone-cyan" d="M340 200 C366 200 366 225 392 225"/><path class="hub-line" d="M340 200 C366 200 366 275 392 275"/><path class="hub-flow tone-amber" d="M340 200 C366 200 366 275 392 275"/><path class="hub-line" d="M340 200 C366 200 366 325 392 325"/><path class="hub-flow tone-violet" d="M340 200 C366 200 366 325 392 325"/><path class="hub-line" d="M340 200 C366 200 366 375 392 375"/><path class="hub-flow tone-green" d="M340 200 C366 200 366 375 392 375"/>
 <g class="hub-node">
-<rect x="8" y="90" width="124" height="40" rx="10"/>
-<svg x="20" y="102" width="16" height="16" viewBox="0 0 24 24"><path class="hub-mark" d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"/></svg>
-<text class="hub-text" x="46" y="115">Google</text>
+<rect x="8" y="140" width="124" height="40" rx="10"/>
+<svg x="20" y="152" width="16" height="16" viewBox="0 0 24 24"><path class="hub-mark" d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"/></svg>
+<text class="hub-text" x="46" y="165">Google</text>
 </g><g class="hub-node">
-<rect x="8" y="170" width="124" height="40" rx="10"/>
-<svg x="20" y="182" width="16" height="16" viewBox="0 0 24 24"><path class="hub-mark" d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
-<text class="hub-text" x="46" y="195">GitHub</text>
+<rect x="8" y="220" width="124" height="40" rx="10"/>
+<svg x="20" y="232" width="16" height="16" viewBox="0 0 24 24"><path class="hub-mark" d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+<text class="hub-text" x="46" y="245">GitHub</text>
 </g>
 <g class="hub-node hub-core">
-<rect x="180" y="110" width="160" height="80" rx="16"/>
-<text class="hub-text hub-brand" x="260" y="148" text-anchor="middle">hoandat.com</text>
-<text class="hub-text hub-sub" x="260" y="168" text-anchor="middle">ISSUER_HOST</text>
+<rect x="180" y="160" width="160" height="80" rx="16"/>
+<text class="hub-text hub-brand" x="260" y="198" text-anchor="middle">hoandat.com</text>
+<text class="hub-text hub-sub" x="260" y="218" text-anchor="middle">ISSUER_HOST</text>
 </g>
 <g class="hub-node tone-violet">
 <rect x="392" y="5" width="148" height="40" rx="10"/>
@@ -101,6 +101,14 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <rect x="392" y="255" width="148" height="40" rx="10"/>
 <image href="/assets/img/apps/tieude-mark-128.webp" x="398" y="261" width="28" height="28" aria-hidden="true"/>
 <text class="hub-text hub-app" x="434" y="280">Tiểu Đệ</text>
+</g><g class="hub-node tone-violet">
+<rect x="392" y="305" width="148" height="40" rx="10"/>
+<image href="/assets/img/apps/tuvi-mark-128.webp" x="398" y="311" width="28" height="28" aria-hidden="true"/>
+<text class="hub-text hub-app" x="434" y="330">Tử Vi</text>
+</g><g class="hub-node tone-green">
+<rect x="392" y="355" width="148" height="40" rx="10"/>
+<image href="/assets/img/apps/clip-mark-128.webp" x="398" y="361" width="28" height="28" aria-hidden="true"/>
+<text class="hub-text hub-app" x="434" y="380">Clip</text>
 </g>
 </svg></div>
 </section>
@@ -187,6 +195,24 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <p class="app-card-desc">An AI bot that does small writing jobs for free and lives on voluntary tips.</p>
 <div class="app-card-how"><p class="app-card-how-label">How to sign in</p><p>Choose Sign in on the site to get more free uses.</p></div>
 <div class="app-card-foot"><a class="btn btn-secondary" href="https://tieude.hoandat.com" data-id="app-open-tieude-web">Open</a></div>
+</li><li class="app-card tone-violet" data-id="app-tuvi-web">
+<div class="app-card-head">
+<span class="app-card-icon"><img class="app-mark" src="/assets/img/apps/tuvi-mark-128.webp" width="44" height="44" alt=""></span>
+<div class="app-card-heading"><h3 class="app-card-name">Tử Vi</h3>
+<p class="app-card-meta"><span class="badge badge-neutral">Web app</span><span class="mono">tuvi.hoandat.com</span></p></div>
+</div>
+<p class="app-card-desc">Cast a Vietnamese tử vi birth chart and share it as an image; for fun.</p>
+<div class="app-card-how"><p class="app-card-how-label">How to sign in</p><p>Choose Sign in on the site to save your charts.</p></div>
+<div class="app-card-foot"><a class="btn btn-secondary" href="https://tuvi.hoandat.com" data-id="app-open-tuvi-web">Open</a></div>
+</li><li class="app-card tone-green" data-id="app-clip-web">
+<div class="app-card-head">
+<span class="app-card-icon"><img class="app-mark" src="/assets/img/apps/clip-mark-128.webp" width="44" height="44" alt=""></span>
+<div class="app-card-heading"><h3 class="app-card-name">Clip</h3>
+<p class="app-card-meta"><span class="badge badge-neutral">Web app</span><span class="mono">clip.hoandat.com</span></p></div>
+</div>
+<p class="app-card-desc">Pick a template, type a few lines and add photos to get a short vertical video.</p>
+<div class="app-card-how"><p class="app-card-how-label">How to sign in</p><p>Choose Sign in on the site to make videos.</p></div>
+<div class="app-card-foot"><a class="btn btn-secondary" href="https://clip.hoandat.com" data-id="app-open-clip-web">Open</a></div>
 </li></ul>
 </section>
 <section class="apps-section" id="how-sign-in-works" aria-labelledby="apps-steps-title" data-id="apps-steps">
@@ -243,21 +269,21 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <a class="btn btn-secondary" href="#how-sign-in-works" data-id="apps-how">Đăng nhập diễn ra thế nào</a>
 </div>
 </div>
-<div class="apps-hero-art"><svg class="hub" viewBox="0 0 544 300" role="img" aria-label="Tài khoản hoandat.com, vào bằng Google hoặc GitHub, đăng nhập cho bạn vào Localman, Tunelo, Chat, Scribe, Miu World và Tiểu Đệ." data-id="apps-hub">
-<path class="hub-line" d="M132 110 C156 110 156 150 180 150"/><path class="hub-flow tone-primary" d="M132 110 C156 110 156 150 180 150"/><path class="hub-line" d="M132 190 C156 190 156 150 180 150"/><path class="hub-flow tone-primary" d="M132 190 C156 190 156 150 180 150"/><path class="hub-line" d="M340 150 C366 150 366 25 392 25"/><path class="hub-flow tone-violet" d="M340 150 C366 150 366 25 392 25"/><path class="hub-line" d="M340 150 C366 150 366 75 392 75"/><path class="hub-flow tone-amber" d="M340 150 C366 150 366 75 392 75"/><path class="hub-line" d="M340 150 C366 150 366 125 392 125"/><path class="hub-flow tone-blue" d="M340 150 C366 150 366 125 392 125"/><path class="hub-line" d="M340 150 C366 150 366 175 392 175"/><path class="hub-flow tone-red" d="M340 150 C366 150 366 175 392 175"/><path class="hub-line" d="M340 150 C366 150 366 225 392 225"/><path class="hub-flow tone-cyan" d="M340 150 C366 150 366 225 392 225"/><path class="hub-line" d="M340 150 C366 150 366 275 392 275"/><path class="hub-flow tone-amber" d="M340 150 C366 150 366 275 392 275"/>
+<div class="apps-hero-art"><svg class="hub" viewBox="0 0 544 400" role="img" aria-label="Tài khoản hoandat.com, vào bằng Google hoặc GitHub, đăng nhập cho bạn vào Localman, Tunelo, Chat, Scribe, Miu World, Tiểu Đệ, Tử Vi và Clip." data-id="apps-hub">
+<path class="hub-line" d="M132 160 C156 160 156 200 180 200"/><path class="hub-flow tone-primary" d="M132 160 C156 160 156 200 180 200"/><path class="hub-line" d="M132 240 C156 240 156 200 180 200"/><path class="hub-flow tone-primary" d="M132 240 C156 240 156 200 180 200"/><path class="hub-line" d="M340 200 C366 200 366 25 392 25"/><path class="hub-flow tone-violet" d="M340 200 C366 200 366 25 392 25"/><path class="hub-line" d="M340 200 C366 200 366 75 392 75"/><path class="hub-flow tone-amber" d="M340 200 C366 200 366 75 392 75"/><path class="hub-line" d="M340 200 C366 200 366 125 392 125"/><path class="hub-flow tone-blue" d="M340 200 C366 200 366 125 392 125"/><path class="hub-line" d="M340 200 C366 200 366 175 392 175"/><path class="hub-flow tone-red" d="M340 200 C366 200 366 175 392 175"/><path class="hub-line" d="M340 200 C366 200 366 225 392 225"/><path class="hub-flow tone-cyan" d="M340 200 C366 200 366 225 392 225"/><path class="hub-line" d="M340 200 C366 200 366 275 392 275"/><path class="hub-flow tone-amber" d="M340 200 C366 200 366 275 392 275"/><path class="hub-line" d="M340 200 C366 200 366 325 392 325"/><path class="hub-flow tone-violet" d="M340 200 C366 200 366 325 392 325"/><path class="hub-line" d="M340 200 C366 200 366 375 392 375"/><path class="hub-flow tone-green" d="M340 200 C366 200 366 375 392 375"/>
 <g class="hub-node">
-<rect x="8" y="90" width="124" height="40" rx="10"/>
-<svg x="20" y="102" width="16" height="16" viewBox="0 0 24 24"><path class="hub-mark" d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"/></svg>
-<text class="hub-text" x="46" y="115">Google</text>
+<rect x="8" y="140" width="124" height="40" rx="10"/>
+<svg x="20" y="152" width="16" height="16" viewBox="0 0 24 24"><path class="hub-mark" d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"/></svg>
+<text class="hub-text" x="46" y="165">Google</text>
 </g><g class="hub-node">
-<rect x="8" y="170" width="124" height="40" rx="10"/>
-<svg x="20" y="182" width="16" height="16" viewBox="0 0 24 24"><path class="hub-mark" d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
-<text class="hub-text" x="46" y="195">GitHub</text>
+<rect x="8" y="220" width="124" height="40" rx="10"/>
+<svg x="20" y="232" width="16" height="16" viewBox="0 0 24 24"><path class="hub-mark" d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+<text class="hub-text" x="46" y="245">GitHub</text>
 </g>
 <g class="hub-node hub-core">
-<rect x="180" y="110" width="160" height="80" rx="16"/>
-<text class="hub-text hub-brand" x="260" y="148" text-anchor="middle">hoandat.com</text>
-<text class="hub-text hub-sub" x="260" y="168" text-anchor="middle">ISSUER_HOST</text>
+<rect x="180" y="160" width="160" height="80" rx="16"/>
+<text class="hub-text hub-brand" x="260" y="198" text-anchor="middle">hoandat.com</text>
+<text class="hub-text hub-sub" x="260" y="218" text-anchor="middle">ISSUER_HOST</text>
 </g>
 <g class="hub-node tone-violet">
 <rect x="392" y="5" width="148" height="40" rx="10"/>
@@ -283,6 +309,14 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <rect x="392" y="255" width="148" height="40" rx="10"/>
 <image href="/assets/img/apps/tieude-mark-128.webp" x="398" y="261" width="28" height="28" aria-hidden="true"/>
 <text class="hub-text hub-app" x="434" y="280">Tiểu Đệ</text>
+</g><g class="hub-node tone-violet">
+<rect x="392" y="305" width="148" height="40" rx="10"/>
+<image href="/assets/img/apps/tuvi-mark-128.webp" x="398" y="311" width="28" height="28" aria-hidden="true"/>
+<text class="hub-text hub-app" x="434" y="330">Tử Vi</text>
+</g><g class="hub-node tone-green">
+<rect x="392" y="355" width="148" height="40" rx="10"/>
+<image href="/assets/img/apps/clip-mark-128.webp" x="398" y="361" width="28" height="28" aria-hidden="true"/>
+<text class="hub-text hub-app" x="434" y="380">Clip</text>
 </g>
 </svg></div>
 </section>
@@ -369,6 +403,24 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <p class="app-card-desc">Bot AI làm giúp miễn phí các việc viết nhỏ, sống nhờ tiền ủng hộ tự nguyện.</p>
 <div class="app-card-how"><p class="app-card-how-label">Cách đăng nhập</p><p>Chọn Đăng nhập trên trang để có thêm lượt dùng miễn phí.</p></div>
 <div class="app-card-foot"><a class="btn btn-secondary" href="https://tieude.hoandat.com" data-id="app-open-tieude-web">Mở</a></div>
+</li><li class="app-card tone-violet" data-id="app-tuvi-web">
+<div class="app-card-head">
+<span class="app-card-icon"><img class="app-mark" src="/assets/img/apps/tuvi-mark-128.webp" width="44" height="44" alt=""></span>
+<div class="app-card-heading"><h3 class="app-card-name">Tử Vi</h3>
+<p class="app-card-meta"><span class="badge badge-neutral">Ứng dụng web</span><span class="mono">tuvi.hoandat.com</span></p></div>
+</div>
+<p class="app-card-desc">Lập lá số tử vi bằng tiếng Việt, xuất ảnh để chia sẻ; mang tính giải trí.</p>
+<div class="app-card-how"><p class="app-card-how-label">Cách đăng nhập</p><p>Chọn Đăng nhập trên trang để lưu lá số.</p></div>
+<div class="app-card-foot"><a class="btn btn-secondary" href="https://tuvi.hoandat.com" data-id="app-open-tuvi-web">Mở</a></div>
+</li><li class="app-card tone-green" data-id="app-clip-web">
+<div class="app-card-head">
+<span class="app-card-icon"><img class="app-mark" src="/assets/img/apps/clip-mark-128.webp" width="44" height="44" alt=""></span>
+<div class="app-card-heading"><h3 class="app-card-name">Clip</h3>
+<p class="app-card-meta"><span class="badge badge-neutral">Ứng dụng web</span><span class="mono">clip.hoandat.com</span></p></div>
+</div>
+<p class="app-card-desc">Chọn mẫu, gõ vài dòng, thêm ảnh để có video dọc ngắn.</p>
+<div class="app-card-how"><p class="app-card-how-label">Cách đăng nhập</p><p>Chọn Đăng nhập trên trang để làm video.</p></div>
+<div class="app-card-foot"><a class="btn btn-secondary" href="https://clip.hoandat.com" data-id="app-open-clip-web">Mở</a></div>
 </li></ul>
 </section>
 <section class="apps-section" id="how-sign-in-works" aria-labelledby="apps-steps-title" data-id="apps-steps">
@@ -425,21 +477,21 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <a class="btn btn-secondary" href="#how-sign-in-works" data-id="apps-how">登录如何进行</a>
 </div>
 </div>
-<div class="apps-hero-art"><svg class="hub" viewBox="0 0 544 300" role="img" aria-label="通过 Google 或 GitHub 进入你的 hoandat.com 账号，即可登录 Localman、Tunelo、Chat、Scribe、Miu World和Tiểu Đệ。" data-id="apps-hub">
-<path class="hub-line" d="M132 110 C156 110 156 150 180 150"/><path class="hub-flow tone-primary" d="M132 110 C156 110 156 150 180 150"/><path class="hub-line" d="M132 190 C156 190 156 150 180 150"/><path class="hub-flow tone-primary" d="M132 190 C156 190 156 150 180 150"/><path class="hub-line" d="M340 150 C366 150 366 25 392 25"/><path class="hub-flow tone-violet" d="M340 150 C366 150 366 25 392 25"/><path class="hub-line" d="M340 150 C366 150 366 75 392 75"/><path class="hub-flow tone-amber" d="M340 150 C366 150 366 75 392 75"/><path class="hub-line" d="M340 150 C366 150 366 125 392 125"/><path class="hub-flow tone-blue" d="M340 150 C366 150 366 125 392 125"/><path class="hub-line" d="M340 150 C366 150 366 175 392 175"/><path class="hub-flow tone-red" d="M340 150 C366 150 366 175 392 175"/><path class="hub-line" d="M340 150 C366 150 366 225 392 225"/><path class="hub-flow tone-cyan" d="M340 150 C366 150 366 225 392 225"/><path class="hub-line" d="M340 150 C366 150 366 275 392 275"/><path class="hub-flow tone-amber" d="M340 150 C366 150 366 275 392 275"/>
+<div class="apps-hero-art"><svg class="hub" viewBox="0 0 544 400" role="img" aria-label="通过 Google 或 GitHub 进入你的 hoandat.com 账号，即可登录 Localman、Tunelo、Chat、Scribe、Miu World、Tiểu Đệ、Tử Vi和Clip。" data-id="apps-hub">
+<path class="hub-line" d="M132 160 C156 160 156 200 180 200"/><path class="hub-flow tone-primary" d="M132 160 C156 160 156 200 180 200"/><path class="hub-line" d="M132 240 C156 240 156 200 180 200"/><path class="hub-flow tone-primary" d="M132 240 C156 240 156 200 180 200"/><path class="hub-line" d="M340 200 C366 200 366 25 392 25"/><path class="hub-flow tone-violet" d="M340 200 C366 200 366 25 392 25"/><path class="hub-line" d="M340 200 C366 200 366 75 392 75"/><path class="hub-flow tone-amber" d="M340 200 C366 200 366 75 392 75"/><path class="hub-line" d="M340 200 C366 200 366 125 392 125"/><path class="hub-flow tone-blue" d="M340 200 C366 200 366 125 392 125"/><path class="hub-line" d="M340 200 C366 200 366 175 392 175"/><path class="hub-flow tone-red" d="M340 200 C366 200 366 175 392 175"/><path class="hub-line" d="M340 200 C366 200 366 225 392 225"/><path class="hub-flow tone-cyan" d="M340 200 C366 200 366 225 392 225"/><path class="hub-line" d="M340 200 C366 200 366 275 392 275"/><path class="hub-flow tone-amber" d="M340 200 C366 200 366 275 392 275"/><path class="hub-line" d="M340 200 C366 200 366 325 392 325"/><path class="hub-flow tone-violet" d="M340 200 C366 200 366 325 392 325"/><path class="hub-line" d="M340 200 C366 200 366 375 392 375"/><path class="hub-flow tone-green" d="M340 200 C366 200 366 375 392 375"/>
 <g class="hub-node">
-<rect x="8" y="90" width="124" height="40" rx="10"/>
-<svg x="20" y="102" width="16" height="16" viewBox="0 0 24 24"><path class="hub-mark" d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"/></svg>
-<text class="hub-text" x="46" y="115">Google</text>
+<rect x="8" y="140" width="124" height="40" rx="10"/>
+<svg x="20" y="152" width="16" height="16" viewBox="0 0 24 24"><path class="hub-mark" d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"/></svg>
+<text class="hub-text" x="46" y="165">Google</text>
 </g><g class="hub-node">
-<rect x="8" y="170" width="124" height="40" rx="10"/>
-<svg x="20" y="182" width="16" height="16" viewBox="0 0 24 24"><path class="hub-mark" d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
-<text class="hub-text" x="46" y="195">GitHub</text>
+<rect x="8" y="220" width="124" height="40" rx="10"/>
+<svg x="20" y="232" width="16" height="16" viewBox="0 0 24 24"><path class="hub-mark" d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+<text class="hub-text" x="46" y="245">GitHub</text>
 </g>
 <g class="hub-node hub-core">
-<rect x="180" y="110" width="160" height="80" rx="16"/>
-<text class="hub-text hub-brand" x="260" y="148" text-anchor="middle">hoandat.com</text>
-<text class="hub-text hub-sub" x="260" y="168" text-anchor="middle">ISSUER_HOST</text>
+<rect x="180" y="160" width="160" height="80" rx="16"/>
+<text class="hub-text hub-brand" x="260" y="198" text-anchor="middle">hoandat.com</text>
+<text class="hub-text hub-sub" x="260" y="218" text-anchor="middle">ISSUER_HOST</text>
 </g>
 <g class="hub-node tone-violet">
 <rect x="392" y="5" width="148" height="40" rx="10"/>
@@ -465,6 +517,14 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <rect x="392" y="255" width="148" height="40" rx="10"/>
 <image href="/assets/img/apps/tieude-mark-128.webp" x="398" y="261" width="28" height="28" aria-hidden="true"/>
 <text class="hub-text hub-app" x="434" y="280">Tiểu Đệ</text>
+</g><g class="hub-node tone-violet">
+<rect x="392" y="305" width="148" height="40" rx="10"/>
+<image href="/assets/img/apps/tuvi-mark-128.webp" x="398" y="311" width="28" height="28" aria-hidden="true"/>
+<text class="hub-text hub-app" x="434" y="330">Tử Vi</text>
+</g><g class="hub-node tone-green">
+<rect x="392" y="355" width="148" height="40" rx="10"/>
+<image href="/assets/img/apps/clip-mark-128.webp" x="398" y="361" width="28" height="28" aria-hidden="true"/>
+<text class="hub-text hub-app" x="434" y="380">Clip</text>
 </g>
 </svg></div>
 </section>
@@ -551,6 +611,24 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <p class="app-card-desc">免费帮你写些小东西的 AI 机器人，靠自愿打赏维持运行。</p>
 <div class="app-card-how"><p class="app-card-how-label">登录方式</p><p>在网站上选择登录，即可获得更多免费次数。</p></div>
 <div class="app-card-foot"><a class="btn btn-secondary" href="https://tieude.hoandat.com" data-id="app-open-tieude-web">打开</a></div>
+</li><li class="app-card tone-violet" data-id="app-tuvi-web">
+<div class="app-card-head">
+<span class="app-card-icon"><img class="app-mark" src="/assets/img/apps/tuvi-mark-128.webp" width="44" height="44" alt=""></span>
+<div class="app-card-heading"><h3 class="app-card-name">Tử Vi</h3>
+<p class="app-card-meta"><span class="badge badge-neutral">网页应用</span><span class="mono">tuvi.hoandat.com</span></p></div>
+</div>
+<p class="app-card-desc">用越南语排紫微斗数命盘，并导出图片分享；仅供娱乐。</p>
+<div class="app-card-how"><p class="app-card-how-label">登录方式</p><p>在网站上选择登录，即可保存命盘。</p></div>
+<div class="app-card-foot"><a class="btn btn-secondary" href="https://tuvi.hoandat.com" data-id="app-open-tuvi-web">打开</a></div>
+</li><li class="app-card tone-green" data-id="app-clip-web">
+<div class="app-card-head">
+<span class="app-card-icon"><img class="app-mark" src="/assets/img/apps/clip-mark-128.webp" width="44" height="44" alt=""></span>
+<div class="app-card-heading"><h3 class="app-card-name">Clip</h3>
+<p class="app-card-meta"><span class="badge badge-neutral">网页应用</span><span class="mono">clip.hoandat.com</span></p></div>
+</div>
+<p class="app-card-desc">选一个模板，写几行字，加几张照片，生成竖屏短视频。</p>
+<div class="app-card-how"><p class="app-card-how-label">登录方式</p><p>在网站上选择登录，即可制作视频。</p></div>
+<div class="app-card-foot"><a class="btn btn-secondary" href="https://clip.hoandat.com" data-id="app-open-clip-web">打开</a></div>
 </li></ul>
 </section>
 <section class="apps-section" id="how-sign-in-works" aria-labelledby="apps-steps-title" data-id="apps-steps">
@@ -1231,6 +1309,58 @@ exports[`primary tenant (hoandat.com) is unchanged > serves the same static clie
     "subject_type": "public",
     "token_endpoint_auth_method": "client_secret_basic",
   },
+  {
+    "allowed_resources": [],
+    "application_type": "web",
+    "backchannel_logout_session_required": false,
+    "client_id": "tuvi-web",
+    "client_name": "Tử Vi",
+    "dpop_bound_access_tokens": false,
+    "grant_types": [
+      "authorization_code",
+    ],
+    "id_token_signed_response_alg": "ES256",
+    "post_logout_redirect_uris": [
+      "https://tuvi.hoandat.com/",
+    ],
+    "redirect_uris": [
+      "https://tuvi.hoandat.com/auth/callback",
+    ],
+    "require_auth_time": false,
+    "require_pushed_authorization_requests": false,
+    "response_types": [
+      "code",
+    ],
+    "scope": "openid",
+    "subject_type": "public",
+    "token_endpoint_auth_method": "client_secret_basic",
+  },
+  {
+    "allowed_resources": [],
+    "application_type": "web",
+    "backchannel_logout_session_required": false,
+    "client_id": "clip-web",
+    "client_name": "Clip",
+    "dpop_bound_access_tokens": false,
+    "grant_types": [
+      "authorization_code",
+    ],
+    "id_token_signed_response_alg": "ES256",
+    "post_logout_redirect_uris": [
+      "https://clip.hoandat.com/",
+    ],
+    "redirect_uris": [
+      "https://clip.hoandat.com/auth/callback",
+    ],
+    "require_auth_time": false,
+    "require_pushed_authorization_requests": false,
+    "response_types": [
+      "code",
+    ],
+    "scope": "openid",
+    "subject_type": "public",
+    "token_endpoint_auth_method": "client_secret_basic",
+  },
 ]
 `;
 
@@ -1306,6 +1436,8 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in en 
   "apps.chatMcp.signIn": "Add {address} to your AI tool as an MCP server, then approve what it may do on the consent page.",
   "apps.chatWeb.description": "Fast messaging with searchable history and bots.",
   "apps.chatWeb.signIn": "Choose Sign in on the site.",
+  "apps.clipWeb.description": "Pick a template, type a few lines and add photos to get a short vertical video.",
+  "apps.clipWeb.signIn": "Choose Sign in on the site to make videos.",
   "apps.cta.account": "Manage your account",
   "apps.cta.how": "How sign-in works",
   "apps.diagram.label": "Your hoandat.com account, reached with Google or GitHub, signs you in to {apps}.",
@@ -1343,6 +1475,8 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in en 
   "apps.tuneloCli.signIn": "Run {command} in a terminal, then enter the code it shows at {device}.",
   "apps.tuneloWeb.description": "Your tunnels in the browser.",
   "apps.tuneloWeb.signIn": "Choose Sign in on the site.",
+  "apps.tuviWeb.description": "Cast a Vietnamese tử vi birth chart and share it as an image; for fun.",
+  "apps.tuviWeb.signIn": "Choose Sign in on the site to save your charts.",
   "bot.link.ask": "Link this Telegram chat to hoandat.com account @{username}? Only confirm if you just opened the link from your account page yourself.",
   "bot.link.confirm": "Confirm link",
   "bot.link.done": "Linked Telegram to hoandat.com account @{username}. You'll get your account's security notices here.",
@@ -1646,6 +1780,8 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in vi 
   "apps.chatMcp.signIn": "Thêm {address} vào công cụ AI làm MCP server, rồi duyệt những gì nó được làm ở trang cấp quyền.",
   "apps.chatWeb.description": "Nhắn tin nhanh, tìm lại lịch sử tin nhắn và dùng bot.",
   "apps.chatWeb.signIn": "Chọn Đăng nhập trên trang.",
+  "apps.clipWeb.description": "Chọn mẫu, gõ vài dòng, thêm ảnh để có video dọc ngắn.",
+  "apps.clipWeb.signIn": "Chọn Đăng nhập trên trang để làm video.",
   "apps.cta.account": "Quản lý tài khoản",
   "apps.cta.how": "Đăng nhập diễn ra thế nào",
   "apps.diagram.label": "Tài khoản hoandat.com, vào bằng Google hoặc GitHub, đăng nhập cho bạn vào {apps}.",
@@ -1683,6 +1819,8 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in vi 
   "apps.tuneloCli.signIn": "Chạy {command} trong terminal, rồi nhập mã nó hiện ở {device}.",
   "apps.tuneloWeb.description": "Tunnel của bạn trên trình duyệt.",
   "apps.tuneloWeb.signIn": "Chọn Đăng nhập trên trang.",
+  "apps.tuviWeb.description": "Lập lá số tử vi bằng tiếng Việt, xuất ảnh để chia sẻ; mang tính giải trí.",
+  "apps.tuviWeb.signIn": "Chọn Đăng nhập trên trang để lưu lá số.",
   "bot.link.ask": "Liên kết chat Telegram này với tài khoản hoandat.com @{username}? Chỉ bấm xác nhận nếu chính bạn vừa mở link từ trang tài khoản.",
   "bot.link.confirm": "Xác nhận liên kết",
   "bot.link.done": "Đã liên kết Telegram với tài khoản hoandat.com @{username}. Bạn sẽ nhận thông báo bảo mật của tài khoản ở đây.",
@@ -1986,6 +2124,8 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in zh-
   "apps.chatMcp.signIn": "在 AI 工具中把 {address} 添加为 MCP 服务器，然后在授权页面批准它可以执行的操作。",
   "apps.chatWeb.description": "快速聊天，可搜索历史消息并使用机器人。",
   "apps.chatWeb.signIn": "在网站上选择登录。",
+  "apps.clipWeb.description": "选一个模板，写几行字，加几张照片，生成竖屏短视频。",
+  "apps.clipWeb.signIn": "在网站上选择登录，即可制作视频。",
   "apps.cta.account": "管理你的账号",
   "apps.cta.how": "登录如何进行",
   "apps.diagram.label": "通过 Google 或 GitHub 进入你的 hoandat.com 账号，即可登录 {apps}。",
@@ -2023,6 +2163,8 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in zh-
   "apps.tuneloCli.signIn": "在终端运行 {command}，然后在 {device} 输入它显示的代码。",
   "apps.tuneloWeb.description": "在浏览器中查看你的隧道。",
   "apps.tuneloWeb.signIn": "在网站上选择登录。",
+  "apps.tuviWeb.description": "用越南语排紫微斗数命盘，并导出图片分享；仅供娱乐。",
+  "apps.tuviWeb.signIn": "在网站上选择登录，即可保存命盘。",
   "bot.link.ask": "将此 Telegram 聊天关联到 hoandat.com 账号 @{username}？只有在你本人刚从账号页面打开该链接时才确认。",
   "bot.link.confirm": "确认关联",
   "bot.link.done": "已将 Telegram 关联到 hoandat.com 账号 @{username}。你将在这里收到账号的安全通知。",

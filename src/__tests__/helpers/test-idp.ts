@@ -26,8 +26,8 @@ import {
 	envClientSecrets,
 	envMiuClients,
 	envScribeClients,
+	envSignInOnlyApps,
 	envTenant,
-	envTieudeClient,
 } from "../../tenants/env-tenant.js";
 import type { Tenant } from "../../tenants/tenant.js";
 import { createAutoInteractions } from "./auto-interactions.js";
@@ -153,7 +153,7 @@ export async function startTestIdp(options: TestIdpOptions): Promise<TestIdp> {
 		chatMobileRedirectUri: env.CHAT_MOBILE_REDIRECT_URI,
 		scribeClients: envScribeClients(env),
 		miuClients: envMiuClients(env),
-		tieudeClient: envTieudeClient(env),
+		signInOnlyApps: envSignInOnlyApps(env),
 		clientSecrets: envClientSecrets(env),
 		accountStore:
 			options.interactions === "real"

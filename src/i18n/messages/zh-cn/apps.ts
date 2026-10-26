@@ -43,6 +43,12 @@ export const zhApps: Translation<typeof enApps> = {
 	"apps.tieudeWeb.description":
 		"免费帮你写些小东西的 AI 机器人，靠自愿打赏维持运行。",
 	"apps.tieudeWeb.signIn": "在网站上选择登录，即可获得更多免费次数。",
+	"apps.tuviWeb.description":
+		"用越南语排紫微斗数命盘，并导出图片分享；仅供娱乐。",
+	"apps.tuviWeb.signIn": "在网站上选择登录，即可保存命盘。",
+	"apps.clipWeb.description":
+		"选一个模板，写几行字，加几张照片，生成竖屏短视频。",
+	"apps.clipWeb.signIn": "在网站上选择登录，即可制作视频。",
 	"apps.steps.title": "登录流程",
 	"apps.steps.choose.title": "选择一个应用",
 	"apps.steps.choose.body": "在它的网站上选择登录，或在终端运行 {command}。",

@@ -47,6 +47,12 @@ export const enApps = {
 	"apps.tieudeWeb.description":
 		"An AI bot that does small writing jobs for free and lives on voluntary tips.",
 	"apps.tieudeWeb.signIn": "Choose Sign in on the site to get more free uses.",
+	"apps.tuviWeb.description":
+		"Cast a Vietnamese tử vi birth chart and share it as an image; for fun.",
+	"apps.tuviWeb.signIn": "Choose Sign in on the site to save your charts.",
+	"apps.clipWeb.description":
+		"Pick a template, type a few lines and add photos to get a short vertical video.",
+	"apps.clipWeb.signIn": "Choose Sign in on the site to make videos.",
 	"apps.steps.title": "How sign-in works",
 	"apps.steps.choose.title": "Pick an app",
 	"apps.steps.choose.body":

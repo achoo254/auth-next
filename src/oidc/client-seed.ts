@@ -6,8 +6,8 @@ import {
 	envClientSecrets,
 	envMiuClients,
 	envScribeClients,
+	envSignInOnlyApps,
 	envTenant,
-	envTieudeClient,
 } from "../tenants/env-tenant.js";
 import { inTenant } from "../tenants/tenant-data.js";
 import { createInMemoryAccountStore } from "./claims.js";
@@ -17,7 +17,7 @@ import { isMiuClientId } from "./miu-clients.js";
 import { collectionNameFor } from "./mongo-adapter.js";
 import { createProvider } from "./provider.js";
 import { isScribeClientId } from "./scribe-clients.js";
-import { isTieudeClientId } from "./tieude-client.js";
+import { isSignInOnlyClientId } from "./sign-in-only-clients.js";
 
 /** One static client as oidc-provider validated it; never its secret. */
 export interface StaticClientSummary {
@@ -58,7 +58,7 @@ function isOptionalClientId(clientId: string): boolean {
 	return (
 		isScribeClientId(clientId) ||
 		isMiuClientId(clientId) ||
-		isTieudeClientId(clientId)
+		isSignInOnlyClientId(clientId)
 	);
 }
 
@@ -83,7 +83,7 @@ export async function inspectStaticClients(deps: {
 		chatMobileRedirectUri: deps.env.CHAT_MOBILE_REDIRECT_URI,
 		scribeClients: envScribeClients(deps.env),
 		miuClients: envMiuClients(deps.env),
-		tieudeClient: envTieudeClient(deps.env),
+		signInOnlyApps: envSignInOnlyApps(deps.env),
 		clientSecrets: envClientSecrets(deps.env),
 		accountStore: createInMemoryAccountStore([]),
 		logger: createLogger("silent"),
@@ -91,7 +91,7 @@ export async function inspectStaticClients(deps: {
 	const clients: StaticClientSummary[] = [];
 	for (const clientId of Object.values(STATIC_CLIENT_IDS)) {
 		const client = await provider.Client.find(clientId);
-		// Scribe's, Miu's and Tiểu Đệ's clients exist only when configured.
+		// Scribe's, Miu's, Tiểu Đệ's, Tử Vi's and Clip's exist only when configured.
 		if (!client && isOptionalClientId(clientId)) continue;
 		if (!client) throw new Error(`Static client ${clientId} is missing`);
 		const metadata = client.metadata();
