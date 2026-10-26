@@ -129,7 +129,9 @@ Not verified yet:
 
 - `xcodebuild test` on a simulator (unit tests on iOS, Keychain test, UI
   tests): first run is on CI.
-- Anything against a real IdP: `/api/account`, the `account-ios` client, AASA
-  and `/ios/*` pages do not exist yet (phase 02/03 server work).
+- Anything against a real IdP. The server side now exists in this repo
+  (`src/account-api/`, `src/oidc/account-ios-client.ts`,
+  `src/http/apple-app-site-association.ts`, `src/http/ios-callback-page.ts`),
+  but the app has not been run against it.
 - On a device: universal-link callback, sign-in with Google/GitHub/Apple,
   Face ID, push delivery, deletion (phase 04 validation, with the owner).

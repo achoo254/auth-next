@@ -1,6 +1,6 @@
 # auth-next
 
-`auth-next` là IdP OpenID Connect tự host tại `auth.hoandat.com`, nơi đăng nhập chung của hệ `*-next` (Localman, Tunelo, Chat, Scribe, Miu World, Tiểu Đệ và app iOS "Tài khoản"). Một tài khoản hoandat dùng được cho mọi app; app không tự giữ mật khẩu hay danh tính. Tên cũ là `hoandat-auth`: process pm2 và thư mục trên server vẫn giữ tên này ([`infra/deploy.sh`](infra/deploy.sh)).
+`auth-next` là IdP OpenID Connect tự host tại `auth.hoandat.com`, nơi đăng nhập chung của hệ `*-next` (Localman, Tunelo, Chat, Scribe, Miu World, Tiểu Đệ và app iOS "Tài khoản"). Một tài khoản hoandat.com dùng được cho mọi app; app không tự giữ mật khẩu hay danh tính. Tên cũ là `hoandat-auth`: process pm2 và thư mục trên server vẫn giữ tên này ([`infra/deploy.sh`](infra/deploy.sh)).
 
 Dựng trên [`oidc-provider`](https://github.com/panva/node-oidc-provider), Express và MongoDB (phiên bản ở [`package.json`](package.json)). **App tích hợp đọc [`docs/integration-guide.md`](docs/integration-guide.md)**: đó là hợp đồng với client, README không lặp lại.
 

@@ -3,6 +3,7 @@
 - Trạng thái: chấp nhận
 - Ngày: 2026-10-20
 - Phạm vi: trang đăng nhập của interaction ở tenant chính, tầng tài khoản, audit. Ngoại lệ duy nhất của ADR 0004 ("không mật khẩu"); tenant sổ (ADR 0006) không bao giờ có.
+- Hết hiệu lực một phần: tenant sổ không còn từ [ADR 0013](0013-single-tenant.md); các câu "chỉ tenant chính" nay áp cho tenant duy nhất.
 
 ## Bối cảnh
 

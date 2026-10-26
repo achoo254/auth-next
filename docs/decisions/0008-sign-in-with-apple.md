@@ -3,6 +3,7 @@
 - Trạng thái: chấp nhận (code xong, chờ tài khoản Apple Developer để bật)
 - Ngày: 2026-10-19
 - Phạm vi: trang đăng nhập/đăng ký, `/account`, tầng tài khoản, `/oauth/apple/*`; mở rộng ADR 0004 mục 1 (danh sách cách đăng nhập). Không đổi gì của tenant sổ (ADR 0006) hay bản tự host (ADR 0007).
+- Hết hiệu lực một phần: câu về tenant sổ ở mục 1 bỏ theo [ADR 0013](0013-single-tenant.md) (chỉ còn một tenant, Apple áp cho nó); câu "IdP chưa có xoá tài khoản" ở mục 4 bị [ADR 0009](0009-account-deletion.md) thay (xoá tài khoản gọi `revokeUnlinked`).
 
 ## Bối cảnh
 

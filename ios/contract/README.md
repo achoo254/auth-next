@@ -2,17 +2,11 @@
 
 What the iOS app `com.hoandat.account` (client `account-ios`) sends and
 expects. The app is built against this file; the server side
-(phase 02 and 03 of `plans/dattqh/261020-0742-ios-account-app/`) implements
-it. The JSON files next to this README are the shared fixtures: the Swift
-tests decode them (`ios/AccountKit/Tests/AccountKitTests/AccountAPITests.swift`),
-and the Node contract test (`src/__tests__/account-api-contract.test.ts`,
-phase 02) should compare the real `GET /api/account` output against
-`account.json` key by key.
-
-> Fixture location: phase 02 named `ios/AccountAppTests/Fixtures/account.json`.
-> The app keeps its logic and tests in the Swift package `ios/AccountKit`, so
-> the fixtures live here instead, in `ios/contract/`, where both test suites
-> read them. The Node test should read `ios/contract/account.json`.
+(`src/account-api/`) implements it. The JSON files next to this README are
+the shared fixtures: the Swift tests decode them
+(`ios/AccountKit/Tests/AccountKitTests/AccountAPITests.swift`), and the Node
+contract test (`src/__tests__/account-api-contract.test.ts`) compares the
+real `GET /api/account` output against `account.json`.
 
 ## OIDC client
 
