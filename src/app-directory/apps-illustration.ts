@@ -6,8 +6,9 @@ import { type ListedApp, appIcon } from "./apps-catalog.js";
 
 /*
  * The hero diagram: Google and GitHub lead into one account of the tenant, which
- * fans out to every app. Pure SVG in currentColor and token classes
- * (apps.css); the moving dashes are CSS and stop under reduced motion.
+ * fans out to every app. SVG in currentColor and token classes (apps.css),
+ * with each app's mark as an <image>; the moving dashes are CSS and stop
+ * under reduced motion.
  */
 
 const VIEW = { width: 544, height: 300 } as const;
@@ -60,8 +61,7 @@ function appNode(app: ListedApp, cy: number): SafeHtml {
 	const y = cy - APP.height / 2;
 	return html`<g class="hub-node tone-${app.tone}">
 <rect x="${APP.x}" y="${y}" width="${APP.width}" height="${APP.height}" rx="10"/>
-<rect class="hub-chip" x="${APP.x + 6}" y="${y + 6}" width="28" height="28" rx="7"/>
-${appIcon(app.icon, { size: 16, x: APP.x + 12, y: y + 12 })}
+${appIcon(app.icon, { size: 28, x: APP.x + 6, y: y + 6 })}
 <text class="hub-text hub-app" x="${APP.x + 42}" y="${cy + 5}">${app.name}</text>
 </g>`;
 }

@@ -55,7 +55,7 @@ function hero(
 function appCard(app: ListedApp, i18n: Translator): SafeHtml {
 	return html`<li class="app-card tone-${app.tone}" data-id="app-${app.id}">
 <div class="app-card-head">
-<span class="app-card-icon">${appIcon(app.icon)}</span>
+<span class="app-card-icon">${appIcon(app.icon, { size: 44 })}</span>
 <div class="app-card-heading"><h3 class="app-card-name">${app.name}</h3>
 <p class="app-card-meta"><span class="badge badge-neutral">${i18n.t(app.kind)}</span>${app.href ? html`<span class="mono">${new URL(app.href).host}</span>` : ""}</p></div>
 </div>

@@ -1,5 +1,8 @@
+import { existsSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { renderAppsPage } from "../app-directory/apps-page.js";
+import { STATIC_DIR } from "../assets.js";
+import { BRAND_MARK_PATH } from "../ui/layout.js";
 import { testPage } from "./helpers/test-page.js";
 
 const STAGING = {
@@ -42,6 +45,41 @@ describe("app list page", () => {
 		expect(hub).not.toContain(">Tunelo CLI</text>");
 		expect(html).toContain('role="img"');
 		expect(html).toContain("signs you in to Localman, Tunelo, and Chat.");
+	});
+
+	it("shows each app's mark from a file in static/img", () => {
+		const html = renderAppsPage(
+			{
+				...STAGING,
+				webApps: {
+					...STAGING.webApps,
+					scribe: "https://scribe.staging.example",
+					miu: "https://miu.staging.example",
+				},
+			},
+			testPage("en", "/apps"),
+		);
+		const marks = [
+			...html.matchAll(
+				/(?:src|href)="\/assets\/img\/(apps\/[a-z0-9-]+\.webp)"/g,
+			),
+		].map((match) => match[1]);
+		expect(new Set(marks).size).toBe(7);
+		for (const mark of marks) {
+			expect(existsSync(`${STATIC_DIR}/img/${mark}`), mark).toBe(true);
+		}
+	});
+
+	it("puts the hoandat mark, a file in static/img, before the wordmark", () => {
+		const html = renderAppsPage(STAGING, testPage("en", "/apps"));
+		expect(html).toContain(
+			`<a class="idp-brand" href="/apps" data-id="idp-brand"><img class="idp-brand-mark" src="${BRAND_MARK_PATH}" width="24" height="24" alt="" aria-hidden="true">`,
+		);
+		expect(
+			existsSync(
+				`${STATIC_DIR}/img/${BRAND_MARK_PATH.replace("/assets/img/", "")}`,
+			),
+		).toBe(true);
 	});
 
 	it("lists chat at the configured chat host", () => {

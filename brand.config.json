@@ -10,7 +10,7 @@
 	},
 	"icon": "brand/app-icon.svg",
 	"iconMaskable": "brand/app-icon-maskable.svg",
-	"webInstall": false,
+	"webInstall": true,
 	"appIds": {
 		"ios": "com.hoandat.account"
 	},

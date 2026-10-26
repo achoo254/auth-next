@@ -31,6 +31,8 @@ COPY --from=prod-deps /app/node_modules ./node_modules
 COPY --from=build /app/dist ./dist
 # Stylesheets served under /assets; fonts come from @fontsource in node_modules.
 COPY static ./static
+# Favicon, app icons and web manifest (src/brand-install.ts, pnpm brand:gen).
+COPY brand ./brand
 COPY package.json ./
 USER node
 EXPOSE 4500

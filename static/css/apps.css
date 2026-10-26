@@ -160,10 +160,6 @@
 .hub-node {
 	color: var(--tone);
 }
-.hub-node .hub-chip {
-	fill: color-mix(in srgb, var(--tone) 18%, var(--c-surface));
-	stroke: none;
-}
 .hub-core rect {
 	fill: color-mix(in srgb, var(--c-primary) 12%, var(--c-surface));
 	stroke: color-mix(in srgb, var(--c-primary) 60%, var(--c-surface));
@@ -259,13 +255,11 @@
 .app-card-icon {
 	flex: none;
 	display: inline-grid;
-	place-items: center;
 	width: 44px;
 	height: 44px;
-	border-radius: var(--radius-md);
-	color: var(--tone);
-	background: color-mix(in srgb, var(--tone) 14%, var(--c-surface));
-	border: 1px solid color-mix(in srgb, var(--tone) 30%, var(--c-surface));
+}
+.app-mark {
+	display: block;
 }
 .app-card-heading {
 	display: grid;

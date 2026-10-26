@@ -86,6 +86,11 @@ button {
 .idp-brand b {
 	color: var(--c-primary);
 }
+.idp-brand-mark {
+	flex: none;
+	width: 24px;
+	height: 24px;
+}
 .topbar-nav {
 	display: flex;
 	align-items: center;

@@ -6,6 +6,7 @@ import {
 import { createAccountRouter } from "./account-portal/account-routes.js";
 import { createAppsRouter } from "./app-directory/apps-page.js";
 import { createAssetsRouter } from "./assets.js";
+import { createBrandInstallRouter } from "./brand-install.js";
 import type { Env } from "./config/env.js";
 import { createAasaRouter } from "./http/apple-app-site-association.js";
 import { createErrorHandler } from "./http/error-handler.js";
@@ -68,6 +69,7 @@ export function createTenantApp(options: TenantAppOptions): Express {
 	// read the same forwarded headers as the provider itself.
 	app.use(forwardTrustedClientInfo);
 	app.use("/assets", createAssetsRouter());
+	app.use(createBrandInstallRouter());
 	app.use(createPrivacyRouter(new URL(tenant.issuer).host));
 	app.use(createLanguageRouter(services));
 	app.use(createAppsRouter(tenant));

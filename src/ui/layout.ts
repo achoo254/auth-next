@@ -1,4 +1,5 @@
 import { stylesheetHref } from "../assets.js";
+import { brandHeadTags } from "../brand-install.js";
 import type { MessageKey } from "../i18n/dictionaries.js";
 import { LOCALES, LOCALE_NAMES } from "../i18n/locales.js";
 import { type HtmlValue, type SafeHtml, html } from "./html.js";
@@ -96,6 +97,9 @@ ${options.body}
 </main>`;
 }
 
+/** The hoandat mark (AI-drawn, static/img), decorative: the wordmark follows it. */
+export const BRAND_MARK_PATH = "/assets/img/hoandat-mark-128.webp";
+
 /**
  * Shared shell of every IdP page: self-hosted fonts and token CSS, the
  * "<brand> · Account" wordmark (the tenant's brand) with the Home and
@@ -112,6 +116,7 @@ export function renderPage(options: PageOptions): string {
 <meta name="robots" content="noindex">
 <meta name="description" content="${i18n.t("layout.description")}">
 <title>${options.title} · ${i18n.brand.name}</title>
+${brandHeadTags()}
 ${FONT_STYLESHEETS.map((href) => html`<link rel="stylesheet" href="${href}">`)}
 ${["tokens.css", "app.css", ...(options.stylesheets ?? [])].map(
 	(name) => html`<link rel="stylesheet" href="${stylesheetHref(name)}">`,
@@ -119,7 +124,7 @@ ${["tokens.css", "app.css", ...(options.stylesheets ?? [])].map(
 </head>
 <body>
 <header class="topbar"><div class="topbar-inner container">
-<a class="idp-brand" href="/apps" data-id="idp-brand"><span><b>${i18n.brand.name}</b><span class="idp-brand-suffix"> · ${i18n.t("layout.brand")}</span></span>${
+<a class="idp-brand" href="/apps" data-id="idp-brand"><img class="idp-brand-mark" src="${BRAND_MARK_PATH}" width="24" height="24" alt="" aria-hidden="true"><span><b>${i18n.brand.name}</b><span class="idp-brand-suffix"> · ${i18n.t("layout.brand")}</span></span>${
 		options.host
 			? html` <span class="badge badge-neutral hide-sm">${options.host}</span>`
 			: ""

@@ -23,6 +23,8 @@ $SSH "$SSH_TARGET" "set -euo pipefail
 	backup=/root/hoandat-auth-backup-\$(date +%Y%m%d-%H%M%S)
 	mkdir -p \"\$backup\"
 	cp -a dist static infra package.json pnpm-lock.yaml pnpm-workspace.yaml \"\$backup\"/
+	# brand/ (icons, web manifest) is absent in releases made before it shipped.
+	if [ -d brand ]; then cp -a brand \"\$backup\"/; fi
 	echo \"backup: \$backup\"
 	ls -1d /root/hoandat-auth-backup-[0-9]*-[0-9]* | sort | head -n -3 | while read -r old; do
 		echo \"remove old backup: \$old\"; rm -rf -- \"\$old\"
@@ -31,7 +33,7 @@ $SSH "$SSH_TARGET" "set -euo pipefail
 echo "== sync release files (no owner/group: files land owned by the remote root)"
 rsync -rlptz --delete -e "$SSH" \
 	--exclude .env --exclude secrets/ --exclude node_modules/ --exclude backups/ \
-	dist static infra package.json pnpm-lock.yaml pnpm-workspace.yaml \
+	dist static brand infra package.json pnpm-lock.yaml pnpm-workspace.yaml \
 	"$SSH_TARGET:$REMOTE_DIR/"
 
 echo "== install runtime dependencies, create indexes, restart"

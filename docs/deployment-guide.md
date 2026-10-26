@@ -36,7 +36,7 @@ Access log của nginx che token trong đường dẫn `/reset/...` (link đặt
 SSH_TARGET=<alias> [SSH_OPTS="-F ssh_config"] bash infra/deploy.sh
 ```
 
-Script build, sao lưu bản đang chạy (mục Rollback), rsync `dist/ static/ infra/ package.json pnpm-lock.yaml pnpm-workspace.yaml` (chủ sở hữu `root`), cài dependency production bằng pnpm 11.9, `pm2 startOrReload`, `pm2 save`, rồi đợi `/healthz`.
+Script build, sao lưu bản đang chạy (mục Rollback), rsync `dist/ static/ brand/ infra/ package.json pnpm-lock.yaml pnpm-workspace.yaml` (chủ sở hữu `root`), cài dependency production bằng pnpm 11.9, `pm2 startOrReload`, `pm2 save`, rồi đợi `/healthz`.
 
 ## Dữ liệu có `tenantId` (ADR 0006, 0013)
 

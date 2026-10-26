@@ -35,20 +35,23 @@ export interface ListedApp {
 	readonly href?: string;
 }
 
-/** Line icons in currentColor, 24×24, stroke width from --icon-stroke. */
-const ICON_SHAPES: Readonly<Record<AppIconName, SafeHtml>> = {
-	localman: html`<path d="M8 4H7a2 2 0 0 0-2 2v4l-2 2 2 2v4a2 2 0 0 0 2 2h1M16 4h1a2 2 0 0 1 2 2v4l2 2-2 2v4a2 2 0 0 1-2 2h-1"/><circle cx="12" cy="12" r="1.5"/>`,
-	mcp: html`<path d="M9 3v4M15 3v4M7 7h10v4a5 5 0 0 1-10 0V7zM12 16v5"/>`,
-	terminal: html`<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9l3 3-3 3M13 15h4"/>`,
-	tunnel: html`<path d="M3 20V12a9 9 0 0 1 18 0v8M7 20v-8a5 5 0 0 1 10 0v8M3 20h18"/>`,
-	chat: html`<path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/><path d="M8.5 12h.01M12 12h.01M15.5 12h.01"/>`,
-	scribe: html`<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3M8 21h8"/>`,
-	miu: html`<path d="M5 10V4l4 3h6l4-3v6a7 7 0 0 1-14 0z"/><path d="M9.5 12h.01M14.5 12h.01M10.5 15.5h3"/>`,
+/**
+ * The AI-drawn app marks (rounded, transparent corners), served from
+ * static/img/apps through /assets/img. Tunelo's web app uses the tunnel mark.
+ */
+const ICON_FILES: Readonly<Record<AppIconName, string>> = {
+	localman: "localman-mark-128.webp",
+	mcp: "mcp-mark-128.webp",
+	terminal: "terminal-mark-128.webp",
+	tunnel: "tunelo-mark-128.webp",
+	chat: "chat-mark-128.webp",
+	scribe: "scribe-mark-128.webp",
+	miu: "miu-mark-128.webp",
 };
 
 /**
- * An app's icon. `size` sets the drawn size; inside another SVG pass `x`/`y`
- * to place it (a nested <svg>).
+ * An app's mark, decorative (the app's name is always beside it). `size`
+ * sets the drawn size; inside an SVG pass `x`/`y` to place it (an <image>).
  */
 export function appIcon(
 	name: AppIconName,
@@ -59,11 +62,11 @@ export function appIcon(
 	} = {},
 ): SafeHtml {
 	const size = options.size ?? 22;
-	const place =
-		options.x === undefined
-			? ""
-			: html` x="${options.x}" y="${options.y ?? 0}"`;
-	return html`<svg class="icon"${place} viewBox="0 0 24 24" width="${size}" height="${size}" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${ICON_SHAPES[name]}</svg>`;
+	const src = `/assets/img/apps/${ICON_FILES[name]}`;
+	if (options.x !== undefined) {
+		return html`<image href="${src}" x="${options.x}" y="${options.y ?? 0}" width="${size}" height="${size}" aria-hidden="true"/>`;
+	}
+	return html`<img class="app-mark" src="${src}" width="${size}" height="${size}" alt="">`;
 }
 
 function code(value: string): SafeHtml {

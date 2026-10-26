@@ -21,6 +21,7 @@
 			"**/.claude/**",
 			"pnpm-lock.yaml",
 			"plans/**",
+			"brand/generated/**",
 			"**/*.css",
 			"**/*.html"
 		]
