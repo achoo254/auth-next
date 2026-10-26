@@ -14,6 +14,7 @@ export const zhCommon: Translation<typeof enCommon> = {
 	"layout.description": "登录账号，管理已关联的应用和设备。",
 	"layout.language": "语言",
 	"layout.nav": "站点导航",
+	"layout.ecosystem": "{brandDomain} 旗下应用",
 	"layout.home": "首页",
 	"client.external": "外部应用",
 	"client.quoted": "“{name}”",

@@ -24,6 +24,8 @@ export interface Tenant {
 		readonly scribe?: string;
 		/** Miu World, once its client secret is configured. */
 		readonly miu?: string;
+		/** Tiểu Đệ, once its client secret is configured. */
+		readonly tieude?: string;
 	};
 }
 

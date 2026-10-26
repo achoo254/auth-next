@@ -15,7 +15,7 @@ export const PRIMARY_TENANT_ID = "primary";
  * before (any shape, so the conformance harness keeps working), its domain
  * `TENANT_DOMAIN` (resources and audiences follow from it), its web apps
  * `LOCALMAN_WEB_URL`, `TUNELO_WEB_URL`, `CHAT_WEB_URL` and, once their client
- * secrets are set, `SCRIBE_WEB_URL` and `MIU_WEB_URL`.
+ * secrets are set, `SCRIBE_WEB_URL`, `MIU_WEB_URL` and `TIEUDE_WEB_URL`.
  */
 export function envTenant(
 	env: Pick<
@@ -30,6 +30,8 @@ export function envTenant(
 		| "SCRIBE_WEB_CLIENT_SECRET"
 		| "MIU_WEB_URL"
 		| "MIU_WEB_CLIENT_SECRET"
+		| "TIEUDE_WEB_URL"
+		| "TIEUDE_WEB_CLIENT_SECRET"
 	>,
 ): Tenant {
 	return {
@@ -43,6 +45,9 @@ export function envTenant(
 			chat: env.CHAT_WEB_URL,
 			...(env.SCRIBE_WEB_CLIENT_SECRET ? { scribe: env.SCRIBE_WEB_URL } : {}),
 			...(env.MIU_WEB_CLIENT_SECRET ? { miu: env.MIU_WEB_URL } : {}),
+			...(env.TIEUDE_WEB_URL && env.TIEUDE_WEB_CLIENT_SECRET
+				? { tieude: env.TIEUDE_WEB_URL }
+				: {}),
 		},
 	};
 }

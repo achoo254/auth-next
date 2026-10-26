@@ -44,6 +44,9 @@ export const enApps = {
 		"A 3D world to play and learn maths and Vietnamese with friends.",
 	"apps.miuWeb.signIn":
 		"Choose Sign in on the site or in the iPhone or Android app.",
+	"apps.tieudeWeb.description":
+		"An AI bot that does small writing jobs for free and lives on voluntary tips.",
+	"apps.tieudeWeb.signIn": "Choose Sign in on the site to get more free uses.",
 	"apps.steps.title": "How sign-in works",
 	"apps.steps.choose.title": "Pick an app",
 	"apps.steps.choose.body":

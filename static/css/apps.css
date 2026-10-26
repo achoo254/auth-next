@@ -361,3 +361,11 @@
 	color: var(--c-text-muted);
 	text-align: center;
 }
+/* phones: the inline "Account" link gets a 44px hit area on the same line */
+@media (pointer: coarse), (max-width: 479px) {
+	.apps-manage .link {
+		display: inline-block;
+		padding-block: 14px;
+		margin-block: -14px;
+	}
+}

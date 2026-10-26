@@ -2,6 +2,7 @@ import { stylesheetHref } from "../assets.js";
 import { brandHeadTags } from "../brand-install.js";
 import type { MessageKey } from "../i18n/dictionaries.js";
 import { LOCALES, LOCALE_NAMES } from "../i18n/locales.js";
+import { appHostsFor } from "../tenants/tenant.js";
 import { type HtmlValue, type SafeHtml, html } from "./html.js";
 import type { PageContext } from "./page-context.js";
 
@@ -48,11 +49,18 @@ function languageSwitcher(page: PageContext): SafeHtml {
 	)}</nav>`;
 }
 
-/** Under every page: the language pill, then the privacy policy (legal/privacy-page.ts PRIVACY_PATH). */
+/**
+ * Under every page: the language pill, then the line every app of the
+ * brand shares (a link to its home page) and the privacy policy
+ * (legal/privacy-page.ts PRIVACY_PATH).
+ */
 function pageFoot(page: PageContext): SafeHtml {
-	return html`<footer class="page-foot container">${languageSwitcher(page)}<a class="foot-link" href="/privacy" data-id="foot-privacy">${page.i18n.t(
+	const { i18n } = page;
+	return html`<footer class="page-foot container">${languageSwitcher(page)}<p class="foot-links"><a class="foot-link" href="https://${i18n.brand.domain}" data-id="foot-home">${i18n.t(
+		"layout.ecosystem",
+	)}</a><a class="foot-link" href="/privacy" data-id="foot-privacy">${i18n.t(
 		"privacy.title",
-	)}</a></footer>`;
+	)}</a></p></footer>`;
 }
 
 interface NavLink {
@@ -100,6 +108,24 @@ ${options.body}
 /** The hoandat mark (AI-drawn, static/img), decorative: the wordmark follows it. */
 export const BRAND_MARK_PATH = "/assets/img/hoandat-mark-128.webp";
 
+/** Share preview (static/img/og-image.jpg, AI-drawn), 1200 × 630. */
+export const OG_IMAGE_PATH = "/assets/img/og-image.jpg";
+
+/** Link previews: title, description and the share image, by absolute URL on the auth host. */
+function shareTags(title: string, page: PageContext): SafeHtml {
+	const { i18n } = page;
+	const image = `https://${appHostsFor(i18n.brand.domain).auth}${OG_IMAGE_PATH}`;
+	return html`<meta property="og:type" content="website">
+<meta property="og:site_name" content="${i18n.brand.name}">
+<meta property="og:title" content="${title}">
+<meta property="og:description" content="${i18n.t("layout.description")}">
+<meta property="og:image" content="${image}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="${image}">`;
+}
+
 /**
  * Shared shell of every IdP page: self-hosted fonts and token CSS, the
  * "<brand> · Account" wordmark (the tenant's brand) with the Home and
@@ -116,6 +142,7 @@ export function renderPage(options: PageOptions): string {
 <meta name="robots" content="noindex">
 <meta name="description" content="${i18n.t("layout.description")}">
 <title>${options.title} · ${i18n.brand.name}</title>
+${shareTags(`${options.title} · ${i18n.brand.name}`, options.page)}
 ${brandHeadTags()}
 ${FONT_STYLESHEETS.map((href) => html`<link rel="stylesheet" href="${href}">`)}
 ${["tokens.css", "app.css", ...(options.stylesheets ?? [])].map(

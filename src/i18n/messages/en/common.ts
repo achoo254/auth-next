@@ -15,6 +15,7 @@ export const enCommon = {
 	"layout.description": brand.description,
 	"layout.language": "Language",
 	"layout.nav": "Site",
+	"layout.ecosystem": "An app from {brandDomain}",
 	"layout.home": "Home",
 	"client.external": "External app",
 	"client.quoted": "“{name}”",

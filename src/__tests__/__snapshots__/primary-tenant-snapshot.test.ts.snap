@@ -27,6 +27,15 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <meta name="robots" content="noindex">
 <meta name="description" content="Sign in to your account and manage the apps and devices connected to it.">
 <title>One account for every hoandat.com app · hoandat.com</title>
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="hoandat.com">
+<meta property="og:title" content="One account for every hoandat.com app · hoandat.com">
+<meta property="og:description" content="Sign in to your account and manage the apps and devices connected to it.">
+<meta property="og:image" content="https://auth.hoandat.com/assets/img/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://auth.hoandat.com/assets/img/og-image.jpg">
 <link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48">
 <link rel="icon" href="/icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180">
@@ -52,8 +61,8 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <a class="btn btn-secondary" href="#how-sign-in-works" data-id="apps-how">How sign-in works</a>
 </div>
 </div>
-<div class="apps-hero-art"><svg class="hub" viewBox="0 0 544 300" role="img" aria-label="Your hoandat.com account, reached with Google or GitHub, signs you in to Localman, Tunelo, Chat, Scribe, and Miu World." data-id="apps-hub">
-<path class="hub-line" d="M132 110 C156 110 156 150 180 150"/><path class="hub-flow tone-primary" d="M132 110 C156 110 156 150 180 150"/><path class="hub-line" d="M132 190 C156 190 156 150 180 150"/><path class="hub-flow tone-primary" d="M132 190 C156 190 156 150 180 150"/><path class="hub-line" d="M340 150 C366 150 366 30 392 30"/><path class="hub-flow tone-violet" d="M340 150 C366 150 366 30 392 30"/><path class="hub-line" d="M340 150 C366 150 366 90 392 90"/><path class="hub-flow tone-amber" d="M340 150 C366 150 366 90 392 90"/><path class="hub-line" d="M340 150 C366 150 366 150 392 150"/><path class="hub-flow tone-blue" d="M340 150 C366 150 366 150 392 150"/><path class="hub-line" d="M340 150 C366 150 366 210 392 210"/><path class="hub-flow tone-red" d="M340 150 C366 150 366 210 392 210"/><path class="hub-line" d="M340 150 C366 150 366 270 392 270"/><path class="hub-flow tone-cyan" d="M340 150 C366 150 366 270 392 270"/>
+<div class="apps-hero-art"><svg class="hub" viewBox="0 0 544 300" role="img" aria-label="Your hoandat.com account, reached with Google or GitHub, signs you in to Localman, Tunelo, Chat, Scribe, Miu World, and Tiểu Đệ." data-id="apps-hub">
+<path class="hub-line" d="M132 110 C156 110 156 150 180 150"/><path class="hub-flow tone-primary" d="M132 110 C156 110 156 150 180 150"/><path class="hub-line" d="M132 190 C156 190 156 150 180 150"/><path class="hub-flow tone-primary" d="M132 190 C156 190 156 150 180 150"/><path class="hub-line" d="M340 150 C366 150 366 25 392 25"/><path class="hub-flow tone-violet" d="M340 150 C366 150 366 25 392 25"/><path class="hub-line" d="M340 150 C366 150 366 75 392 75"/><path class="hub-flow tone-amber" d="M340 150 C366 150 366 75 392 75"/><path class="hub-line" d="M340 150 C366 150 366 125 392 125"/><path class="hub-flow tone-blue" d="M340 150 C366 150 366 125 392 125"/><path class="hub-line" d="M340 150 C366 150 366 175 392 175"/><path class="hub-flow tone-red" d="M340 150 C366 150 366 175 392 175"/><path class="hub-line" d="M340 150 C366 150 366 225 392 225"/><path class="hub-flow tone-cyan" d="M340 150 C366 150 366 225 392 225"/><path class="hub-line" d="M340 150 C366 150 366 275 392 275"/><path class="hub-flow tone-amber" d="M340 150 C366 150 366 275 392 275"/>
 <g class="hub-node">
 <rect x="8" y="90" width="124" height="40" rx="10"/>
 <svg x="20" y="102" width="16" height="16" viewBox="0 0 24 24"><path class="hub-mark" d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"/></svg>
@@ -69,25 +78,29 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <text class="hub-text hub-sub" x="260" y="168" text-anchor="middle">ISSUER_HOST</text>
 </g>
 <g class="hub-node tone-violet">
-<rect x="392" y="10" width="148" height="40" rx="10"/>
-<image href="/assets/img/apps/localman-mark-128.webp" x="398" y="16" width="28" height="28" aria-hidden="true"/>
-<text class="hub-text hub-app" x="434" y="35">Localman</text>
+<rect x="392" y="5" width="148" height="40" rx="10"/>
+<image href="/assets/img/apps/localman-mark-128.webp" x="398" y="11" width="28" height="28" aria-hidden="true"/>
+<text class="hub-text hub-app" x="434" y="30">Localman</text>
 </g><g class="hub-node tone-amber">
-<rect x="392" y="70" width="148" height="40" rx="10"/>
-<image href="/assets/img/apps/tunelo-mark-128.webp" x="398" y="76" width="28" height="28" aria-hidden="true"/>
-<text class="hub-text hub-app" x="434" y="95">Tunelo</text>
+<rect x="392" y="55" width="148" height="40" rx="10"/>
+<image href="/assets/img/apps/tunelo-mark-128.webp" x="398" y="61" width="28" height="28" aria-hidden="true"/>
+<text class="hub-text hub-app" x="434" y="80">Tunelo</text>
 </g><g class="hub-node tone-blue">
-<rect x="392" y="130" width="148" height="40" rx="10"/>
-<image href="/assets/img/apps/chat-mark-128.webp" x="398" y="136" width="28" height="28" aria-hidden="true"/>
-<text class="hub-text hub-app" x="434" y="155">Chat</text>
+<rect x="392" y="105" width="148" height="40" rx="10"/>
+<image href="/assets/img/apps/chat-mark-128.webp" x="398" y="111" width="28" height="28" aria-hidden="true"/>
+<text class="hub-text hub-app" x="434" y="130">Chat</text>
 </g><g class="hub-node tone-red">
-<rect x="392" y="190" width="148" height="40" rx="10"/>
-<image href="/assets/img/apps/scribe-mark-128.webp" x="398" y="196" width="28" height="28" aria-hidden="true"/>
-<text class="hub-text hub-app" x="434" y="215">Scribe</text>
+<rect x="392" y="155" width="148" height="40" rx="10"/>
+<image href="/assets/img/apps/scribe-mark-128.webp" x="398" y="161" width="28" height="28" aria-hidden="true"/>
+<text class="hub-text hub-app" x="434" y="180">Scribe</text>
 </g><g class="hub-node tone-cyan">
-<rect x="392" y="250" width="148" height="40" rx="10"/>
-<image href="/assets/img/apps/miu-mark-128.webp" x="398" y="256" width="28" height="28" aria-hidden="true"/>
-<text class="hub-text hub-app" x="434" y="275">Miu World</text>
+<rect x="392" y="205" width="148" height="40" rx="10"/>
+<image href="/assets/img/apps/miu-mark-128.webp" x="398" y="211" width="28" height="28" aria-hidden="true"/>
+<text class="hub-text hub-app" x="434" y="230">Miu World</text>
+</g><g class="hub-node tone-amber">
+<rect x="392" y="255" width="148" height="40" rx="10"/>
+<image href="/assets/img/apps/tieude-mark-128.webp" x="398" y="261" width="28" height="28" aria-hidden="true"/>
+<text class="hub-text hub-app" x="434" y="280">Tiểu Đệ</text>
 </g>
 </svg></div>
 </section>
@@ -165,6 +178,15 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <p class="app-card-desc">A 3D world to play and learn maths and Vietnamese with friends.</p>
 <div class="app-card-how"><p class="app-card-how-label">How to sign in</p><p>Choose Sign in on the site or in the iPhone or Android app.</p></div>
 <div class="app-card-foot"><a class="btn btn-secondary" href="https://miu.hoandat.com" data-id="app-open-miu-web">Open</a></div>
+</li><li class="app-card tone-amber" data-id="app-tieude-web">
+<div class="app-card-head">
+<span class="app-card-icon"><img class="app-mark" src="/assets/img/apps/tieude-mark-128.webp" width="44" height="44" alt=""></span>
+<div class="app-card-heading"><h3 class="app-card-name">Tiểu Đệ</h3>
+<p class="app-card-meta"><span class="badge badge-neutral">Web app</span><span class="mono">tieude.hoandat.com</span></p></div>
+</div>
+<p class="app-card-desc">An AI bot that does small writing jobs for free and lives on voluntary tips.</p>
+<div class="app-card-how"><p class="app-card-how-label">How to sign in</p><p>Choose Sign in on the site to get more free uses.</p></div>
+<div class="app-card-foot"><a class="btn btn-secondary" href="https://tieude.hoandat.com" data-id="app-open-tieude-web">Open</a></div>
 </li></ul>
 </section>
 <section class="apps-section" id="how-sign-in-works" aria-labelledby="apps-steps-title" data-id="apps-steps">
@@ -172,7 +194,7 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <ol class="apps-steps"><li class="apps-step"><span class="apps-step-number" aria-hidden="true">1</span><div><h3 class="apps-step-title">Pick an app</h3><p class="apps-step-body">Choose Sign in on its site, or run <code class="mono">tunelo login</code> in a terminal.</p></div></li><li class="apps-step"><span class="apps-step-number" aria-hidden="true">2</span><div><h3 class="apps-step-title">Continue with Google or GitHub</h3><p class="apps-step-body">The account you linked signs you in. The first time, you pick a username.</p></div></li><li class="apps-step"><span class="apps-step-number" aria-hidden="true">3</span><div><h3 class="apps-step-title">You are back in the app</h3><p class="apps-step-body">Apps from outside hoandat.com, such as AI tools, ask for your approval first.</p></div></li></ol>
 </section>
 <p class="apps-manage" data-id="apps-manage">To see or remove the apps that can access your account, open <a class="link" href="/account">Account</a>.</p></main>
-<footer class="page-foot container"><nav class="lang-switch" aria-label="Language" data-id="lang-switch"><a class="lang-option" href="/lang?set=en&amp;return=%2Fapps" lang="en" hreflang="en" aria-current="true" data-id="lang-en">English</a><a class="lang-option" href="/lang?set=zh-CN&amp;return=%2Fapps" lang="zh-CN" hreflang="zh-CN" data-id="lang-zh-CN">中文</a><a class="lang-option" href="/lang?set=vi&amp;return=%2Fapps" lang="vi" hreflang="vi" data-id="lang-vi">Tiếng Việt</a></nav><a class="foot-link" href="/privacy" data-id="foot-privacy">Privacy policy</a></footer>
+<footer class="page-foot container"><nav class="lang-switch" aria-label="Language" data-id="lang-switch"><a class="lang-option" href="/lang?set=en&amp;return=%2Fapps" lang="en" hreflang="en" aria-current="true" data-id="lang-en">English</a><a class="lang-option" href="/lang?set=zh-CN&amp;return=%2Fapps" lang="zh-CN" hreflang="zh-CN" data-id="lang-zh-CN">中文</a><a class="lang-option" href="/lang?set=vi&amp;return=%2Fapps" lang="vi" hreflang="vi" data-id="lang-vi">Tiếng Việt</a></nav><p class="foot-links"><a class="foot-link" href="https://hoandat.com" data-id="foot-home">An app from hoandat.com</a><a class="foot-link" href="/privacy" data-id="foot-privacy">Privacy policy</a></p></footer>
 </body>
 </html>"
 `;
@@ -187,6 +209,15 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <meta name="robots" content="noindex">
 <meta name="description" content="Đăng nhập vào tài khoản và quản lý các ứng dụng, thiết bị đã kết nối với tài khoản.">
 <title>Một tài khoản cho mọi ứng dụng hoandat.com · hoandat.com</title>
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="hoandat.com">
+<meta property="og:title" content="Một tài khoản cho mọi ứng dụng hoandat.com · hoandat.com">
+<meta property="og:description" content="Đăng nhập vào tài khoản và quản lý các ứng dụng, thiết bị đã kết nối với tài khoản.">
+<meta property="og:image" content="https://auth.hoandat.com/assets/img/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://auth.hoandat.com/assets/img/og-image.jpg">
 <link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48">
 <link rel="icon" href="/icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180">
@@ -212,8 +243,8 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <a class="btn btn-secondary" href="#how-sign-in-works" data-id="apps-how">Đăng nhập diễn ra thế nào</a>
 </div>
 </div>
-<div class="apps-hero-art"><svg class="hub" viewBox="0 0 544 300" role="img" aria-label="Tài khoản hoandat.com, vào bằng Google hoặc GitHub, đăng nhập cho bạn vào Localman, Tunelo, Chat, Scribe và Miu World." data-id="apps-hub">
-<path class="hub-line" d="M132 110 C156 110 156 150 180 150"/><path class="hub-flow tone-primary" d="M132 110 C156 110 156 150 180 150"/><path class="hub-line" d="M132 190 C156 190 156 150 180 150"/><path class="hub-flow tone-primary" d="M132 190 C156 190 156 150 180 150"/><path class="hub-line" d="M340 150 C366 150 366 30 392 30"/><path class="hub-flow tone-violet" d="M340 150 C366 150 366 30 392 30"/><path class="hub-line" d="M340 150 C366 150 366 90 392 90"/><path class="hub-flow tone-amber" d="M340 150 C366 150 366 90 392 90"/><path class="hub-line" d="M340 150 C366 150 366 150 392 150"/><path class="hub-flow tone-blue" d="M340 150 C366 150 366 150 392 150"/><path class="hub-line" d="M340 150 C366 150 366 210 392 210"/><path class="hub-flow tone-red" d="M340 150 C366 150 366 210 392 210"/><path class="hub-line" d="M340 150 C366 150 366 270 392 270"/><path class="hub-flow tone-cyan" d="M340 150 C366 150 366 270 392 270"/>
+<div class="apps-hero-art"><svg class="hub" viewBox="0 0 544 300" role="img" aria-label="Tài khoản hoandat.com, vào bằng Google hoặc GitHub, đăng nhập cho bạn vào Localman, Tunelo, Chat, Scribe, Miu World và Tiểu Đệ." data-id="apps-hub">
+<path class="hub-line" d="M132 110 C156 110 156 150 180 150"/><path class="hub-flow tone-primary" d="M132 110 C156 110 156 150 180 150"/><path class="hub-line" d="M132 190 C156 190 156 150 180 150"/><path class="hub-flow tone-primary" d="M132 190 C156 190 156 150 180 150"/><path class="hub-line" d="M340 150 C366 150 366 25 392 25"/><path class="hub-flow tone-violet" d="M340 150 C366 150 366 25 392 25"/><path class="hub-line" d="M340 150 C366 150 366 75 392 75"/><path class="hub-flow tone-amber" d="M340 150 C366 150 366 75 392 75"/><path class="hub-line" d="M340 150 C366 150 366 125 392 125"/><path class="hub-flow tone-blue" d="M340 150 C366 150 366 125 392 125"/><path class="hub-line" d="M340 150 C366 150 366 175 392 175"/><path class="hub-flow tone-red" d="M340 150 C366 150 366 175 392 175"/><path class="hub-line" d="M340 150 C366 150 366 225 392 225"/><path class="hub-flow tone-cyan" d="M340 150 C366 150 366 225 392 225"/><path class="hub-line" d="M340 150 C366 150 366 275 392 275"/><path class="hub-flow tone-amber" d="M340 150 C366 150 366 275 392 275"/>
 <g class="hub-node">
 <rect x="8" y="90" width="124" height="40" rx="10"/>
 <svg x="20" y="102" width="16" height="16" viewBox="0 0 24 24"><path class="hub-mark" d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"/></svg>
@@ -229,25 +260,29 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <text class="hub-text hub-sub" x="260" y="168" text-anchor="middle">ISSUER_HOST</text>
 </g>
 <g class="hub-node tone-violet">
-<rect x="392" y="10" width="148" height="40" rx="10"/>
-<image href="/assets/img/apps/localman-mark-128.webp" x="398" y="16" width="28" height="28" aria-hidden="true"/>
-<text class="hub-text hub-app" x="434" y="35">Localman</text>
+<rect x="392" y="5" width="148" height="40" rx="10"/>
+<image href="/assets/img/apps/localman-mark-128.webp" x="398" y="11" width="28" height="28" aria-hidden="true"/>
+<text class="hub-text hub-app" x="434" y="30">Localman</text>
 </g><g class="hub-node tone-amber">
-<rect x="392" y="70" width="148" height="40" rx="10"/>
-<image href="/assets/img/apps/tunelo-mark-128.webp" x="398" y="76" width="28" height="28" aria-hidden="true"/>
-<text class="hub-text hub-app" x="434" y="95">Tunelo</text>
+<rect x="392" y="55" width="148" height="40" rx="10"/>
+<image href="/assets/img/apps/tunelo-mark-128.webp" x="398" y="61" width="28" height="28" aria-hidden="true"/>
+<text class="hub-text hub-app" x="434" y="80">Tunelo</text>
 </g><g class="hub-node tone-blue">
-<rect x="392" y="130" width="148" height="40" rx="10"/>
-<image href="/assets/img/apps/chat-mark-128.webp" x="398" y="136" width="28" height="28" aria-hidden="true"/>
-<text class="hub-text hub-app" x="434" y="155">Chat</text>
+<rect x="392" y="105" width="148" height="40" rx="10"/>
+<image href="/assets/img/apps/chat-mark-128.webp" x="398" y="111" width="28" height="28" aria-hidden="true"/>
+<text class="hub-text hub-app" x="434" y="130">Chat</text>
 </g><g class="hub-node tone-red">
-<rect x="392" y="190" width="148" height="40" rx="10"/>
-<image href="/assets/img/apps/scribe-mark-128.webp" x="398" y="196" width="28" height="28" aria-hidden="true"/>
-<text class="hub-text hub-app" x="434" y="215">Scribe</text>
+<rect x="392" y="155" width="148" height="40" rx="10"/>
+<image href="/assets/img/apps/scribe-mark-128.webp" x="398" y="161" width="28" height="28" aria-hidden="true"/>
+<text class="hub-text hub-app" x="434" y="180">Scribe</text>
 </g><g class="hub-node tone-cyan">
-<rect x="392" y="250" width="148" height="40" rx="10"/>
-<image href="/assets/img/apps/miu-mark-128.webp" x="398" y="256" width="28" height="28" aria-hidden="true"/>
-<text class="hub-text hub-app" x="434" y="275">Miu World</text>
+<rect x="392" y="205" width="148" height="40" rx="10"/>
+<image href="/assets/img/apps/miu-mark-128.webp" x="398" y="211" width="28" height="28" aria-hidden="true"/>
+<text class="hub-text hub-app" x="434" y="230">Miu World</text>
+</g><g class="hub-node tone-amber">
+<rect x="392" y="255" width="148" height="40" rx="10"/>
+<image href="/assets/img/apps/tieude-mark-128.webp" x="398" y="261" width="28" height="28" aria-hidden="true"/>
+<text class="hub-text hub-app" x="434" y="280">Tiểu Đệ</text>
 </g>
 </svg></div>
 </section>
@@ -325,6 +360,15 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <p class="app-card-desc">Thế giới 3D vừa chơi vừa học Toán và Tiếng Việt, chơi cùng bạn bè.</p>
 <div class="app-card-how"><p class="app-card-how-label">Cách đăng nhập</p><p>Chọn Đăng nhập trên trang hoặc trong app iPhone, Android.</p></div>
 <div class="app-card-foot"><a class="btn btn-secondary" href="https://miu.hoandat.com" data-id="app-open-miu-web">Mở</a></div>
+</li><li class="app-card tone-amber" data-id="app-tieude-web">
+<div class="app-card-head">
+<span class="app-card-icon"><img class="app-mark" src="/assets/img/apps/tieude-mark-128.webp" width="44" height="44" alt=""></span>
+<div class="app-card-heading"><h3 class="app-card-name">Tiểu Đệ</h3>
+<p class="app-card-meta"><span class="badge badge-neutral">Ứng dụng web</span><span class="mono">tieude.hoandat.com</span></p></div>
+</div>
+<p class="app-card-desc">Bot AI làm giúp miễn phí các việc viết nhỏ, sống nhờ tiền ủng hộ tự nguyện.</p>
+<div class="app-card-how"><p class="app-card-how-label">Cách đăng nhập</p><p>Chọn Đăng nhập trên trang để có thêm lượt dùng miễn phí.</p></div>
+<div class="app-card-foot"><a class="btn btn-secondary" href="https://tieude.hoandat.com" data-id="app-open-tieude-web">Mở</a></div>
 </li></ul>
 </section>
 <section class="apps-section" id="how-sign-in-works" aria-labelledby="apps-steps-title" data-id="apps-steps">
@@ -332,7 +376,7 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <ol class="apps-steps"><li class="apps-step"><span class="apps-step-number" aria-hidden="true">1</span><div><h3 class="apps-step-title">Chọn một ứng dụng</h3><p class="apps-step-body">Chọn Đăng nhập trên trang của nó, hoặc chạy <code class="mono">tunelo login</code> trong terminal.</p></div></li><li class="apps-step"><span class="apps-step-number" aria-hidden="true">2</span><div><h3 class="apps-step-title">Tiếp tục với Google hoặc GitHub</h3><p class="apps-step-body">Tài khoản bạn đã liên kết sẽ đăng nhập cho bạn. Lần đầu, bạn chọn một tên đăng nhập.</p></div></li><li class="apps-step"><span class="apps-step-number" aria-hidden="true">3</span><div><h3 class="apps-step-title">Quay lại ứng dụng</h3><p class="apps-step-body">Ứng dụng bên ngoài hoandat.com, như công cụ AI, sẽ hỏi bạn đồng ý trước.</p></div></li></ol>
 </section>
 <p class="apps-manage" data-id="apps-manage">Để xem hoặc gỡ các ứng dụng đang có quyền vào tài khoản, mở trang <a class="link" href="/account">Tài khoản</a>.</p></main>
-<footer class="page-foot container"><nav class="lang-switch" aria-label="Ngôn ngữ" data-id="lang-switch"><a class="lang-option" href="/lang?set=en&amp;return=%2Fapps" lang="en" hreflang="en" data-id="lang-en">English</a><a class="lang-option" href="/lang?set=zh-CN&amp;return=%2Fapps" lang="zh-CN" hreflang="zh-CN" data-id="lang-zh-CN">中文</a><a class="lang-option" href="/lang?set=vi&amp;return=%2Fapps" lang="vi" hreflang="vi" aria-current="true" data-id="lang-vi">Tiếng Việt</a></nav><a class="foot-link" href="/privacy" data-id="foot-privacy">Chính sách quyền riêng tư</a></footer>
+<footer class="page-foot container"><nav class="lang-switch" aria-label="Ngôn ngữ" data-id="lang-switch"><a class="lang-option" href="/lang?set=en&amp;return=%2Fapps" lang="en" hreflang="en" data-id="lang-en">English</a><a class="lang-option" href="/lang?set=zh-CN&amp;return=%2Fapps" lang="zh-CN" hreflang="zh-CN" data-id="lang-zh-CN">中文</a><a class="lang-option" href="/lang?set=vi&amp;return=%2Fapps" lang="vi" hreflang="vi" aria-current="true" data-id="lang-vi">Tiếng Việt</a></nav><p class="foot-links"><a class="foot-link" href="https://hoandat.com" data-id="foot-home">Một app của hoandat.com</a><a class="foot-link" href="/privacy" data-id="foot-privacy">Chính sách quyền riêng tư</a></p></footer>
 </body>
 </html>"
 `;
@@ -347,6 +391,15 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <meta name="robots" content="noindex">
 <meta name="description" content="登录账号，管理已关联的应用和设备。">
 <title>一个账号，通用所有 hoandat.com 应用 · hoandat.com</title>
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="hoandat.com">
+<meta property="og:title" content="一个账号，通用所有 hoandat.com 应用 · hoandat.com">
+<meta property="og:description" content="登录账号，管理已关联的应用和设备。">
+<meta property="og:image" content="https://auth.hoandat.com/assets/img/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://auth.hoandat.com/assets/img/og-image.jpg">
 <link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48">
 <link rel="icon" href="/icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180">
@@ -372,8 +425,8 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <a class="btn btn-secondary" href="#how-sign-in-works" data-id="apps-how">登录如何进行</a>
 </div>
 </div>
-<div class="apps-hero-art"><svg class="hub" viewBox="0 0 544 300" role="img" aria-label="通过 Google 或 GitHub 进入你的 hoandat.com 账号，即可登录 Localman、Tunelo、Chat、Scribe和Miu World。" data-id="apps-hub">
-<path class="hub-line" d="M132 110 C156 110 156 150 180 150"/><path class="hub-flow tone-primary" d="M132 110 C156 110 156 150 180 150"/><path class="hub-line" d="M132 190 C156 190 156 150 180 150"/><path class="hub-flow tone-primary" d="M132 190 C156 190 156 150 180 150"/><path class="hub-line" d="M340 150 C366 150 366 30 392 30"/><path class="hub-flow tone-violet" d="M340 150 C366 150 366 30 392 30"/><path class="hub-line" d="M340 150 C366 150 366 90 392 90"/><path class="hub-flow tone-amber" d="M340 150 C366 150 366 90 392 90"/><path class="hub-line" d="M340 150 C366 150 366 150 392 150"/><path class="hub-flow tone-blue" d="M340 150 C366 150 366 150 392 150"/><path class="hub-line" d="M340 150 C366 150 366 210 392 210"/><path class="hub-flow tone-red" d="M340 150 C366 150 366 210 392 210"/><path class="hub-line" d="M340 150 C366 150 366 270 392 270"/><path class="hub-flow tone-cyan" d="M340 150 C366 150 366 270 392 270"/>
+<div class="apps-hero-art"><svg class="hub" viewBox="0 0 544 300" role="img" aria-label="通过 Google 或 GitHub 进入你的 hoandat.com 账号，即可登录 Localman、Tunelo、Chat、Scribe、Miu World和Tiểu Đệ。" data-id="apps-hub">
+<path class="hub-line" d="M132 110 C156 110 156 150 180 150"/><path class="hub-flow tone-primary" d="M132 110 C156 110 156 150 180 150"/><path class="hub-line" d="M132 190 C156 190 156 150 180 150"/><path class="hub-flow tone-primary" d="M132 190 C156 190 156 150 180 150"/><path class="hub-line" d="M340 150 C366 150 366 25 392 25"/><path class="hub-flow tone-violet" d="M340 150 C366 150 366 25 392 25"/><path class="hub-line" d="M340 150 C366 150 366 75 392 75"/><path class="hub-flow tone-amber" d="M340 150 C366 150 366 75 392 75"/><path class="hub-line" d="M340 150 C366 150 366 125 392 125"/><path class="hub-flow tone-blue" d="M340 150 C366 150 366 125 392 125"/><path class="hub-line" d="M340 150 C366 150 366 175 392 175"/><path class="hub-flow tone-red" d="M340 150 C366 150 366 175 392 175"/><path class="hub-line" d="M340 150 C366 150 366 225 392 225"/><path class="hub-flow tone-cyan" d="M340 150 C366 150 366 225 392 225"/><path class="hub-line" d="M340 150 C366 150 366 275 392 275"/><path class="hub-flow tone-amber" d="M340 150 C366 150 366 275 392 275"/>
 <g class="hub-node">
 <rect x="8" y="90" width="124" height="40" rx="10"/>
 <svg x="20" y="102" width="16" height="16" viewBox="0 0 24 24"><path class="hub-mark" d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"/></svg>
@@ -389,25 +442,29 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <text class="hub-text hub-sub" x="260" y="168" text-anchor="middle">ISSUER_HOST</text>
 </g>
 <g class="hub-node tone-violet">
-<rect x="392" y="10" width="148" height="40" rx="10"/>
-<image href="/assets/img/apps/localman-mark-128.webp" x="398" y="16" width="28" height="28" aria-hidden="true"/>
-<text class="hub-text hub-app" x="434" y="35">Localman</text>
+<rect x="392" y="5" width="148" height="40" rx="10"/>
+<image href="/assets/img/apps/localman-mark-128.webp" x="398" y="11" width="28" height="28" aria-hidden="true"/>
+<text class="hub-text hub-app" x="434" y="30">Localman</text>
 </g><g class="hub-node tone-amber">
-<rect x="392" y="70" width="148" height="40" rx="10"/>
-<image href="/assets/img/apps/tunelo-mark-128.webp" x="398" y="76" width="28" height="28" aria-hidden="true"/>
-<text class="hub-text hub-app" x="434" y="95">Tunelo</text>
+<rect x="392" y="55" width="148" height="40" rx="10"/>
+<image href="/assets/img/apps/tunelo-mark-128.webp" x="398" y="61" width="28" height="28" aria-hidden="true"/>
+<text class="hub-text hub-app" x="434" y="80">Tunelo</text>
 </g><g class="hub-node tone-blue">
-<rect x="392" y="130" width="148" height="40" rx="10"/>
-<image href="/assets/img/apps/chat-mark-128.webp" x="398" y="136" width="28" height="28" aria-hidden="true"/>
-<text class="hub-text hub-app" x="434" y="155">Chat</text>
+<rect x="392" y="105" width="148" height="40" rx="10"/>
+<image href="/assets/img/apps/chat-mark-128.webp" x="398" y="111" width="28" height="28" aria-hidden="true"/>
+<text class="hub-text hub-app" x="434" y="130">Chat</text>
 </g><g class="hub-node tone-red">
-<rect x="392" y="190" width="148" height="40" rx="10"/>
-<image href="/assets/img/apps/scribe-mark-128.webp" x="398" y="196" width="28" height="28" aria-hidden="true"/>
-<text class="hub-text hub-app" x="434" y="215">Scribe</text>
+<rect x="392" y="155" width="148" height="40" rx="10"/>
+<image href="/assets/img/apps/scribe-mark-128.webp" x="398" y="161" width="28" height="28" aria-hidden="true"/>
+<text class="hub-text hub-app" x="434" y="180">Scribe</text>
 </g><g class="hub-node tone-cyan">
-<rect x="392" y="250" width="148" height="40" rx="10"/>
-<image href="/assets/img/apps/miu-mark-128.webp" x="398" y="256" width="28" height="28" aria-hidden="true"/>
-<text class="hub-text hub-app" x="434" y="275">Miu World</text>
+<rect x="392" y="205" width="148" height="40" rx="10"/>
+<image href="/assets/img/apps/miu-mark-128.webp" x="398" y="211" width="28" height="28" aria-hidden="true"/>
+<text class="hub-text hub-app" x="434" y="230">Miu World</text>
+</g><g class="hub-node tone-amber">
+<rect x="392" y="255" width="148" height="40" rx="10"/>
+<image href="/assets/img/apps/tieude-mark-128.webp" x="398" y="261" width="28" height="28" aria-hidden="true"/>
+<text class="hub-text hub-app" x="434" y="280">Tiểu Đệ</text>
 </g>
 </svg></div>
 </section>
@@ -485,6 +542,15 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <p class="app-card-desc">边玩边学数学和越南语的 3D 世界，可与朋友一起玩。</p>
 <div class="app-card-how"><p class="app-card-how-label">登录方式</p><p>在网站或 iPhone、Android 应用中选择登录。</p></div>
 <div class="app-card-foot"><a class="btn btn-secondary" href="https://miu.hoandat.com" data-id="app-open-miu-web">打开</a></div>
+</li><li class="app-card tone-amber" data-id="app-tieude-web">
+<div class="app-card-head">
+<span class="app-card-icon"><img class="app-mark" src="/assets/img/apps/tieude-mark-128.webp" width="44" height="44" alt=""></span>
+<div class="app-card-heading"><h3 class="app-card-name">Tiểu Đệ</h3>
+<p class="app-card-meta"><span class="badge badge-neutral">网页应用</span><span class="mono">tieude.hoandat.com</span></p></div>
+</div>
+<p class="app-card-desc">免费帮你写些小东西的 AI 机器人，靠自愿打赏维持运行。</p>
+<div class="app-card-how"><p class="app-card-how-label">登录方式</p><p>在网站上选择登录，即可获得更多免费次数。</p></div>
+<div class="app-card-foot"><a class="btn btn-secondary" href="https://tieude.hoandat.com" data-id="app-open-tieude-web">打开</a></div>
 </li></ul>
 </section>
 <section class="apps-section" id="how-sign-in-works" aria-labelledby="apps-steps-title" data-id="apps-steps">
@@ -492,7 +558,7 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <ol class="apps-steps"><li class="apps-step"><span class="apps-step-number" aria-hidden="true">1</span><div><h3 class="apps-step-title">选择一个应用</h3><p class="apps-step-body">在它的网站上选择登录，或在终端运行 <code class="mono">tunelo login</code>。</p></div></li><li class="apps-step"><span class="apps-step-number" aria-hidden="true">2</span><div><h3 class="apps-step-title">使用 Google 或 GitHub 继续</h3><p class="apps-step-body">你关联的账号会为你登录。第一次登录时需选择用户名。</p></div></li><li class="apps-step"><span class="apps-step-number" aria-hidden="true">3</span><div><h3 class="apps-step-title">回到应用</h3><p class="apps-step-body">来自 hoandat.com 以外的应用（例如 AI 工具）会先请求你的同意。</p></div></li></ol>
 </section>
 <p class="apps-manage" data-id="apps-manage">如需查看或移除可以访问你账号的应用，请打开<a class="link" href="/account">账号</a>页面。</p></main>
-<footer class="page-foot container"><nav class="lang-switch" aria-label="语言" data-id="lang-switch"><a class="lang-option" href="/lang?set=en&amp;return=%2Fapps" lang="en" hreflang="en" data-id="lang-en">English</a><a class="lang-option" href="/lang?set=zh-CN&amp;return=%2Fapps" lang="zh-CN" hreflang="zh-CN" aria-current="true" data-id="lang-zh-CN">中文</a><a class="lang-option" href="/lang?set=vi&amp;return=%2Fapps" lang="vi" hreflang="vi" data-id="lang-vi">Tiếng Việt</a></nav><a class="foot-link" href="/privacy" data-id="foot-privacy">隐私政策</a></footer>
+<footer class="page-foot container"><nav class="lang-switch" aria-label="语言" data-id="lang-switch"><a class="lang-option" href="/lang?set=en&amp;return=%2Fapps" lang="en" hreflang="en" data-id="lang-en">English</a><a class="lang-option" href="/lang?set=zh-CN&amp;return=%2Fapps" lang="zh-CN" hreflang="zh-CN" aria-current="true" data-id="lang-zh-CN">中文</a><a class="lang-option" href="/lang?set=vi&amp;return=%2Fapps" lang="vi" hreflang="vi" data-id="lang-vi">Tiếng Việt</a></nav><p class="foot-links"><a class="foot-link" href="https://hoandat.com" data-id="foot-home">hoandat.com 旗下应用</a><a class="foot-link" href="/privacy" data-id="foot-privacy">隐私政策</a></p></footer>
 </body>
 </html>"
 `;
@@ -507,6 +573,15 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /privacy the same w
 <meta name="robots" content="noindex">
 <meta name="description" content="Sign in to your account and manage the apps and devices connected to it.">
 <title>Privacy policy · hoandat.com</title>
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="hoandat.com">
+<meta property="og:title" content="Privacy policy · hoandat.com">
+<meta property="og:description" content="Sign in to your account and manage the apps and devices connected to it.">
+<meta property="og:image" content="https://auth.hoandat.com/assets/img/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://auth.hoandat.com/assets/img/og-image.jpg">
 <link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48">
 <link rel="icon" href="/icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180">
@@ -529,6 +604,7 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /privacy the same w
 <ul><li>Username, email address, display name and profile picture.</li><li>The service uses no passwords. Accounts created before passwords were removed may still hold an argon2id hash of the old password and old recovery codes; they are no longer used to sign in.</li><li>When you sign in with Google, GitHub or Apple: your account ID at the provider, and the verified email, name and profile picture the provider returns. With Apple, the email may be a private relay address you chose to share, and a token is kept only to revoke the link at Apple when you remove it.</li><li>When you link Telegram: the chat ID and Telegram username.</li><li>Sign-in sessions, devices and apps you allowed, with when they were used.</li><li>Which app you signed in to and when (the app&#39;s ID, the time, and whether you signed in on these pages or with an existing session), without IP address or browser; kept for 400 days.</li><li>A security log (sign-ins, linking or removing sign-in methods, revoked sessions and access) with IP address and browser; the IP address and browser of events not yet delivered are deleted after 30 days.</li></ul>
 <h2>How we use it</h2>
 <p>Data is used only to authenticate you, keep you signed in, recover your account, detect unusual access and count, in aggregate, how many people use each app. The service sends no email, shows no ads, and never sells or shares your data or these statistics.</p>
+<p data-id="privacy-analytics">The pages use Cloudflare Web Analytics to count visits in aggregate; it sets no cookies.</p>
 <h2>Sharing</h2>
 <p>Profile information goes only to apps run by the same owner (the hoandat.com apps) or to apps you allowed, within what you allowed. It is not shared with anyone else.</p>
 <h2>Your rights</h2>
@@ -542,7 +618,7 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /privacy the same w
 </div>
 </div>
 </main>
-<footer class="page-foot container"><nav class="lang-switch" aria-label="Language" data-id="lang-switch"><a class="lang-option" href="/lang?set=en&amp;return=%2Fprivacy" lang="en" hreflang="en" aria-current="true" data-id="lang-en">English</a><a class="lang-option" href="/lang?set=zh-CN&amp;return=%2Fprivacy" lang="zh-CN" hreflang="zh-CN" data-id="lang-zh-CN">中文</a><a class="lang-option" href="/lang?set=vi&amp;return=%2Fprivacy" lang="vi" hreflang="vi" data-id="lang-vi">Tiếng Việt</a></nav><a class="foot-link" href="/privacy" data-id="foot-privacy">Privacy policy</a></footer>
+<footer class="page-foot container"><nav class="lang-switch" aria-label="Language" data-id="lang-switch"><a class="lang-option" href="/lang?set=en&amp;return=%2Fprivacy" lang="en" hreflang="en" aria-current="true" data-id="lang-en">English</a><a class="lang-option" href="/lang?set=zh-CN&amp;return=%2Fprivacy" lang="zh-CN" hreflang="zh-CN" data-id="lang-zh-CN">中文</a><a class="lang-option" href="/lang?set=vi&amp;return=%2Fprivacy" lang="vi" hreflang="vi" data-id="lang-vi">Tiếng Việt</a></nav><p class="foot-links"><a class="foot-link" href="https://hoandat.com" data-id="foot-home">An app from hoandat.com</a><a class="foot-link" href="/privacy" data-id="foot-privacy">Privacy policy</a></p></footer>
 </body>
 </html>"
 `;
@@ -557,6 +633,15 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /privacy the same w
 <meta name="robots" content="noindex">
 <meta name="description" content="Đăng nhập vào tài khoản và quản lý các ứng dụng, thiết bị đã kết nối với tài khoản.">
 <title>Chính sách quyền riêng tư · hoandat.com</title>
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="hoandat.com">
+<meta property="og:title" content="Chính sách quyền riêng tư · hoandat.com">
+<meta property="og:description" content="Đăng nhập vào tài khoản và quản lý các ứng dụng, thiết bị đã kết nối với tài khoản.">
+<meta property="og:image" content="https://auth.hoandat.com/assets/img/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://auth.hoandat.com/assets/img/og-image.jpg">
 <link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48">
 <link rel="icon" href="/icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180">
@@ -579,6 +664,7 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /privacy the same w
 <ul><li>Tên đăng nhập, địa chỉ email, tên hiển thị và ảnh đại diện.</li><li>Dịch vụ không dùng mật khẩu. Tài khoản tạo trước khi bỏ mật khẩu có thể vẫn còn bản băm argon2id của mật khẩu và mã khôi phục cũ; chúng không còn được dùng để đăng nhập.</li><li>Khi bạn đăng nhập bằng Google, GitHub hoặc Apple: mã định danh tài khoản ở nhà cung cấp, email đã xác minh, tên và ảnh đại diện mà nhà cung cấp trả về. Với Apple, email có thể là địa chỉ chuyển tiếp riêng tư do bạn chọn chia sẻ, và một mã được giữ lại chỉ để thu hồi liên kết ở Apple khi bạn gỡ nó.</li><li>Khi bạn liên kết Telegram: mã chat và tên người dùng Telegram.</li><li>Phiên đăng nhập, thiết bị và ứng dụng bạn đã cấp quyền, kèm thời điểm sử dụng.</li><li>Lần đăng nhập vào từng ứng dụng (mã ứng dụng, thời điểm, đăng nhập mới hay dùng phiên sẵn có), không kèm địa chỉ IP hay trình duyệt; giữ 400 ngày.</li><li>Nhật ký bảo mật (đăng nhập, liên kết hoặc gỡ phương thức đăng nhập, thu hồi phiên và quyền) gồm địa chỉ IP và trình duyệt; IP và trình duyệt của sự kiện chưa gửi đi bị xoá sau 30 ngày.</li></ul>
 <h2>Mục đích sử dụng</h2>
 <p>Dữ liệu chỉ dùng để xác thực bạn, giữ phiên đăng nhập, khôi phục tài khoản, phát hiện truy cập bất thường và thống kê tổng hợp số người dùng theo ứng dụng. Dịch vụ không gửi email, không hiển thị quảng cáo, không bán và không chia sẻ dữ liệu hay số liệu thống kê này.</p>
+<p data-id="privacy-analytics">Các trang dùng Cloudflare Web Analytics để đếm lượt xem tổng quát; công cụ này không đặt cookie.</p>
 <h2>Chia sẻ</h2>
 <p>Thông tin hồ sơ chỉ được cấp cho các ứng dụng do cùng chủ sở hữu vận hành (các ứng dụng của hoandat.com) hoặc ứng dụng bạn đã đồng ý cấp quyền, trong phạm vi bạn đồng ý. Không chia sẻ cho bên thứ ba nào khác.</p>
 <h2>Quyền của bạn</h2>
@@ -592,7 +678,7 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /privacy the same w
 </div>
 </div>
 </main>
-<footer class="page-foot container"><nav class="lang-switch" aria-label="Ngôn ngữ" data-id="lang-switch"><a class="lang-option" href="/lang?set=en&amp;return=%2Fprivacy" lang="en" hreflang="en" data-id="lang-en">English</a><a class="lang-option" href="/lang?set=zh-CN&amp;return=%2Fprivacy" lang="zh-CN" hreflang="zh-CN" data-id="lang-zh-CN">中文</a><a class="lang-option" href="/lang?set=vi&amp;return=%2Fprivacy" lang="vi" hreflang="vi" aria-current="true" data-id="lang-vi">Tiếng Việt</a></nav><a class="foot-link" href="/privacy" data-id="foot-privacy">Chính sách quyền riêng tư</a></footer>
+<footer class="page-foot container"><nav class="lang-switch" aria-label="Ngôn ngữ" data-id="lang-switch"><a class="lang-option" href="/lang?set=en&amp;return=%2Fprivacy" lang="en" hreflang="en" data-id="lang-en">English</a><a class="lang-option" href="/lang?set=zh-CN&amp;return=%2Fprivacy" lang="zh-CN" hreflang="zh-CN" data-id="lang-zh-CN">中文</a><a class="lang-option" href="/lang?set=vi&amp;return=%2Fprivacy" lang="vi" hreflang="vi" aria-current="true" data-id="lang-vi">Tiếng Việt</a></nav><p class="foot-links"><a class="foot-link" href="https://hoandat.com" data-id="foot-home">Một app của hoandat.com</a><a class="foot-link" href="/privacy" data-id="foot-privacy">Chính sách quyền riêng tư</a></p></footer>
 </body>
 </html>"
 `;
@@ -607,6 +693,15 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /privacy the same w
 <meta name="robots" content="noindex">
 <meta name="description" content="登录账号，管理已关联的应用和设备。">
 <title>隐私政策 · hoandat.com</title>
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="hoandat.com">
+<meta property="og:title" content="隐私政策 · hoandat.com">
+<meta property="og:description" content="登录账号，管理已关联的应用和设备。">
+<meta property="og:image" content="https://auth.hoandat.com/assets/img/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://auth.hoandat.com/assets/img/og-image.jpg">
 <link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48">
 <link rel="icon" href="/icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180">
@@ -629,6 +724,7 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /privacy the same w
 <ul><li>用户名、邮箱地址、显示名称和头像。</li><li>本服务不使用密码。取消密码之前创建的账号可能仍保留旧密码的 argon2id 哈希和旧恢复码；它们已不再用于登录。</li><li>当你使用 Google、GitHub 或 Apple 登录时：你在该提供商处的账号 ID，以及提供商返回的已验证邮箱、姓名和头像。使用 Apple 时，邮箱可能是你选择共享的私密中转地址；我们保留一个令牌，仅用于在你移除关联时向 Apple 撤销授权。</li><li>当你关联 Telegram 时：聊天 ID 和 Telegram 用户名。</li><li>登录会话、设备和你已授权的应用，以及使用时间。</li><li>你登录各应用的记录（应用 ID、时间，以及是重新登录还是使用已有会话），不含 IP 地址和浏览器信息；保留 400 天。</li><li>安全日志（登录、关联或移除登录方式、撤销会话和权限），包含 IP 地址和浏览器；尚未发送的事件的 IP 地址和浏览器信息会在 30 天后删除。</li></ul>
 <h2>使用目的</h2>
 <p>数据仅用于验证你的身份、保持登录、恢复账号、发现异常访问，以及汇总统计各应用的用户人数。本服务不发送邮件、不展示广告，不出售也不共享你的数据或这些统计。</p>
+<p data-id="privacy-analytics">页面使用 Cloudflare Web Analytics 汇总统计访问量，它不设置 Cookie。</p>
 <h2>共享</h2>
 <p>个人资料只提供给同一所有者运营的应用（hoandat.com 的应用）或你已授权的应用，且仅限你同意的范围。不与任何其他第三方共享。</p>
 <h2>你的权利</h2>
@@ -642,7 +738,7 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /privacy the same w
 </div>
 </div>
 </main>
-<footer class="page-foot container"><nav class="lang-switch" aria-label="语言" data-id="lang-switch"><a class="lang-option" href="/lang?set=en&amp;return=%2Fprivacy" lang="en" hreflang="en" data-id="lang-en">English</a><a class="lang-option" href="/lang?set=zh-CN&amp;return=%2Fprivacy" lang="zh-CN" hreflang="zh-CN" aria-current="true" data-id="lang-zh-CN">中文</a><a class="lang-option" href="/lang?set=vi&amp;return=%2Fprivacy" lang="vi" hreflang="vi" data-id="lang-vi">Tiếng Việt</a></nav><a class="foot-link" href="/privacy" data-id="foot-privacy">隐私政策</a></footer>
+<footer class="page-foot container"><nav class="lang-switch" aria-label="语言" data-id="lang-switch"><a class="lang-option" href="/lang?set=en&amp;return=%2Fprivacy" lang="en" hreflang="en" data-id="lang-en">English</a><a class="lang-option" href="/lang?set=zh-CN&amp;return=%2Fprivacy" lang="zh-CN" hreflang="zh-CN" aria-current="true" data-id="lang-zh-CN">中文</a><a class="lang-option" href="/lang?set=vi&amp;return=%2Fprivacy" lang="vi" hreflang="vi" data-id="lang-vi">Tiếng Việt</a></nav><p class="foot-links"><a class="foot-link" href="https://hoandat.com" data-id="foot-home">hoandat.com 旗下应用</a><a class="foot-link" href="/privacy" data-id="foot-privacy">隐私政策</a></p></footer>
 </body>
 </html>"
 `;
@@ -1237,6 +1333,8 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in en 
   "apps.steps.provider.title": "Continue with Google or GitHub",
   "apps.steps.title": "How sign-in works",
   "apps.subtitle": "Sign in once with Google or GitHub and use the same account in every app below.",
+  "apps.tieudeWeb.description": "An AI bot that does small writing jobs for free and lives on voluntary tips.",
+  "apps.tieudeWeb.signIn": "Choose Sign in on the site to get more free uses.",
   "apps.title": "One account for every hoandat.com app",
   "apps.trust.control": "You choose which apps get access",
   "apps.trust.noPassword": "No password to create or remember",
@@ -1333,6 +1431,7 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in en 
   "iosApp.open.title": "Open the app",
   "layout.brand": "Account",
   "layout.description": "Sign in to your account and manage the apps and devices connected to it.",
+  "layout.ecosystem": "An app from hoandat.com",
   "layout.home": "Home",
   "layout.language": "Language",
   "layout.nav": "Site",
@@ -1369,6 +1468,7 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in en 
   "notice.sessionRevoked": "Signed out the session.",
   "notice.telegramUnlinked": "Unlinked Telegram.",
   "notice.unlinked": "Unlinked.",
+  "privacy.analytics": "The pages use Cloudflare Web Analytics to count visits in aggregate; it sets no cookies.",
   "privacy.purpose.body": "Data is used only to authenticate you, keep you signed in, recover your account, detect unusual access and count, in aggregate, how many people use each app. The service sends no email, shows no ads, and never sells or shares your data or these statistics.",
   "privacy.purpose.title": "How we use it",
   "privacy.rights.body": "On your {account} page you can see and edit your profile, unlink Google, GitHub, Apple or Telegram, and sign out sessions and apps you allowed.",
@@ -1573,6 +1673,8 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in vi 
   "apps.steps.provider.title": "Tiếp tục với Google hoặc GitHub",
   "apps.steps.title": "Đăng nhập diễn ra thế nào",
   "apps.subtitle": "Đăng nhập một lần bằng Google hoặc GitHub, rồi dùng cùng tài khoản đó trong mọi ứng dụng bên dưới.",
+  "apps.tieudeWeb.description": "Bot AI làm giúp miễn phí các việc viết nhỏ, sống nhờ tiền ủng hộ tự nguyện.",
+  "apps.tieudeWeb.signIn": "Chọn Đăng nhập trên trang để có thêm lượt dùng miễn phí.",
   "apps.title": "Một tài khoản cho mọi ứng dụng hoandat.com",
   "apps.trust.control": "Bạn chọn ứng dụng nào được quyền truy cập",
   "apps.trust.noPassword": "Không phải tạo hay nhớ mật khẩu",
@@ -1669,6 +1771,7 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in vi 
   "iosApp.open.title": "Mở app",
   "layout.brand": "Tài khoản",
   "layout.description": "Đăng nhập vào tài khoản và quản lý các ứng dụng, thiết bị đã kết nối với tài khoản.",
+  "layout.ecosystem": "Một app của hoandat.com",
   "layout.home": "Trang chủ",
   "layout.language": "Ngôn ngữ",
   "layout.nav": "Điều hướng",
@@ -1705,6 +1808,7 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in vi 
   "notice.sessionRevoked": "Đã đăng xuất phiên.",
   "notice.telegramUnlinked": "Đã huỷ liên kết Telegram.",
   "notice.unlinked": "Đã huỷ liên kết.",
+  "privacy.analytics": "Các trang dùng Cloudflare Web Analytics để đếm lượt xem tổng quát; công cụ này không đặt cookie.",
   "privacy.purpose.body": "Dữ liệu chỉ dùng để xác thực bạn, giữ phiên đăng nhập, khôi phục tài khoản, phát hiện truy cập bất thường và thống kê tổng hợp số người dùng theo ứng dụng. Dịch vụ không gửi email, không hiển thị quảng cáo, không bán và không chia sẻ dữ liệu hay số liệu thống kê này.",
   "privacy.purpose.title": "Mục đích sử dụng",
   "privacy.rights.body": "Tại trang {account}, bạn xem và sửa hồ sơ, gỡ liên kết Google, GitHub, Apple hoặc Telegram, thu hồi phiên và ứng dụng đã cấp quyền.",
@@ -1909,6 +2013,8 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in zh-
   "apps.steps.provider.title": "使用 Google 或 GitHub 继续",
   "apps.steps.title": "登录流程",
   "apps.subtitle": "用 Google 或 GitHub 登录一次，即可在下方所有应用中使用同一个账号。",
+  "apps.tieudeWeb.description": "免费帮你写些小东西的 AI 机器人，靠自愿打赏维持运行。",
+  "apps.tieudeWeb.signIn": "在网站上选择登录，即可获得更多免费次数。",
   "apps.title": "一个账号，通用所有 hoandat.com 应用",
   "apps.trust.control": "由你决定哪些应用可以访问",
   "apps.trust.noPassword": "无需创建或记住密码",
@@ -2005,6 +2111,7 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in zh-
   "iosApp.open.title": "打开应用",
   "layout.brand": "账号",
   "layout.description": "登录账号，管理已关联的应用和设备。",
+  "layout.ecosystem": "hoandat.com 旗下应用",
   "layout.home": "首页",
   "layout.language": "语言",
   "layout.nav": "站点导航",
@@ -2041,6 +2148,7 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in zh-
   "notice.sessionRevoked": "已退出该会话。",
   "notice.telegramUnlinked": "已取消关联 Telegram。",
   "notice.unlinked": "已取消关联。",
+  "privacy.analytics": "页面使用 Cloudflare Web Analytics 汇总统计访问量，它不设置 Cookie。",
   "privacy.purpose.body": "数据仅用于验证你的身份、保持登录、恢复账号、发现异常访问，以及汇总统计各应用的用户人数。本服务不发送邮件、不展示广告，不出售也不共享你的数据或这些统计。",
   "privacy.purpose.title": "使用目的",
   "privacy.rights.body": "在{account}页面，你可以查看和编辑个人资料，取消关联 Google、GitHub、Apple 或 Telegram，退出会话并撤销已授权的应用。",

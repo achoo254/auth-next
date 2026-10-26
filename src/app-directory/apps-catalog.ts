@@ -19,7 +19,8 @@ type AppIconName =
 	| "tunnel"
 	| "chat"
 	| "scribe"
-	| "miu";
+	| "miu"
+	| "tieude";
 
 /** One app on the page; `id` is its `client_id` when it has a fixed one. */
 export interface ListedApp {
@@ -47,6 +48,7 @@ const ICON_FILES: Readonly<Record<AppIconName, string>> = {
 	chat: "chat-mark-128.webp",
 	scribe: "scribe-mark-128.webp",
 	miu: "miu-mark-128.webp",
+	tieude: "tieude-mark-128.webp",
 };
 
 /**
@@ -75,8 +77,8 @@ function code(value: string): SafeHtml {
 
 /**
  * The first-party apps of src/oidc/clients.ts, plus the MCP clients that
- * register themselves for the MCP resources of Localman and Chat. Scribe
- * and Miu World once configured (`webApps.scribe`, `webApps.miu`).
+ * register themselves for the MCP resources of Localman and Chat, and the
+ * web apps of OPTIONAL_WEB_APPS once configured.
  */
 export function listedApps(
 	tenant: AppDirectoryTenant,
@@ -129,8 +131,10 @@ export function listedApps(
 		},
 		chatWeb(tenant, i18n),
 		chatMcp(tenant, i18n),
-		...(tenant.webApps.scribe ? [scribeWeb(tenant.webApps.scribe, i18n)] : []),
-		...(tenant.webApps.miu ? [miuWeb(tenant.webApps.miu, i18n)] : []),
+		...OPTIONAL_WEB_APPS.flatMap((app) => {
+			const href = tenant.webApps[app.key];
+			return href ? [optionalWebApp(app, href, i18n)] : [];
+		}),
 	];
 }
 
@@ -161,28 +165,61 @@ function chatMcp(tenant: AppDirectoryTenant, i18n: Translator): ListedApp {
 	};
 }
 
-function scribeWeb(href: string, i18n: Translator): ListedApp {
-	return {
+/**
+ * Web apps listed only once their client is configured (their `webApps`
+ * entry is set from the environment): Scribe, Miu World, Tiểu Đệ.
+ */
+const OPTIONAL_WEB_APPS = [
+	{
+		key: "scribe",
 		id: STATIC_CLIENT_IDS.scribeWeb,
 		name: "Scribe",
 		tone: "red",
 		icon: "scribe",
-		kind: "apps.kind.web",
 		description: "apps.scribeWeb.description",
-		signIn: html`${i18n.t("apps.scribeWeb.signIn")}`,
-		href,
-	};
-}
-
-function miuWeb(href: string, i18n: Translator): ListedApp {
-	return {
+		signIn: "apps.scribeWeb.signIn",
+	},
+	{
+		key: "miu",
 		id: STATIC_CLIENT_IDS.miuWeb,
 		name: "Miu World",
 		tone: "cyan",
 		icon: "miu",
-		kind: "apps.kind.web",
 		description: "apps.miuWeb.description",
-		signIn: html`${i18n.t("apps.miuWeb.signIn")}`,
+		signIn: "apps.miuWeb.signIn",
+	},
+	{
+		key: "tieude",
+		id: STATIC_CLIENT_IDS.tieudeWeb,
+		name: "Tiểu Đệ",
+		tone: "amber",
+		icon: "tieude",
+		description: "apps.tieudeWeb.description",
+		signIn: "apps.tieudeWeb.signIn",
+	},
+] as const satisfies readonly {
+	readonly key: "scribe" | "miu" | "tieude";
+	readonly id: string;
+	readonly name: string;
+	readonly tone: AppTone;
+	readonly icon: AppIconName;
+	readonly description: MessageKey;
+	readonly signIn: MessageKey;
+}[];
+
+function optionalWebApp(
+	app: (typeof OPTIONAL_WEB_APPS)[number],
+	href: string,
+	i18n: Translator,
+): ListedApp {
+	return {
+		id: app.id,
+		name: app.name,
+		tone: app.tone,
+		icon: app.icon,
+		kind: "apps.kind.web",
+		description: app.description,
+		signIn: html`${i18n.t(app.signIn)}`,
 		href,
 	};
 }

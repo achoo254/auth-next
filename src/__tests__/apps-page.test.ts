@@ -55,6 +55,7 @@ describe("app list page", () => {
 					...STAGING.webApps,
 					scribe: "https://scribe.staging.example",
 					miu: "https://miu.staging.example",
+					tieude: "https://tieude.staging.example",
 				},
 			},
 			testPage("en", "/apps"),
@@ -64,7 +65,7 @@ describe("app list page", () => {
 				/(?:src|href)="\/assets\/img\/(apps\/[a-z0-9-]+\.webp)"/g,
 			),
 		].map((match) => match[1]);
-		expect(new Set(marks).size).toBe(7);
+		expect(new Set(marks).size).toBe(8);
 		for (const mark of marks) {
 			expect(existsSync(`${STATIC_DIR}/img/${mark}`), mark).toBe(true);
 		}
@@ -130,6 +131,37 @@ describe("app list page", () => {
 		const unconfigured = renderAppsPage(STAGING, testPage("en", "/apps"));
 		expect(unconfigured).not.toContain('data-id="app-miu-web"');
 		expect(unconfigured).not.toContain(miu);
+	});
+
+	it("lists Tiểu Đệ with its mark once its client is configured", () => {
+		const tieude = "https://tieude.staging.example";
+		const withTieude = { ...STAGING, webApps: { ...STAGING.webApps, tieude } };
+		const html = renderAppsPage(withTieude, testPage("en", "/apps"));
+		expect(html).toContain('data-id="app-open-tieude-web"');
+		expect(html).toContain(`href="${tieude}"`);
+		expect(html).toContain("/assets/img/apps/tieude-mark-128.webp");
+		expect(html).toContain("small writing jobs for free");
+		expect(renderAppsPage(withTieude, testPage("vi", "/apps"))).toContain(
+			"Bot AI làm giúp miễn phí",
+		);
+		expect(renderAppsPage(withTieude, testPage("zh-CN", "/apps"))).toContain(
+			"AI 机器人",
+		);
+		expect(renderAppsPage(STAGING, testPage("en", "/apps"))).not.toContain(
+			'data-id="app-tieude-web"',
+		);
+	});
+
+	it("ends every page with the brand's home link and the privacy policy", () => {
+		const html = renderAppsPage(STAGING, testPage("vi", "/apps"));
+		expect(html).toContain(
+			'<a class="foot-link" href="https://hoandat.com" data-id="foot-home">Một app của hoandat.com</a>',
+		);
+		expect(html).toContain('data-id="foot-privacy"');
+		expect(html).toContain(
+			'<meta property="og:image" content="https://auth.hoandat.com/assets/img/og-image.jpg">',
+		);
+		expect(existsSync(`${STATIC_DIR}/img/og-image.jpg`)).toBe(true);
 	});
 
 	it("links the sign-in steps from the hero", () => {
