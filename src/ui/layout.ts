@@ -47,6 +47,13 @@ function languageSwitcher(page: PageContext): SafeHtml {
 	)}</nav>`;
 }
 
+/** Under every page: the language pill, then the privacy policy (legal/privacy-page.ts PRIVACY_PATH). */
+function pageFoot(page: PageContext): SafeHtml {
+	return html`<footer class="page-foot container">${languageSwitcher(page)}<a class="foot-link" href="/privacy" data-id="foot-privacy">${page.i18n.t(
+		"privacy.title",
+	)}</a></footer>`;
+}
+
 interface NavLink {
 	readonly href: string;
 	readonly key: MessageKey;
@@ -120,7 +127,7 @@ ${["tokens.css", "app.css", ...(options.stylesheets ?? [])].map(
 ${topbarNav(options.page)}
 </div></header>
 ${main(options)}
-<footer class="page-foot container">${languageSwitcher(options.page)}</footer>
+${pageFoot(options.page)}
 </body>
 </html>`;
 	return page.value;

@@ -171,7 +171,7 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <ol class="apps-steps"><li class="apps-step"><span class="apps-step-number" aria-hidden="true">1</span><div><h3 class="apps-step-title">Pick an app</h3><p class="apps-step-body">Choose Sign in on its site, or run <code class="mono">tunelo login</code> in a terminal.</p></div></li><li class="apps-step"><span class="apps-step-number" aria-hidden="true">2</span><div><h3 class="apps-step-title">Continue with Google or GitHub</h3><p class="apps-step-body">The account you linked signs you in. The first time, you pick a username.</p></div></li><li class="apps-step"><span class="apps-step-number" aria-hidden="true">3</span><div><h3 class="apps-step-title">You are back in the app</h3><p class="apps-step-body">Apps from outside Auth Next, such as AI tools, ask for your approval first.</p></div></li></ol>
 </section>
 <p class="apps-manage" data-id="apps-manage">To see or remove the apps that can access your account, open <a class="link" href="/account">Account</a>.</p></main>
-<footer class="page-foot container"><nav class="lang-switch" aria-label="Language" data-id="lang-switch"><a class="lang-option" href="/lang?set=en&amp;return=%2Fapps" lang="en" hreflang="en" aria-current="true" data-id="lang-en">English</a><a class="lang-option" href="/lang?set=zh-CN&amp;return=%2Fapps" lang="zh-CN" hreflang="zh-CN" data-id="lang-zh-CN">中文</a><a class="lang-option" href="/lang?set=vi&amp;return=%2Fapps" lang="vi" hreflang="vi" data-id="lang-vi">Tiếng Việt</a></nav></footer>
+<footer class="page-foot container"><nav class="lang-switch" aria-label="Language" data-id="lang-switch"><a class="lang-option" href="/lang?set=en&amp;return=%2Fapps" lang="en" hreflang="en" aria-current="true" data-id="lang-en">English</a><a class="lang-option" href="/lang?set=zh-CN&amp;return=%2Fapps" lang="zh-CN" hreflang="zh-CN" data-id="lang-zh-CN">中文</a><a class="lang-option" href="/lang?set=vi&amp;return=%2Fapps" lang="vi" hreflang="vi" data-id="lang-vi">Tiếng Việt</a></nav><a class="foot-link" href="/privacy" data-id="foot-privacy">Privacy policy</a></footer>
 </body>
 </html>"
 `;
@@ -330,7 +330,7 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <ol class="apps-steps"><li class="apps-step"><span class="apps-step-number" aria-hidden="true">1</span><div><h3 class="apps-step-title">Chọn một ứng dụng</h3><p class="apps-step-body">Chọn Đăng nhập trên trang của nó, hoặc chạy <code class="mono">tunelo login</code> trong terminal.</p></div></li><li class="apps-step"><span class="apps-step-number" aria-hidden="true">2</span><div><h3 class="apps-step-title">Tiếp tục với Google hoặc GitHub</h3><p class="apps-step-body">Tài khoản bạn đã liên kết sẽ đăng nhập cho bạn. Lần đầu, bạn chọn một tên đăng nhập.</p></div></li><li class="apps-step"><span class="apps-step-number" aria-hidden="true">3</span><div><h3 class="apps-step-title">Quay lại ứng dụng</h3><p class="apps-step-body">Ứng dụng bên ngoài Auth Next, như công cụ AI, sẽ hỏi bạn đồng ý trước.</p></div></li></ol>
 </section>
 <p class="apps-manage" data-id="apps-manage">Để xem hoặc gỡ các ứng dụng đang có quyền vào tài khoản, mở trang <a class="link" href="/account">Tài khoản</a>.</p></main>
-<footer class="page-foot container"><nav class="lang-switch" aria-label="Ngôn ngữ" data-id="lang-switch"><a class="lang-option" href="/lang?set=en&amp;return=%2Fapps" lang="en" hreflang="en" data-id="lang-en">English</a><a class="lang-option" href="/lang?set=zh-CN&amp;return=%2Fapps" lang="zh-CN" hreflang="zh-CN" data-id="lang-zh-CN">中文</a><a class="lang-option" href="/lang?set=vi&amp;return=%2Fapps" lang="vi" hreflang="vi" aria-current="true" data-id="lang-vi">Tiếng Việt</a></nav></footer>
+<footer class="page-foot container"><nav class="lang-switch" aria-label="Ngôn ngữ" data-id="lang-switch"><a class="lang-option" href="/lang?set=en&amp;return=%2Fapps" lang="en" hreflang="en" data-id="lang-en">English</a><a class="lang-option" href="/lang?set=zh-CN&amp;return=%2Fapps" lang="zh-CN" hreflang="zh-CN" data-id="lang-zh-CN">中文</a><a class="lang-option" href="/lang?set=vi&amp;return=%2Fapps" lang="vi" hreflang="vi" aria-current="true" data-id="lang-vi">Tiếng Việt</a></nav><a class="foot-link" href="/privacy" data-id="foot-privacy">Chính sách quyền riêng tư</a></footer>
 </body>
 </html>"
 `;
@@ -489,7 +489,7 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <ol class="apps-steps"><li class="apps-step"><span class="apps-step-number" aria-hidden="true">1</span><div><h3 class="apps-step-title">选择一个应用</h3><p class="apps-step-body">在它的网站上选择登录，或在终端运行 <code class="mono">tunelo login</code>。</p></div></li><li class="apps-step"><span class="apps-step-number" aria-hidden="true">2</span><div><h3 class="apps-step-title">使用 Google 或 GitHub 继续</h3><p class="apps-step-body">你关联的账号会为你登录。第一次登录时需选择用户名。</p></div></li><li class="apps-step"><span class="apps-step-number" aria-hidden="true">3</span><div><h3 class="apps-step-title">回到应用</h3><p class="apps-step-body">来自 Auth Next 以外的应用（例如 AI 工具）会先请求你的同意。</p></div></li></ol>
 </section>
 <p class="apps-manage" data-id="apps-manage">如需查看或移除可以访问你账号的应用，请打开<a class="link" href="/account">账号</a>页面。</p></main>
-<footer class="page-foot container"><nav class="lang-switch" aria-label="语言" data-id="lang-switch"><a class="lang-option" href="/lang?set=en&amp;return=%2Fapps" lang="en" hreflang="en" data-id="lang-en">English</a><a class="lang-option" href="/lang?set=zh-CN&amp;return=%2Fapps" lang="zh-CN" hreflang="zh-CN" aria-current="true" data-id="lang-zh-CN">中文</a><a class="lang-option" href="/lang?set=vi&amp;return=%2Fapps" lang="vi" hreflang="vi" data-id="lang-vi">Tiếng Việt</a></nav></footer>
+<footer class="page-foot container"><nav class="lang-switch" aria-label="语言" data-id="lang-switch"><a class="lang-option" href="/lang?set=en&amp;return=%2Fapps" lang="en" hreflang="en" data-id="lang-en">English</a><a class="lang-option" href="/lang?set=zh-CN&amp;return=%2Fapps" lang="zh-CN" hreflang="zh-CN" aria-current="true" data-id="lang-zh-CN">中文</a><a class="lang-option" href="/lang?set=vi&amp;return=%2Fapps" lang="vi" hreflang="vi" data-id="lang-vi">Tiếng Việt</a></nav><a class="foot-link" href="/privacy" data-id="foot-privacy">隐私政策</a></footer>
 </body>
 </html>"
 `;
@@ -533,7 +533,7 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /privacy the same w
 </div>
 </div>
 </main>
-<footer class="page-foot container"><nav class="lang-switch" aria-label="Language" data-id="lang-switch"><a class="lang-option" href="/lang?set=en&amp;return=%2Fprivacy" lang="en" hreflang="en" aria-current="true" data-id="lang-en">English</a><a class="lang-option" href="/lang?set=zh-CN&amp;return=%2Fprivacy" lang="zh-CN" hreflang="zh-CN" data-id="lang-zh-CN">中文</a><a class="lang-option" href="/lang?set=vi&amp;return=%2Fprivacy" lang="vi" hreflang="vi" data-id="lang-vi">Tiếng Việt</a></nav></footer>
+<footer class="page-foot container"><nav class="lang-switch" aria-label="Language" data-id="lang-switch"><a class="lang-option" href="/lang?set=en&amp;return=%2Fprivacy" lang="en" hreflang="en" aria-current="true" data-id="lang-en">English</a><a class="lang-option" href="/lang?set=zh-CN&amp;return=%2Fprivacy" lang="zh-CN" hreflang="zh-CN" data-id="lang-zh-CN">中文</a><a class="lang-option" href="/lang?set=vi&amp;return=%2Fprivacy" lang="vi" hreflang="vi" data-id="lang-vi">Tiếng Việt</a></nav><a class="foot-link" href="/privacy" data-id="foot-privacy">Privacy policy</a></footer>
 </body>
 </html>"
 `;
@@ -577,7 +577,7 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /privacy the same w
 </div>
 </div>
 </main>
-<footer class="page-foot container"><nav class="lang-switch" aria-label="Ngôn ngữ" data-id="lang-switch"><a class="lang-option" href="/lang?set=en&amp;return=%2Fprivacy" lang="en" hreflang="en" data-id="lang-en">English</a><a class="lang-option" href="/lang?set=zh-CN&amp;return=%2Fprivacy" lang="zh-CN" hreflang="zh-CN" data-id="lang-zh-CN">中文</a><a class="lang-option" href="/lang?set=vi&amp;return=%2Fprivacy" lang="vi" hreflang="vi" aria-current="true" data-id="lang-vi">Tiếng Việt</a></nav></footer>
+<footer class="page-foot container"><nav class="lang-switch" aria-label="Ngôn ngữ" data-id="lang-switch"><a class="lang-option" href="/lang?set=en&amp;return=%2Fprivacy" lang="en" hreflang="en" data-id="lang-en">English</a><a class="lang-option" href="/lang?set=zh-CN&amp;return=%2Fprivacy" lang="zh-CN" hreflang="zh-CN" data-id="lang-zh-CN">中文</a><a class="lang-option" href="/lang?set=vi&amp;return=%2Fprivacy" lang="vi" hreflang="vi" aria-current="true" data-id="lang-vi">Tiếng Việt</a></nav><a class="foot-link" href="/privacy" data-id="foot-privacy">Chính sách quyền riêng tư</a></footer>
 </body>
 </html>"
 `;
@@ -621,7 +621,7 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /privacy the same w
 </div>
 </div>
 </main>
-<footer class="page-foot container"><nav class="lang-switch" aria-label="语言" data-id="lang-switch"><a class="lang-option" href="/lang?set=en&amp;return=%2Fprivacy" lang="en" hreflang="en" data-id="lang-en">English</a><a class="lang-option" href="/lang?set=zh-CN&amp;return=%2Fprivacy" lang="zh-CN" hreflang="zh-CN" aria-current="true" data-id="lang-zh-CN">中文</a><a class="lang-option" href="/lang?set=vi&amp;return=%2Fprivacy" lang="vi" hreflang="vi" data-id="lang-vi">Tiếng Việt</a></nav></footer>
+<footer class="page-foot container"><nav class="lang-switch" aria-label="语言" data-id="lang-switch"><a class="lang-option" href="/lang?set=en&amp;return=%2Fprivacy" lang="en" hreflang="en" data-id="lang-en">English</a><a class="lang-option" href="/lang?set=zh-CN&amp;return=%2Fprivacy" lang="zh-CN" hreflang="zh-CN" aria-current="true" data-id="lang-zh-CN">中文</a><a class="lang-option" href="/lang?set=vi&amp;return=%2Fprivacy" lang="vi" hreflang="vi" data-id="lang-vi">Tiếng Việt</a></nav><a class="foot-link" href="/privacy" data-id="foot-privacy">隐私政策</a></footer>
 </body>
 </html>"
 `;
