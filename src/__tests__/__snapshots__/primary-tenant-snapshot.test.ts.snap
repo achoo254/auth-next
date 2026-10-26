@@ -107,24 +107,6 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <p class="app-card-desc">Mock APIs and an API client in your browser.</p>
 <div class="app-card-how"><p class="app-card-how-label">How to sign in</p><p>Choose Sign in on the site.</p></div>
 <div class="app-card-foot"><a class="btn btn-secondary" href="https://localman.hoandat.com" data-id="app-open-localman-web">Open</a></div>
-</li><li class="app-card tone-cyan" data-id="app-localman-mcp">
-<div class="app-card-head">
-<span class="app-card-icon"><img class="app-mark" src="/assets/img/apps/mcp-mark-128.webp" width="44" height="44" alt=""></span>
-<div class="app-card-heading"><h3 class="app-card-name">Localman MCP</h3>
-<p class="app-card-meta"><span class="badge badge-neutral">MCP server</span></p></div>
-</div>
-<p class="app-card-desc">Lets AI tools such as Claude Code work with your Localman projects.</p>
-<div class="app-card-how"><p class="app-card-how-label">How to sign in</p><p>Add <code class="mono">https://localman.hoandat.com/mcp</code> to your AI tool as an MCP server, then approve what it may do on the consent page.</p></div>
-
-</li><li class="app-card tone-green" data-id="app-tunelo-cli">
-<div class="app-card-head">
-<span class="app-card-icon"><img class="app-mark" src="/assets/img/apps/terminal-mark-128.webp" width="44" height="44" alt=""></span>
-<div class="app-card-heading"><h3 class="app-card-name">Tunelo CLI</h3>
-<p class="app-card-meta"><span class="badge badge-neutral">Command line</span></p></div>
-</div>
-<p class="app-card-desc">Opens tunnels from your computer to the internet.</p>
-<div class="app-card-how"><p class="app-card-how-label">How to sign in</p><p>Run <code class="mono">tunelo login</code> in a terminal, then enter the code it shows at <a class="link" href="ISSUER/device">ISSUER/device</a>.</p></div>
-
 </li><li class="app-card tone-amber" data-id="app-tunelo-web">
 <div class="app-card-head">
 <span class="app-card-icon"><img class="app-mark" src="/assets/img/apps/tunelo-mark-128.webp" width="44" height="44" alt=""></span>
@@ -143,15 +125,6 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <p class="app-card-desc">Fast messaging with searchable history and bots.</p>
 <div class="app-card-how"><p class="app-card-how-label">How to sign in</p><p>Choose Sign in on the site.</p></div>
 <div class="app-card-foot"><a class="btn btn-secondary" href="https://chat.hoandat.com" data-id="app-open-chat-web">Open</a></div>
-</li><li class="app-card tone-blue" data-id="app-chat-mcp">
-<div class="app-card-head">
-<span class="app-card-icon"><img class="app-mark" src="/assets/img/apps/mcp-mark-128.webp" width="44" height="44" alt=""></span>
-<div class="app-card-heading"><h3 class="app-card-name">Chat MCP</h3>
-<p class="app-card-meta"><span class="badge badge-neutral">MCP server</span></p></div>
-</div>
-<p class="app-card-desc">Lets AI tools such as Claude Code read and send messages and manage your bots on Chat.</p>
-<div class="app-card-how"><p class="app-card-how-label">How to sign in</p><p>Add <code class="mono">https://chat.hoandat.com/mcp</code> to your AI tool as an MCP server, then approve what it may do on the consent page.</p></div>
-
 </li><li class="app-card tone-red" data-id="app-scribe-web">
 <div class="app-card-head">
 <span class="app-card-icon"><img class="app-mark" src="/assets/img/apps/scribe-mark-128.webp" width="44" height="44" alt=""></span>
@@ -302,24 +275,6 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <p class="app-card-desc">Mock API và API client ngay trên trình duyệt.</p>
 <div class="app-card-how"><p class="app-card-how-label">Cách đăng nhập</p><p>Chọn Đăng nhập trên trang.</p></div>
 <div class="app-card-foot"><a class="btn btn-secondary" href="https://localman.hoandat.com" data-id="app-open-localman-web">Mở</a></div>
-</li><li class="app-card tone-cyan" data-id="app-localman-mcp">
-<div class="app-card-head">
-<span class="app-card-icon"><img class="app-mark" src="/assets/img/apps/mcp-mark-128.webp" width="44" height="44" alt=""></span>
-<div class="app-card-heading"><h3 class="app-card-name">Localman MCP</h3>
-<p class="app-card-meta"><span class="badge badge-neutral">MCP server</span></p></div>
-</div>
-<p class="app-card-desc">Cho công cụ AI như Claude Code làm việc với project Localman của bạn.</p>
-<div class="app-card-how"><p class="app-card-how-label">Cách đăng nhập</p><p>Thêm <code class="mono">https://localman.hoandat.com/mcp</code> vào công cụ AI làm MCP server, rồi duyệt những gì nó được làm ở trang cấp quyền.</p></div>
-
-</li><li class="app-card tone-green" data-id="app-tunelo-cli">
-<div class="app-card-head">
-<span class="app-card-icon"><img class="app-mark" src="/assets/img/apps/terminal-mark-128.webp" width="44" height="44" alt=""></span>
-<div class="app-card-heading"><h3 class="app-card-name">Tunelo CLI</h3>
-<p class="app-card-meta"><span class="badge badge-neutral">Dòng lệnh</span></p></div>
-</div>
-<p class="app-card-desc">Mở tunnel từ máy của bạn ra internet.</p>
-<div class="app-card-how"><p class="app-card-how-label">Cách đăng nhập</p><p>Chạy <code class="mono">tunelo login</code> trong terminal, rồi nhập mã nó hiện ở <a class="link" href="ISSUER/device">ISSUER/device</a>.</p></div>
-
 </li><li class="app-card tone-amber" data-id="app-tunelo-web">
 <div class="app-card-head">
 <span class="app-card-icon"><img class="app-mark" src="/assets/img/apps/tunelo-mark-128.webp" width="44" height="44" alt=""></span>
@@ -338,15 +293,6 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <p class="app-card-desc">Nhắn tin nhanh, tìm lại lịch sử tin nhắn và dùng bot.</p>
 <div class="app-card-how"><p class="app-card-how-label">Cách đăng nhập</p><p>Chọn Đăng nhập trên trang.</p></div>
 <div class="app-card-foot"><a class="btn btn-secondary" href="https://chat.hoandat.com" data-id="app-open-chat-web">Mở</a></div>
-</li><li class="app-card tone-blue" data-id="app-chat-mcp">
-<div class="app-card-head">
-<span class="app-card-icon"><img class="app-mark" src="/assets/img/apps/mcp-mark-128.webp" width="44" height="44" alt=""></span>
-<div class="app-card-heading"><h3 class="app-card-name">Chat MCP</h3>
-<p class="app-card-meta"><span class="badge badge-neutral">MCP server</span></p></div>
-</div>
-<p class="app-card-desc">Cho công cụ AI như Claude Code đọc, gửi tin nhắn và quản lý bot của bạn trên Chat.</p>
-<div class="app-card-how"><p class="app-card-how-label">Cách đăng nhập</p><p>Thêm <code class="mono">https://chat.hoandat.com/mcp</code> vào công cụ AI làm MCP server, rồi duyệt những gì nó được làm ở trang cấp quyền.</p></div>
-
 </li><li class="app-card tone-red" data-id="app-scribe-web">
 <div class="app-card-head">
 <span class="app-card-icon"><img class="app-mark" src="/assets/img/apps/scribe-mark-128.webp" width="44" height="44" alt=""></span>
@@ -497,24 +443,6 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <p class="app-card-desc">在浏览器中使用 Mock API 和 API 客户端。</p>
 <div class="app-card-how"><p class="app-card-how-label">登录方式</p><p>在网站上选择登录。</p></div>
 <div class="app-card-foot"><a class="btn btn-secondary" href="https://localman.hoandat.com" data-id="app-open-localman-web">打开</a></div>
-</li><li class="app-card tone-cyan" data-id="app-localman-mcp">
-<div class="app-card-head">
-<span class="app-card-icon"><img class="app-mark" src="/assets/img/apps/mcp-mark-128.webp" width="44" height="44" alt=""></span>
-<div class="app-card-heading"><h3 class="app-card-name">Localman MCP</h3>
-<p class="app-card-meta"><span class="badge badge-neutral">MCP 服务器</span></p></div>
-</div>
-<p class="app-card-desc">让 Claude Code 等 AI 工具操作你的 Localman 项目。</p>
-<div class="app-card-how"><p class="app-card-how-label">登录方式</p><p>在 AI 工具中把 <code class="mono">https://localman.hoandat.com/mcp</code> 添加为 MCP 服务器，然后在授权页面批准它可以执行的操作。</p></div>
-
-</li><li class="app-card tone-green" data-id="app-tunelo-cli">
-<div class="app-card-head">
-<span class="app-card-icon"><img class="app-mark" src="/assets/img/apps/terminal-mark-128.webp" width="44" height="44" alt=""></span>
-<div class="app-card-heading"><h3 class="app-card-name">Tunelo CLI</h3>
-<p class="app-card-meta"><span class="badge badge-neutral">命令行</span></p></div>
-</div>
-<p class="app-card-desc">从你的电脑向互联网打开隧道。</p>
-<div class="app-card-how"><p class="app-card-how-label">登录方式</p><p>在终端运行 <code class="mono">tunelo login</code>，然后在 <a class="link" href="ISSUER/device">ISSUER/device</a> 输入它显示的代码。</p></div>
-
 </li><li class="app-card tone-amber" data-id="app-tunelo-web">
 <div class="app-card-head">
 <span class="app-card-icon"><img class="app-mark" src="/assets/img/apps/tunelo-mark-128.webp" width="44" height="44" alt=""></span>
@@ -533,15 +461,6 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <p class="app-card-desc">快速聊天，可搜索历史消息并使用机器人。</p>
 <div class="app-card-how"><p class="app-card-how-label">登录方式</p><p>在网站上选择登录。</p></div>
 <div class="app-card-foot"><a class="btn btn-secondary" href="https://chat.hoandat.com" data-id="app-open-chat-web">打开</a></div>
-</li><li class="app-card tone-blue" data-id="app-chat-mcp">
-<div class="app-card-head">
-<span class="app-card-icon"><img class="app-mark" src="/assets/img/apps/mcp-mark-128.webp" width="44" height="44" alt=""></span>
-<div class="app-card-heading"><h3 class="app-card-name">Chat MCP</h3>
-<p class="app-card-meta"><span class="badge badge-neutral">MCP 服务器</span></p></div>
-</div>
-<p class="app-card-desc">让 Claude Code 等 AI 工具读取和发送消息，并管理你在 Chat 上的机器人。</p>
-<div class="app-card-how"><p class="app-card-how-label">登录方式</p><p>在 AI 工具中把 <code class="mono">https://chat.hoandat.com/mcp</code> 添加为 MCP 服务器，然后在授权页面批准它可以执行的操作。</p></div>
-
 </li><li class="app-card tone-red" data-id="app-scribe-web">
 <div class="app-card-head">
 <span class="app-card-icon"><img class="app-mark" src="/assets/img/apps/scribe-mark-128.webp" width="44" height="44" alt=""></span>

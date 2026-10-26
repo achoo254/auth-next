@@ -27,6 +27,13 @@ const TRUST: readonly MessageKey[] = [
 
 const CHECK = html`<svg class="icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12l4 4 10-10"/></svg>`;
 
+/**
+ * The directory showcases apps with a web page of their own; Localman MCP,
+ * Chat MCP and Tunelo CLI are other ways into those apps, explained on their
+ * sites, and the sign-in steps below still name `tunelo login`.
+ */
+const hasHomePage = (app: ListedApp): boolean => app.kind === "apps.kind.web";
+
 /** Apps for fun; every other app is listed under work. */
 const FUN_APP_IDS: ReadonlySet<string> = new Set([
 	STATIC_CLIENT_IDS.miuWeb,
@@ -141,7 +148,7 @@ export function renderAppsPage(
 		layout: "portal",
 		stylesheets: ["apps.css"],
 		body: html`${hero(tenant, i18n, apps)}
-${appGroups(apps, i18n)}
+${appGroups(apps.filter(hasHomePage), i18n)}
 ${steps(i18n)}
 <p class="apps-manage" data-id="apps-manage">${i18n.rich("apps.manage", { account: html`<a class="link" href="/account">${i18n.t("layout.brand")}</a>` })}</p>`,
 	});

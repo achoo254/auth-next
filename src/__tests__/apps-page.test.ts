@@ -21,7 +21,8 @@ describe("app list page", () => {
 		expect(html).toContain('href="https://localman.staging.example"');
 		expect(html).toContain('href="https://tunnel.staging.example"');
 		expect(html).toContain('href="https://chat.staging.example"');
-		expect(html).toContain("https://auth.staging.example/device");
+		// MCP and CLI entries are not listed, so no device-code address shows.
+		expect(html).not.toContain("https://auth.staging.example/device");
 		expect(html).not.toContain('https://localman.hoandat.com"');
 	});
 
@@ -65,7 +66,8 @@ describe("app list page", () => {
 				/(?:src|href)="\/assets\/img\/(apps\/[a-z0-9-]+\.webp)"/g,
 			),
 		].map((match) => match[1]);
-		expect(new Set(marks).size).toBe(8);
+		// Localman, Tunelo, Chat, Scribe, Miu World, Tiểu Đệ: web apps only.
+		expect(new Set(marks).size).toBe(6);
 		for (const mark of marks) {
 			expect(existsSync(`${STATIC_DIR}/img/${mark}`), mark).toBe(true);
 		}
