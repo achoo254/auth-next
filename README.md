@@ -1,175 +1,76 @@
 # auth-next
 
-`auth-next` (trước là `hoandat-auth`; process pm2, thư mục `/var/www/hoandat-auth` trên server và repo GitHub vẫn giữ tên cũ) là IdP OpenID Connect tự host tại `auth.hoandat.com`, dùng chung cho hệ `*-next`: một nơi đăng nhập cho Localman web, Localman MCP, Tunelo CLI, Tunelo web, Chat, Chat MCP, Scribe và Miu World. Dựng trên [`oidc-provider`](https://github.com/panva/node-oidc-provider) v9, Express 5 và MongoDB. Lý do chọn kiến trúc: [`docs/decisions/0001-own-oidc-idp.md`](docs/decisions/0001-own-oidc-idp.md); tài khoản và trang đăng nhập: [`docs/decisions/0002-accounts-and-login-pages.md`](docs/decisions/0002-accounts-and-login-pages.md); token exchange, kiểm client và audit: [`docs/decisions/0003-token-exchange-and-audit-outbox.md`](docs/decisions/0003-token-exchange-and-audit-outbox.md); chỉ đăng nhập bằng Google/GitHub: [`docs/decisions/0004-upstream-only-sign-in.md`](docs/decisions/0004-upstream-only-sign-in.md), thêm Apple: [`docs/decisions/0008-sign-in-with-apple.md`](docs/decisions/0008-sign-in-with-apple.md). **App tích hợp đọc [`docs/integration-guide.md`](docs/integration-guide.md).**
+`auth-next` là IdP OpenID Connect tự host tại `auth.hoandat.com`, nơi đăng nhập chung của hệ `*-next` (Localman, Tunelo, Chat, Scribe, Miu World, Tiểu Đệ và app iOS "Tài khoản"). Một tài khoản hoandat dùng được cho mọi app; app không tự giữ mật khẩu hay danh tính. Tên cũ là `hoandat-auth`: process pm2 và thư mục trên server vẫn giữ tên này ([`infra/deploy.sh`](infra/deploy.sh)).
 
-Trạng thái: phase 03 (phần IdP). Có lõi OIDC (phase 01), trang đăng nhập, đăng ký, consent, duyệt thiết bị, đăng xuất, trang `/account` (phase 02), cùng token exchange Localman → Tunelo, script kiểm client và outbox sự kiện audit gửi sang Localman (phase 03). Đăng nhập và đăng ký chỉ bằng Google, GitHub hoặc Apple (Apple khi đã cấu hình, ADR 0008): không có mật khẩu, mã khôi phục hay quên mật khẩu (ADR 0004). Không gửi email ở bất kỳ đâu.
+Dựng trên [`oidc-provider`](https://github.com/panva/node-oidc-provider), Express và MongoDB (phiên bản ở [`package.json`](package.json)). **App tích hợp đọc [`docs/integration-guide.md`](docs/integration-guide.md)**: đó là hợp đồng với client, README không lặp lại.
 
-## Ứng dụng đang đăng nhập qua `auth.hoandat.com`
+## Quyết định chính
 
-Người dùng xem danh sách này ở trang công khai `/apps` (mở `auth.hoandat.com` cũng được chuyển tới đó), ba ngôn ngữ, render ở `src/app-directory/apps-page.ts`.
+| Quyết định | ADR |
+|---|---|
+| Tự host IdP bằng `oidc-provider` thay vì dịch vụ ngoài | [0001](docs/decisions/0001-own-oidc-idp.md) |
+| Tài khoản, trang đăng nhập và trang `/account` render phía server, không JavaScript | [0002](docs/decisions/0002-accounts-and-login-pages.md) |
+| Token exchange Localman → Tunelo, kiểm client tĩnh, outbox sự kiện audit gửi sang Localman | [0003](docs/decisions/0003-token-exchange-and-audit-outbox.md) |
+| Chỉ đăng nhập bằng Google/GitHub, không mật khẩu hay mã khôi phục | [0004](docs/decisions/0004-upstream-only-sign-in.md) |
+| ES256 mặc định, RS256 cho ID token của client cần | [0005](docs/decisions/0005-rs256-id-tokens.md) |
+| Thêm "Đăng nhập với Apple" | [0008](docs/decisions/0008-sign-in-with-apple.md) |
+| Người dùng tự xoá tài khoản | [0009](docs/decisions/0009-account-deletion.md) |
+| Mật khẩu chỉ cho người duyệt App Store, tắt mặc định | [0010](docs/decisions/0010-review-only-password-sign-in.md) |
+| Ghi tài khoản vào app nào để đo tăng trưởng (`client_usage`) | [0011](docs/decisions/0011-client-usage-metrics.md) |
+| Đơn tenant `hoandat.com`, vẫn giữ trường `tenantId` | [0013](docs/decisions/0013-single-tenant.md) |
 
-| Ứng dụng | Địa chỉ | `client_id` | Cách đăng nhập |
-|---|---|---|---|
-| Localman web | `https://localman.hoandat.com` | `localman-web` | Nút đăng nhập trên web (Code + PKCE); phiên gắn với phiên IdP, đăng xuất ở IdP là đăng xuất Localman |
-| Localman MCP | `https://localman.hoandat.com/mcp` | mỗi client MCP một id (DCR) | Client MCP (ví dụ Claude Code) tự đăng ký qua `/reg`, người dùng duyệt quyền ở trang consent |
-| Tunelo CLI | lệnh `tunelo` trên máy người dùng | `tunelo-cli` | `tunelo login` (device flow): mở `/device`, nhập mã, duyệt từng máy |
-| Tunelo web | `https://tunnel.hoandat.com` | `tunelo-web` | Nút đăng nhập trên web (Code + PKCE) |
-| Chat web (repo `chat-next`) | `https://chat.hoandat.com` | `chat-web` | Nút đăng nhập trên web (Code + PKCE); phiên gắn với phiên IdP |
-| Chat MCP (repo `chat-next`) | `https://chat.hoandat.com/mcp` | mỗi client MCP một id (DCR), dùng chung với Localman MCP | Như Localman MCP; quyền `bots:admin` chỉ khi client khai rõ lúc đăng ký |
-| Chat mobile (repo `chat-next`) | app iOS/Android (desktop dùng Chat web dạng PWA, không có client riêng) | `chat-mobile` | Trình duyệt hệ thống, Code + PKCE; redirect private-use scheme (`CHAT_MOBILE_REDIRECT_URI`) |
-| Scribe web (repo `scribe-next`) | `https://scribe.hoandat.com` | `scribe-web` | Nút đăng nhập trên web (Code + PKCE, client confidential); back-channel logout về `/api/auth/backchannel-logout` |
-| Scribe mobile (repo `scribe-next`) | app iOS/Android | `scribe-mobile` | Trình duyệt hệ thống, Code + PKCE; redirect private-use scheme (`SCRIBE_MOBILE_REDIRECT_URI`, mặc định `com.hoandat.scribe:/auth/callback`) |
-| Miu World web (repo `miu-world-next`) | `https://miu.hoandat.com` | `miu-web` | Nút đăng nhập phụ huynh (Code + PKCE, client confidential, scope `openid email`, không refresh); back-channel logout về `/api/auth/backchannel-logout` |
-| Miu World app (repo `miu-world-next`) | app iPhone/Android | `miu-mobile` | Trình duyệt hệ thống, Code + PKCE; redirect private-use scheme (`MIU_MOBILE_REDIRECT_URI`, mặc định `com.hoandat.miu:/auth/callback`) |
-| Tiểu Đệ web (repo `tieu-de-next`) | `https://tieude.hoandat.com` | `tieude-web` | "Đăng nhập bằng tài khoản Hoandat" (Code + PKCE, client confidential, scope `openid`, không refresh, không back-channel); chỉ để biết khách có tài khoản, không hiện ở `/apps` |
-| Trang tài khoản | `https://auth.hoandat.com/account` | `hoandat-account` | Nội bộ IdP, không dành cho app bên ngoài |
+ADR 0006 (tenant theo domain), 0007 (tenant tự host) và 0012 (Scribe trên tenant) đã bị ADR 0013 thay thế; chỉ còn giá trị lịch sử.
 
-Địa chỉ trên là của production; môi trường khác đổi qua `LOCALMAN_WEB_URL`, `TUNELO_WEB_URL`, `CHAT_WEB_URL`, `SCRIBE_WEB_URL`, `MIU_WEB_URL`, `ISSUER`. Trang `/apps` liệt kê Scribe khi đã khai `SCRIBE_WEB_CLIENT_SECRET` (client khai ở [`src/oidc/scribe-clients.ts`](src/oidc/scribe-clients.ts); `scribe-web-dev` cho máy dev không hiện ở `/apps`). Miu World như vậy với `MIU_WEB_CLIENT_SECRET` ([`src/oidc/miu-clients.ts`](src/oidc/miu-clients.ts); khung chung của hai app ở [`src/oidc/primary-app-clients.ts`](src/oidc/primary-app-clients.ts)). `tieude-web` chỉ có khi khai cả `TIEUDE_WEB_URL` lẫn `TIEUDE_WEB_CLIENT_SECRET` ([`src/oidc/tieude-client.ts`](src/oidc/tieude-client.ts)), không hiện ở `/apps`. Localman còn nhận sự kiện audit từ IdP (mục **Audit** bên dưới). Client tĩnh chỉ khai ở [`src/oidc/clients.ts`](src/oidc/clients.ts); thêm app mới thì khai ở đó rồi cập nhật bảng này, trang `/apps`, mục [Client và audience](#client-và-audience) và [`docs/integration-guide.md`](docs/integration-guide.md) mục 2.
+Ràng buộc không suy ra được từ code:
 
-## Một tenant
+- **Không có kênh email.** Hệ sinh thái không gửi mail; IdP không có quên mật khẩu, xác minh qua mail hay thông báo mail. Thông báo bảo mật đi qua bot Telegram (khi người dùng liên kết) và push của app "Tài khoản".
+- **Không được để tài khoản mất cách đăng nhập.** Vì chỉ có Google/GitHub/Apple, khoá huỷ liên kết provider cuối cùng là yêu cầu an toàn, không phải tiện ích.
+- **Một tenant, nhưng dữ liệu vẫn mang `tenantId`.** ADR 0013 chọn không migrate; mọi truy vấn vẫn lọc theo tenant để giữ cô lập dữ liệu.
 
-IdP chỉ phục vụ `hoandat.com` (ADR [0013](docs/decisions/0013-single-tenant.md), 24/10/2026): tenant duy nhất dựng từ env (`TENANT_DOMAIN`, `TENANT_DISPLAY_NAME`, URL của từng app), id `primary`. Dữ liệu vẫn mang `tenantId` (luôn `primary`) và mọi truy vấn vẫn lọc theo nó; không còn nhận domain, `/admin` của tenant, tự host hay API nội bộ.
+## Lưu ý cho client
+
+Hợp đồng đầy đủ ở [`docs/integration-guide.md`](docs/integration-guide.md); các điểm dễ sai nhất:
+
+- **Endpoint lấy từ discovery** (`/.well-known/openid-configuration`), không hardcode (mục 1).
+- **Refresh token dùng một lần và xoay vòng.** Dùng lại token cũ thu hồi cả grant; hai refresh song song thì một cái nhận `invalid_grant`. Client chạy nhiều tiến trình (như Tunelo CLI) **phải khoá khi refresh** và lưu token mới trước khi nhả khoá (mục 8).
+- **Phiên trượt 30 ngày, trần 90 ngày** từ lúc đăng nhập; một số client thiết bị không có trần. Client nào có trần do `hasHardCap` trong [`src/oidc/sliding-grants.ts`](src/oidc/sliding-grants.ts) quyết định (mục 8).
+- **Refresh token của client web gắn với phiên IdP**: đăng xuất ở IdP thì lần refresh sau nhận `invalid_grant`, kể cả khi back-channel logout không tới (mục 5, 8).
+- **Xác minh access token offline** bằng JWKS đã cache, kiểm `iss`, `aud` của chính mình, `alg` và `typ`; mẫu tham chiếu: [`src/__tests__/helpers/verify-access-token.ts`](src/__tests__/helpers/verify-access-token.ts) (mục 3).
+- **Token exchange** chỉ dành cho `localman-web` (mục 6). **Client MCP** đăng ký động qua `/reg` (mục 9). App iOS "Tài khoản" dùng `/api/account` (mục 13).
+- Revocation và introspection: client chỉ thao tác trên token của chính nó, trừ các client tin cậy khai ở [`src/oidc/clients.ts`](src/oidc/clients.ts).
+
+Thêm app mới: khai client tĩnh ở [`src/oidc/clients.ts`](src/oidc/clients.ts) (hoặc file client riêng của app trong `src/oidc/`), cập nhật trang `/apps` ([`src/app-directory/`](src/app-directory/)) và mục 2 của integration guide; [`scripts/seed-clients.ts`](scripts/seed-clients.ts) kiểm client với env hiện tại.
 
 ## Bắt đầu
 
-Yêu cầu: Node ≥ 22.12, pnpm 11, MongoDB (replica set) hoặc Docker.
+Yêu cầu: Node và pnpm theo `engines`/`packageManager` trong [`package.json`](package.json); MongoDB chạy replica set, hoặc Docker.
 
 ```bash
 pnpm install
-pnpm generate-key            # tạo secrets/signing-keys.json (ES256, có kid)
-pnpm generate-key secrets/signing-keys.json --alg RS256   # thêm khoá RSA cho ID token RS256
-cp .env.example .env         # điền COOKIE_KEYS và hai client secret
-pnpm dev                     # http://localhost:4500, cần MONGO_URL trỏ tới MongoDB
+pnpm generate-key            # tạo khoá ký vào secrets/
+cp .env.example .env         # điền secret theo chú thích trong file
+pnpm dev
 ```
 
-Hoặc chạy cả MongoDB lẫn IdP bằng Docker: `docker compose up --build` (cả hai cổng chỉ bind `127.0.0.1`).
+Hoặc chạy cả MongoDB lẫn IdP bằng [`docker-compose.yml`](docker-compose.yml). Danh sách lệnh ở `scripts` của [`package.json`](package.json); cổng kiểm tra trước khi báo xong và giới hạn chạy test trên máy dev ở [`CLAUDE.md`](CLAUDE.md).
 
-| Lệnh | Việc |
+## Cấu hình và vận hành
+
+- Biến môi trường: [`.env.example`](.env.example) (có chú thích), schema ở [`src/config/`](src/config/). Ở production process từ chối khởi động khi URL không phải https công khai hoặc `TRUST_PROXY` còn mặc định. `TRUST_PROXY` phải ghi đúng địa chỉ của reverse proxy, không tin cả một dải mạng riêng, vì container nào trong dải đó cũng giả được IP client.
+- Deploy, xoay khoá ký, client theo từng app, rollback: [`docs/deployment-guide.md`](docs/deployment-guide.md); script ở [`infra/`](infra/).
+- Bật "Đăng nhập với Apple": [`docs/sign-in-with-apple.md`](docs/sign-in-with-apple.md).
+
+## Đi đâu trong code
+
+| Chỗ | Vai trò |
 |---|---|
-| `pnpm dev` | Chạy server với `tsx watch`, đọc `.env` nếu có |
-| `pnpm build` / `pnpm start` | Bundle `dist/server.mjs` bằng esbuild / chạy bản build |
-| `pnpm lint` | Biome 1.9.4 |
-| `pnpm typecheck` | `tsc --noEmit` |
-| `pnpm test` | Vitest (unit + integration HTTP); tự chạy một mongod thật qua `mongodb-memory-server` (lần đầu tải binary). Tối đa 2 worker (đặt trong `vitest.config.ts`); thêm tham số thì viết `pnpm test <args>`, vì `pnpm test -- <args>` không chuyển tham số |
-| `pnpm test:e2e` | Playwright (Chromium, 1 worker) trên server thật ở cổng 4590/4591 với Google, GitHub, Telegram giả. Cài trình duyệt một lần: `pnpm exec playwright install chromium` |
-| `pnpm check:tokens` | Không có mã màu (hex, `rgb()`, `hsl()`) trong `src/` và `static/` ngoài `static/css/tokens.css` |
-| `pnpm generate-key [file] [--alg ES256\|RS256]` | Sinh khoá (mặc định ES256) và thêm vào cuối JWKS; khoá đầu tiên của mỗi thuật toán ký, khoá sau chỉ để xác minh (ADR 0001 mục 4, ADR 0005) |
-| `pnpm conformance:idp` | Bản IdP thử cho bộ conformance OpenID (Basic OP): cấu hình provider thật trên MongoDB trong bộ nhớ, khoá ES256 + RS256 sinh tạm, đăng nhập tự hoàn tất bằng tài khoản thử; cần `CONFORMANCE_ISSUER` là URL https công khai (mở bằng `tunelo http 4595:<subdomain>`). Ghi cấu hình plan kèm secret thử vào `secrets/conformance-plan.json` (mode 600). Chỉ để kiểm thử, xem đầu `e2e/support/conformance-server.ts` |
-| `pnpm growth:report [--weeks N] [--tenant <id>] [--json]` | Số liệu tăng trưởng theo tuần (thứ Hai 00:00 Asia/Saigon), theo tenant: tài khoản mới, app đầu tiên của tài khoản mới, tỷ lệ tài khoản dùng từ 2 app trở lên, lượt đăng nhập theo `client_id`; thêm tỷ lệ dùng từ 2 app trong 28 ngày gần nhất (app giữ phiên riêng nên số theo tuần đếm thiếu). Bỏ tài khoản người duyệt App Store khỏi mọi chỉ số (ADR 0011). Chỉ đọc, mặc định 8 tuần, tối đa 57 (vừa trong 400 ngày lưu `client_usage`). Trên server: `node --env-file=.env dist/growth-report.mjs` |
-| `pnpm seed:clients [--skip-discovery]` | Kiểm client tĩnh với env hiện tại (validator của `oidc-provider`, bản ghi MongoDB che id tĩnh, discovery và JWKS của issuer), in kế hoạch kèm fingerprint; chỉ đọc, chạy lại cho cùng kết quả. Trong image production: `node dist/seed-clients.mjs` |
-
-## Endpoint
-
-Client phải đọc endpoint từ `/.well-known/openid-configuration`, không hardcode. `prompt_values_supported` gồm `none`, `create`, `login`, `consent`: `prompt=create` (OIDC Prompt Create) mở thẳng trang đăng ký, đăng ký xong quay về client như đăng nhập. Hiện tại: `/auth`, `/request` (PAR), `/token`, `/me` (userinfo), `/jwks`, `/device/auth` và `/device` (device flow), `/token/revocation`, `/token/introspection`, `/session/end`, `/reg` (DCR). `/auth`, `/request`, `/token`, `/device`, `/device/auth` và `/reg` bị giới hạn tần suất theo IP (mọi cách viết hoa/thường và `/` cuối đều tính chung). `/healthz` trả 200 khi process sống.
-
-## Client và audience
-
-| Client | Loại | Grant | Scope | Audience của access token |
-|---|---|---|---|---|
-| `localman-web` | confidential | Code + PKCE, refresh (gắn phiên IdP), token exchange | `openid profile email telegram` + scope API Localman | `https://localman.hoandat.com`; token exchange cấp `https://tunnel.hoandat.com` |
-| `tunelo-cli` | public | device code, refresh | `openid offline_access tunnels:open tunnels:read` | `https://tunnel.hoandat.com` |
-| `tunelo-web` | confidential | Code + PKCE, refresh (gắn phiên IdP) | `openid profile email tunnels:open tunnels:read` | `https://tunnel.hoandat.com` (trang web Tunelo chỉ xin `openid profile`, nhận access token opaque cho userinfo) |
-| `chat-web` | confidential | Code + PKCE, refresh (gắn phiên IdP) | `openid profile email` | không có (chat tự cấp phiên, chỉ đọc ID token và userinfo) |
-| `chat-mobile` | public, native | Code + PKCE, refresh (theo thiết bị) | `openid profile email` | không có |
-| `scribe-web`, `scribe-web-dev` | confidential | Code + PKCE, refresh (gắn phiên IdP) | `openid profile email` | không có (Scribe tự cấp phiên, chỉ đọc ID token và userinfo) |
-| `scribe-mobile` | public, native | Code + PKCE, refresh | `openid profile email` | không có |
-| `miu-web`, `miu-web-dev` | confidential | Code + PKCE, không refresh | `openid email` | không có (Miu tự cấp phiên, đọc email đã xác minh ở userinfo) |
-| `miu-mobile` | public, native | Code + PKCE, không refresh | `openid email` | không có |
-| `tieude-web` | confidential | Code + PKCE, không refresh | `openid` | không có (Tiểu Đệ tự giữ cookie) |
-| `account-ios` | public, native | Code + PKCE, refresh (theo thiết bị, **giữ trần 90 ngày**), `require_auth_time` | `openid profile email account` | không có: token opaque, chỉ dùng cho `/api/account` (app iOS "Tài khoản") |
-| Client MCP (DCR) | public hoặc confidential | Code + PKCE, refresh | chỉ `mock:read mock:write client:read client:write client:send`, cộng `credentials:write` nếu khai rõ lúc đăng ký | luôn `https://localman.hoandat.com/mcp` |
-| `hoandat-account` | public, nội bộ | Code + PKCE (code không bao giờ được đổi) | `openid` | không có |
-
-Back-channel logout: `localman-web` tới `${LOCALMAN_WEB_URL}/auth/backchannel-logout`, `tunelo-web` tới `${TUNELO_WEB_URL}/auth/backchannel-logout`, `chat-web` tới `${CHAT_WEB_URL}/auth/backchannel-logout`, `scribe-web` tới `${SCRIBE_WEB_URL}/api/auth/backchannel-logout`, `miu-web` tới `${MIU_WEB_URL}/api/auth/backchannel-logout` (cả năm có `sid`; `scribe-web-dev`, `miu-web-dev` không có back-channel).
-
-**Token exchange** (RFC 8693, grant `urn:ietf:params:oauth:grant-type:token-exchange`): chỉ `localman-web`, đổi access token opaque của phiên Localman lấy JWT `aud=https://tunnel.hoandat.com`, `scope=tunnels:read`, sống 15 phút, có `act`/`azp` là `localman-web`, không có refresh token. Subject token phải còn sống (grant chưa bị thu hồi, tài khoản không bị khoá). Chi tiết và mã lỗi: [`docs/integration-guide.md`](docs/integration-guide.md) mục 6.
-
-`hoandat-account` là client riêng của trang `/account`: chưa đăng nhập thì `/account` gửi trình duyệt qua một authorization request bình thường của client này, nên đăng nhập dùng chung trang và chung cơ chế khoá; sau đó chỉ cookie phiên của IdP có ý nghĩa. App bên ngoài không dùng client này.
-
-ID token mặc định ký ES256; client tĩnh khai `id_token_signed_response_alg: "RS256"` thì nhận RS256 (discovery quảng bá cả hai, theo OpenID Connect Discovery; ADR 0005). Access token là JWT ES256 (`typ: at+jwt`) sống 15 phút. App xác minh offline bằng `jose` với JWKS đã cache, kiểm `iss`, `aud` của chính mình, `alg: ES256` và `typ`; mẫu tham chiếu: [`src/__tests__/helpers/verify-access-token.ts`](src/__tests__/helpers/verify-access-token.ts).
-
-Scope `telegram` (chỉ `localman-web`, không hỏi consent vì là app first-party) trả `telegram_chat_id` và `telegram_username` của chat đã liên kết **chỉ qua userinfo**, không bao giờ trong ID token hay access token; chưa liên kết thì không có hai claim này (`telegram_linked` của scope `profile` vẫn như cũ). Localman dùng nó để gửi thông báo bằng bot riêng: [`docs/integration-guide.md`](docs/integration-guide.md) mục 4.
-
-Khi request không có `resource`, IdP chỉ gắn audience nếu scope xin có ít nhất một scope của resource duy nhất mà client được phép (ví dụ `mock:read` cho Localman, `tunnels:read` cho Tunelo). Request chỉ có `openid profile email` nhận access token opaque, dùng được cho userinfo (`/me`).
-
-### Lưu ý cho client
-- **Refresh token dùng một lần và xoay vòng.** Mỗi lần refresh trả về refresh token mới; dùng lại token cũ sẽ thu hồi cả grant. Hai request refresh song song với cùng một token thì chỉ một cái thắng, cái còn lại nhận `invalid_grant`. Vì vậy client (đặc biệt Tunelo CLI chạy nhiều tiến trình) **phải khoá khi refresh** (file lock hoặc mutex) và lưu token mới trước khi nhả khoá.
-- **Phiên trượt, trần 90 ngày.** Mỗi lần refresh thành công, grant (và refresh token mới) được gia hạn thêm 30 ngày tính từ lúc refresh, nhưng không bao giờ quá 90 ngày kể từ lúc đăng nhập. Bỏ không refresh quá 30 ngày thì phiên hết hạn; tới ngày thứ 90 thì dù đang dùng cũng phải đăng nhập lại ở app web. Refresh token gần trần chỉ sống tới đúng trần. Áp cho mọi grant có refresh token, **trừ thiết bị Tunelo CLI và app chat native** (`tunelo-cli`, Jev 0.98): máy chạy liên tục (server lab) cứ refresh là còn phiên, không có trần 90 ngày; máy bỏ quá 30 ngày vẫn hết hạn, và mỗi thiết bị thu hồi được ở `/account` (`hasHardCap` trong `src/oidc/sliding-grants.ts`). `chat-mobile` cũng vậy, và nhận refresh token không cần `offline_access`; refresh token của chúng không chết khi người dùng đăng xuất trên trình duyệt (`refreshesPerDevice`). Riêng `localman-web` và client MCP (không có `offline_access`) thì refresh token còn gắn với phiên trình duyệt ở IdP: đăng xuất ở IdP thu hồi grant của chúng, kể cả token exchange của Localman (Jev 0.94).
-- `offline_access` chỉ có hiệu lực khi request kèm `prompt=consent` (OIDC Core); chỉ `tunelo-cli` có scope này. `tunelo-web` (trang web Tunelo) và `chat-web`, như `localman-web`, có refresh token gắn với phiên IdP: đăng xuất ở IdP thì lần refresh sau của nó nhận `invalid_grant`, kể cả khi back-channel logout không tới.
-- `account-ios` (app iOS "Tài khoản") là client thiết bị như `chat-mobile` (refresh không cần `offline_access`, không chết khi đăng xuất trình duyệt) nhưng **giữ trần 90 ngày**. Redirect là universal link `${ISSUER}/ios/callback` và `${ISSUER}/ios/linked` (AASA ở `/.well-known/apple-app-site-association` khi có `IOS_APP_ID`). Access token của nó (scope `account`) là credential duy nhất của API `/api/account`; token của client khác nhận 403. Hợp đồng: [`docs/integration-guide.md`](docs/integration-guide.md) mục 13.
-- Revocation: client chỉ thu hồi được token của chính nó.
-- Introspection: client chỉ xem được token của chính mình; riêng `localman-web` và `tunelo-web` xem được mọi token. Token không được phép xem trả `{"active": false}`.
-
-Tunelo CLI nên gửi thêm `device_name=<hostname>` (tối đa 64 ký tự chữ, số, khoảng trắng, `._'()-`) trong request tới `/device/auth`; trang duyệt hiện "Cho phép `tunelo` trên máy <device_name>?" và trang `/account` liệt kê máy theo tên đó. Thiếu thì IdP dùng User-Agent. App native theo thiết bị (`chat-mobile`, `scribe-mobile`) gửi được cùng tham số `device_name` trong authorization request; mỗi lần duyệt là một grant riêng cho máy đó.
-
-Client MCP đăng ký qua `/reg`: redirect chỉ được là `https://…` hoặc `http://localhost`/`http://127.0.0.1`; xin resource khác `/mcp` bị trả `invalid_target`. `client_name` là tên tự khai: chỉ bị từ chối khi rỗng, dài quá 100 ký tự hoặc chứa ký tự điều khiển/bidi; tên chứa `localman`, `tunelo`, `hoandat` (như `Claude Code (localman)`) hay bản nhái vẫn đăng ký được, còn trang consent cảnh báo mạo danh (xem dưới). Client không được khai `logo_uri`, `client_uri`, `policy_uri`, `tos_uri`, `backchannel_logout_uri`, `jwks_uri`, `sector_identifier_uri`. Mỗi IP đăng ký tối đa 20 client mỗi giờ.
-
-## Tài khoản và đăng nhập
-
-Mọi trang có ba ngôn ngữ: English (mặc định), 中文 giản thể và Tiếng Việt. Chữ người dùng thấy nằm trong từ điển có kiểu ở `src/i18n/messages/{en,zh-cn,vi}/` (thiếu key là lỗi typecheck); trang chọn ngôn ngữ theo `ui_locales` của app, cookie `hd_lang`, `Accept-Language`, rồi English. Ngày giờ định dạng theo ngôn ngữ, múi `Asia/Ho_Chi_Minh`.
-
-Mọi trang là HTML render phía server, không có JavaScript (CSP `script-src 'self'`, `style-src 'self'`), dùng token màu của Localman (`static/css/tokens.css`, bản sao có chủ đích) và font Inter, JetBrains Mono tự host từ `@fontsource` (có subset tiếng Việt). Mọi dữ liệu đưa vào HTML đi qua template tự escape (`src/ui/html.ts`).
-
-| Đường dẫn | Việc |
-|---|---|
-| `/apps` | Trang công khai liệt kê ứng dụng đăng nhập qua IdP, địa chỉ lấy từ `LOCALMAN_WEB_URL`, `TUNELO_WEB_URL`, `CHAT_WEB_URL`, `ISSUER`; `/` chuyển hướng (302) tới đây |
-| `/interaction/:uid` | Đăng nhập và đăng ký bằng Google/GitHub, consent, duyệt thiết bị. Gắn với cookie interaction của `oidc-provider` |
-| `/device` | Nhập mã thiết bị (trang của `oidc-provider` đã thay giao diện) |
-| `/session/end` | Đăng xuất (trang của `oidc-provider` đã thay giao diện) |
-| `/account` | Ba nhóm card: Tài khoản (hồ sơ, cách đăng nhập), Bảo mật (phiên đang mở, thiết bị: Tunelo CLI và app native `chat-mobile`, `scribe-mobile`, mỗi máy một dòng), Kết nối (ứng dụng đã cấp quyền, Telegram) |
-| `/account/apps/:clientId/revoke`, `/account/sessions/revoke-others` | Trang xác nhận (GET) trước khi gỡ quyền ứng dụng hoặc đăng xuất mọi phiên khác; POST cần CSRF và đăng nhập gần đây |
-| `/account/delete` | Xoá tài khoản (ADR 0009): trang xác nhận (GET), POST cần CSRF, đăng nhập gần đây và gõ lại username |
-| `/lang?set=<locale>&return=<path>` | Nút chuyển ngôn ngữ (English, 中文, Tiếng Việt), xem `docs/integration-guide.md` mục 4 |
-| `/oauth/:provider/callback` | Redirect URI đăng ký với Google/GitHub/Apple. Apple trả về bằng `POST` (form_post): IdP cất câu trả lời 2 phút theo state rồi 303 sang `GET` cùng path, nơi kiểm cookie state |
-| `POST /oauth/apple/notifications` | Thông báo server-to-server của Apple (JWS, kiểm chữ ký): `consent-revoked`, `account-deleted` bỏ token thu hồi đã lưu |
-| `/telegram/webhook` | Webhook của bot; từ chối (401) khi header `X-Telegram-Bot-Api-Secret-Token` sai |
-
-- **Đăng nhập và đăng ký** chỉ bằng Google hoặc GitHub. Trang đăng nhập chỉ có hai nút "Đăng nhập với Google/GitHub" và nút huỷ; `prompt=create` mở trang đăng ký với cùng hai nút ("Đăng ký với …"). Danh tính Google/GitHub chưa liên kết với tài khoản nào thì tạo tài khoản mới sau khi chọn username (`^[a-z0-9_]{3,30}$`); email của tài khoản mới luôn là email provider đã xác minh. Không có đăng nhập, đăng ký hay đặt lại bằng mật khẩu; các route cũ (`POST /interaction/:uid/login`, `/signup`, `/forgot/*`, `/reset/*`, đổi mật khẩu và mã khôi phục ở `/account`) trả 404. Bản băm mật khẩu và mã khôi phục của tài khoản cũ vẫn nằm trong MongoDB nhưng không bao giờ được đọc. Chưa cấu hình Google lẫn GitHub thì trang đăng nhập trả 503 với thông báo thay cho các nút.
-- **Google/GitHub** (theo env; phải bật ít nhất một), qua `openid-client`: cả hai dùng Code + PKCE + state; Google thêm `nonce` và kiểm ID token (issuer, audience, hạn, nonce). Metadata của hai provider ghi tĩnh trong code, không gọi discovery. Luật liên kết: tài khoản provider đã liên kết thì đăng nhập; email trùng một tài khoản mà email đó đã được provider xác minh thì tự liên kết; email trùng một tài khoản mà email đó **chưa** xác minh thì không liên kết: người vừa chứng minh sở hữu email tạo tài khoản mới với email đó, còn tài khoản cũ bị gỡ email (giữ các Google/GitHub khác đã liên kết, thấy thông báo ở `/account` và trên Telegram nếu đã liên kết); chưa có tài khoản thì tạo mới và hỏi username. Huỷ liên kết provider đã xác minh email thì email trở về chưa xác minh, trừ khi provider còn lại cũng đã xác minh đúng email đó. `/account` luôn hiện email/login mà provider báo lúc liên kết ("không rõ" với liên kết cũ). Provider không trả email đã xác minh thì bị từ chối.
-- **Cách đăng nhập** ở `/account` (neo `#account-sign-in`): liên kết và huỷ liên kết Google/GitHub. Không huỷ được provider cuối cùng còn đăng nhập được (đã liên kết và đang bật ở IdP); lệnh ghi ở MongoDB còn đòi provider kia vẫn liên kết, nên hai lần huỷ song song cũng không để tài khoản mất cách vào. Nên liên kết cả hai: mất một tài khoản Google/GitHub thì vẫn vào bằng cái kia. Mọi token một lần gắn với tài khoản (mã liên kết Telegram, liên kết Google/GitHub dở dang) mang `securityVersion` của lúc cấp; liên kết/gỡ phương thức hay email bị lấy lại làm chúng hết hiệu lực (410), xem ADR 0002 mục 10.
-- **Telegram**: `/account` tạo deep link `t.me/<bot>?start=<code>` (dùng một lần, 10 phút); bot nhận `/start <code>`, hỏi lại kèm nút xác nhận ("Confirm link", "确认关联", "Xác nhận liên kết"), và chỉ gắn chat khi nút được bấm và phiên đã tạo mã vẫn còn. `/account` hiện @username và tên Telegram đã liên kết; khi chuyển sang chat khác thì chat cũ được báo. Telegram chỉ để nhận thông báo, không dùng để đăng nhập; bot báo cho chủ tài khoản khi có Google/GitHub mới được liên kết hoặc khi email bị gỡ.
-- **Ngôn ngữ của bot**: mã liên kết mang ngôn ngữ của trang `/account` đã tạo nó; bot hỏi và báo kết quả bằng ngôn ngữ đó, và khi liên kết xong thì lưu nó vào `telegramLocale` của tài khoản. Mỗi lần mở `/account` bằng ngôn ngữ khác trong lúc đang liên kết thì `telegramLocale` đổi theo (không tăng `securityVersion`). Thông báo bảo mật dùng `telegramLocale`, không có thì English. Tin trả lời chat chưa gắn với mã còn hiệu lực (`/start` không kèm mã, mã đã dùng/hết hạn) theo `language_code` của Telegram: `zh`, `zh-hans`, `zh-cn` là 中文, `vi*` là Tiếng Việt, còn lại English.
-- **Thao tác nhạy cảm ở `/account`** (liên kết hoặc huỷ Google/GitHub/Telegram, gỡ quyền ứng dụng, đăng xuất mọi phiên khác) cần đăng nhập trong 10 phút gần đây; quá hạn thì IdP bắt đăng nhập lại bằng Google/GitHub (`prompt=login`) rồi đưa về `/account` để làm lại.
-- **Consent**: app first-party (`localman-web`, `tunelo-web`) không hỏi. Client MCP đăng ký qua DCR luôn hỏi: tên trong ngoặc kép, nhãn "Ứng dụng bên ngoài" kèm cảnh báo "không do hoandat.com phát hành", cảnh báo đỏ nếu tên giống sản phẩm hoandat, và host của `redirect_uri` của lần này. Đăng nhập Tunelo CLI luôn hỏi "Cho phép `tunelo` trên máy …?"; đã có phiên thì không phải đăng nhập lại. Mỗi máy có grant riêng nên thu hồi từng máy được.
-- **Chống giả mạo form**: mọi form có CSRF (HMAC của một bí mật theo trình duyệt và phạm vi: uid interaction hoặc uid phiên IdP). Rate-limit theo IP cho mọi POST và cho bước bắt đầu đăng nhập Google/GitHub.
-- **Thu hồi** ở `/account`, nút ghi rõ tác dụng: "Sign out this browser" (phiên hiện tại, có badge), "Sign out session", "Sign out device", "Remove app access" (nút đỏ duy nhất) và "Sign out every other session" khi có từ hai phiên. Gỡ quyền ứng dụng và đăng xuất mọi phiên khác hỏi lại ở trang riêng; đăng xuất phiên đi kèm back-channel logout như khi đăng xuất. Thu hồi grant xoá refresh token, access token opaque và code của grant đó ngay; access token JWT không gọi lại được và hết hạn trong tối đa 15 phút.
-
-## Cấu hình
-
-Xem [`.env.example`](.env.example); env sai hoặc thiếu thì process báo tên biến và thoát với mã 1 (không in giá trị).
-
-Ở production (`NODE_ENV=production`) process từ chối khởi động nếu `ISSUER`, `LOCALMAN_WEB_URL`, `TUNELO_WEB_URL` không phải URL https công khai ghi rõ (không localhost), hoặc `TRUST_PROXY` vẫn là mặc định `loopback` hay `false`. `TRUST_PROXY` phải liệt kê **đúng địa chỉ** mà reverse proxy kết nối tới container (ví dụ IP của proxy trong mạng Docker) cùng từ khoá `cloudflare`, ví dụ `172.18.0.2,cloudflare`; đừng tin cả một dải mạng riêng, vì container nào trong dải đó cũng giả được IP client. File khoá mount read-only và phải đọc được bởi user `node` (uid 1000) trong container.
-
-Google, GitHub và bot Telegram cấu hình theo nhóm: thiếu biến nào trong một nhóm thì process báo lỗi; bỏ trống cả nhóm thì nút tương ứng bị ẩn và route trả 404. Google và GitHub là cách đăng nhập duy nhất, nên bỏ trống cả hai thì không ai đăng nhập được (trang đăng nhập báo 503). Callback cần đăng ký ở Google/GitHub là `${ISSUER}/oauth/google/callback` và `${ISSUER}/oauth/github/callback`; Apple (bốn biến `APPLE_*`, khoá `.p8` trong `secrets/`, chỉ tenant chính) dùng `${ISSUER}/oauth/apple/callback`, các bước ở [`docs/sign-in-with-apple.md`](docs/sign-in-with-apple.md); webhook Telegram là `${ISSUER}/telegram/webhook` với `secret_token` bằng `TELEGRAM_WEBHOOK_SECRET`. Đăng nhập mật khẩu cho người duyệt App Store (`REVIEW_LOGIN_EMAIL`, `REVIEW_LOGIN_PASSWORD_HASH_PATH`, ADR 0010) tắt mặc định, chỉ bật trong thời gian duyệt app theo [`docs/deployment-guide.md`](docs/deployment-guide.md).
-
-**Audit**: đăng nhập thành công, liên kết/gỡ Google/GitHub/Telegram, email bị lấy lại, duyệt thiết bị Tunelo, consent client MCP, thu hồi phiên/grant (cả ở `/token/revocation`) và đăng xuất RP-initiated được ghi vào collection `audit_outbox`, sau bước bảo mật tương ứng; ghi lỗi chỉ bị log, không làm hỏng bước đó. Đặt đủ `AUDIT_EVENTS_URL` (https, không chứa user:pass), `AUDIT_CLIENT_ID` (không chứa `:`), `AUDIT_CLIENT_SECRET` thì một dispatcher nền gửi từng sự kiện (cũ trước) sang Localman dạng SET ký ES256, `aud` là đúng URL đó, hết hạn 10 phút sau lúc ký (HTTP Basic `base64(id:secret)`, `Idempotency-Key`), thử lại 5 giây nhân đôi tới trần 1 giờ, không bỏ sự kiện nào; thiếu cả ba thì sự kiện nằm chờ. Sự kiện chờ quá 30 ngày bị xoá IP/User-Agent; sự kiện đã gửi tự xoá sau 30 ngày. Xoá tài khoản xoá ngay IP/User-Agent của mọi sự kiện của tài khoản đó và ghi `account.deleted`. Định dạng: [`docs/integration-guide.md`](docs/integration-guide.md) mục 10.
-
-**Thống kê dùng app** (ADR 0011): mỗi lượt app nhận authorization (sự kiện `authorization.success` của `oidc-provider`, cả luồng thiết bị) ghi một document vào `client_usage` (`sub`, `clientId`, thời điểm, `interactive` khi đăng nhập ở trang của IdP cho lượt đó hoặc `sso` khi dùng phiên IdP sẵn có); đăng nhập rồi từ chối ở bước consent không được ghi. Không IP hay User-Agent, tự xoá sau 400 ngày, xoá cùng tài khoản. Ghi lỗi chỉ bị log, không làm hỏng đăng nhập; `CLIENT_USAGE_ENABLED=false` tắt việc ghi. Đọc bằng `growth-report` (bảng lệnh ở trên).
-
-Request có Host khác host của `ISSUER` bị trả 421; thêm host phụ cho dev qua `ALLOWED_HOSTS`. Riêng `/healthz` trả lời mọi Host để healthcheck của container chạy được.
-
-## Cấu trúc
-
-```
-src/server.ts                 # entry: env, Mongo, khoá ký, provider, dịch vụ, dispatcher audit, listen, tắt êm
-src/app.ts                    # Express: bảo mật, /healthz, /assets, trang, provider
-src/services.ts               # gom repository, CSRF, Google/GitHub, bot Telegram
-src/config/                   # env (zod), env tích hợp, trust proxy (gồm dải IP Cloudflare)
-src/http/                     # helmet + rate limit + header proxy, CSRF, đọc form, error handler
-src/oidc/                     # cấu hình oidc-provider, client, resource, DCR, adapter Mongo, JWKS, claim,
-                              # token exchange, kiểm client (seed)
-src/audit/                    # sự kiện audit: outbox Mongo, ký SET, dispatcher gửi sang Localman
-src/accounts/                 # model tài khoản, token dùng một lần,
-                              # luật liên kết, Google/GitHub qua openid-client
-src/telegram/                 # bot client, deep link liên kết, webhook, thông báo
-src/app-directory/            # /apps: danh sách ứng dụng đăng nhập qua IdP
-src/usage/                    # client_usage: ghi lượt vào app, truy vấn của growth-report
-src/tenants/                  # tenant duy nhất từ env, lọc tenantId ở tầng dữ liệu, runtime và serving
-src/interactions/             # trang đăng nhập/đăng ký Google/GitHub, consent, thiết bị, logout, lỗi
-src/account-portal/           # /account: phiên, grant, thiết bị, ứng dụng
-src/i18n/                     # ngôn ngữ: chọn locale, từ điển en/zh-cn/vi, endpoint /lang
-src/ui/                       # template HTML tự escape, layout, component, logo Google/GitHub
-static/css/                   # tokens.css (bản sao từ Localman) và app.css
-src/__tests__/                # test luồng bằng openid-client trên Mongo thật, upstream giả
-e2e/                          # Playwright trên server thật (e2e/support/e2e-server.ts)
-```
+| [`src/server.ts`](src/server.ts), [`src/app.ts`](src/app.ts) | Entry point và dựng Express |
+| [`src/oidc/`](src/oidc/) | Cấu hình provider, client, resource/audience, DCR, token exchange, phiên trượt, JWKS |
+| [`src/interactions/`](src/interactions/), [`src/account-portal/`](src/account-portal/) | Trang đăng nhập/đăng ký/consent/thiết bị và trang `/account` |
+| [`src/accounts/`](src/accounts/) | Tài khoản, luật liên kết, Google/GitHub/Apple |
+| [`src/account-api/`](src/account-api/), [`src/push/`](src/push/), [`ios/`](ios/) | API và push cho app iOS "Tài khoản" |
+| [`src/audit/`](src/audit/), [`src/usage/`](src/usage/) | Outbox sự kiện audit; ghi lượt vào app cho `growth-report` |
+| [`src/tenants/`](src/tenants/) | Tenant duy nhất từ env và lọc `tenantId` ở tầng dữ liệu |
+| [`src/telegram/`](src/telegram/), [`src/i18n/`](src/i18n/), [`src/ui/`](src/ui/) | Bot thông báo, từ điển ba ngôn ngữ, template HTML tự escape |
+| [`scripts/`](scripts/) | Sinh khoá, kiểm client, báo cáo tăng trưởng, kiểm token màu |
+| [`src/__tests__/`](src/__tests__/), [`e2e/`](e2e/) | Test luồng trên MongoDB thật; Playwright trên server thật |
