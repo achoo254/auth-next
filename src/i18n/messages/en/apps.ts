@@ -15,8 +15,7 @@ export const enApps = {
 	"apps.group.work.lead":
 		"Build, test and share faster: mock APIs, tunnels, chat and transcripts.",
 	"apps.group.fun.title": "Apps for fun",
-	"apps.group.fun.lead":
-		"Play, learn and have fun with the same account.",
+	"apps.group.fun.lead": "Play, learn and have fun with the same account.",
 	"apps.kind.web": "Web app",
 	"apps.kind.mcp": "MCP server",
 	"apps.kind.cli": "Command line",
