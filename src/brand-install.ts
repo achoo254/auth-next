@@ -16,7 +16,7 @@ const APPLE_TOUCH_ICON = "apple-touch-icon.png";
 
 /**
  * URL path (no leading slash) of each install file and its file under
- * brand/: the same list as `webIconFiles` of @shared-next/brand/build
+ * brand/: the same list as `webIconFiles` of @achoo254/brand/build
  * (brand-install.test.ts keeps them equal), written out here so the server
  * bundle does not pull in the build-time half of the package.
  */

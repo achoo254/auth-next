@@ -45,15 +45,15 @@ importers:
         specifier: ^4.6.5
         version: 4.6.5
     devDependencies:
+      '@achoo254/brand':
+        specifier: github:achoo254/shared-next#v0.5.1&path:/packages/brand
+        version: https://codeload.github.com/achoo254/shared-next/tar.gz/e33adf9fb8fb81c16186d8fcdda4c2e5f763dbd1#path:/packages/brand
       '@biomejs/biome':
         specifier: 1.9.4
         version: 1.9.4
       '@playwright/test':
         specifier: ^1.63.0
         version: 1.63.0
-      '@shared-next/brand':
-        specifier: github:achoo254/shared-next#v0.2.0&path:/packages/brand
-        version: https://codeload.github.com/achoo254/shared-next/tar.gz/2dfb78942308f36f459ef861fbb57489402c3eb5#path:/packages/brand
       '@types/express':
         specifier: ^5.0.6
         version: 5.0.6
@@ -80,6 +80,12 @@ importers:
         version: 3.2.7(@types/node@22.20.5)(tsx@4.23.15)
 
 packages:
+
+  '@achoo254/brand@https://codeload.github.com/achoo254/shared-next/tar.gz/e33adf9fb8fb81c16186d8fcdda4c2e5f763dbd1#path:/packages/brand':
+    resolution: {gitHosted: true, path: /packages/brand, tarball: https://codeload.github.com/achoo254/shared-next/tar.gz/e33adf9fb8fb81c16186d8fcdda4c2e5f763dbd1}
+    version: 0.3.0
+    engines: {node: '>=22.12'}
+    hasBin: true
 
   '@biomejs/biome@1.9.4':
     resolution: {integrity: sha512-1rkd7G70+o9KkTn5KLmDYXihGoTaIGO9PIIN2ZB7UJxFrWw04CZHPYiMRjYsaDvVV7hP1dYNRLxSANLaBFGpog==}
@@ -614,12 +620,6 @@ packages:
     resolution: {integrity: sha512-KpxCwRn1Qh3tmBHAqIAF4HtUCVKqZd0w57TsItWblx3QVeJLtXaSgeBFAj1WAvBSpBo+Mh9iZCjj6YW/HaBVMw==}
     cpu: [x64]
     os: [win32]
-
-  '@shared-next/brand@https://codeload.github.com/achoo254/shared-next/tar.gz/2dfb78942308f36f459ef861fbb57489402c3eb5#path:/packages/brand':
-    resolution: {gitHosted: true, path: /packages/brand, tarball: https://codeload.github.com/achoo254/shared-next/tar.gz/2dfb78942308f36f459ef861fbb57489402c3eb5}
-    version: 0.2.0
-    engines: {node: '>=22.12'}
-    hasBin: true
 
   '@types/accepts@1.3.7':
     resolution: {integrity: sha512-Pay9fq2lM2wXPWbteBsRAGiWH2hig4ZE2asK+mm7kUzlxRTfL961rj89I6zV/E3PcIkDqyuBEcMxFT7rccugeQ==}
@@ -1613,6 +1613,10 @@ packages:
 
 snapshots:
 
+  '@achoo254/brand@https://codeload.github.com/achoo254/shared-next/tar.gz/e33adf9fb8fb81c16186d8fcdda4c2e5f763dbd1#path:/packages/brand':
+    dependencies:
+      ajv: 8.20.0
+
   '@biomejs/biome@1.9.4':
     optionalDependencies:
       '@biomejs/cli-darwin-arm64': 1.9.4
@@ -1897,10 +1901,6 @@ snapshots:
 
   '@rollup/rollup-win32-x64-msvc@4.64.1':
     optional: true
-
-  '@shared-next/brand@https://codeload.github.com/achoo254/shared-next/tar.gz/2dfb78942308f36f459ef861fbb57489402c3eb5#path:/packages/brand':
-    dependencies:
-      ajv: 8.20.0
 
   '@types/accepts@1.3.7':
     dependencies:

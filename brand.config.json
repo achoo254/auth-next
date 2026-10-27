@@ -1,5 +1,5 @@
 {
-	"$schema": "./node_modules/@shared-next/brand/brand.config.schema.json",
+	"$schema": "./node_modules/@achoo254/brand/brand.config.schema.json",
 	"appName": "hoandat.com",
 	"shortName": "hoandat.com",
 	"description": "Sign in to your account and manage the apps and devices connected to it.",

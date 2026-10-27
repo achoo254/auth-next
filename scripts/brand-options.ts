@@ -1,9 +1,9 @@
-import type { BrandConfig } from "@shared-next/brand";
+import type { BrandConfig } from "@achoo254/brand";
 import {
 	type GenerateManifestsOptions,
 	loadBrandConfig,
 	svgManifestIcons,
-} from "@shared-next/brand/build";
+} from "@achoo254/brand/build";
 
 /** Repository root: the directory of brand.config.json and its icon paths. */
 export const BRAND_ROOT = new URL("../", import.meta.url);

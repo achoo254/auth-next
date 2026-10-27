@@ -1,13 +1,13 @@
 /**
- * `pnpm brand:gen`: validates brand.config.json against the @shared-next/brand
+ * `pnpm brand:gen`: validates brand.config.json against the @achoo254/brand
  * schema and writes brand/generated/: the web manifest and the PNG/ICO icons
  * drawn from brand/app-icon.svg and app-icon-maskable.svg with the Chromium
  * of @playwright/test. src/brand-install.ts serves them at the site root when
  * "webInstall" is on. Run after editing the brand, then commit the files.
  * The iOS app icon is not generated here (ios/scripts/render-app-icon.swift).
  */
+import { chromiumRenderer, writeBrandFiles } from "@achoo254/brand/build";
 import { chromium } from "@playwright/test";
-import { chromiumRenderer, writeBrandFiles } from "@shared-next/brand/build";
 import {
 	BRAND_GENERATED_DIR,
 	BRAND_ROOT,

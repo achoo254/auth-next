@@ -7,7 +7,7 @@ import {
 	generateManifests,
 	iconSourceHashes,
 	webIconFiles,
-} from "@shared-next/brand/build";
+} from "@achoo254/brand/build";
 import express from "express";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import {
@@ -55,7 +55,7 @@ describe("brand install files", () => {
 		expect(brand.webInstall).toBe(true);
 	});
 
-	it("serves the same files as @shared-next/brand lists, from brand/", () => {
+	it("serves the same files as @achoo254/brand lists, from brand/", () => {
 		const expected = [
 			...webIconFiles(config, {
 				root: BRAND_ROOT,
