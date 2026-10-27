@@ -1,9 +1,9 @@
-// Renders the 1024×1024 iOS app icon from brand/app-icon.svg. The icon is a
-// full-bleed picture (drawn with AI) embedded in the SVG as a base64 data URI
-// (the SVG only clips its corners, which iOS rounds itself);
-// ImageIO decodes it (WebP or PNG) and Core Graphics scales it onto an opaque
-// canvas, as App Store icons must be, so no SVG tool is needed. Run from the
-// repo root:
+// Renders the 1024×1024 iOS app icon from ios/brand/app-icon.webp, the app's
+// own AI-drawn picture (a user inside a shield). The web pages keep the
+// ecosystem logo of brand/app-icon.svg; the iOS app has its own mark so it does
+// not look like the hoandat.com home screen shortcut. ImageIO decodes the WebP
+// and Core Graphics scales it onto an opaque canvas, as App Store icons must
+// be. Run from the repo root:
 //   swift ios/scripts/render-app-icon.swift
 import CoreGraphics
 import Foundation
@@ -11,18 +11,13 @@ import ImageIO
 import UniformTypeIdentifiers
 
 let size = 1024
-let source = URL(fileURLWithPath: "brand/app-icon.svg")
+let source = URL(fileURLWithPath: "ios/brand/app-icon.webp")
 let output = URL(fileURLWithPath: "ios/AccountApp/Resources/Assets.xcassets/AppIcon.appiconset/AppIcon.png")
 
-guard let svg = try? String(contentsOf: source, encoding: .utf8) else { fatalError("cannot read \(source.path)") }
-let dataUri = try NSRegularExpression(pattern: #"href="data:image/(?:webp|png);base64,([A-Za-z0-9+/=]+)""#)
 guard
-    let match = dataUri.firstMatch(in: svg, range: NSRange(svg.startIndex..., in: svg)),
-    let base64 = Range(match.range(at: 1), in: svg).map({ String(svg[$0]) }),
-    let data = Data(base64Encoded: base64),
-    let picture = CGImageSourceCreateWithData(data as CFData, nil),
+    let picture = CGImageSourceCreateWithURL(source as CFURL, nil),
     let art = CGImageSourceCreateImageAtIndex(picture, 0, nil)
-else { fatalError("\(source.path): no embedded WebP/PNG picture to draw") }
+else { fatalError("cannot read \(source.path)") }
 
 guard let context = CGContext(
     data: nil, width: size, height: size, bitsPerComponent: 8, bytesPerRow: 0,

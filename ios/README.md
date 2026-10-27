@@ -46,7 +46,7 @@ ios/
   AccountAppUITests/       launch and sign-in screen, offline, largest text size
   contract/                JSON contract with the IdP + fixtures (README inside)
   scripts/                 sync-colors.mjs (colours from static/css/tokens.css),
-                           render-app-icon.swift (icon from brand/app-icon.svg)
+                           render-app-icon.swift (icon from ios/brand/app-icon.webp)
 ```
 
 ## How it talks to the IdP
