@@ -43,6 +43,7 @@ Ngày 24/10/2026 lúc 21:00, user quyết định: bỏ đa tenant, giữ trư�
 - **`chat-next`**: một process `chat-api`, không còn `chat-api-<tenant>`, `/opt/chat/tenants`, `setup-tenant.sh` hay `chat.tenants.conf`; server không đọc `TENANT_ID` (hằng `primary`), vẫn đọc `TENANT_DOMAIN`. ADR 0010 của repo superseded.
 - **`localman-next`** (Localman và Tunelo): directory đơn tenant chỉ nhận host đã khai (host khác 421), bỏ client API nội bộ của IdP, chuyển tenant, nginx tenant; giữ plugin gắn `tenantId` và chỉ mục `tenant_*`. ADR tenant của repo superseded.
 - **`shared-next`**: bỏ phần tenant trong gói (app switcher nhận prop `domain`), publish lên npm dưới scope `@achoo254` qua trusted publishing có provenance: `@achoo254/brand`, `@achoo254/app-switcher`, `@achoo254/capacitor-system-auth`. `chat-next` publish `@achoo254/chat-core`, `@achoo254/chat-platform`, `@achoo254/chat-platform-web`, `@achoo254/chat-proto` và `@achoo254/chat-bot-sdk`, không có URL backend mặc định (người dùng tự cấu hình backend). Consumer chuyển từ `@shared-next/*` sang `@achoo254/*` khi gói đã có trên registry.
+  - Cập nhật 27/10/2026: tài khoản npm `achoo254` bị tạm khoá từ 24/10 và chưa được mở. Kênh chính thức tạm thời là tag git `github:achoo254/shared-next#<tag>&path:/packages/<tên>`; mọi consumer đã chuyển sang `@achoo254/*` từ tag `v0.5.1`. Hai SDK của Chat chưa phát hành, README hướng dẫn tự build tarball. Publish npm làm sau khi tài khoản mở lại, giữ đúng số phiên bản.
 
 ### 5. Production
 
