@@ -52,7 +52,6 @@ export interface InteractionError {
 
 /** An error page in the request's language (default status 400). */
 export function sendInteractionError(
-	services: AppServices,
 	res: Response,
 	error: InteractionError,
 ): void {
@@ -60,7 +59,6 @@ export function sendInteractionError(
 	sendPage(
 		res,
 		renderErrorPage({
-			host: services.host,
 			page,
 			message: page.i18n.t(error.message, error.params),
 			backHref: error.back?.href,
@@ -85,13 +83,13 @@ export async function loadInteraction(
 	try {
 		interaction = await services.provider.interactionDetails(req, res);
 	} catch {
-		sendInteractionError(services, res, {
+		sendInteractionError(res, {
 			message: "error.interactionExpired",
 		});
 		return undefined;
 	}
 	if (interaction.uid !== routeParam(req, "uid")) {
-		sendInteractionError(services, res, { message: "error.otherInteraction" });
+		sendInteractionError(res, { message: "error.otherInteraction" });
 		return undefined;
 	}
 	return interaction;
@@ -105,7 +103,7 @@ export function checkCsrf(
 	scope: string,
 ): boolean {
 	if (services.csrf.verify(req, scope)) return true;
-	sendInteractionError(services, res, {
+	sendInteractionError(res, {
 		message: "error.formExpired",
 		status: 403,
 	});
@@ -128,7 +126,7 @@ export async function finishLogin(
 	// sign-in was decided; it must not get a new session after that.
 	const account = await services.accounts.findActiveById(accountId);
 	if (!account) {
-		sendInteractionError(services, res, {
+		sendInteractionError(res, {
 			message: "upstream.rejected.disabled",
 			status: 403,
 		});

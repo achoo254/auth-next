@@ -33,7 +33,8 @@ describe("GET /lang", () => {
 		expect(cookie).toMatch(/^hd_lang=zh-CN;/);
 		expect(cookie).toMatch(/Path=\//);
 		expect(cookie).toMatch(/SameSite=Lax/);
-		expect(cookie).toMatch(/HttpOnly/);
+		// Shared with the apps' own switches, which read it from script.
+		expect(cookie).not.toMatch(/HttpOnly/);
 	});
 
 	it("scopes a pick made during a sign-in to that sign-in's path", async () => {
@@ -78,6 +79,14 @@ describe("page language", () => {
 		expect(
 			langOf(await privacy({ "accept-language": "zh", cookie: "hd_lang=vi" })),
 		).toBe("vi");
+	});
+
+	it("takes the newest hd_lang when an old host-only one is sent as well", async () => {
+		// Same path: the browser sends the older (host-only) cookie first.
+		const html = await fetch(`${idp.issuer}/privacy`, {
+			headers: { cookie: "hd_lang=vi; hd_lang=zh-CN; hd_lang=xx" },
+		}).then((r) => r.text());
+		expect(langOf(html)).toBe("zh-CN");
 	});
 
 	it("uses the app's ui_locales over the cookie, until the user switches on that sign-in", async () => {

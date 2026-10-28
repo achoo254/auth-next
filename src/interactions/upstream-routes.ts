@@ -79,7 +79,6 @@ export function registerUpstreamInteractionRoutes(
 			const decision = await decideUpstreamLogin(services.accounts, profile);
 			const csrf = services.csrf.token(req, res, csrfScope(interaction.uid));
 			const base = {
-				host: services.host,
 				page: interactionPage(req, interaction),
 				uid: interaction.uid,
 				csrf,
@@ -139,7 +138,7 @@ export function registerUpstreamInteractionRoutes(
 					return;
 				case "rejected":
 					await dropPendingUpstream(services, interaction.uid);
-					sendInteractionError(services, res, {
+					sendInteractionError(res, {
 						message: REJECTED.get(decision.reason) ?? "upstream.rejected.other",
 						status: 403,
 						back: {

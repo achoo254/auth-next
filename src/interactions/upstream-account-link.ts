@@ -37,7 +37,7 @@ export async function finishAccountLink(
 	} as const;
 	const portal = await loadPortalContext(services, req, res);
 	if (!portal || portal.account._id !== accountId) {
-		sendInteractionError(services, res, expired);
+		sendInteractionError(res, expired);
 		return;
 	}
 	const owner = await services.accounts.findByProvider(
@@ -45,7 +45,7 @@ export async function finishAccountLink(
 		profile.providerId,
 	);
 	if (owner && owner._id !== portal.account._id) {
-		sendInteractionError(services, res, {
+		sendInteractionError(res, {
 			message: "upstream.link.ownedByOther",
 			params: { provider: label },
 			status: 409,
@@ -54,7 +54,7 @@ export async function finishAccountLink(
 		return;
 	}
 	if (portal.account.providers[profile.provider]) {
-		sendInteractionError(services, res, {
+		sendInteractionError(res, {
 			message: "upstream.link.alreadyLinked",
 			params: { provider: label },
 			status: 409,
@@ -69,7 +69,7 @@ export async function finishAccountLink(
 		link.version,
 	);
 	if (!write.applied) {
-		sendInteractionError(services, res, { ...expired, status: 410 });
+		sendInteractionError(res, { ...expired, status: 410 });
 		return;
 	}
 	notifyAccount(services, portal.account, {

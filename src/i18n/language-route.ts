@@ -1,3 +1,4 @@
+import { cookieDomainFor } from "@achoo254/app-shell/preferences";
 import { Router } from "express";
 import { formRateLimit, queryValue } from "../http/form.js";
 import { normalizeRoutePath } from "../http/route-path.js";
@@ -51,13 +52,23 @@ function interactionPathOf(path: string): string | undefined {
 
 /**
  * GET /lang?set=<locale>&return=<path>: the language switcher of every
- * page. Remembers the choice in a cookie and goes back with a 303. On a
- * sign-in page the choice also outranks the app's `ui_locales` for the
- * rest of that sign-in, through a cookie scoped to its interaction path.
+ * page. Remembers the choice and goes back with a 303. The choice is the
+ * brand's shared `hd_lang` cookie (@achoo254/app-shell preferences): set
+ * for the root domain (`Domain=<tenant domain>` when the IdP runs under
+ * it) and readable by script, so every app of the brand opens in the same
+ * language. The host-only HttpOnly cookie of earlier releases is cleared.
+ * On a sign-in page the choice also outranks the app's `ui_locales` for
+ * the rest of that sign-in, through a cookie scoped to its interaction path.
  */
-export function createLanguageRouter(services: AppServices): Router {
+export function createLanguageRouter(
+	services: Pick<AppServices, "issuer" | "tenant" | "formPostsPerMinute">,
+): Router {
 	const router = Router();
 	const secure = services.issuer.startsWith("https:");
+	const domain = cookieDomainFor(
+		new URL(services.issuer).hostname,
+		services.tenant.domain,
+	);
 	router.get(
 		LANGUAGE_PATH,
 		formRateLimit(services.formPostsPerMinute),
@@ -67,16 +78,22 @@ export function createLanguageRouter(services: AppServices): Router {
 				safeReturnPath(queryValue(req, "return"), services.issuer) ??
 				DEFAULT_RETURN;
 			if (isLocale(locale)) {
-				const options = { httpOnly: true, sameSite: "lax", secure } as const;
+				if (domain) {
+					res.clearCookie(LOCALE_COOKIE, { path: "/" });
+				}
 				res.cookie(LOCALE_COOKIE, locale, {
-					...options,
+					domain,
 					path: "/",
 					maxAge: YEAR_MS,
+					sameSite: "lax",
+					secure,
 				});
 				const interactionPath = interactionPathOf(target);
 				if (interactionPath) {
 					res.cookie(INTERACTION_LOCALE_COOKIE, locale, {
-						...options,
+						httpOnly: true,
+						sameSite: "lax",
+						secure,
 						path: interactionPath,
 						maxAge: TTL_SECONDS.Interaction * 1000,
 					});

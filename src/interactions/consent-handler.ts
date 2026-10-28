@@ -128,7 +128,7 @@ export async function showConsent(
 	const clientId = interactionClientId(interaction);
 	const client = await services.provider.Client.find(clientId);
 	if (!account || !client) {
-		sendInteractionError(services, res, { message: "error.consentMissing" });
+		sendInteractionError(res, { message: "error.consentMissing" });
 		return;
 	}
 	const csrf = services.csrf.token(req, res, csrfScope(interaction.uid));
@@ -138,7 +138,6 @@ export async function showConsent(
 		sendPage(
 			res,
 			renderDeviceApproval({
-				host: services.host,
 				page,
 				csrf,
 				uid: interaction.uid,
@@ -166,7 +165,6 @@ export async function showConsent(
 	sendPage(
 		res,
 		renderConsent({
-			host: services.host,
 			page,
 			csrf,
 			uid: interaction.uid,

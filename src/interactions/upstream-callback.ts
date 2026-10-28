@@ -107,7 +107,7 @@ export function createUpstreamCallbackRouter(services: AppServices): Router {
 				!data.verifier ||
 				!data.nonce
 			) {
-				sendInteractionError(services, res, expired);
+				sendInteractionError(res, expired);
 				return;
 			}
 			const back = data.uid ? `/interaction/${data.uid}` : "/account";
@@ -137,7 +137,7 @@ export function createUpstreamCallbackRouter(services: AppServices): Router {
 					redirectToApp(services, res, "failed", client.provider);
 					return;
 				}
-				sendInteractionError(services, res, {
+				sendInteractionError(res, {
 					message: "upstream.failed",
 					params: { provider: label },
 					status: 502,
@@ -160,7 +160,7 @@ export function createUpstreamCallbackRouter(services: AppServices): Router {
 				return;
 			}
 			if (data.purpose !== "link" || !data.accountId) {
-				sendInteractionError(services, res, expired);
+				sendInteractionError(res, expired);
 				return;
 			}
 			await finishAccountLink(services, req, res, {

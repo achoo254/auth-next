@@ -37,7 +37,6 @@ export function upstreamButtons(
 }
 
 export interface LoginView {
-	readonly host: string;
 	readonly page: PageContext;
 	readonly uid: string;
 	readonly csrf: string;
@@ -89,13 +88,11 @@ ${view.reviewLogin ? reviewLoginLink(i18n, view.uid) : ""}
 	return renderPage({
 		title: i18n.t("login.title"),
 		body,
-		host: view.host,
 		page: view.page,
 	});
 }
 
 export interface SignupView {
-	readonly host: string;
 	readonly page: PageContext;
 	readonly uid: string;
 	readonly providers: readonly UpstreamProvider[];
@@ -114,7 +111,6 @@ ${upstreamButtons(i18n, view.uid, view.providers, "signup.with")}
 	return renderPage({
 		title: i18n.t("signup.pageTitle"),
 		body,
-		host: view.host,
 		page: view.page,
 	});
 }

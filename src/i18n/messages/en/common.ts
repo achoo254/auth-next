@@ -13,9 +13,6 @@ export const enCommon = {
 	"layout.brand": "Account",
 	/** Meta description of every page; the English text is the brand description. */
 	"layout.description": brand.description,
-	"layout.language": "Language",
-	"layout.nav": "Site",
-	"layout.ecosystem": "An app from {brandDomain}",
 	"layout.home": "Home",
 	"client.external": "External app",
 	"client.quoted": "“{name}”",

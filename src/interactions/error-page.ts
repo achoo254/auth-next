@@ -20,7 +20,6 @@ const ERROR_TEXT: ReadonlyMap<string, MessageKey> = new Map([
 ]);
 
 export interface ErrorView {
-	readonly host: string;
 	readonly page: PageContext;
 	readonly title?: string;
 	/** Already in the page's language. */
@@ -38,7 +37,7 @@ export function renderErrorPage(view: ErrorView): string {
 <div class="alert alert-error" role="alert" data-id="error-message">${view.message}</div>
 ${view.code ? html`<p class="help">${i18n.rich("error.code", { code: html`<code data-id="error-code">${view.code}</code>` })}</p>` : ""}
 <p class="auth-foot"><a class="link" href="${view.backHref ?? "/account"}" data-id="error-back">${view.backLabel ?? i18n.t("common.backToAccount")}</a></p>`;
-	return renderPage({ title, body, host: view.host, page: view.page });
+	return renderPage({ title, body, page: view.page });
 }
 
 function field(source: unknown, key: string): unknown {
@@ -67,5 +66,5 @@ export async function renderProviderError(
 	const code = out.error_description
 		? `${out.error}: ${out.error_description}`
 		: out.error;
-	sendKoaPage(ctx, renderErrorPage({ host: ctx.host, page, message, code }));
+	sendKoaPage(ctx, renderErrorPage({ page, message, code }));
 }

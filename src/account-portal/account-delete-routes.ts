@@ -34,7 +34,6 @@ export function registerDeleteRoutes(
 			sendPage(
 				res,
 				renderDeleteConfirm({
-					host: services.host,
 					page: pageContext(req),
 					csrf: services.csrf.token(req, res, portalCsrfScope(portal)),
 					username: portal.account.username,
@@ -45,7 +44,7 @@ export function registerDeleteRoutes(
 
 	// Public: the session it would need is gone with the account.
 	router.get(ACCOUNT_DELETED_PATH.replace(/^\/account/, ""), (req, res) => {
-		sendPage(res, renderAccountDeleted(services.host, pageContext(req)));
+		sendPage(res, renderAccountDeleted(pageContext(req)));
 	});
 
 	router.post(

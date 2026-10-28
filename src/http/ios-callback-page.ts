@@ -15,7 +15,7 @@ import { sendPage } from "../ui/send-page.js";
  * they only say to go back to the app; the code or result in the query is
  * never read, never sent anywhere (no-referrer) and never cached.
  */
-export function createIosCallbackRouter(host: string): Router {
+export function createIosCallbackRouter(): Router {
 	const router = Router();
 	const page = (req: Request, res: Response): void => {
 		// The language switcher returns to the bare path: the query (a code)
@@ -27,7 +27,6 @@ export function createIosCallbackRouter(host: string): Router {
 			res,
 			renderPage({
 				title,
-				host,
 				page: context,
 				body: pageTitle(
 					html`<span data-id="ios-open-app">${title}</span>`,

@@ -53,7 +53,7 @@ export function registerFormPostCallback(
 			}
 			const state = formValue(req, "state") ?? "";
 			if (!STATE_PATTERN.test(state)) {
-				sendInteractionError(services, res, {
+				sendInteractionError(res, {
 					message: "upstream.expired",
 					params: { provider: UPSTREAM_LABELS[client.provider] },
 					status: 410,

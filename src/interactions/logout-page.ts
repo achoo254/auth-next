@@ -40,7 +40,7 @@ ${submitButton(i18n.t("logout.confirm"), { block: true, name: "logout", value: "
 ${submitButton(i18n.t("logout.keep"), { block: true, variant: "secondary", form: "op.logoutForm", dataId: "logout-cancel" })}
 </div>
 <p class="help">${i18n.t("logout.help")}</p>`;
-	sendKoaPage(ctx, renderPage({ title, body, host: ctx.host, page }));
+	sendKoaPage(ctx, renderPage({ title, body, page }));
 }
 
 /** `features.rpInitiatedLogout.postLogoutSuccessSource`. */
@@ -53,5 +53,5 @@ export async function postLogoutSuccessSource(
 	const body = html`${pageTitle(title)}
 ${alertBox("success", i18n.t("logout.done"))}
 <p class="auth-foot"><a class="link" href="/account" data-id="logout-signin-again">${i18n.t("logout.signInAgain")}</a></p>`;
-	sendKoaPage(ctx, renderPage({ title, body, host: ctx.host, page }));
+	sendKoaPage(ctx, renderPage({ title, body, page }));
 }

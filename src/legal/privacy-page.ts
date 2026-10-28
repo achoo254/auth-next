@@ -29,7 +29,7 @@ const STORED: readonly MessageKey[] = [
  * Public privacy policy. Google requires one before a "Sign in with Google"
  * app can leave testing; it states only what this service actually stores.
  */
-export function renderPrivacyPage(host: string, page: PageContext): string {
+export function renderPrivacyPage(page: PageContext): string {
 	const { i18n } = page;
 	const link = (href: string, key: MessageKey) =>
 		html`<a href="${href}" rel="noopener">${i18n.t(key)}</a>`;
@@ -37,7 +37,6 @@ export function renderPrivacyPage(host: string, page: PageContext): string {
 	const account = html`<a href="/account">${i18n.t("layout.brand")}</a>`;
 	return renderPage({
 		title,
-		host,
 		page,
 		layout: "wide",
 		body: html`${pageTitle(title, i18n.t("privacy.subtitle"))}
@@ -72,7 +71,7 @@ export function renderPrivacyPage(host: string, page: PageContext): string {
  * The page depends on the visitor's language (cookie, Accept-Language),
  * so caches must revalidate rather than serve one language to everyone.
  */
-export function createPrivacyRouter(host: string): Router {
+export function createPrivacyRouter(): Router {
 	const router = Router();
 	router.get(PRIVACY_PATH, (req, res) => {
 		res
@@ -81,7 +80,7 @@ export function createPrivacyRouter(host: string): Router {
 			.vary("Cookie")
 			.vary("Accept-Language")
 			.type("html")
-			.send(renderPrivacyPage(host, pageContext(req)));
+			.send(renderPrivacyPage(pageContext(req)));
 	});
 	return router;
 }

@@ -54,7 +54,8 @@ export function html(
 
 /**
  * Marks markup as safe without escaping. Only for HTML that oidc-provider
- * builds itself (its logout form), never for user or request data.
+ * builds itself (its logout form) and the shell markup React renders
+ * (ui/layout.ts; React escapes every value), never for user or request data.
  */
 export function trustedHtml(markup: string): SafeHtml {
 	return new SafeHtml(markup);

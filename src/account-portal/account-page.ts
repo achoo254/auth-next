@@ -24,7 +24,6 @@ import { ACCOUNT_NOTICES } from "./notices.js";
 import type { OpenSession } from "./session-directory.js";
 
 export interface AccountView {
-	readonly host: string;
 	readonly page: PageContext;
 	readonly csrf: string;
 	readonly account: AccountDocument;
@@ -100,7 +99,6 @@ ${accountNav(view)}
 	return renderPage({
 		title: i18n.t("account.pageTitle"),
 		body,
-		host: view.host,
 		page: view.page,
 		layout: "portal",
 		stylesheets: ["account.css"],

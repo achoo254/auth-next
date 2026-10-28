@@ -128,7 +128,7 @@ ${linkButton(telegramDeepLink(bot, code), i18n.t("telegram.open"), "primary", "t
 ${alertBox("info", i18n.t("telegram.once"))}
 ${linkButton("/account", i18n.t("common.backToAccount"), "secondary", "telegram-back")}
 </div>`;
-				sendPage(res, renderPage({ title, body, host: services.host, page }));
+				sendPage(res, renderPage({ title, body, page }));
 			},
 			{ csrf: true, recentLogin: true },
 		),

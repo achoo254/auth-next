@@ -35,6 +35,36 @@ describe("HTTP shell", () => {
 		);
 		expect(csp).toContain("connect-src 'self' https://cloudflareinsights.com;");
 	});
+
+	it("lets the shell's theme script run from this origin, and no inline script", async () => {
+		const response = await fetch(`${idp.issuer}/apps`);
+		const csp = response.headers.get("content-security-policy") ?? "";
+		const scriptSrc = /(?:^|;)script-src ([^;]*)/.exec(csp)?.[1] ?? "";
+		expect(scriptSrc.split(" ")).toContain("'self'");
+		expect(scriptSrc).not.toMatch(/unsafe-inline|unsafe-eval|nonce-|sha256-/);
+		expect(csp).toContain("script-src-attr 'none'");
+		expect(csp).toContain("style-src 'self';");
+		const page = await response.text();
+		const src =
+			/<script src="(\/assets\/app-shell\/app-shell-enhance\.js\?v=[0-9a-f]{12})"><\/script>/.exec(
+				page,
+			)?.[1];
+		expect(src).toBeDefined();
+		const script = await fetch(`${idp.issuer}${src}`);
+		expect(script.status).toBe(200);
+		expect(script.headers.get("content-type")).toMatch(/javascript/);
+		expect(script.headers.get("cache-control")).toBe(
+			"public, max-age=31536000, immutable",
+		);
+		// Only the shell's three files are served from the package.
+		for (const other of [
+			"/assets/app-shell/index.js",
+			"/assets/app-shell/package.json",
+			"/assets/app-shell/../package.json",
+		]) {
+			expect((await fetch(`${idp.issuer}${other}`)).status, other).toBe(404);
+		}
+	});
 });
 
 describe("Privacy policy", () => {

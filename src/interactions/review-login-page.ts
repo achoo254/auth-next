@@ -16,7 +16,6 @@ export function reviewLoginLink(i18n: Translator, uid: string): SafeHtml {
 }
 
 export interface ReviewLoginView {
-	readonly host: string;
 	readonly page: PageContext;
 	readonly uid: string;
 	readonly csrf: string;
@@ -38,5 +37,5 @@ ${inputField({ name: "password", label: i18n.t("review.password"), type: "passwo
 ${submitButton(i18n.t("review.submit"), { block: true, dataId: "review-submit" })}
 </form>
 <p class="auth-foot"><a class="link" href="/interaction/${view.uid}" data-id="review-back">${i18n.t("username.back")}</a></p>`;
-	return renderPage({ title, body, host: view.host, page: view.page });
+	return renderPage({ title, body, page: view.page });
 }

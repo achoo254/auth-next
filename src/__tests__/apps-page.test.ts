@@ -76,7 +76,7 @@ describe("app list page", () => {
 	it("puts the hoandat mark, a file in static/img, before the wordmark", () => {
 		const html = renderAppsPage(STAGING, testPage("en", "/apps"));
 		expect(html).toContain(
-			`<a class="idp-brand" href="/apps" data-id="idp-brand"><img class="idp-brand-mark" src="${BRAND_MARK_PATH}" width="24" height="24" alt="" aria-hidden="true">`,
+			`<a href="/apps" class="shell-brand" data-id="public-home"><img class="shell-brand-mark" src="${BRAND_MARK_PATH}" width="24" height="24" alt="" aria-hidden="true"/><b class="shell-brand-name">hoandat.com</b></a>`,
 		);
 		expect(
 			existsSync(
@@ -161,7 +161,7 @@ describe("app list page", () => {
 	it("ends every page with the brand's home link and the privacy policy", () => {
 		const html = renderAppsPage(STAGING, testPage("vi", "/apps"));
 		expect(html).toContain(
-			'<a class="foot-link" href="https://hoandat.com" data-id="foot-home">Một app của hoandat.com</a>',
+			'<a class="shell-foot-link" href="https://hoandat.com" data-id="foot-home">Một app của hoandat.com</a>',
 		);
 		expect(html).toContain('data-id="foot-privacy"');
 		expect(html).toContain(

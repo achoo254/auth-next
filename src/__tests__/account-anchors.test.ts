@@ -14,7 +14,6 @@ function page(
 	providers: AccountView["providers"],
 ): string {
 	return renderAccountPage({
-		host: "auth.example.test",
 		page: testPage(),
 		csrf: "csrf-token",
 		account: {

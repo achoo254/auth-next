@@ -44,7 +44,6 @@ export function registerUpstreamFinishRoutes(
 				sendPage(
 					res,
 					renderChooseUsername({
-						host: services.host,
 						page,
 						uid: interaction.uid,
 						csrf: services.csrf.token(req, res, csrfScope(interaction.uid)),

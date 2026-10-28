@@ -13,9 +13,6 @@ export const viCommon: Translation<typeof enCommon> = {
 	"layout.brand": "Tài khoản",
 	"layout.description":
 		"Đăng nhập vào tài khoản và quản lý các ứng dụng, thiết bị đã kết nối với tài khoản.",
-	"layout.language": "Ngôn ngữ",
-	"layout.nav": "Điều hướng",
-	"layout.ecosystem": "Một app của {brandDomain}",
 	"layout.home": "Trang chủ",
 	"client.external": "Ứng dụng bên ngoài",
 	"client.quoted": "“{name}”",

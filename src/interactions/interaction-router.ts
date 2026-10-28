@@ -47,7 +47,7 @@ export function createInteractionRouter(services: AppServices): Router {
 				await showConsent(services, req, res, interaction);
 				return;
 			}
-			sendInteractionError(services, res, {
+			sendInteractionError(res, {
 				message: "error.unsupportedStep",
 			});
 		}),

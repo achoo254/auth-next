@@ -15,9 +15,10 @@ test("sign up with Google, consent and return to the client; then sign in again"
 	const { url, checks } = await mcp.authorizationUrl();
 	await page.goto(url.href);
 	await expect(page).toHaveTitle(/Đăng nhập · hoandat\.com/);
-	await expect(page.locator('[data-id="idp-brand"]')).toContainText(
-		"hoandat.com · Tài khoản",
+	await expect(page.locator('[data-id="public-home"]')).toHaveText(
+		"hoandat.com",
 	);
+	await expect(page.locator('[data-id="nav-account"]')).toHaveText("Tài khoản");
 	await signUp(page, user);
 
 	// 2. Consent: a DCR client is always labelled as external and its name is

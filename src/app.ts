@@ -70,13 +70,13 @@ export function createTenantApp(options: TenantAppOptions): Express {
 	app.use(forwardTrustedClientInfo);
 	app.use("/assets", createAssetsRouter());
 	app.use(createBrandInstallRouter());
-	app.use(createPrivacyRouter(new URL(tenant.issuer).host));
+	app.use(createPrivacyRouter());
 	app.use(createLanguageRouter(services));
 	app.use(createAppsRouter(tenant));
 	// The iOS account app (primary tenant only, like its client).
 	if (tenant.id === PRIMARY_TENANT_ID) {
 		app.use(createAasaRouter(env.IOS_APP_ID));
-		app.use(createIosCallbackRouter(new URL(tenant.issuer).host));
+		app.use(createIosCallbackRouter());
 		app.use(ACCOUNT_API_PATH, createAccountApiRouter(services));
 	}
 	app.use(

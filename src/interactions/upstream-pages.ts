@@ -13,7 +13,6 @@ import { renderPage } from "../ui/layout.js";
 import type { PageContext } from "../ui/page-context.js";
 
 interface UpstreamPageBase {
-	readonly host: string;
 	readonly page: PageContext;
 	readonly uid: string;
 	readonly csrf: string;
@@ -53,7 +52,7 @@ ${inputField({ name: "username", label: i18n.t("username.label"), value: view.su
 ${submitButton(i18n.t("username.submit"), { block: true, dataId: "upstream-signup-submit" })}
 </form>
 <p class="auth-foot"><a class="link" href="/interaction/${view.uid}" data-id="upstream-signup-back">${i18n.t("username.back")}</a></p>`;
-	return renderPage({ title, body, host: view.host, page: view.page });
+	return renderPage({ title, body, page: view.page });
 }
 
 /** A username guess from the email's local part, e.g. "Minh.Anh" → "minh_anh". */

@@ -1,8 +1,8 @@
 /**
- * `pnpm check:tokens` — colour literals live only in static/css/tokens.css
- * (the copy of Localman's design tokens). Every other stylesheet and every
- * TypeScript source must use the custom properties, so the IdP keeps the
- * Localman palette in light and dark mode.
+ * `pnpm check:tokens` — colour literals live only in the tokens.css of
+ * @achoo254/app-shell (the brand's design tokens, served from the package).
+ * Every stylesheet and TypeScript source here must use the custom
+ * properties, so the IdP keeps the shared palette in light and dark mode.
  *
  * Flags hex colours (#abc, #aabbcc, with or without alpha) and rgb()/rgba()/
  * hsl()/hsla() calls. Exits 1 and prints file:line for each hit.
@@ -12,7 +12,6 @@ import { extname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = resolve(fileURLToPath(new URL("..", import.meta.url)));
-const TOKENS_FILE = join(ROOT, "static/css/tokens.css");
 const SCAN = [
 	{ dir: join(ROOT, "src"), extensions: new Set([".ts", ".css"]) },
 	{ dir: join(ROOT, "static"), extensions: new Set([".css", ".js", ".html"]) },
@@ -64,7 +63,6 @@ async function main(): Promise<number> {
 		)
 	)
 		.flat()
-		.filter((file) => file !== TOKENS_FILE)
 		.sort();
 	const violations = (
 		await Promise.all(
@@ -75,7 +73,7 @@ async function main(): Promise<number> {
 	).flat();
 	if (violations.length > 0) {
 		process.stderr.write(
-			`✗ ${violations.length} colour literal(s) outside static/css/tokens.css:\n`,
+			`✗ ${violations.length} colour literal(s); use the tokens of @achoo254/app-shell:\n`,
 		);
 		for (const v of violations) {
 			process.stderr.write(`  ${v.file}:${v.line}  [${v.rule}]  ${v.match}\n`);
@@ -83,7 +81,7 @@ async function main(): Promise<number> {
 		return 1;
 	}
 	process.stdout.write(
-		`✓ No colour literals in ${files.length} files (src/, static/) outside tokens.css\n`,
+		`✓ No colour literals in ${files.length} files (src/, static/)\n`,
 	);
 	return 0;
 }

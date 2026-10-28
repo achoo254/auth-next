@@ -194,7 +194,6 @@ describe("consent for an app registered through DCR", () => {
 describe("consent for a first-party client", () => {
 	it("shows no external label, notice or quotes", () => {
 		const page = renderConsent({
-			host: "auth.example.test",
 			page: testPage(),
 			csrf: "csrf-token",
 			uid: "uid-1",

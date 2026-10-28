@@ -12,7 +12,6 @@ import type { AuthorizedApp } from "./grant-directory.js";
 import type { OpenSession } from "./session-directory.js";
 
 interface ConfirmView {
-	readonly host: string;
 	readonly page: PageContext;
 	readonly csrf: string;
 	readonly title: string;
@@ -42,13 +41,11 @@ ${view.details}
 	return renderPage({
 		title: view.title,
 		body,
-		host: view.host,
 		page: view.page,
 	});
 }
 
 interface ConfirmBase {
-	readonly host: string;
 	readonly page: PageContext;
 	readonly csrf: string;
 	readonly action: string;

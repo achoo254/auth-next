@@ -35,7 +35,6 @@ const APP_URLS = {
 
 function accountView(locale: Locale): AccountView {
 	return {
-		host: HOST,
 		page: testPage(locale, "/account"),
 		csrf: "csrf-token",
 		account: {
@@ -74,7 +73,7 @@ function pages(locale: Locale): Record<string, string> {
 	const view = accountView(locale);
 	const app = view.apps[0];
 	if (!app) throw new Error("no app");
-	const base = { host: HOST, page, csrf: "csrf-token", uid: "uid-1" };
+	const base = { page, csrf: "csrf-token", uid: "uid-1" };
 	return {
 		login: renderLogin({
 			...base,
@@ -107,8 +106,8 @@ function pages(locale: Locale): Record<string, string> {
 			suggestion: "minh_anh",
 			reclaiming: true,
 		}),
-		error: renderErrorPage({ host: HOST, page, message: "x", code: "c" }),
-		privacy: renderPrivacyPage(HOST, page),
+		error: renderErrorPage({ page, message: "x", code: "c" }),
+		privacy: renderPrivacyPage(page),
 		apps: renderAppsPage(APP_URLS, page),
 		account: renderAccountPage(view),
 		confirmApp: renderRemoveAppConfirm({
@@ -120,7 +119,7 @@ function pages(locale: Locale): Record<string, string> {
 			...base,
 			username: "minh_anh",
 		}),
-		deleted: renderAccountDeleted(HOST, page),
+		deleted: renderAccountDeleted(page),
 		confirmSessions: renderRevokeOthersConfirm({
 			...base,
 			action: "/account/sessions/revoke-others",
@@ -158,7 +157,8 @@ describe("every page in every language", () => {
 			// No placeholder left unfilled, and the switcher marks this language.
 			expect(html, name).not.toMatch(/\{\w+\}/);
 			expect(html, name).toMatch(
-				new RegExp(`hreflang="${locale}" aria-current="true"`),
+				// HTML attribute names ignore case; React writes `hrefLang`.
+				new RegExp(`hreflang="${locale}" aria-current="true"`, "i"),
 			);
 		}
 		const all = Object.values(rendered).join("\n");

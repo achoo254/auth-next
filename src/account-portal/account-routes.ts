@@ -77,7 +77,6 @@ export function createAccountRouter(services: AppServices): Router {
 				sendPage(
 					res,
 					renderAccountPage({
-						host: services.host,
 						page,
 						csrf: services.csrf.token(req, res, portalCsrfScope(portal)),
 						account,
@@ -100,7 +99,7 @@ export function createAccountRouter(services: AppServices): Router {
 		"/callback",
 		asyncHandler(async (req, res) => {
 			if (queryValue(req, "error")) {
-				sendInteractionError(services, res, {
+				sendInteractionError(res, {
 					message: "account.callbackFailed",
 					back: { href: "/account", label: "common.tryAgain" },
 				});

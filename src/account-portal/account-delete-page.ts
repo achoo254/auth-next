@@ -15,7 +15,6 @@ export const ACCOUNT_DELETE_PATH = "/account/delete";
 export const ACCOUNT_DELETED_PATH = "/account/deleted";
 
 interface DeleteConfirmView {
-	readonly host: string;
 	readonly page: PageContext;
 	readonly csrf: string;
 	readonly username: string;
@@ -50,15 +49,14 @@ ${inputField({
 ${submitButton(i18n.t("confirm.delete.button"), { block: true, variant: "danger", dataId: "account-delete-confirm" })}
 <a class="btn btn-minimal btn-block" href="/account" data-id="confirm-cancel">${i18n.t("common.cancel")}</a>
 </form>`;
-	return renderPage({ title, body, host: view.host, page: view.page });
+	return renderPage({ title, body, page: view.page });
 }
 
 /** Shown once the account is gone; nothing on it needs a session. */
-export function renderAccountDeleted(host: string, page: PageContext): string {
+export function renderAccountDeleted(page: PageContext): string {
 	const title = page.i18n.t("deleted.title");
 	return renderPage({
 		title,
-		host,
 		page,
 		body: pageTitle(
 			html`<span data-id="account-deleted">${title}</span>`,

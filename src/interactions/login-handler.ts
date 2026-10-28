@@ -31,7 +31,6 @@ export async function showLogin(
 	sendPage(
 		res,
 		renderLogin({
-			host: services.host,
 			page: interactionPage(req, interaction),
 			uid: interaction.uid,
 			csrf: services.csrf.token(req, res, csrfScope(interaction.uid)),
@@ -62,7 +61,6 @@ export function showSignup(
 	sendPage(
 		res,
 		renderSignup({
-			host: services.host,
 			page: interactionPage(req, interaction),
 			uid: interaction.uid,
 			providers: signInProviders(services, interaction),

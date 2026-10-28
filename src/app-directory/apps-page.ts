@@ -143,7 +143,6 @@ export function renderAppsPage(
 	const apps = listedApps(tenant, i18n);
 	return renderPage({
 		title: i18n.t("apps.title"),
-		host: new URL(tenant.issuer).host,
 		page,
 		layout: "portal",
 		stylesheets: ["apps.css"],

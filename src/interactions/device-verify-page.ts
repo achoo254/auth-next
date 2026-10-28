@@ -66,7 +66,7 @@ ${inputMessage(i18n, error)}
 ${submitButton(i18n.t("common.continue"), { block: true, dataId: "device-continue" })}
 </form>`;
 	const title = i18n.t("device.input.title");
-	sendKoaPage(ctx, renderPage({ title, body, host: ctx.host, page }));
+	sendKoaPage(ctx, renderPage({ title, body, page }));
 }
 
 /**
@@ -95,7 +95,7 @@ export async function userCodeConfirmSource(
 <form method="post" action="${action}"><input type="hidden" name="xsrf" value="${xsrf}"><input type="hidden" name="user_code" value="${userCode}"><input type="hidden" name="confirm" value="yes">${submitButton(i18n.t("device.confirm.match"), { block: true, dataId: "device-confirm" })}</form>
 <form method="post" action="${action}"><input type="hidden" name="xsrf" value="${xsrf}"><input type="hidden" name="user_code" value="${userCode}"><input type="hidden" name="abort" value="yes">${submitButton(i18n.t("common.cancel"), { block: true, variant: "minimal", dataId: "device-abort" })}</form>
 </div>`;
-	sendKoaPage(ctx, renderPage({ title, body, host: ctx.host, page }));
+	sendKoaPage(ctx, renderPage({ title, body, page }));
 }
 
 /** `features.deviceFlow.successSource`. */
@@ -114,7 +114,7 @@ export async function deviceSuccessSource(
 ${alertBox("success", i18n.t("device.success.alert"))}
 <p class="auth-foot"><a class="link" href="/account" data-id="device-success-account">${i18n.t("device.success.manage")}</a></p>`;
 	const title = i18n.t("device.success.pageTitle");
-	sendKoaPage(ctx, renderPage({ title, body, host: ctx.host, page }));
+	sendKoaPage(ctx, renderPage({ title, body, page }));
 }
 
 /** Stored codes are normalised (XXXXXXXX); show them as on the device. */
@@ -123,7 +123,6 @@ function formatUserCode(code: string): string {
 }
 
 export interface DeviceApprovalView {
-	readonly host: string;
 	readonly page: PageContext;
 	readonly csrf: string;
 	readonly uid: string;
@@ -151,5 +150,5 @@ ${view.userCode ? html`<p class="help">${i18n.rich("device.approve.code", { code
 <form method="post" action="/interaction/${view.uid}/consent">${csrfField(view.csrf)}${submitButton(i18n.t("consent.allow"), { block: true, dataId: "device-allow" })}</form>
 <form method="post" action="/interaction/${view.uid}/abort">${csrfField(view.csrf)}${submitButton(i18n.t("consent.deny"), { block: true, variant: "secondary", dataId: "device-deny" })}</form>
 </div>`;
-	return renderPage({ title, body, host: view.host, page: view.page });
+	return renderPage({ title, body, page: view.page });
 }

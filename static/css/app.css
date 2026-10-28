@@ -1,6 +1,8 @@
-/* hoandat · Tài khoản — page styles. Every colour, radius, duration and
-   spacing step comes from tokens.css (checked by `pnpm check:tokens`);
-   rules follow the IdP screens of the Localman prototype (idpShell). */
+/* hoandat · Tài khoản — page styles, loaded after the tokens.css and
+   app-shell.css of @achoo254/app-shell (header, frame, footer, switches).
+   Every colour, radius, duration and spacing step comes from the tokens
+   (checked by `pnpm check:tokens`); rules follow the IdP screens of the
+   Localman prototype (idpShell). */
 
 *,
 *::before,
@@ -10,19 +12,10 @@
 html {
 	-webkit-text-size-adjust: 100%;
 }
+/* the shell (.shell) draws the page and its grid; the body only frames it */
 body {
 	margin: 0;
-	min-height: 100dvh;
-	font-family: var(--font-sans);
-	font-size: 16px;
-	line-height: 1.55;
-	color: var(--c-text);
 	background-color: var(--c-bg);
-	background-image: linear-gradient(var(--c-grid) 1px, transparent 1px),
-		linear-gradient(90deg, var(--c-grid) 1px, transparent 1px);
-	background-size: var(--grid-size) var(--grid-size);
-	background-position: -1px -1px;
-	-webkit-font-smoothing: antialiased;
 }
 h1,
 h2,
@@ -45,121 +38,7 @@ button {
 	outline: 2px solid var(--c-primary);
 	outline-offset: 2px;
 }
-.container {
-	width: 100%;
-	max-width: var(--container);
-	margin-inline: auto;
-	padding-inline: var(--gutter);
-}
-@media (max-width: 639px) {
-	.hide-sm {
-		display: none !important;
-	}
-}
-
-/* topbar + wordmark */
-.topbar {
-	position: sticky;
-	top: 0;
-	z-index: 30;
-	background: color-mix(in srgb, var(--c-bg) 82%, transparent);
-	backdrop-filter: blur(10px);
-	border-bottom: 1px solid var(--c-border-subtle);
-}
-.topbar-inner {
-	min-height: var(--topbar-h);
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	gap: var(--space-3);
-}
-.idp-brand {
-	font-family: var(--font-sans);
-	font-size: 16px;
-	display: inline-flex;
-	align-items: center;
-	min-height: 44px;
-	gap: var(--space-2);
-	flex-wrap: wrap;
-	color: var(--c-text);
-	text-decoration: none;
-}
-.idp-brand b {
-	color: var(--c-primary);
-}
-.idp-brand-mark {
-	flex: none;
-	width: 24px;
-	height: 24px;
-}
-.topbar-nav {
-	display: flex;
-	align-items: center;
-	gap: var(--space-1);
-}
-.topbar-link {
-	font-family: var(--font-mono);
-	font-size: 13px;
-	font-weight: 600;
-	color: var(--c-text-muted);
-	text-decoration: none;
-	white-space: nowrap;
-	padding: var(--space-2) var(--space-3);
-	border-radius: var(--radius-sm);
-	transition: background-color var(--dur-fast) var(--ease-standard),
-		color var(--dur-fast) var(--ease-standard);
-}
-.topbar-link:hover {
-	color: var(--c-text);
-	background: color-mix(in srgb, var(--c-text) 6%, transparent);
-}
-.topbar-link[aria-current="page"] {
-	color: var(--c-primary);
-	background: color-mix(in srgb, var(--c-primary) 10%, transparent);
-}
-.idp-brand-suffix {
-	white-space: pre;
-}
-/* touch screens and phones: every header and footer link is a 44px target */
-@media (pointer: coarse), (max-width: 479px) {
-	.topbar-link,
-	.foot-link,
-	.lang-option {
-		display: inline-flex;
-		align-items: center;
-		min-height: 44px;
-	}
-}
-/* phones: the Account link in the nav already says it */
-@media (max-width: 479px) {
-	.idp-brand-suffix {
-		display: none;
-	}
-	.topbar-link {
-		padding-inline: var(--space-2);
-	}
-}
-/* narrow phones: three nav links (with the domain guide) still fit */
-@media (max-width: 379px) {
-	.topbar-link {
-		padding-inline: var(--space-1);
-	}
-}
-@media (max-width: 359px) {
-	.topbar-inner {
-		gap: var(--space-2);
-	}
-	.topbar-link {
-		font-size: 12px;
-	}
-}
-
-/* layout */
-.auth {
-	display: grid;
-	place-items: center;
-	padding-block: var(--space-7) var(--space-8);
-}
+/* layout: the frame of each page inside the shell's <main> */
 .card {
 	background: var(--c-surface);
 	border: 1px solid var(--c-border);
@@ -508,60 +387,6 @@ button {
 }
 .tenant-row > div:first-child {
 	flex: 1 1 16rem;
-}
-
-/* under every page: the language pill, then one quiet legal link */
-.page-foot {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	gap: var(--space-3);
-	padding-bottom: var(--space-7);
-}
-.lang-switch {
-	display: inline-flex;
-	flex-wrap: wrap;
-	justify-content: center;
-	gap: 2px;
-	padding: 2px;
-	border: 1px solid var(--c-border);
-	border-radius: var(--radius-full);
-	background: var(--c-surface);
-}
-.foot-links {
-	display: flex;
-	flex-wrap: wrap;
-	justify-content: center;
-	column-gap: var(--space-4);
-	margin: 0;
-}
-.foot-link {
-	font-size: 13px;
-	color: var(--c-text-muted);
-	text-decoration: none;
-}
-.foot-link:hover {
-	color: var(--c-text);
-	text-decoration: underline;
-	text-underline-offset: 2px;
-}
-.lang-option {
-	font-family: var(--font-mono);
-	font-size: 13px;
-	font-weight: 600;
-	color: var(--c-text-muted);
-	text-decoration: none;
-	padding: var(--space-1) var(--space-3);
-	border: 1px solid transparent;
-	border-radius: var(--radius-full);
-}
-.lang-option:hover {
-	color: var(--c-text);
-}
-.lang-option[aria-current="true"] {
-	color: var(--c-primary);
-	background: color-mix(in srgb, var(--c-primary) 8%, var(--c-surface));
-	border-color: color-mix(in srgb, var(--c-primary) 30%, var(--c-surface));
 }
 
 /* Google/GitHub marks (single colour, currentColor) */

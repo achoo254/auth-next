@@ -1,17 +1,17 @@
-import { stylesheetHref } from "../assets.js";
+import { PublicPage } from "@achoo254/app-shell";
+import { type ReactElement, createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import { appShellHref, stylesheetHref } from "../assets.js";
 import { brandHeadTags } from "../brand-install.js";
-import type { MessageKey } from "../i18n/dictionaries.js";
-import { LOCALES, LOCALE_NAMES } from "../i18n/locales.js";
+import { LOCALES, type Locale } from "../i18n/locales.js";
 import { appHostsFor } from "../tenants/tenant.js";
-import { type HtmlValue, type SafeHtml, html } from "./html.js";
+import { type HtmlValue, type SafeHtml, html, trustedHtml } from "./html.js";
 import type { PageContext } from "./page-context.js";
 
 export interface PageOptions {
 	readonly title: string;
 	readonly body: HtmlValue;
 	readonly page: PageContext;
-	/** Host shown next to the wordmark (the issuer's host). */
-	readonly host?: string;
 	/**
 	 * `card` (default) is the narrow sign-in card; `wide` a wider card for
 	 * reading; `portal` drops the outer card for pages made of cards.
@@ -38,72 +38,10 @@ export function languageHref(locale: string, returnTo: string): string {
 	return `${LANGUAGE_PATH}?${query.toString()}`;
 }
 
-/** Plain links, no script: each one sets the cookie and comes back here. */
-function languageSwitcher(page: PageContext): SafeHtml {
-	const current = page.i18n.locale;
-	return html`<nav class="lang-switch" aria-label="${page.i18n.t("layout.language")}" data-id="lang-switch">${LOCALES.map(
-		(locale) =>
-			html`<a class="lang-option" href="${languageHref(locale, page.path)}" lang="${locale}" hreflang="${locale}"${
-				locale === current ? html` aria-current="true"` : ""
-			} data-id="lang-${locale}">${LOCALE_NAMES[locale]}</a>`,
-	)}</nav>`;
-}
-
-/**
- * Under every page: the language pill, then the line every app of the
- * brand shares (a link to its home page) and the privacy policy
- * (legal/privacy-page.ts PRIVACY_PATH).
- */
-function pageFoot(page: PageContext): SafeHtml {
-	const { i18n } = page;
-	return html`<footer class="page-foot container">${languageSwitcher(page)}<p class="foot-links"><a class="foot-link" href="https://${i18n.brand.domain}" data-id="foot-home">${i18n.t(
-		"layout.ecosystem",
-	)}</a><a class="foot-link" href="/privacy" data-id="foot-privacy">${i18n.t(
-		"privacy.title",
-	)}</a></p></footer>`;
-}
-
-interface NavLink {
-	readonly href: string;
-	readonly key: MessageKey;
-	readonly dataId: string;
-}
-
-const HOME_LINK: NavLink = {
-	href: "/apps",
-	key: "layout.home",
-	dataId: "nav-home",
-};
-const ACCOUNT_LINK: NavLink = {
-	href: "/account",
-	key: "layout.brand",
-	dataId: "nav-account",
-};
-
-/** The page's own link is marked current; /account/... counts as Account. */
-function topbarNav(page: PageContext): SafeHtml {
-	const path = page.path.split("?")[0] ?? "";
-	const links = [HOME_LINK, ACCOUNT_LINK];
-	return html`<nav class="topbar-nav" aria-label="${page.i18n.t("layout.nav")}">${links.map(
-		(link) =>
-			html`<a class="topbar-link" href="${link.href}"${
-				path === link.href || path.startsWith(`${link.href}/`)
-					? html` aria-current="page"`
-					: ""
-			} data-id="${link.dataId}">${page.i18n.t(link.key)}</a>`,
-	)}</nav>`;
-}
-
-function main(options: PageOptions): SafeHtml {
-	if (options.layout === "portal") {
-		return html`<main class="page container portal">${options.body}</main>`;
-	}
-	return html`<main class="page container auth">
-<div class="card auth-card${options.layout === "wide" ? " auth-card-wide" : ""}">
-${options.body}
-</div>
-</main>`;
-}
+const HOME_PATH = "/apps";
+const ACCOUNT_PATH = "/account";
+/** legal/privacy-page.ts PRIVACY_PATH (that module imports this one). */
+const PRIVACY_PATH = "/privacy";
 
 /** The hoandat mark (AI-drawn, static/img), decorative: the wordmark follows it. */
 export const BRAND_MARK_PATH = "/assets/img/hoandat-mark-128.webp";
@@ -126,10 +64,79 @@ function shareTags(title: string, page: PageContext): SafeHtml {
 <meta name="twitter:image" content="${image}">`;
 }
 
+/** The page's own link is marked current; /account/... counts as Account. */
+function isCurrent(page: PageContext, href: string): boolean {
+	const path = page.path.split("?")[0] ?? "";
+	return path === href || path.startsWith(`${href}/`);
+}
+
+/** The page body in its frame: the sign-in card, the wide card, or the portal grid. */
+function framedBody(options: PageOptions): ReactElement {
+	const layout = options.layout ?? "card";
+	const className =
+		layout === "portal"
+			? "portal"
+			: `card auth-card${layout === "wide" ? " auth-card-wide" : ""}`;
+	return createElement("div", {
+		className,
+		// The body is SafeHtml, built by the escaping `html` template.
+		dangerouslySetInnerHTML: { __html: html`${options.body}`.value },
+	});
+}
+
 /**
- * Shared shell of every IdP page: self-hosted fonts and token CSS, the
- * "<brand> · Account" wordmark (the tenant's brand) with the Home and
- * Account links, the language switcher, no script at all.
+ * Header, frame and footer of the shared app shell (@achoo254/app-shell),
+ * rendered on the server without client React: the Home link, Account in
+ * the account slot, language links (each sets the cookie on the server and
+ * comes back here) and the theme switch run by app-shell-enhance.js.
+ */
+function shellPage(options: PageOptions): string {
+	const { page } = options;
+	const { i18n } = page;
+	return renderToStaticMarkup(
+		createElement(PublicPage<Locale>, {
+			brand: {
+				appName: i18n.brand.name,
+				domain: i18n.brand.domain,
+				markSrc: BRAND_MARK_PATH,
+			},
+			locale: i18n.locale,
+			locales: LOCALES,
+			languageHref: (locale) => languageHref(locale, page.path),
+			homeHref: HOME_PATH,
+			signInHref: ACCOUNT_PATH,
+			navLinks: [
+				{
+					href: HOME_PATH,
+					label: i18n.t("layout.home"),
+					dataId: "nav-home",
+					current: isCurrent(page, HOME_PATH),
+				},
+			],
+			accountSlot: createElement(
+				"a",
+				{
+					className: "shell-topbar-link",
+					href: ACCOUNT_PATH,
+					"data-id": "nav-account",
+					"aria-current": isCurrent(page, ACCOUNT_PATH) ? "page" : undefined,
+				},
+				i18n.t("layout.brand"),
+			),
+			privacyHref: PRIVACY_PATH,
+			termsHref: null,
+			layout: options.layout === "portal" ? "flow" : "center",
+			// biome-ignore lint/correctness/noChildrenProp: PublicPageProps requires children among the props
+			children: framedBody(options),
+		}),
+	);
+}
+
+/**
+ * Every IdP page: self-hosted fonts, the shell's tokens and stylesheet, the
+ * theme script (an external file that sets the stored theme before the
+ * first paint; the CSP allows no inline script), then the page in the
+ * shared header, frame and footer.
  */
 export function renderPage(options: PageOptions): string {
 	const { i18n } = options.page;
@@ -144,22 +151,16 @@ export function renderPage(options: PageOptions): string {
 <title>${options.title} · ${i18n.brand.name}</title>
 ${shareTags(`${options.title} · ${i18n.brand.name}`, options.page)}
 ${brandHeadTags()}
+<script src="${appShellHref("app-shell-enhance.js")}"></script>
 ${FONT_STYLESHEETS.map((href) => html`<link rel="stylesheet" href="${href}">`)}
-${["tokens.css", "app.css", ...(options.stylesheets ?? [])].map(
+<link rel="stylesheet" href="${appShellHref("tokens.css")}">
+<link rel="stylesheet" href="${appShellHref("app-shell.css")}">
+${["app.css", ...(options.stylesheets ?? [])].map(
 	(name) => html`<link rel="stylesheet" href="${stylesheetHref(name)}">`,
 )}
 </head>
 <body>
-<header class="topbar"><div class="topbar-inner container">
-<a class="idp-brand" href="/apps" data-id="idp-brand"><img class="idp-brand-mark" src="${BRAND_MARK_PATH}" width="24" height="24" alt="" aria-hidden="true"><span><b>${i18n.brand.name}</b><span class="idp-brand-suffix"> · ${i18n.t("layout.brand")}</span></span>${
-		options.host
-			? html` <span class="badge badge-neutral hide-sm">${options.host}</span>`
-			: ""
-	}</a>
-${topbarNav(options.page)}
-</div></header>
-${main(options)}
-${pageFoot(options.page)}
+${trustedHtml(shellPage(options))}
 </body>
 </html>`;
 	return page.value;

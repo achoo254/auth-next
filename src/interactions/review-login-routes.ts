@@ -39,7 +39,6 @@ function sendForm(
 	sendPage(
 		res,
 		renderReviewLogin({
-			host: services.host,
 			page: interactionPage(req, interaction),
 			uid: interaction.uid,
 			csrf: services.csrf.token(req, res, csrfScope(interaction.uid)),

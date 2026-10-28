@@ -31,7 +31,7 @@ function withoutIssuer(text: string): string {
 		.join("ISSUER")
 		.split(new URL(idp.issuer).host)
 		.join("ISSUER_HOST")
-		.replace(/\.css\?v=[0-9a-f]{12}/g, ".css?v=HASH");
+		.replace(/\.(css|js)\?v=[0-9a-f]{12}/g, ".$1?v=HASH");
 }
 
 /**

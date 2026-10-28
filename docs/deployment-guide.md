@@ -36,7 +36,7 @@ Access log của nginx che token trong đường dẫn `/reset/...` (link đặt
 SSH_TARGET=<alias> [SSH_OPTS="-F ssh_config"] bash infra/deploy.sh
 ```
 
-Script build, sao lưu bản đang chạy (mục Rollback), rsync `dist/ static/ brand/ infra/ package.json pnpm-lock.yaml pnpm-workspace.yaml` (chủ sở hữu `root`), cài dependency production bằng pnpm 11.9, `pm2 startOrReload`, `pm2 save`, rồi đợi `/healthz`.
+Script build, sao lưu bản đang chạy (mục Rollback), rsync `dist/ static/ brand/ infra/ package.json pnpm-lock.yaml pnpm-workspace.yaml` (chủ sở hữu `root`), cài dependency production bằng pnpm 11.9, `pm2 startOrReload`, `pm2 save`, rồi đợi `/healthz`. Dependency production có `@achoo254/app-shell` và `@achoo254/brand` cài từ tag git của `achoo254/shared-next` (khung trang, `tokens.css`, `app-shell.css`, `app-shell-enhance.js` được phục vụ thẳng từ `node_modules`), nên server phải tải được từ GitHub lúc cài; lockfile ghi tarball và integrity của đúng tag.
 
 ## Dữ liệu có `tenantId` (ADR 0006, 0013)
 

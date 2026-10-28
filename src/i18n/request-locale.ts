@@ -1,5 +1,5 @@
 import type { IncomingHttpHeaders } from "node:http";
-import { readCookie } from "../http/cookies.js";
+import { readCookie, readCookies } from "../http/cookies.js";
 import {
 	DEFAULT_LOCALE,
 	type Locale,
@@ -8,8 +8,23 @@ import {
 	localeFromUiLocales,
 } from "./locales.js";
 
-/** The language picked with the switcher; remembered for a year. */
+/**
+ * The language picked with the switcher of any app of the brand, remembered
+ * for a year: the shared cookie of @achoo254/app-shell, set for the root
+ * domain (language-route.ts) and by the apps' own switches.
+ */
 export const LOCALE_COOKIE = "hd_lang";
+
+/**
+ * The shared choice. A browser that still has the host-only cookie of
+ * earlier releases sends it as well, before the newer domain cookie
+ * (cookies of one path go oldest first), so the last value wins.
+ */
+function sharedLocaleCookie(req: {
+	readonly headers: IncomingHttpHeaders;
+}): string | undefined {
+	return readCookies(req, LOCALE_COOKIE).filter(isLocale).at(-1);
+}
 
 /**
  * The language picked during one sign-in. Its Path is that interaction's
@@ -51,7 +66,7 @@ export function requestLocale(
 	return resolveLocale({
 		pickedForInteraction: readCookie(req, INTERACTION_LOCALE_COOKIE),
 		uiLocales,
-		cookie: readCookie(req, LOCALE_COOKIE),
+		cookie: sharedLocaleCookie(req),
 		acceptLanguage: req.headers["accept-language"],
 	});
 }

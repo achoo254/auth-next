@@ -76,7 +76,6 @@ export function describeScopes(
 }
 
 export interface ConsentView {
-	readonly host: string;
 	readonly page: PageContext;
 	readonly csrf: string;
 	readonly uid: string;
@@ -146,7 +145,6 @@ ${scopeWarnings(i18n, view.scopes)}
 	return renderPage({
 		title: i18n.t("consent.pageTitle"),
 		body,
-		host: view.host,
 		page: view.page,
 	});
 }
