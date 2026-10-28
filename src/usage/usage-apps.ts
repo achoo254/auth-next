@@ -28,6 +28,7 @@ const APP_OF_STATIC_CLIENT: Readonly<Record<string, string>> = {
 	[ids.tieudeWeb]: "tieude",
 	[ids.tuviWeb]: "tuvi",
 	[ids.clipWeb]: "clip",
+	[ids.trangWeb]: "trang",
 };
 
 /**

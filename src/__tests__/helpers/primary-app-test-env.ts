@@ -2,7 +2,7 @@ import { randomBytes } from "node:crypto";
 
 /*
  * Client secrets and local origins of the primary-tenant apps (Scribe, Miu
- * World, Tiểu Đệ, Tử Vi, Clip) in the test IdP: all their clients exist.
+ * World, Tiểu Đệ, Tử Vi, Clip, Trang Của Tôi) in the test IdP: all their clients exist.
  */
 
 export const SCRIBE_WEB_SECRET = randomBytes(32).toString("base64url");
@@ -20,6 +20,8 @@ export const TUVI_WEB_SECRET = randomBytes(32).toString("base64url");
 export const TUVI_WEB_URL = "https://tuvi.hoandat.com";
 export const CLIP_WEB_SECRET = randomBytes(32).toString("base64url");
 export const CLIP_WEB_URL = "https://clip.hoandat.com";
+export const TRANG_WEB_SECRET = randomBytes(32).toString("base64url");
+export const TRANG_WEB_URL = "https://trang.hoandat.com";
 
 /** The environment that turns those clients on. */
 export const PRIMARY_APP_TEST_ENV = {
@@ -29,6 +31,8 @@ export const PRIMARY_APP_TEST_ENV = {
 	TUVI_WEB_CLIENT_SECRET: TUVI_WEB_SECRET,
 	CLIP_WEB_URL,
 	CLIP_WEB_CLIENT_SECRET: CLIP_WEB_SECRET,
+	TRANG_WEB_URL,
+	TRANG_WEB_CLIENT_SECRET: TRANG_WEB_SECRET,
 	SCRIBE_WEB_CLIENT_SECRET: SCRIBE_WEB_SECRET,
 	SCRIBE_WEB_DEV_URL,
 	SCRIBE_WEB_DEV_CLIENT_SECRET: SCRIBE_WEB_DEV_SECRET,

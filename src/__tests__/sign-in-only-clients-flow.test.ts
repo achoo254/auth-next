@@ -20,6 +20,8 @@ import {
 	CLIP_WEB_URL,
 	TIEUDE_WEB_SECRET,
 	TIEUDE_WEB_URL,
+	TRANG_WEB_SECRET,
+	TRANG_WEB_URL,
 	TUVI_WEB_SECRET,
 	TUVI_WEB_URL,
 	type TestIdp,
@@ -28,7 +30,7 @@ import {
 import { OTHER_TEST_TENANT } from "./helpers/test-tenant.js";
 
 /**
- * Tiểu Đệ, Tử Vi and Clip sign visitors in only to learn they have an
+ * Tiểu Đệ, Tử Vi, Clip and Trang Của Tôi sign visitors in only to learn they have an
  * account: `openid` alone, a confidential web client, no refresh token, no
  * API resource.
  */
@@ -56,6 +58,14 @@ const APPS = [
 		url: CLIP_WEB_URL,
 		secret: CLIP_WEB_SECRET,
 		env: "CLIP",
+	},
+	{
+		app: "trang",
+		name: "Trang Của Tôi",
+		clientId: STATIC_CLIENT_IDS.trangWeb,
+		url: TRANG_WEB_URL,
+		secret: TRANG_WEB_SECRET,
+		env: "TRANG",
 	},
 ] as const;
 
