@@ -24,11 +24,11 @@ export interface Tenant {
 		readonly scribe?: string;
 		/** Miu World, once its client secret is configured. */
 		readonly miu?: string;
-		/** Tiểu Đệ, Tử Vi, Clip and Trang Của Tôi, each once its URL and secret are configured. */
+		/** Tiểu Đệ, Tử Vi, Clip and Web Nhanh, each once its URL and secret are configured. */
 		readonly tieude?: string;
 		readonly tuvi?: string;
 		readonly clip?: string;
-		readonly trang?: string;
+		readonly webnhanh?: string;
 	};
 }
 

@@ -1245,18 +1245,18 @@ exports[`primary tenant (hoandat.com) is unchanged > serves the same static clie
     "allowed_resources": [],
     "application_type": "web",
     "backchannel_logout_session_required": false,
-    "client_id": "trang-web",
-    "client_name": "Trang Của Tôi",
+    "client_id": "webnhanh-web",
+    "client_name": "Web Nhanh",
     "dpop_bound_access_tokens": false,
     "grant_types": [
       "authorization_code",
     ],
     "id_token_signed_response_alg": "ES256",
     "post_logout_redirect_uris": [
-      "https://trang.hoandat.com/",
+      "https://webnhanh.hoandat.com/",
     ],
     "redirect_uris": [
-      "https://trang.hoandat.com/auth/callback",
+      "https://webnhanh.hoandat.com/auth/callback",
     ],
     "require_auth_time": false,
     "require_pushed_authorization_requests": false,

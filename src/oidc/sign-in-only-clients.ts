@@ -6,15 +6,15 @@ import { ALLOWED_RESOURCES_PROPERTY } from "./resources.js";
 
 /**
  * Apps whose visitors sign in only to prove they have an account: Tiểu Đệ
- * (repo tieu-de-next), Tử Vi (tu-vi-next), Clip (clip-next) and Trang Của Tôi
- * (trang-next). Each has
+ * (repo tieu-de-next), Tử Vi (tu-vi-next), Clip (clip-next) and Web Nhanh
+ * (webnhanh-next). Each has
  * one confidential web client and no mobile or development client.
  */
 export const SIGN_IN_ONLY_APPS = {
 	tieude: { clientId: "tieude-web", name: "Tiểu Đệ" },
 	tuvi: { clientId: "tuvi-web", name: "Tử Vi" },
 	clip: { clientId: "clip-web", name: "Clip" },
-	trang: { clientId: "trang-web", name: "Trang Của Tôi" },
+	webnhanh: { clientId: "webnhanh-web", name: "Web Nhanh" },
 } as const;
 
 export type SignInOnlyAppKey = keyof typeof SIGN_IN_ONLY_APPS;
@@ -23,7 +23,7 @@ export const SIGN_IN_ONLY_CLIENT_IDS = {
 	tieudeWeb: SIGN_IN_ONLY_APPS.tieude.clientId,
 	tuviWeb: SIGN_IN_ONLY_APPS.tuvi.clientId,
 	clipWeb: SIGN_IN_ONLY_APPS.clip.clientId,
-	trangWeb: SIGN_IN_ONLY_APPS.trang.clientId,
+	webnhanhWeb: SIGN_IN_ONLY_APPS.webnhanh.clientId,
 } as const;
 
 /** Where each app's server receives the authorization code. */
