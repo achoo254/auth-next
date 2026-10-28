@@ -158,11 +158,16 @@ export function portalRoute(
 				return;
 			}
 			if (options.recentLogin && !isRecentLogin(portal)) {
-				// The form is not replayed: after signing in again the user lands
-				// on /account (with a notice) and repeats the action.
+				// A confirmation page asks before it shows and comes back to itself,
+				// so its button then works. A posted form is not replayed: after
+				// signing in again the user lands on /account (with a notice) and
+				// repeats the action.
 				redirectToPortalLogin(services, res, {
 					reauthenticate: true,
-					returnTo: req.baseUrl === "/account" ? undefined : returnTo,
+					returnTo:
+						req.method === "GET" || req.baseUrl !== "/account"
+							? returnTo
+							: undefined,
 				});
 				return;
 			}

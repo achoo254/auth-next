@@ -1,12 +1,19 @@
 import type { Request, Response } from "express";
 import { readCookie } from "../http/cookies.js";
 import type { AppServices } from "../services.js";
+import { REVOKE_OTHER_SESSIONS_PATH } from "./account-sections.js";
 
 /** Pages besides /account the sign-in may return to (never a free URL). */
-const RETURN_PATHS: ReadonlySet<string> = new Set(["/claim"]);
+const RETURN_PATHS: ReadonlySet<string> = new Set([
+	"/claim",
+	REVOKE_OTHER_SESSIONS_PATH,
+]);
+
+/** The page that asks before removing one app's access. */
+const APP_REVOKE_PATH = /^\/account\/apps\/[A-Za-z0-9._-]{1,128}\/revoke$/;
 
 export function isPortalReturnPath(path: string): boolean {
-	return RETURN_PATHS.has(path);
+	return RETURN_PATHS.has(path) || APP_REVOKE_PATH.test(path);
 }
 
 /** Remembers an allowed page to come back to after signing in. */
@@ -15,7 +22,7 @@ export function rememberPortalReturn(
 	res: Response,
 	returnTo: string,
 ): void {
-	if (!RETURN_PATHS.has(returnTo)) return;
+	if (!isPortalReturnPath(returnTo)) return;
 	res.cookie(portalReturnCookie(services), returnTo, {
 		...portalStateCookieOptions(services),
 		maxAge: 30 * 60 * 1000,
@@ -46,7 +53,7 @@ export function consumePortalReturn(
 		portalReturnCookie(services),
 		portalStateCookieOptions(services),
 	);
-	return RETURN_PATHS.has(value) ? value : undefined;
+	return isPortalReturnPath(value) ? value : undefined;
 }
 
 export function portalStateCookieOptions(services: AppServices): {

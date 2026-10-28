@@ -132,7 +132,11 @@ export function createAccountRouter(services: AppServices): Router {
 	registerAccessRoutes(router, services, write, sensitive);
 	const page = (handler: PortalHandler): RequestHandler =>
 		portalRoute(services, handler, { csrf: false });
-	registerConfirmRoutes(router, services, page, sensitive);
+	// Its pages lead to a sensitive button: an old sign-in is repeated before
+	// the page shows rather than after the button is pressed.
+	const recentPage = (handler: PortalHandler): RequestHandler =>
+		portalRoute(services, handler, { csrf: false, recentLogin: true });
+	registerConfirmRoutes(router, services, recentPage, sensitive);
 	registerDeleteRoutes(router, services, page, sensitive);
 	return router;
 }

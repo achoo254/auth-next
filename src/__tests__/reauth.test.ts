@@ -145,6 +145,54 @@ describe("sensitive changes need a recent sign-in", () => {
 			.toBe(true);
 	});
 
+	it("asks again before a confirmation page shows, then comes back to it", async () => {
+		const account = await createTestAccount(repositoryOf(idp), {
+			providers: { google: `g-confirm-${Date.now()}` },
+		});
+		const browser = await signedInBrowser(idp, account);
+		await signedInBrowser(idp, account);
+		await ageSignIn(account, 11 * 60);
+
+		const path = "/account/sessions/revoke-others";
+		const challenge = await browser.request(`${idp.issuer}${path}`);
+		const login = new URL(challenge.headers.get("location") ?? "", idp.issuer);
+		expect(login.pathname).toBe("/auth");
+		expect(login.searchParams.get("prompt")).toBe("login");
+
+		const signIn = await browser.navigate(login);
+		const uid = /\/interaction\/([\w-]+)/.exec(signIn.response.url)?.[1] ?? "";
+		idp.fake.nextLogins.push(linkedGoogleProfile(account));
+		const back = await browser.navigate(
+			`${idp.issuer}/interaction/${uid}/upstream/google`,
+		);
+		expect(back.response.url).toBe(`${idp.issuer}${path}`);
+		const page = await back.response.text();
+		expect(page).toContain('data-id="sessions-revoke-others-confirm"');
+
+		// Its button now works at once.
+		const done = await browser.request(`${idp.issuer}${path}`, {
+			form: { csrf: formField(page, "csrf") },
+		});
+		expect(done.headers.get("location")).toBe(
+			"/account?notice=sessions-revoked",
+		);
+	});
+
+	it("comes back only to a known confirmation page", async () => {
+		const { isPortalReturnPath } = await import(
+			"../account-portal/portal-cookies.js"
+		);
+		expect(isPortalReturnPath("/account/apps/oFTGVhGV1cLw-_.x/revoke")).toBe(
+			true,
+		);
+		expect(isPortalReturnPath("/account/sessions/revoke-others")).toBe(true);
+		expect(isPortalReturnPath("/account/apps/a/b/revoke")).toBe(false);
+		expect(isPortalReturnPath("//evil.example/account/apps/a/revoke")).toBe(
+			false,
+		);
+		expect(isPortalReturnPath("/account/delete")).toBe(false);
+	});
+
 	it("shows the 'confirmed again' notice only for this browser's own state", async () => {
 		const account = await createTestAccount(repositoryOf(idp));
 		const browser = await signedInBrowser(idp, account);
