@@ -44,6 +44,10 @@ export const enApps = {
 	"apps.scribeWeb.description":
 		"Record audio and turn it into searchable, editable transcripts.",
 	"apps.scribeWeb.signIn": "Choose Sign in on the site.",
+	"apps.webnhanhWeb.description":
+		"Make a website from a template and publish it at its own address; developers deploy from a git link or a zip.",
+	"apps.webnhanhWeb.signIn":
+		"Choose Sign in on the site to make and publish websites.",
 	"apps.miuWeb.description":
 		"A 3D world to play and learn maths and Vietnamese with friends.",
 	"apps.miuWeb.signIn":

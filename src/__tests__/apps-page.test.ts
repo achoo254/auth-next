@@ -158,6 +158,36 @@ describe("app list page", () => {
 		);
 	});
 
+	it("lists Web Nhanh as a work app with its mark once its client is configured", () => {
+		const webnhanh = "https://webnhanh.staging.example";
+		const withWebnhanh = {
+			...STAGING,
+			webApps: { ...STAGING.webApps, webnhanh },
+		};
+		const html = renderAppsPage(withWebnhanh, testPage("en", "/apps"));
+		expect(html).toContain('data-id="app-open-webnhanh-web"');
+		expect(html).toContain(`href="${webnhanh}"`);
+		expect(html).toContain("/assets/img/apps/webnhanh-mark-128.webp");
+		expect(html).toContain("publish it at its own address");
+		// A work app: drawn in the diagram and listed before the fun group.
+		expect(html).toContain(">Web Nhanh</text>");
+		expect(html).toContain(
+			"signs you in to Localman, Tunelo, Chat, and Web Nhanh.",
+		);
+		expect(html).not.toContain('data-id="apps-group-fun"');
+		const work = html.slice(html.indexOf('data-id="apps-group-work"'));
+		expect(work).toContain('data-id="app-webnhanh-web"');
+		expect(renderAppsPage(withWebnhanh, testPage("vi", "/apps"))).toContain(
+			"Làm website từ mẫu có sẵn",
+		);
+		expect(renderAppsPage(withWebnhanh, testPage("zh-CN", "/apps"))).toContain(
+			"用现成模板制作网站",
+		);
+		expect(renderAppsPage(STAGING, testPage("en", "/apps"))).not.toContain(
+			'data-id="app-webnhanh-web"',
+		);
+	});
+
 	it("ends every page with the brand's home link and the privacy policy", () => {
 		const html = renderAppsPage(STAGING, testPage("vi", "/apps"));
 		expect(html).toContain(

@@ -123,7 +123,8 @@ function chatMcp(tenant: AppDirectoryTenant, i18n: Translator): ListedApp {
 
 /**
  * Web apps listed only once their client is configured (their `webApps`
- * entry is set from the environment): Scribe, Miu World, Tiểu Đệ, Tử Vi, Clip.
+ * entry is set from the environment): Scribe, Web Nhanh, Miu World, Tiểu Đệ,
+ * Tử Vi, Clip.
  */
 const OPTIONAL_WEB_APPS = [
 	{
@@ -134,6 +135,15 @@ const OPTIONAL_WEB_APPS = [
 		icon: "scribe",
 		description: "apps.scribeWeb.description",
 		signIn: "apps.scribeWeb.signIn",
+	},
+	{
+		key: "webnhanh",
+		id: STATIC_CLIENT_IDS.webnhanhWeb,
+		name: "Web Nhanh",
+		tone: "green",
+		icon: "webnhanh",
+		description: "apps.webnhanhWeb.description",
+		signIn: "apps.webnhanhWeb.signIn",
 	},
 	{
 		key: "miu",
@@ -172,7 +182,7 @@ const OPTIONAL_WEB_APPS = [
 		signIn: "apps.clipWeb.signIn",
 	},
 ] as const satisfies readonly {
-	readonly key: "scribe" | "miu" | "tieude" | "tuvi" | "clip";
+	readonly key: "scribe" | "webnhanh" | "miu" | "tieude" | "tuvi" | "clip";
 	readonly id: string;
 	readonly name: string;
 	readonly tone: AppTone;

@@ -45,6 +45,10 @@ export const viApps: Translation<typeof enApps> = {
 	"apps.scribeWeb.description":
 		"Ghi âm và chuyển thành bản chép lời để tìm kiếm, chỉnh sửa.",
 	"apps.scribeWeb.signIn": "Chọn Đăng nhập trên trang.",
+	"apps.webnhanhWeb.description":
+		"Làm website từ mẫu có sẵn và đăng ngay ở địa chỉ riêng; lập trình viên gắn link git hoặc tải file zip lên.",
+	"apps.webnhanhWeb.signIn":
+		"Chọn Đăng nhập trên trang để làm và đăng website.",
 	"apps.miuWeb.description":
 		"Thế giới 3D vừa chơi vừa học Toán và Tiếng Việt, chơi cùng bạn bè.",
 	"apps.miuWeb.signIn":

@@ -11,7 +11,8 @@ export type AppIconName =
 	| "miu"
 	| "tieude"
 	| "tuvi"
-	| "clip";
+	| "clip"
+	| "webnhanh";
 
 /**
  * The AI-drawn app marks (rounded, transparent corners), served from
@@ -28,6 +29,7 @@ const ICON_FILES: Readonly<Record<AppIconName, string>> = {
 	tieude: "tieude-mark-128.webp",
 	tuvi: "tuvi-mark-128.webp",
 	clip: "clip-mark-128.webp",
+	webnhanh: "webnhanh-mark-128.webp",
 };
 
 /**
