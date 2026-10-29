@@ -14,6 +14,7 @@ import { codeTokens } from "./helpers/exchange-flows.js";
 import { discoverClient } from "./helpers/flows.js";
 import { signedInBrowser } from "./helpers/session-flows.js";
 import { createTestAccount, repositoryOf } from "./helpers/test-accounts.js";
+import type { TestAccount } from "./helpers/test-accounts.js";
 import type { TestBrowser } from "./helpers/test-browser.js";
 import {
 	CLIP_WEB_SECRET,
@@ -29,14 +30,19 @@ import {
 } from "./helpers/test-idp.js";
 import { OTHER_TEST_TENANT } from "./helpers/test-tenant.js";
 
+/** Tử Vi, Clip and Web Nhanh show the account in their header; Tiểu Đệ does not. */
+const PROFILE_SCOPE = "openid profile email";
+
 /**
- * Tiểu Đệ, Tử Vi, Clip and Web Nhanh sign visitors in only to learn they have an
- * account: `openid` alone, a confidential web client, no refresh token, no
- * API resource.
+ * Tiểu Đệ, Tử Vi, Clip and Web Nhanh sign visitors in to learn they have an
+ * account: a confidential web client, no refresh token, no API resource.
+ * Tiểu Đệ asks for `openid` alone; the others also for the name, picture
+ * and email of their account menu.
  */
 const APPS = [
 	{
 		app: "tieude",
+		scope: "openid",
 		name: "Tiểu Đệ",
 		clientId: STATIC_CLIENT_IDS.tieudeWeb,
 		url: TIEUDE_WEB_URL,
@@ -45,6 +51,7 @@ const APPS = [
 	},
 	{
 		app: "tuvi",
+		scope: PROFILE_SCOPE,
 		name: "Tử Vi",
 		clientId: STATIC_CLIENT_IDS.tuviWeb,
 		url: TUVI_WEB_URL,
@@ -53,6 +60,7 @@ const APPS = [
 	},
 	{
 		app: "clip",
+		scope: PROFILE_SCOPE,
 		name: "Clip",
 		clientId: STATIC_CLIENT_IDS.clipWeb,
 		url: CLIP_WEB_URL,
@@ -61,6 +69,7 @@ const APPS = [
 	},
 	{
 		app: "webnhanh",
+		scope: PROFILE_SCOPE,
 		name: "Web Nhanh",
 		clientId: STATIC_CLIENT_IDS.webnhanhWeb,
 		url: WEBNHANH_WEB_URL,
@@ -87,71 +96,130 @@ afterAll(async () => {
 	await idp?.close();
 });
 
-async function signedIn(): Promise<TestBrowser> {
+const PICTURE = "https://lh3.googleusercontent.com/a/test-picture";
+
+async function signedInAs(): Promise<{
+	browser: TestBrowser;
+	account: TestAccount;
+}> {
 	const account = await createTestAccount(repositoryOf(idp), {
 		emailVerifiedBy: "google",
+		name: "Nguyễn Văn A",
+		picture: PICTURE,
 	});
-	return signedInBrowser(idp, account);
+	return { browser: await signedInBrowser(idp, account), account };
 }
 
-describe.each(APPS)("$clientId", ({ app, name, clientId, url, secret }) => {
-	const callback = `${url}/auth/callback`;
-	const webClient = () =>
-		discoverClient(idp, clientId, client.ClientSecretBasic(secret));
+async function signedIn(): Promise<TestBrowser> {
+	return (await signedInAs()).browser;
+}
 
-	it("is a confidential Code + PKCE client for openid only, without refresh, resource or back-channel", async () => {
-		const metadata = (await idp.provider.Client.find(clientId))?.metadata();
-		expect(metadata).toMatchObject({
-			client_name: name,
-			token_endpoint_auth_method: "client_secret_basic",
-			grant_types: ["authorization_code"],
-			response_types: ["code"],
-			redirect_uris: [callback],
-			post_logout_redirect_uris: [`${url}/`],
-			scope: "openid",
-			allowed_resources: [],
+describe.each(APPS)(
+	"$clientId",
+	({ app, name, clientId, url, secret, scope }) => {
+		const callback = `${url}/auth/callback`;
+		const webClient = () =>
+			discoverClient(idp, clientId, client.ClientSecretBasic(secret));
+
+		it("is a confidential Code + PKCE client for its scope, without refresh, resource or back-channel", async () => {
+			const metadata = (await idp.provider.Client.find(clientId))?.metadata();
+			expect(metadata).toMatchObject({
+				client_name: name,
+				token_endpoint_auth_method: "client_secret_basic",
+				grant_types: ["authorization_code"],
+				response_types: ["code"],
+				redirect_uris: [callback],
+				post_logout_redirect_uris: [`${url}/`],
+				scope,
+				allowed_resources: [],
+			});
+			expect(metadata?.backchannel_logout_uri).toBeUndefined();
 		});
-		expect(metadata?.backchannel_logout_uri).toBeUndefined();
-	});
 
-	it("signs in without a consent page and returns only an ID token for the account", async () => {
-		const browser = await signedIn();
-		const tokens = await codeTokens(
-			await webClient(),
-			browser,
-			callback,
-			"openid",
-		);
-		expect(tokens.refresh_token).toBeUndefined();
-		const claims = decodeJwt(tokens.id_token ?? "");
-		expect(claims).toMatchObject({ iss: idp.issuer, aud: clientId });
-		expect(claims.sub).toEqual(expect.any(String));
-		expect(claims.email).toBeUndefined();
-	});
+		it("signs in without a consent page, with no refresh token and no scope claim in the ID token", async () => {
+			const browser = await signedIn();
+			const tokens = await codeTokens(
+				await webClient(),
+				browser,
+				callback,
+				scope,
+			);
+			expect(tokens.refresh_token).toBeUndefined();
+			const claims = decodeJwt(tokens.id_token ?? "");
+			expect(claims).toMatchObject({ iss: idp.issuer, aud: clientId });
+			expect(claims.sub).toEqual(expect.any(String));
+			// Scope claims stay out of the ID token (conformIdTokenClaims).
+			expect(claims.email).toBeUndefined();
+			expect(claims.name).toBeUndefined();
+		});
 
-	it("refuses a request for more than openid", async () => {
-		const browser = await signedIn();
-		await expect(
-			codeTokens(await webClient(), browser, callback, "openid email"),
-		).rejects.toMatchObject({ error: "invalid_scope" });
-	});
+		it("refuses a scope it does not have", async () => {
+			const browser = await signedIn();
+			const extra = scope === "openid" ? "openid email" : `${scope} telegram`;
+			await expect(
+				codeTokens(await webClient(), browser, callback, extra),
+			).rejects.toMatchObject({ error: "invalid_scope" });
+		});
 
-	it("needs its secret", async () => {
-		const browser = await signedIn();
-		const wrong = await discoverClient(
-			idp,
-			clientId,
-			client.ClientSecretBasic("w".repeat(43)),
-		);
-		await expect(
-			codeTokens(wrong, browser, callback, "openid"),
-		).rejects.toMatchObject({ status: 401 });
-	});
+		it("needs its secret", async () => {
+			const browser = await signedIn();
+			const wrong = await discoverClient(
+				idp,
+				clientId,
+				client.ClientSecretBasic("w".repeat(43)),
+			);
+			await expect(
+				codeTokens(wrong, browser, callback, "openid"),
+			).rejects.toMatchObject({ status: 401 });
+		});
 
-	it(`counts as the app ${app} in usage metrics`, () => {
-		expect(appOfClient(clientId)).toBe(app);
-	});
-});
+		it(`counts as the app ${app} in usage metrics`, () => {
+			expect(appOfClient(clientId)).toBe(app);
+		});
+	},
+);
+
+const PROFILE_APPS = APPS.filter((entry) => entry.scope === PROFILE_SCOPE);
+
+describe.each(PROFILE_APPS)(
+	"account menu of $clientId",
+	({ clientId, url, secret }) => {
+		const callback = `${url}/auth/callback`;
+		const webClient = () =>
+			discoverClient(idp, clientId, client.ClientSecretBasic(secret));
+
+		it("reads the name, picture and email from userinfo", async () => {
+			const { browser, account } = await signedInAs();
+			const config = await webClient();
+			const tokens = await codeTokens(config, browser, callback, PROFILE_SCOPE);
+			const sub = String(decodeJwt(tokens.id_token ?? "").sub);
+			const profile = await client.fetchUserInfo(
+				config,
+				tokens.access_token,
+				sub,
+			);
+			expect(profile).toMatchObject({
+				sub,
+				name: "Nguyễn Văn A",
+				picture: PICTURE,
+				email: account.email,
+				email_verified: true,
+			});
+		});
+
+		it("widens an earlier openid-only grant with no consent page", async () => {
+			const browser = await signedIn();
+			const config = await webClient();
+			await codeTokens(config, browser, callback, "openid");
+			const tokens = await codeTokens(config, browser, callback, PROFILE_SCOPE);
+			expect(tokens.scope?.split(" ").sort()).toEqual([
+				"email",
+				"openid",
+				"profile",
+			]);
+		});
+	},
+);
 
 describe.each(APPS)("configuration of $clientId", ({ app, url, env }) => {
 	const urlKey = `${env}_WEB_URL`;

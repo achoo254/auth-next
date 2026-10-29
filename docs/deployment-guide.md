@@ -101,7 +101,7 @@ Rollback: xoá dòng `MIU_WEB_CLIENT_SECRET` rồi reload; IdP không còn clien
 
 ## Client của Tiểu Đệ, Tử Vi, Clip và Web Nhanh
 
-Bốn app chỉ cần biết khách có tài khoản dùng chung một kiểu client (`src/oidc/sign-in-only-clients.ts`): confidential, `client_secret_basic`, scope chỉ `openid`, không refresh token, redirect `/auth/callback`.
+Bốn app đăng nhập để biết khách có tài khoản dùng chung một kiểu client (`src/oidc/sign-in-only-clients.ts`): confidential, `client_secret_basic`, không refresh token, redirect `/auth/callback`. Tiểu Đệ chỉ có scope `openid`; Tử Vi, Clip và Web Nhanh có `openid profile email` (tên, ảnh, email cho menu tài khoản trên header).
 
 | App | Repo, origin | Client | Biến (đặt **cả hai**, secret ≥ 32 ký tự) | Secret phía app |
 |---|---|---|---|---|

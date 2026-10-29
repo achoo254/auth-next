@@ -1226,7 +1226,7 @@ exports[`primary tenant (hoandat.com) is unchanged > serves the same static clie
     "response_types": [
       "code",
     ],
-    "scope": "openid",
+    "scope": "openid profile email",
     "subject_type": "public",
     "token_endpoint_auth_method": "client_secret_basic",
   },
@@ -1252,7 +1252,7 @@ exports[`primary tenant (hoandat.com) is unchanged > serves the same static clie
     "response_types": [
       "code",
     ],
-    "scope": "openid",
+    "scope": "openid profile email",
     "subject_type": "public",
     "token_endpoint_auth_method": "client_secret_basic",
   },
@@ -1278,7 +1278,7 @@ exports[`primary tenant (hoandat.com) is unchanged > serves the same static clie
     "response_types": [
       "code",
     ],
-    "scope": "openid",
+    "scope": "openid profile email",
     "subject_type": "public",
     "token_endpoint_auth_method": "client_secret_basic",
   },

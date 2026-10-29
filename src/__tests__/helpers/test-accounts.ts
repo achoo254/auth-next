@@ -52,6 +52,8 @@ export async function createTestAccount(
 		email?: string;
 		emailVerifiedBy?: UpstreamProvider | null;
 		providers?: AccountDocument["providers"];
+		name?: string;
+		picture?: string;
 	} = {},
 ): Promise<TestAccount> {
 	counter += 1;
@@ -65,6 +67,8 @@ export async function createTestAccount(
 		providers: overrides.providers ?? {
 			google: `g-${counter}-${randomUUID().slice(0, 8)}`,
 		},
+		name: overrides.name,
+		picture: overrides.picture,
 	});
 	return { ...account, email: account.email ?? email };
 }
