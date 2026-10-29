@@ -1,3 +1,4 @@
+import type { AccountDocument } from "../accounts/user-model.js";
 import type { MessageKey } from "../i18n/dictionaries.js";
 import {
 	csrfField,
@@ -8,6 +9,7 @@ import {
 import { html } from "../ui/html.js";
 import { renderPage } from "../ui/layout.js";
 import type { PageContext } from "../ui/page-context.js";
+import { portalAccountMenu } from "./portal-account-menu.js";
 
 /** Asks before deleting; the request comes back here (POST /account/delete). */
 export const ACCOUNT_DELETE_PATH = "/account/delete";
@@ -17,7 +19,7 @@ export const ACCOUNT_DELETED_PATH = "/account/deleted";
 interface DeleteConfirmView {
 	readonly page: PageContext;
 	readonly csrf: string;
-	readonly username: string;
+	readonly account: AccountDocument;
 }
 
 /**
@@ -26,7 +28,7 @@ interface DeleteConfirmView {
  */
 export function renderDeleteConfirm(view: DeleteConfirmView): string {
 	const { i18n } = view.page;
-	const handle = `@${view.username}`;
+	const handle = `@${view.account.username}`;
 	const effects: MessageKey[] = [
 		"confirm.delete.signOut",
 		"confirm.delete.providers",
@@ -49,7 +51,12 @@ ${inputField({
 ${submitButton(i18n.t("confirm.delete.button"), { block: true, variant: "danger", dataId: "account-delete-confirm" })}
 <a class="btn btn-minimal btn-block" href="/account" data-id="confirm-cancel">${i18n.t("common.cancel")}</a>
 </form>`;
-	return renderPage({ title, body, page: view.page });
+	return renderPage({
+		title,
+		body,
+		page: view.page,
+		accountMenu: portalAccountMenu(view.page, view.account, view.csrf),
+	});
 }
 
 /** Shown once the account is gone; nothing on it needs a session. */

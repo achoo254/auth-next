@@ -21,3 +21,8 @@ export type AccountIcon = keyof typeof SHAPES;
 export function accountIcon(name: AccountIcon): SafeHtml {
 	return html`<svg class="icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${SHAPES[name]}</svg>`;
 }
+
+/** The shape alone, for an icon drawn in another frame (the header's account menu). */
+export function accountIconShape(name: AccountIcon): SafeHtml {
+	return SHAPES[name];
+}

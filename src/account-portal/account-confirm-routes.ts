@@ -57,6 +57,7 @@ export function registerConfirmRoutes(
 				res,
 				renderRemoveAppConfirm({
 					page: pageContext(req),
+					account: portal.account,
 					csrf: csrfFor(req, res, portal),
 					action: appRevokePath(clientId),
 					app,
@@ -96,6 +97,7 @@ export function registerConfirmRoutes(
 				res,
 				renderRevokeOthersConfirm({
 					page: pageContext(req),
+					account: portal.account,
 					csrf: csrfFor(req, res, portal),
 					action: REVOKE_OTHER_SESSIONS_PATH,
 					others,

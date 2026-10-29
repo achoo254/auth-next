@@ -11,6 +11,7 @@ import {
 	asyncHandler,
 	sendInteractionError,
 } from "../interactions/interaction-helpers.js";
+import { OIDC_ROUTES } from "../oidc/provider.js";
 import type { AppServices } from "../services.js";
 import { pageContext } from "../ui/page-context.js";
 import { sendPage } from "../ui/send-page.js";
@@ -21,6 +22,7 @@ import { registerDeleteRoutes } from "./account-delete-routes.js";
 import { renderAccountPage } from "./account-page.js";
 import { listDeviceGrants } from "./device-grants.js";
 import { listAuthorizedApps, listGrants } from "./grant-directory.js";
+import { ACCOUNT_SIGN_OUT_PATH } from "./portal-account-menu.js";
 import {
 	type PortalHandler,
 	consumePortalReturn,
@@ -125,6 +127,14 @@ export function createAccountRouter(services: AppServices): Router {
 		write(async (req, res, { account }) => {
 			await updateProfileName(services, account, formText(req, "name", 100));
 			res.redirect(303, "/account?notice=profile");
+		}),
+	);
+
+	// The header menu's sign-out: on to the end-session page, which asks first.
+	router.post(
+		ACCOUNT_SIGN_OUT_PATH.replace(/^\/account/, ""),
+		write(async (_req, res) => {
+			res.redirect(303, OIDC_ROUTES.end_session);
 		}),
 	);
 

@@ -1,3 +1,4 @@
+import type { AccountDocument } from "../accounts/user-model.js";
 import {
 	externalAppBadge,
 	quotedClientName,
@@ -9,10 +10,12 @@ import { renderPage } from "../ui/layout.js";
 import type { PageContext } from "../ui/page-context.js";
 import { describeUserAgent } from "./account-sections.js";
 import type { AuthorizedApp } from "./grant-directory.js";
+import { portalAccountMenu } from "./portal-account-menu.js";
 import type { OpenSession } from "./session-directory.js";
 
 interface ConfirmView {
 	readonly page: PageContext;
+	readonly account: AccountDocument;
 	readonly csrf: string;
 	readonly title: string;
 	readonly lead: HtmlValue;
@@ -42,11 +45,13 @@ ${view.details}
 		title: view.title,
 		body,
 		page: view.page,
+		accountMenu: portalAccountMenu(view.page, view.account, view.csrf),
 	});
 }
 
 interface ConfirmBase {
 	readonly page: PageContext;
+	readonly account: AccountDocument;
 	readonly csrf: string;
 	readonly action: string;
 }

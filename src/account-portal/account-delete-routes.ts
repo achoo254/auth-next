@@ -36,7 +36,7 @@ export function registerDeleteRoutes(
 				renderDeleteConfirm({
 					page: pageContext(req),
 					csrf: services.csrf.token(req, res, portalCsrfScope(portal)),
-					username: portal.account.username,
+					account: portal.account,
 				}),
 			);
 		}),

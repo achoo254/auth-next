@@ -1,3 +1,4 @@
+import { createElement } from "react";
 import { describe, expect, it } from "vitest";
 import { shown, testPage } from "../__tests__/helpers/test-page.js";
 import { brand } from "../brand.js";
@@ -93,6 +94,16 @@ describe("renderPage frame", () => {
 			'<a class="shell-topbar-link" href="/account" data-id="nav-account">Account</a>',
 		);
 		expect(markup).not.toContain('data-id="public-sign-in"');
+	});
+
+	it("puts the signed-in account's menu in the account slot instead of the Account link", () => {
+		const markup = page({
+			accountMenu: createElement("span", { "data-id": "the-menu" }),
+		});
+		expect(markup).toContain(
+			'<div class="shell-topbar-end"><nav class="shell-topbar-nav" aria-label="Navigation"><a href="/apps" class="shell-topbar-link" data-id="nav-home" aria-current="page">Home</a></nav><span data-id="the-menu"></span></div>',
+		);
+		expect(markup).not.toContain('data-id="nav-account"');
 	});
 
 	it.each(["/account", "/account/delete", "/account?x=1"])(

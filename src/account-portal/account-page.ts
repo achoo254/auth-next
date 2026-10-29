@@ -21,6 +21,7 @@ import { devicesCard, sessionsCard } from "./account-sections.js";
 import type { DeviceGrant } from "./device-grants.js";
 import type { AuthorizedApp } from "./grant-directory.js";
 import { ACCOUNT_NOTICES } from "./notices.js";
+import { portalAccountMenu } from "./portal-account-menu.js";
 import type { OpenSession } from "./session-directory.js";
 
 export interface AccountView {
@@ -102,5 +103,6 @@ ${accountNav(view)}
 		page: view.page,
 		layout: "portal",
 		stylesheets: ["account.css"],
+		accountMenu: portalAccountMenu(view.page, view.account, view.csrf),
 	});
 }

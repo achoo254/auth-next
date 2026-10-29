@@ -27,8 +27,8 @@
 		"growth:report": "tsx --env-file-if-exists=.env scripts/growth-report.ts"
 	},
 	"dependencies": {
-		"@achoo254/app-shell": "github:achoo254/shared-next#v0.9.1&path:/packages/app-shell",
-		"@achoo254/brand": "github:achoo254/shared-next#v0.9.1&path:/packages/brand",
+		"@achoo254/app-shell": "github:achoo254/shared-next#v0.11.0&path:/packages/app-shell",
+		"@achoo254/brand": "github:achoo254/shared-next#v0.11.0&path:/packages/brand",
 		"@fontsource/inter": "^5.3.0",
 		"@fontsource/jetbrains-mono": "^5.3.0",
 		"express": "^5.2.1",

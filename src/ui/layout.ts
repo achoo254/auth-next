@@ -19,6 +19,11 @@ export interface PageOptions {
 	readonly layout?: "card" | "wide" | "portal";
 	/** Extra stylesheets of static/css by file name, after app.css (one page's own styles). */
 	readonly stylesheets?: readonly string[];
+	/**
+	 * The signed-in account's menu (the shell's AccountMenu), in place of
+	 * the Account link; only pages that know the session pass it.
+	 */
+	readonly accountMenu?: ReactElement;
 }
 
 const FONT_STYLESHEETS = [
@@ -86,9 +91,10 @@ function framedBody(options: PageOptions): ReactElement {
 
 /**
  * Header, frame and footer of the shared app shell (@achoo254/app-shell),
- * rendered on the server without client React: the Home link, Account in
- * the account slot, language links (each sets the cookie on the server and
- * comes back here) and the theme switch run by app-shell-enhance.js.
+ * rendered on the server without client React: the Home link, the account
+ * menu (or the Account link) in the account slot, language links (each
+ * sets the cookie on the server and comes back here) and the theme switch
+ * and account menu run by app-shell-enhance.js.
  */
 function shellPage(options: PageOptions): string {
 	const { page } = options;
@@ -113,16 +119,18 @@ function shellPage(options: PageOptions): string {
 					current: isCurrent(page, HOME_PATH),
 				},
 			],
-			accountSlot: createElement(
-				"a",
-				{
-					className: "shell-topbar-link",
-					href: ACCOUNT_PATH,
-					"data-id": "nav-account",
-					"aria-current": isCurrent(page, ACCOUNT_PATH) ? "page" : undefined,
-				},
-				i18n.t("layout.brand"),
-			),
+			accountSlot:
+				options.accountMenu ??
+				createElement(
+					"a",
+					{
+						className: "shell-topbar-link",
+						href: ACCOUNT_PATH,
+						"data-id": "nav-account",
+						"aria-current": isCurrent(page, ACCOUNT_PATH) ? "page" : undefined,
+					},
+					i18n.t("layout.brand"),
+				),
 			privacyHref: PRIVACY_PATH,
 			termsHref: null,
 			layout: options.layout === "portal" ? "flow" : "center",

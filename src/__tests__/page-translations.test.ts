@@ -112,16 +112,15 @@ function pages(locale: Locale): Record<string, string> {
 		account: renderAccountPage(view),
 		confirmApp: renderRemoveAppConfirm({
 			...base,
+			account: view.account,
 			action: "/account/apps/mcp-1/revoke",
 			app,
 		}),
-		confirmDelete: renderDeleteConfirm({
-			...base,
-			username: "minh_anh",
-		}),
+		confirmDelete: renderDeleteConfirm({ ...base, account: view.account }),
 		deleted: renderAccountDeleted(page),
 		confirmSessions: renderRevokeOthersConfirm({
 			...base,
+			account: view.account,
 			action: "/account/sessions/revoke-others",
 			others: view.sessions.slice(1),
 		}),
