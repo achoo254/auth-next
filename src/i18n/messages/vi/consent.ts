@@ -44,7 +44,7 @@ export const viConsent: Translation<typeof enConsent> = {
 	"scope.chatRead":
 		"Xem danh sách cuộc trò chuyện, đọc và tìm tin nhắn trong các cuộc trò chuyện của bạn trên Chat, cùng thông tin người dùng và thành viên",
 	"scope.chatWrite":
-		"Gửi, sửa, xoá tin nhắn, đánh dấu đã đọc và thả cảm xúc trên Chat với tư cách của bạn",
+		"Thao tác trên Chat với tư cách của bạn: gửi, sửa, xoá tin nhắn, thả cảm xúc và đánh dấu đã đọc; tạo nhóm, kênh và quản lý thành viên, link mời, chủ đề, quyền quản trị; tắt thông báo và ghim cuộc trò chuyện; quản lý danh bạ, người bị chặn và webhook đến",
 	"scope.botsRead":
 		"Xem bot của bạn trên Chat, cấu hình webhook và tình trạng giao tin (kể cả tin giao lỗi)",
 	"scope.botsWrite":

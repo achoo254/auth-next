@@ -75,7 +75,7 @@ Redirect URI: `${LOCALMAN_WEB_URL}/auth/callback`, `${TUNELO_WEB_URL}/auth/callb
 | `tunnels:open` | Tunelo | | Mở tunnel mới bằng tài khoản của bạn |
 | `tunnels:read` | Tunelo | | Xem danh sách tunnel của bạn |
 | `chat:read` | MCP của Chat | có | Xem danh sách cuộc trò chuyện, đọc và tìm tin nhắn trong các cuộc trò chuyện của bạn trên Chat, cùng thông tin người dùng và thành viên |
-| `chat:write` | MCP của Chat | có | Gửi, sửa, xoá tin nhắn, đánh dấu đã đọc và thả cảm xúc trên Chat với tư cách của bạn |
+| `chat:write` | MCP của Chat | có | Thao tác trên Chat với tư cách của bạn: gửi, sửa, xoá tin nhắn, thả cảm xúc và đánh dấu đã đọc; tạo nhóm, kênh và quản lý thành viên, link mời, chủ đề, quyền quản trị; tắt thông báo và ghim cuộc trò chuyện; quản lý danh bạ, người bị chặn và webhook đến |
 | `bots:read` | MCP của Chat | có | Xem bot của bạn trên Chat, cấu hình webhook và tình trạng giao tin (kể cả tin giao lỗi) |
 | `bots:write` | MCP của Chat | có | Tạo bot, sửa thông tin và lệnh của bot, gửi lại hoặc bỏ các tin giao lỗi trên Chat |
 | `bots:admin` | MCP của Chat | **không** | Đặt hoặc gỡ webhook, cấp lại token và xoá bot của bạn trên Chat; kèm cảnh báo đỏ "Cho phép chuyển mọi tin gửi tới bot sang địa chỉ khác (webhook), cấp lại token và xoá bot. Chỉ cấp cho ứng dụng bạn tin tưởng." |

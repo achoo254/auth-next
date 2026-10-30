@@ -41,7 +41,7 @@ export const enConsent = {
 	"scope.chatRead":
 		"See your conversations on Chat, read and search their messages, and see users and members",
 	"scope.chatWrite":
-		"Send, edit and delete messages, mark them as read and add reactions on Chat as you",
+		"Act on Chat as you: send, edit and delete messages, react and mark as read; create groups and channels, manage their members, invite links, topics and admins; mute and pin chats; manage contacts and blocked users; and manage incoming webhooks",
 	"scope.botsRead":
 		"See your bots on Chat, their webhook settings and delivery status (including failed deliveries)",
 	"scope.botsWrite":

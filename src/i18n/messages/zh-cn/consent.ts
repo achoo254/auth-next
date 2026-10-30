@@ -41,7 +41,7 @@ export const zhConsent: Translation<typeof enConsent> = {
 	"scope.chatRead":
 		"查看你在 Chat 上的会话列表，阅读和搜索其中的消息，以及用户和成员信息",
 	"scope.chatWrite":
-		"以你的身份在 Chat 上发送、编辑、删除消息，标记已读并添加表情回应",
+		"以你的身份在 Chat 上操作：发送、编辑、删除消息，添加表情回应并标记已读；创建群组和频道，管理其成员、邀请链接、话题和管理员权限；将会话设为免打扰和置顶；管理联系人、已屏蔽的用户和传入 webhook",
 	"scope.botsRead":
 		"查看你在 Chat 上的机器人、其 webhook 配置和消息投递状态（包括投递失败的消息）",
 	"scope.botsWrite":
