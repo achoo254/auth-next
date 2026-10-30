@@ -47,6 +47,14 @@ export const CHAT_MCP_SCOPES = [
 ] as const;
 
 /**
+ * Scopes the Scribe MCP endpoint accepts: read only. An AI tool can read
+ * recordings, transcripts, summaries, translations and usage, search them
+ * and ask questions about them, but cannot upload, transcribe, edit, share
+ * or delete anything.
+ */
+export const SCRIBE_MCP_SCOPES = ["scribe:read"] as const;
+
+/**
  * The linked Telegram chat, at userinfo only; just `localman-web` may ask
  * (its own bot sends the user's notifications there).
  */
@@ -70,6 +78,7 @@ export const SUPPORTED_SCOPES = [
 	...LOCALMAN_MCP_SCOPES,
 	...TUNNEL_SCOPES,
 	...CHAT_MCP_SCOPES,
+	...SCRIBE_MCP_SCOPES,
 ];
 
 const ACCESS_TOKEN_TTL_SECONDS = 15 * 60;
@@ -110,6 +119,7 @@ export function createResourcePolicy(
 		[resources.localmanMcp, LOCALMAN_MCP_SCOPES],
 		[resources.tunnel, TUNNEL_SCOPES],
 		[resources.chatMcp, CHAT_MCP_SCOPES],
+		[resources.scribeMcp, SCRIBE_MCP_SCOPES],
 	]);
 	const isResourceIndicator = (value: unknown): value is string =>
 		typeof value === "string" && scopesByResource.has(value);
@@ -150,7 +160,7 @@ export function createResourcePolicy(
 		 * When a request names no resource but asks for scopes of exactly
 		 * one of the client's allowed resources, that resource is implied;
 		 * so a Tunelo or MCP token is always audience-bound (a DCR client
-		 * holding both MCP resources is routed by the scopes it asks for).
+		 * holding several MCP resources is routed by the scopes it asks for).
 		 * A plain OpenID request (`openid profile email`) gets no resource
 		 * and therefore an opaque access token for /me; a request whose
 		 * scopes span several resources gets none either, so it never gets

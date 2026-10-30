@@ -42,6 +42,10 @@ export const zhApps: Translation<typeof enApps> = {
 	"apps.chatWeb.signIn": "在网站上选择登录。",
 	"apps.scribeWeb.description": "录音并转写为可搜索、可编辑的文字稿。",
 	"apps.scribeWeb.signIn": "在网站上选择登录。",
+	"apps.scribeMcp.description":
+		"让 Claude Code 等 AI 工具读取、搜索你在 Scribe 上的录音和文字稿，并就其提问。",
+	"apps.scribeMcp.signIn":
+		"在 AI 工具中把 {address} 添加为 MCP 服务器，然后在授权页面批准它可以执行的操作。",
 	"apps.webnhanhWeb.description":
 		"用现成模板制作网站，并发布到专属地址；开发者可通过 git 链接或上传 zip 部署。",
 	"apps.webnhanhWeb.signIn": "在网站上选择登录，即可制作并发布网站。",

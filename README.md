@@ -36,7 +36,7 @@ Hợp đồng đầy đủ ở [`docs/integration-guide.md`](docs/integration-gu
 - **Phiên trượt 30 ngày, trần 90 ngày** từ lúc đăng nhập; một số client thiết bị không có trần. Client nào có trần do `hasHardCap` trong [`src/oidc/sliding-grants.ts`](src/oidc/sliding-grants.ts) quyết định (mục 8).
 - **Refresh token của client web gắn với phiên IdP**: đăng xuất ở IdP thì lần refresh sau nhận `invalid_grant`, kể cả khi back-channel logout không tới (mục 5, 8).
 - **Xác minh access token offline** bằng JWKS đã cache, kiểm `iss`, `aud` của chính mình, `alg` và `typ`; mẫu tham chiếu: [`src/__tests__/helpers/verify-access-token.ts`](src/__tests__/helpers/verify-access-token.ts) (mục 3).
-- **Token exchange** chỉ dành cho `localman-web` (mục 6). **Client MCP** đăng ký động qua `/reg` (mục 9). App iOS "Tài khoản" dùng `/api/account` (mục 13).
+- **Token exchange** chỉ dành cho `localman-web` (mục 6). **Client MCP** đăng ký động qua `/reg` và dùng chung cho ba endpoint MCP: Localman, Chat và Scribe (chỉ đọc, `scribe:read`) (mục 9). App iOS "Tài khoản" dùng `/api/account` (mục 13).
 - Revocation và introspection: client chỉ thao tác trên token của chính nó, trừ các client tin cậy khai ở [`src/oidc/clients.ts`](src/oidc/clients.ts).
 
 Thêm app mới: khai client tĩnh ở [`src/oidc/clients.ts`](src/oidc/clients.ts) (hoặc file client riêng của app trong `src/oidc/`), cập nhật trang `/apps` ([`src/app-directory/`](src/app-directory/)) và mục 2 của integration guide; [`scripts/seed-clients.ts`](scripts/seed-clients.ts) kiểm client với env hiện tại.

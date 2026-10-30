@@ -48,6 +48,8 @@ export const enConsent = {
 		"Create bots, edit their details and commands, retry or discard failed deliveries on Chat",
 	"scope.botsAdmin":
 		"Set or remove webhooks, issue new tokens and delete your bots on Chat",
+	"scope.scribeRead":
+		"Read your Scribe recordings and files: their transcripts, summaries, translations, speakers and bookmarks, search them and ask questions about them (read only)",
 	"scope.unknown": "Permission “{scope}”",
 	"device.input.title": "Device sign-in",
 	"device.input.subtitle":

@@ -33,8 +33,8 @@ function code(value: string): SafeHtml {
 
 /**
  * The first-party apps of src/oidc/clients.ts, plus the MCP clients that
- * register themselves for the MCP resources of Localman and Chat, and the
- * web apps of OPTIONAL_WEB_APPS once configured.
+ * register themselves for the MCP resources of Localman and Chat, the web
+ * apps of OPTIONAL_WEB_APPS once configured, and Scribe MCP once Scribe is.
  */
 export function listedApps(
 	tenant: AppDirectoryTenant,
@@ -91,6 +91,7 @@ export function listedApps(
 			const href = tenant.webApps[app.key];
 			return href ? [optionalWebApp(app, href, i18n)] : [];
 		}),
+		...(tenant.webApps.scribe ? [scribeMcp(tenant, i18n)] : []),
 	];
 }
 
@@ -117,6 +118,20 @@ function chatMcp(tenant: AppDirectoryTenant, i18n: Translator): ListedApp {
 		description: "apps.chatMcp.description",
 		signIn: i18n.rich("apps.chatMcp.signIn", {
 			address: code(resourcesFor(tenant.domain).chatMcp),
+		}),
+	};
+}
+
+function scribeMcp(tenant: AppDirectoryTenant, i18n: Translator): ListedApp {
+	return {
+		id: "scribe-mcp",
+		name: "Scribe MCP",
+		tone: "red",
+		icon: "mcp",
+		kind: "apps.kind.mcp",
+		description: "apps.scribeMcp.description",
+		signIn: i18n.rich("apps.scribeMcp.signIn", {
+			address: code(resourcesFor(tenant.domain).scribeMcp),
 		}),
 	};
 }

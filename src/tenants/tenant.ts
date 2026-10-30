@@ -37,6 +37,7 @@ export interface TenantAppHosts {
 	readonly auth: string;
 	readonly chat: string;
 	readonly localman: string;
+	readonly scribe: string;
 	readonly tunnel: string;
 }
 
@@ -45,6 +46,7 @@ export function appHostsFor(domain: string): TenantAppHosts {
 		auth: `auth.${domain}`,
 		chat: `chat.${domain}`,
 		localman: `localman.${domain}`,
+		scribe: `scribe.${domain}`,
 		tunnel: `tunnel.${domain}`,
 	};
 }

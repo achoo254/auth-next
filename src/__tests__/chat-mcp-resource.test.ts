@@ -3,19 +3,19 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { collectionNameFor } from "../oidc/mongo-adapter.js";
 import { BOTS_ADMIN_SCOPE, CHAT_MCP_SCOPES } from "../oidc/resources.js";
 import { authorizationRedirect, discoverClient } from "./helpers/flows.js";
-import { signedInBrowser } from "./helpers/session-flows.js";
 import {
-	createTestAccount,
-	repositoryOf,
-	submitForm,
-} from "./helpers/test-accounts.js";
-import { type TestBrowser, formField } from "./helpers/test-browser.js";
+	type ConsentResult,
+	MCP_REDIRECT,
+	accessTokenScopes,
+	consentAndRedeem as consentAndRedeemIn,
+	registerMcpClient,
+} from "./helpers/mcp-consent-flows.js";
+import { signedInBrowser } from "./helpers/session-flows.js";
+import { createTestAccount, repositoryOf } from "./helpers/test-accounts.js";
+import type { TestBrowser } from "./helpers/test-browser.js";
 import { type TestIdp, startTestIdp } from "./helpers/test-idp.js";
 import { shown } from "./helpers/test-page.js";
 import { RESOURCES } from "./helpers/test-tenant.js";
-import { createAccessTokenVerifier } from "./helpers/verify-access-token.js";
-
-const MCP_REDIRECT = "http://127.0.0.1:33422/callback";
 
 let idp: TestIdp;
 let browser: TestBrowser;
@@ -35,70 +35,19 @@ afterAll(async () => {
 function register(
 	metadata: Partial<client.ClientMetadata> = {},
 ): Promise<client.Configuration> {
-	return client.dynamicClientRegistration(
-		new URL(idp.issuer),
-		{
-			redirect_uris: [MCP_REDIRECT],
-			token_endpoint_auth_method: "none",
-			grant_types: ["authorization_code", "refresh_token"],
-			client_name: "Agent",
-			...metadata,
-		},
-		client.None(),
-		{ execute: [client.allowInsecureRequests] },
-	);
+	return registerMcpClient(idp, metadata);
 }
 
-interface ConsentResult {
-	readonly page: string;
-	readonly tokens: client.TokenEndpointResponse;
-}
-
-/** Opens the consent page, allows it and redeems the code. */
-async function consentAndRedeem(
+function consentAndRedeem(
 	config: client.Configuration,
 	scope: string,
 	resource?: string,
 ): Promise<ConsentResult> {
-	const verifier = client.randomPKCECodeVerifier();
-	const state = client.randomState();
-	const url = client.buildAuthorizationUrl(config, {
-		redirect_uri: MCP_REDIRECT,
-		scope,
-		...(resource ? { resource } : {}),
-		code_challenge: await client.calculatePKCECodeChallenge(verifier),
-		code_challenge_method: "S256",
-		state,
-	});
-	const { response } = await browser.navigate(url, {}, MCP_REDIRECT);
-	const page = await response.text();
-	const uid = /\/interaction\/([\w-]+)/.exec(response.url)?.[1];
-	if (!uid) throw new Error(`no consent page: ${response.status}`);
-	const back = await submitForm(
-		browser,
-		`${idp.issuer}/interaction/${uid}/consent`,
-		{ csrf: formField(page, "csrf") },
-		MCP_REDIRECT,
-	);
-	if (!back.location) throw new Error("did not return to the client");
-	const tokens = await client.authorizationCodeGrant(config, back.location, {
-		pkceCodeVerifier: verifier,
-		expectedState: state,
-	});
-	return { page, tokens };
+	return consentAndRedeemIn(idp, browser, config, scope, resource);
 }
 
-/** The sorted scopes of an access token, verified for `audience`. */
-async function scopesFor(
-	audience: string,
-	{ tokens }: ConsentResult,
-): Promise<string[]> {
-	const payload = await createAccessTokenVerifier({
-		issuer: idp.issuer,
-		audience,
-		jwksUri: `${idp.issuer}/jwks`,
-	})(tokens.access_token);
-	return String(payload.scope).split(" ").sort();
+function scopesFor(audience: string, result: ConsentResult): Promise<string[]> {
+	return accessTokenScopes(idp, audience, result);
 }
 
 describe("Chat MCP resource for DCR clients", () => {
@@ -175,13 +124,14 @@ describe("Chat MCP resource for DCR clients", () => {
 });
 
 describe("allowed_resources of DCR clients", () => {
-	it("accepts a subset of the MCP resources and widens it to both", async () => {
+	it("accepts a subset of the MCP resources and widens it to all of them", async () => {
 		const registered = await register({
 			allowed_resources: [RESOURCES.localmanMcp],
 		});
 		expect(registered.clientMetadata().allowed_resources).toEqual([
 			RESOURCES.localmanMcp,
 			RESOURCES.chatMcp,
+			RESOURCES.scribeMcp,
 		]);
 	});
 

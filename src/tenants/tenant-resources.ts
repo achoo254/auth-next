@@ -10,6 +10,7 @@ export interface TenantResources {
 	readonly localmanMcp: string;
 	readonly tunnel: string;
 	readonly chatMcp: string;
+	readonly scribeMcp: string;
 }
 
 export function resourcesFor(domain: string): TenantResources {
@@ -19,6 +20,7 @@ export function resourcesFor(domain: string): TenantResources {
 		localmanMcp: `https://${hosts.localman}/mcp`,
 		tunnel: `https://${hosts.tunnel}`,
 		chatMcp: `https://${hosts.chat}/mcp`,
+		scribeMcp: `https://${hosts.scribe}/mcp`,
 	};
 }
 

@@ -48,6 +48,8 @@ export const zhConsent: Translation<typeof enConsent> = {
 		"在 Chat 上创建机器人，编辑机器人的信息和命令，重新投递或丢弃投递失败的消息",
 	"scope.botsAdmin":
 		"在 Chat 上设置或移除 webhook、重新签发 token 并删除你的机器人",
+	"scope.scribeRead":
+		"读取你在 Scribe 上的录音和文件：文字稿、会议纪要、翻译、说话人和书签，并可搜索和就其提问（只读）",
 	"scope.unknown": "权限“{scope}”",
 	"device.input.title": "设备登录",
 	"device.input.subtitle":

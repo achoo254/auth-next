@@ -9,12 +9,14 @@ import {
 	LOCALMAN_MCP_SCOPES,
 	LOCALMAN_SCOPES,
 	type ResourcePolicy,
+	SCRIBE_MCP_SCOPES,
 } from "./resources.js";
 
 /** Scopes a dynamically registered (MCP) client may hold. */
 export const DCR_ALLOWED_SCOPES: readonly string[] = [
 	...LOCALMAN_MCP_SCOPES,
 	...CHAT_MCP_SCOPES,
+	...SCRIBE_MCP_SCOPES,
 ];
 
 /**
@@ -24,11 +26,12 @@ export const DCR_ALLOWED_SCOPES: readonly string[] = [
 export const DCR_DEFAULT_SCOPES: readonly string[] = [
 	...LOCALMAN_SCOPES,
 	...CHAT_MCP_SCOPES.filter((scope) => scope !== BOTS_ADMIN_SCOPE),
+	...SCRIBE_MCP_SCOPES,
 ];
 
-/** The MCP endpoints a DCR client may get tokens for: Localman's and Chat's. */
+/** The MCP endpoints a DCR client may get tokens for: Localman's, Chat's and Scribe's. */
 function mcpResourcesOf(resources: TenantResources): string[] {
-	return [resources.localmanMcp, resources.chatMcp];
+	return [resources.localmanMcp, resources.chatMcp, resources.scribeMcp];
 }
 
 const DCR_GRANT_TYPES = new Set(["authorization_code", "refresh_token"]);
@@ -119,9 +122,9 @@ function rejectOutside(
  * MCP clients: MCP scopes only, loopback or https redirects, the tenant's
  * MCP resources only. `allowed_resources` is assigned by the server: a
  * client may send it only as a non-empty subset of the MCP resources, and
- * it always ends up as all of them. Clients stored before Chat MCP existed
- * carry `[localmanMcp]` and are validated again when loaded, so they load
- * with both resources too.
+ * it always ends up as all of them. Clients stored before Chat or Scribe
+ * MCP existed carry fewer resources and are validated again when loaded, so
+ * they load with all of them too.
  */
 function enforceDynamicClientPolicy(
 	metadata: ClientMetadata,

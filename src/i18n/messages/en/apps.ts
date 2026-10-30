@@ -44,6 +44,10 @@ export const enApps = {
 	"apps.scribeWeb.description":
 		"Record audio and turn it into searchable, editable transcripts.",
 	"apps.scribeWeb.signIn": "Choose Sign in on the site.",
+	"apps.scribeMcp.description":
+		"Lets AI tools such as Claude Code read, search and ask about your recordings and transcripts on Scribe.",
+	"apps.scribeMcp.signIn":
+		"Add {address} to your AI tool as an MCP server, then approve what it may do on the consent page.",
 	"apps.webnhanhWeb.description":
 		"Make a website from a template and publish it at its own address; developers deploy from a git link or a zip.",
 	"apps.webnhanhWeb.signIn":

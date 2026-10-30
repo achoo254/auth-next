@@ -45,6 +45,10 @@ export const viApps: Translation<typeof enApps> = {
 	"apps.scribeWeb.description":
 		"Ghi âm và chuyển thành bản chép lời để tìm kiếm, chỉnh sửa.",
 	"apps.scribeWeb.signIn": "Chọn Đăng nhập trên trang.",
+	"apps.scribeMcp.description":
+		"Cho công cụ AI như Claude Code đọc, tìm và hỏi đáp trên bản ghi và bản chép lời của bạn trên Scribe.",
+	"apps.scribeMcp.signIn":
+		"Thêm {address} vào công cụ AI làm MCP server, rồi duyệt những gì nó được làm ở trang cấp quyền.",
 	"apps.webnhanhWeb.description":
 		"Làm website từ mẫu có sẵn và đăng ngay ở địa chỉ riêng; lập trình viên gắn link git hoặc tải file zip lên.",
 	"apps.webnhanhWeb.signIn":
