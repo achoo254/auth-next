@@ -36,7 +36,7 @@ const REJECTED: ReadonlyMap<string, MessageKey> = new Map([
 ]);
 
 /**
- * Google/GitHub inside an interaction, the only way to sign in or sign up:
+ * Google/GitHub/Apple inside an interaction, the only way to sign in or sign up:
  * start, then apply the linking rules to the profile the callback stored.
  */
 export function registerUpstreamInteractionRoutes(

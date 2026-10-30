@@ -9,7 +9,7 @@ export const viAccount: Translation<typeof enAccount> = {
 	"account.emailVerified": "đã xác minh qua {provider}",
 	"account.emailUnverified": "email chưa xác minh",
 	"account.emailReclaimed":
-		"Email {email} đã được gỡ khỏi tài khoản này lúc {date}, vì người sở hữu email đã xác minh nó qua Google/GitHub.",
+		"Email {email} đã được gỡ khỏi tài khoản này lúc {date}, vì người sở hữu email đã xác minh nó qua Google, GitHub hoặc Apple.",
 	"account.callbackFailed": "Chưa đăng nhập được vào trang tài khoản.",
 	"account.group.account": "Tài khoản",
 	"account.group.security": "Bảo mật",
@@ -29,8 +29,9 @@ export const viAccount: Translation<typeof enAccount> = {
 	"account.profile.save": "Lưu",
 	"account.signIn.title": "Cách đăng nhập",
 	"account.signIn.description":
-		"{brand} không dùng mật khẩu: bạn đăng nhập bằng Google hoặc GitHub. Liên kết cả hai để vẫn vào được tài khoản khi mất một cách.",
-	"account.signIn.empty": "Đăng nhập bằng Google và GitHub đang tạm tắt.",
+		"{brand} không dùng mật khẩu: bạn đăng nhập bằng Google, GitHub hoặc Apple. Liên kết từ hai cách trở lên để vẫn vào được tài khoản khi mất một cách.",
+	"account.signIn.empty":
+		"Đăng nhập bằng Google, GitHub và Apple đang tạm tắt.",
 	"account.signIn.notLinked": "Chưa liên kết",
 	"account.signIn.linked": "Đã liên kết ({identity})",
 	"account.signIn.linkedOff":

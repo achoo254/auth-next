@@ -46,7 +46,7 @@ export interface AccountDocument {
 	username: string;
 	/**
 	 * Normalised (trimmed, lowercase), unique when present. Absent after a
-	 * Google/GitHub user proved they own it and reclaimed it (see
+	 * Google/GitHub/Apple user proved they own it and reclaimed it (see
 	 * `reclaimedEmail`).
 	 */
 	email?: string;

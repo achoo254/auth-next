@@ -86,7 +86,7 @@ export async function finishUpstream(
 	await finishLogin(services, req, res, accountId, amr);
 }
 
-/** Loads the interaction and its pending Google/GitHub profile. */
+/** Loads the interaction and its pending Google/GitHub/Apple profile. */
 export async function loadPending(
 	services: AppServices,
 	req: Request,

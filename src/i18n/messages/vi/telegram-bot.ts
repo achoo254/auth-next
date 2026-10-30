@@ -21,5 +21,5 @@ export const viTelegramBot: Translation<typeof enTelegramBot> = {
 	"bot.notice.providerLinked":
 		"Tài khoản {brand} @{username} vừa được liên kết với {provider}. Nếu không phải bạn, hãy huỷ liên kết ở trang tài khoản.",
 	"bot.notice.emailReclaimed":
-		"Email {email} đã được gỡ khỏi tài khoản {brand} @{username} vì người sở hữu email đã xác minh nó qua {provider}. Bạn vẫn đăng nhập được bằng Google/GitHub đã liên kết với tài khoản đó.",
+		"Email {email} đã được gỡ khỏi tài khoản {brand} @{username} vì người sở hữu email đã xác minh nó qua {provider}. Bạn vẫn đăng nhập được bằng Google, GitHub hoặc Apple đã liên kết với tài khoản đó.",
 };

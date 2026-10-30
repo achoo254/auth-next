@@ -1,4 +1,4 @@
-/** Sign-in, sign-up, choosing a username, Google/GitHub errors, sign-out. */
+/** Sign-in, sign-up, choosing a username, Google/GitHub/Apple errors, sign-out. */
 export const enSignIn = {
 	"login.title": "Sign in",
 	"login.titleForApp": "Sign in to continue to {app}",
@@ -7,7 +7,7 @@ export const enSignIn = {
 	"login.continueTo": "To continue to {app}.",
 	"login.with": "Sign in with {provider}",
 	"login.noProvider":
-		"Sign-in with Google and GitHub is turned off for now, so you can't sign in or sign up. Try again later.",
+		"Sign-in with Google, GitHub and Apple is turned off for now, so you can't sign in or sign up. Try again later.",
 	"login.firstTime":
 		"Signing in with one of these for the first time creates a new {brand} account.",
 	"login.cancel": "Cancel sign-in",
@@ -21,7 +21,7 @@ export const enSignIn = {
 	"username.subtitle":
 		"Create your {brand} account with {provider} for {email} (verified).",
 	"username.reclaimWarning":
-		"This email belongs to another {brand} account that nobody has verified. If that account is yours and it is linked to another Google or GitHub account, {link} and link {provider} on your account page. If you continue, the email moves to the new account; the other account keeps its other ways to sign in.",
+		"This email belongs to another {brand} account that nobody has verified. If that account is yours and it is linked to another Google, GitHub or Apple account, {link} and link {provider} on your account page. If you continue, the email moves to the new account; the other account keeps its other ways to sign in.",
 	"username.existingAccount":
 		"Already have a {brand} account? Do not create a new one: {link} (the Google, GitHub or Apple account you used) and link {provider} on your account page. With Apple, hiding your email always gives a new address, so your existing account is not recognised.",
 	"username.reclaimLink": "sign in that way",

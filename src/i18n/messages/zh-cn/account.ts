@@ -9,7 +9,7 @@ export const zhAccount: Translation<typeof enAccount> = {
 	"account.emailVerified": "已通过 {provider} 验证",
 	"account.emailUnverified": "邮箱未验证",
 	"account.emailReclaimed":
-		"邮箱 {email} 已于 {date} 从此账号移除，因为该邮箱的所有者已通过 Google 或 GitHub 验证了它。",
+		"邮箱 {email} 已于 {date} 从此账号移除，因为该邮箱的所有者已通过 Google、GitHub 或 Apple 验证了它。",
 	"account.callbackFailed": "无法登录账号页面。",
 	"account.group.account": "账号",
 	"account.group.security": "安全",
@@ -27,8 +27,8 @@ export const zhAccount: Translation<typeof enAccount> = {
 	"account.profile.save": "保存",
 	"account.signIn.title": "登录方式",
 	"account.signIn.description":
-		"无需密码：使用 Google 或 GitHub 登录。两个都关联，丢失其中一个时仍能登录。",
-	"account.signIn.empty": "Google 和 GitHub 登录暂时关闭。",
+		"无需密码：使用 Google、GitHub 或 Apple 登录。关联两种以上方式，丢失其中一种时仍能登录。",
+	"account.signIn.empty": "Google、GitHub 和 Apple 登录暂时关闭。",
 	"account.signIn.notLinked": "未关联",
 	"account.signIn.linked": "已关联（{identity}）",
 	"account.signIn.linkedOff": "已关联（{identity}）· 此登录方式暂时关闭",

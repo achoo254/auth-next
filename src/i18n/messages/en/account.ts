@@ -7,7 +7,7 @@ export const enAccount = {
 	"account.emailVerified": "verified by {provider}",
 	"account.emailUnverified": "email not verified",
 	"account.emailReclaimed":
-		"The email {email} was removed from this account on {date}, because its owner verified it with Google or GitHub.",
+		"The email {email} was removed from this account on {date}, because its owner verified it with Google, GitHub or Apple.",
 	"account.callbackFailed": "Couldn't sign in to your account page.",
 	"account.group.account": "Account",
 	"account.group.security": "Security",
@@ -25,9 +25,9 @@ export const enAccount = {
 	"account.profile.save": "Save",
 	"account.signIn.title": "Sign-in methods",
 	"account.signIn.description":
-		"No password: you sign in with Google or GitHub. Link both to keep a way in if you lose one.",
+		"No password: you sign in with Google, GitHub or Apple. Link more than one to keep a way in if you lose one.",
 	"account.signIn.empty":
-		"Sign-in with Google and GitHub is turned off for now.",
+		"Sign-in with Google, GitHub and Apple is turned off for now.",
 	"account.signIn.notLinked": "Not linked",
 	"account.signIn.linked": "Linked ({identity})",
 	"account.signIn.linkedOff":

@@ -8,7 +8,7 @@ export interface AccountProfile {
 	readonly username: string;
 	readonly email?: string;
 	/**
-	 * True only when Google or GitHub vouched for the email; a typed-in email
+	 * True only when Google, GitHub or Apple vouched for the email; a typed-in email
 	 * is never treated as verified because the IdP sends no mail.
 	 */
 	readonly emailVerified: boolean;

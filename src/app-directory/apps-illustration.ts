@@ -6,8 +6,8 @@ import { appIcon } from "./app-marks.js";
 import type { ListedApp } from "./apps-catalog.js";
 
 /*
- * The hero diagram: Google and GitHub lead into one account of the tenant, which
- * fans out to every app. SVG in currentColor and token classes (apps.css),
+ * The hero diagram: Google, GitHub and Apple lead into one account of the
+ * tenant, which fans out to every app. SVG in currentColor and token classes (apps.css),
  * with each app's mark as an <image>; the moving dashes are CSS and stop
  * under reduced motion.
  */
@@ -36,8 +36,9 @@ const KEYS: readonly {
 	readonly label: string;
 	readonly cy: number;
 }[] = [
-	{ provider: "google", label: "Google", cy: 110 },
-	{ provider: "github", label: "GitHub", cy: 190 },
+	{ provider: "google", label: "Google", cy: 70 },
+	{ provider: "github", label: "GitHub", cy: 150 },
+	{ provider: "apple", label: "Apple", cy: 230 },
 ];
 
 /** A smooth horizontal link from (x1, y1) to (x2, y2). */

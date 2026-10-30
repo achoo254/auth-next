@@ -9,7 +9,7 @@ export const zhSignIn: Translation<typeof enSignIn> = {
 	"login.continueTo": "以继续使用 {app}。",
 	"login.with": "使用 {provider} 登录",
 	"login.noProvider":
-		"Google 和 GitHub 登录暂时关闭，因此目前无法登录或注册。请稍后重试。",
+		"Google、GitHub 和 Apple 登录暂时关闭，因此目前无法登录或注册。请稍后重试。",
 	"login.firstTime": "首次使用以上任一方式登录将创建新的 {brand} 账号。",
 	"login.cancel": "取消登录",
 	"signup.title": "创建 {brand} 账号",
@@ -22,7 +22,7 @@ export const zhSignIn: Translation<typeof enSignIn> = {
 	"username.subtitle":
 		"使用 {provider} 为 {email}（已验证）创建 {brand} 账号。",
 	"username.reclaimWarning":
-		"此邮箱属于另一个尚未验证邮箱的 {brand} 账号。如果那是你的账号，并且已关联另一个 Google 或 GitHub 账号，请{link}，然后在账号页面关联 {provider}。如果继续，该邮箱将转移到新账号；原账号保留其他登录方式。",
+		"此邮箱属于另一个尚未验证邮箱的 {brand} 账号。如果那是你的账号，并且已关联另一个 Google、GitHub 或 Apple 账号，请{link}，然后在账号页面关联 {provider}。如果继续，该邮箱将转移到新账号；原账号保留其他登录方式。",
 	"username.existingAccount":
 		"已有 {brand} 账号？请不要创建新账号：{link}（你用过的 Google、GitHub 或 Apple），然后在账号页面关联 {provider}。使用 Apple 时选择隐藏邮箱总会得到新地址，因此无法识别你的已有账号。",
 	"username.reclaimLink": "用那种方式登录",

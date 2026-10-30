@@ -3,14 +3,14 @@ export const enApps = {
 	"apps.eyebrow": "{brand} sign-in",
 	"apps.title": "One account for every {brand} app",
 	"apps.subtitle":
-		"Sign in once with Google or GitHub and use the same account in every app below.",
-	"apps.trust.providers": "Sign in with Google or GitHub",
+		"Sign in once with Google, GitHub or Apple and use the same account in every app below.",
+	"apps.trust.providers": "Sign in with Google, GitHub or Apple",
 	"apps.trust.noPassword": "No password to create or remember",
 	"apps.trust.control": "You choose which apps get access",
 	"apps.cta.account": "Manage your account",
 	"apps.cta.how": "How sign-in works",
 	"apps.diagram.label":
-		"Your {brand} account, reached with Google or GitHub, signs you in to {apps}.",
+		"Your {brand} account, reached with Google, GitHub or Apple, signs you in to {apps}.",
 	"apps.group.work.title": "Apps for work",
 	"apps.group.work.lead":
 		"Build, test and share faster: mock APIs, tunnels, chat and transcripts.",
@@ -69,7 +69,7 @@ export const enApps = {
 	"apps.steps.choose.title": "Pick an app",
 	"apps.steps.choose.body":
 		"Choose Sign in on its site, or run {command} in a terminal.",
-	"apps.steps.provider.title": "Continue with Google or GitHub",
+	"apps.steps.provider.title": "Continue with Google, GitHub or Apple",
 	"apps.steps.provider.body":
 		"The account you linked signs you in. The first time, you pick a username.",
 	"apps.steps.back.title": "You are back in the app",

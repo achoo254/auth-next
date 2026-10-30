@@ -22,5 +22,5 @@ export const enTelegramBot = {
 	"bot.notice.providerLinked":
 		"{brand} account @{username} was just linked to {provider}. If this wasn't you, unlink it on your account page.",
 	"bot.notice.emailReclaimed":
-		"Email {email} was removed from {brand} account @{username} because its owner verified it with {provider}. You can still sign in with the Google or GitHub account linked to that account.",
+		"Email {email} was removed from {brand} account @{username} because its owner verified it with {provider}. You can still sign in with the Google, GitHub or Apple account linked to that account.",
 };

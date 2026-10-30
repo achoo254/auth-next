@@ -5,14 +5,14 @@ export const zhApps: Translation<typeof enApps> = {
 	"apps.eyebrow": "{brand} 登录",
 	"apps.title": "一个账号，通用所有 {brand} 应用",
 	"apps.subtitle":
-		"用 Google 或 GitHub 登录一次，即可在下方所有应用中使用同一个账号。",
-	"apps.trust.providers": "使用 Google 或 GitHub 登录",
+		"用 Google、GitHub 或 Apple 登录一次，即可在下方所有应用中使用同一个账号。",
+	"apps.trust.providers": "使用 Google、GitHub 或 Apple 登录",
 	"apps.trust.noPassword": "无需创建或记住密码",
 	"apps.trust.control": "由你决定哪些应用可以访问",
 	"apps.cta.account": "管理你的账号",
 	"apps.cta.how": "登录如何进行",
 	"apps.diagram.label":
-		"通过 Google 或 GitHub 进入你的 {brand} 账号，即可登录 {apps}。",
+		"通过 Google、GitHub 或 Apple 进入你的 {brand} 账号，即可登录 {apps}。",
 	"apps.group.work.title": "工作应用",
 	"apps.group.work.lead":
 		"更快地构建、测试和分享：模拟 API、隧道、聊天和转写。",
@@ -63,7 +63,7 @@ export const zhApps: Translation<typeof enApps> = {
 	"apps.steps.title": "登录流程",
 	"apps.steps.choose.title": "选择一个应用",
 	"apps.steps.choose.body": "在它的网站上选择登录，或在终端运行 {command}。",
-	"apps.steps.provider.title": "使用 Google 或 GitHub 继续",
+	"apps.steps.provider.title": "使用 Google、GitHub 或 Apple 继续",
 	"apps.steps.provider.body":
 		"你关联的账号会为你登录。第一次登录时需选择用户名。",
 	"apps.steps.back.title": "回到应用",

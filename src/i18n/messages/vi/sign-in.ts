@@ -9,7 +9,7 @@ export const viSignIn: Translation<typeof enSignIn> = {
 	"login.continueTo": "Để tiếp tục tới {app}.",
 	"login.with": "Đăng nhập với {provider}",
 	"login.noProvider":
-		"Đăng nhập bằng Google và GitHub đang tạm tắt, nên chưa đăng nhập hay đăng ký được. Thử lại sau.",
+		"Đăng nhập bằng Google, GitHub và Apple đang tạm tắt, nên chưa đăng nhập hay đăng ký được. Thử lại sau.",
 	"login.firstTime":
 		"Lần đầu đăng nhập bằng một trong các cách trên sẽ tạo tài khoản {brand} mới.",
 	"login.cancel": "Huỷ đăng nhập",
@@ -23,7 +23,7 @@ export const viSignIn: Translation<typeof enSignIn> = {
 	"username.subtitle":
 		"Tạo tài khoản {brand} bằng {provider} cho {email} (đã xác minh).",
 	"username.reclaimWarning":
-		"Email này đang gắn với một tài khoản {brand} khác nhưng chưa ai xác minh. Nếu đó là tài khoản của bạn và nó đã liên kết Google hoặc GitHub khác, hãy {link} rồi liên kết {provider} ở trang tài khoản. Nếu tiếp tục, email chuyển sang tài khoản mới; tài khoản kia giữ các cách đăng nhập khác của nó.",
+		"Email này đang gắn với một tài khoản {brand} khác nhưng chưa ai xác minh. Nếu đó là tài khoản của bạn và nó đã liên kết Google, GitHub hoặc Apple khác, hãy {link} rồi liên kết {provider} ở trang tài khoản. Nếu tiếp tục, email chuyển sang tài khoản mới; tài khoản kia giữ các cách đăng nhập khác của nó.",
 	"username.existingAccount":
 		"Đã có tài khoản {brand}? Đừng tạo tài khoản mới: hãy {link} (Google, GitHub hoặc Apple bạn đã dùng) rồi liên kết {provider} ở trang tài khoản. Với Apple, chọn ẩn email sẽ luôn ra địa chỉ mới nên không tự nhận ra tài khoản cũ.",
 	"username.reclaimLink": "đăng nhập bằng cách đó",

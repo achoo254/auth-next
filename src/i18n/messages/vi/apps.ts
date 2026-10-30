@@ -5,14 +5,14 @@ export const viApps: Translation<typeof enApps> = {
 	"apps.eyebrow": "Đăng nhập {brand}",
 	"apps.title": "Một tài khoản cho mọi ứng dụng {brand}",
 	"apps.subtitle":
-		"Đăng nhập một lần bằng Google hoặc GitHub, rồi dùng cùng tài khoản đó trong mọi ứng dụng bên dưới.",
-	"apps.trust.providers": "Đăng nhập bằng Google hoặc GitHub",
+		"Đăng nhập một lần bằng Google, GitHub hoặc Apple, rồi dùng cùng tài khoản đó trong mọi ứng dụng bên dưới.",
+	"apps.trust.providers": "Đăng nhập bằng Google, GitHub hoặc Apple",
 	"apps.trust.noPassword": "Không phải tạo hay nhớ mật khẩu",
 	"apps.trust.control": "Bạn chọn ứng dụng nào được quyền truy cập",
 	"apps.cta.account": "Quản lý tài khoản",
 	"apps.cta.how": "Đăng nhập diễn ra thế nào",
 	"apps.diagram.label":
-		"Tài khoản {brand}, vào bằng Google hoặc GitHub, đăng nhập cho bạn vào {apps}.",
+		"Tài khoản {brand}, vào bằng Google, GitHub hoặc Apple, đăng nhập cho bạn vào {apps}.",
 	"apps.group.work.title": "Ứng dụng cho công việc",
 	"apps.group.work.lead":
 		"Làm, thử và chia sẻ nhanh hơn: mock API, tunnel, nhắn tin và chép lời.",
@@ -71,7 +71,7 @@ export const viApps: Translation<typeof enApps> = {
 	"apps.steps.choose.title": "Chọn một ứng dụng",
 	"apps.steps.choose.body":
 		"Chọn Đăng nhập trên trang của nó, hoặc chạy {command} trong terminal.",
-	"apps.steps.provider.title": "Tiếp tục với Google hoặc GitHub",
+	"apps.steps.provider.title": "Tiếp tục với Google, GitHub hoặc Apple",
 	"apps.steps.provider.body":
 		"Tài khoản bạn đã liên kết sẽ đăng nhập cho bạn. Lần đầu, bạn chọn một tên đăng nhập.",
 	"apps.steps.back.title": "Quay lại ứng dụng",

@@ -21,5 +21,5 @@ export const zhTelegramBot: Translation<typeof enTelegramBot> = {
 	"bot.notice.providerLinked":
 		"{brand} 账号 @{username} 刚刚关联了 {provider}。如果不是你本人操作，请在账号页面取消关联。",
 	"bot.notice.emailReclaimed":
-		"邮箱 {email} 已从 {brand} 账号 @{username} 中移除，因为该邮箱的所有者已通过 {provider} 验证了它。你仍可使用该账号已关联的 Google 或 GitHub 登录。",
+		"邮箱 {email} 已从 {brand} 账号 @{username} 中移除，因为该邮箱的所有者已通过 {provider} 验证了它。你仍可使用该账号已关联的 Google、GitHub 或 Apple 登录。",
 };

@@ -273,18 +273,18 @@
         }
       }
     },
-    "Data inside the other apps (projects, messages, notes) is not deleted by this. Domains you own keep following your Google or GitHub account.": {
+    "Data inside the other apps (projects, messages, notes) is not deleted by this. Domains you own keep following your Google, GitHub or Apple account.": {
       "localizations": {
         "vi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Dữ liệu trong các app khác (dự án, tin nhắn, ghi chú) không bị xoá theo. Domain bạn sở hữu vẫn theo tài khoản Google hoặc GitHub của bạn."
+            "value": "Dữ liệu trong các app khác (dự án, tin nhắn, ghi chú) không bị xoá theo. Domain bạn sở hữu vẫn theo tài khoản Google, GitHub hoặc Apple của bạn."
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "其他应用中的数据（项目、消息、笔记）不会因此删除。您拥有的域名仍归属于您的 Google 或 GitHub 账户。"
+            "value": "其他应用中的数据（项目、消息、笔记）不会因此删除。您拥有的域名仍归属于您的 Google、GitHub 或 Apple 账户。"
           }
         }
       }

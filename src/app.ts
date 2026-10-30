@@ -49,7 +49,7 @@ export interface TenantAppOptions {
 /**
  * The tenant's pages behind the dispatcher: security headers, static
  * assets, the server-rendered pages (the app list at /apps, interactions,
- * /account, Google/GitHub callbacks, Telegram webhook), then the tenant's
+ * /account, Google/GitHub/Apple callbacks, Telegram webhook), then the tenant's
  * provider for everything else.
  */
 export function createTenantApp(options: TenantAppOptions): Express {

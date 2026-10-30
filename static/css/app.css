@@ -389,7 +389,7 @@ button {
 	flex: 1 1 16rem;
 }
 
-/* Google/GitHub marks (single colour, currentColor) */
+/* Google/GitHub/Apple marks (single colour, currentColor) */
 .provider-logo {
 	flex: none;
 }

@@ -134,8 +134,8 @@ Trang IdP có English (mặc định), `zh-CN` và `vi`; discovery quảng bá `
 IdP hỗ trợ [OpenID Connect Prompt Create 1.0](https://openid.net/specs/openid-connect-prompt-create-1_0.html); discovery quảng bá `prompt_values_supported: ["none", "create", "login", "consent"]` (kiểm giá trị này trước khi hiện nút). Mọi client (tĩnh hoặc DCR) đều dùng được.
 
 - Gửi authorization request như bước 1 ở trên, thêm `prompt: "create"`. IdP mở thẳng trang **đăng ký** thay vì trang đăng nhập, kể cả khi user đã có phiên IdP (theo spec). Trang đăng ký chỉ có nút "Đăng ký với <provider>" của Google, GitHub và Apple khi bật (IdP không có mật khẩu, ADR 0004, 0008): danh tính chưa có tài khoản thì chọn username rồi tạo tài khoản mới; danh tính đã liên kết thì đăng nhập vào tài khoản đó. Xong thì IdP quay về `redirect_uri` với `code` như một lần đăng nhập bình thường; callback xử lý y hệt.
-- Trên trang đăng ký có "Đã có tài khoản? Đăng nhập" (giữ nguyên request, không quay về app); nút Google/GitHub dùng đúng luồng liên kết/tạo tài khoản của trang đăng nhập. Mọi luật cũ vẫn áp dụng: giới hạn tần suất, CSRF.
-- `prompt=create none` (hay `none` đi cùng bất kỳ giá trị nào) bị trả về `redirect_uri` với `error=invalid_request`. Không gửi `prompt` thì luồng không đổi (trang đăng nhập với nút Google/GitHub; lần đầu đăng nhập bằng một danh tính mới cũng tạo tài khoản).
+- Trên trang đăng ký có "Đã có tài khoản? Đăng nhập" (giữ nguyên request, không quay về app); nút Google/GitHub/Apple dùng đúng luồng liên kết/tạo tài khoản của trang đăng nhập. Mọi luật cũ vẫn áp dụng: giới hạn tần suất, CSRF.
+- `prompt=create none` (hay `none` đi cùng bất kỳ giá trị nào) bị trả về `redirect_uri` với `error=invalid_request`. Không gửi `prompt` thì luồng không đổi (trang đăng nhập với nút Google/GitHub/Apple; lần đầu đăng nhập bằng một danh tính mới cũng tạo tài khoản).
 
 ```ts
 const url = oidc.buildAuthorizationUrl(config, {

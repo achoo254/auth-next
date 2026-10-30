@@ -98,7 +98,7 @@ export interface SignupView {
 	readonly providers: readonly UpstreamProvider[];
 }
 
-/** `prompt=create`: the same Google/GitHub choice, worded as a sign-up. */
+/** `prompt=create`: the same Google/GitHub/Apple choice, worded as a sign-up. */
 export function renderSignup(view: SignupView): string {
 	const { i18n } = view.page;
 	const body = html`${pageTitle(i18n.t("signup.title"), i18n.t("signup.subtitle"))}

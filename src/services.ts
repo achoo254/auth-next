@@ -68,7 +68,7 @@ export interface AppServices {
 	readonly telegram?: TelegramBot;
 	/** The review-only password sign-in (ADR 0010): primary tenant, when on. */
 	readonly reviewLogin?: ReviewLoginConfig;
-	/** Per-IP budget for form POSTs and Google/GitHub sign-in starts. */
+	/** Per-IP budget for form POSTs and Google/GitHub/Apple sign-in starts. */
 	readonly formPostsPerMinute: number;
 	/** Verifies the tenant's own ID tokens (re-authentication on /api/account). */
 	readonly idTokenKeys: JWTVerifyGetKey;
@@ -89,7 +89,7 @@ export interface ServiceDependencies {
 	readonly accounts: AccountRepository;
 	/** Replaces the env-derived Telegram bot (tests). */
 	readonly telegram?: TelegramBot;
-	/** Replaces the env-derived Google/GitHub clients (tests). */
+	/** Replaces the env-derived Google/GitHub/Apple clients (tests). */
 	readonly upstreams?: Upstreams;
 	readonly formPostsPerMinute?: number;
 	/** The tenant's signing keys (only their public half is kept). */

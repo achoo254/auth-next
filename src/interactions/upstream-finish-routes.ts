@@ -18,7 +18,7 @@ import { renderChooseUsername } from "./upstream-pages.js";
 import { finishUpstream, loadPending } from "./upstream-pending.js";
 
 /**
- * Finishes a Google/GitHub sign-up: the username for the new account. When
+ * Finishes a Google/GitHub/Apple sign-up: the username for the new account. When
  * an account held this email unverified, the email moves to the new account
  * (its proven owner); the old account keeps its other sign-in methods.
  */

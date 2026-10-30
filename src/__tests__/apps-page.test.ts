@@ -39,7 +39,14 @@ describe("app list page", () => {
 		const html = renderAppsPage(STAGING, testPage("en", "/apps"));
 		const hub = html.slice(html.indexOf('data-id="apps-hub"'));
 		expect(hub).toContain(">auth.staging.example</text>");
-		for (const name of ["Google", "GitHub", "Localman", "Tunelo", "Chat"]) {
+		for (const name of [
+			"Google",
+			"GitHub",
+			"Apple",
+			"Localman",
+			"Tunelo",
+			"Chat",
+		]) {
 			expect(hub).toContain(`>${name}</text>`);
 		}
 		expect(hub).not.toContain(">Localman MCP</text>");

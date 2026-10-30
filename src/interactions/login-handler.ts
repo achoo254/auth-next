@@ -18,7 +18,7 @@ function pageStatus(services: AppServices): number | undefined {
 		: undefined;
 }
 
-/** The login page for `interaction`: Google/GitHub buttons and cancel. */
+/** The login page for `interaction`: Google/GitHub/Apple buttons and cancel. */
 export async function showLogin(
 	services: AppServices,
 	req: Request,
@@ -49,7 +49,7 @@ export async function showLogin(
 }
 
 /**
- * `prompt=create`: the sign-up page. It offers the same Google/GitHub
+ * `prompt=create`: the sign-up page. It offers the same Google/GitHub/Apple
  * sign-in: an identity no account knows yet goes on to choose a username.
  */
 export function showSignup(

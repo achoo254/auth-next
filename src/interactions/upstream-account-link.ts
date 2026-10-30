@@ -10,7 +10,7 @@ import type { AppServices } from "../services.js";
 import { sendInteractionError } from "./interaction-helpers.js";
 
 /**
- * Callback of "Link Google/GitHub" on /account: the same browser must
+ * Callback of "Link Google/GitHub/Apple" on /account: the same browser must
  * still be signed in as the account that started it, and the provider
  * account must not belong to someone else.
  */

@@ -11,7 +11,7 @@ export const viAccountActions: Translation<typeof enAccountActions> = {
 	"notice.linkedApple": "Đã liên kết Apple.",
 	"notice.unlinked": "Đã huỷ liên kết.",
 	"notice.lastMethod":
-		"Không huỷ được: đây là cách đăng nhập cuối cùng của tài khoản. Liên kết Google hoặc GitHub còn lại trước.",
+		"Không huỷ được: đây là cách đăng nhập cuối cùng của tài khoản. Liên kết thêm một cách khác (Google, GitHub hoặc Apple) trước.",
 	"notice.telegramUnlinked": "Đã huỷ liên kết Telegram.",
 	"notice.sessionRevoked": "Đã đăng xuất phiên.",
 	"notice.otherSessionsRevoked": "Đã đăng xuất mọi phiên khác.",

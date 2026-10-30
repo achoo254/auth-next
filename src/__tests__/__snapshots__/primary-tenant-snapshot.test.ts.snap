@@ -53,23 +53,27 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <div class="apps-hero-text">
 <p class="apps-eyebrow">hoandat.com sign-in</p>
 <h1 class="apps-title">One account for every hoandat.com app</h1>
-<p class="apps-lead">Sign in once with Google or GitHub and use the same account in every app below.</p>
-<ul class="apps-trust"><li><svg class="icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12l4 4 10-10"/></svg><span>Sign in with Google or GitHub</span></li><li><svg class="icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12l4 4 10-10"/></svg><span>No password to create or remember</span></li><li><svg class="icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12l4 4 10-10"/></svg><span>You choose which apps get access</span></li></ul>
+<p class="apps-lead">Sign in once with Google, GitHub or Apple and use the same account in every app below.</p>
+<ul class="apps-trust"><li><svg class="icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12l4 4 10-10"/></svg><span>Sign in with Google, GitHub or Apple</span></li><li><svg class="icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12l4 4 10-10"/></svg><span>No password to create or remember</span></li><li><svg class="icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12l4 4 10-10"/></svg><span>You choose which apps get access</span></li></ul>
 <div class="apps-actions">
 <a class="btn btn-primary" href="/account" data-id="apps-manage-account">Manage your account</a>
 <a class="btn btn-secondary" href="#how-sign-in-works" data-id="apps-how">How sign-in works</a>
 </div>
 </div>
-<div class="apps-hero-art"><svg class="hub" viewBox="0 0 544 300" role="img" aria-label="Your hoandat.com account, reached with Google or GitHub, signs you in to Localman, Tunelo, Chat, Scribe, and Web Nhanh." data-id="apps-hub">
-<path class="hub-line" d="M132 110 C156 110 156 150 180 150"/><path class="hub-flow tone-primary" d="M132 110 C156 110 156 150 180 150"/><path class="hub-line" d="M132 190 C156 190 156 150 180 150"/><path class="hub-flow tone-primary" d="M132 190 C156 190 156 150 180 150"/><path class="hub-line" d="M340 150 C366 150 366 30 392 30"/><path class="hub-flow tone-violet" d="M340 150 C366 150 366 30 392 30"/><path class="hub-line" d="M340 150 C366 150 366 90 392 90"/><path class="hub-flow tone-amber" d="M340 150 C366 150 366 90 392 90"/><path class="hub-line" d="M340 150 C366 150 366 150 392 150"/><path class="hub-flow tone-blue" d="M340 150 C366 150 366 150 392 150"/><path class="hub-line" d="M340 150 C366 150 366 210 392 210"/><path class="hub-flow tone-red" d="M340 150 C366 150 366 210 392 210"/><path class="hub-line" d="M340 150 C366 150 366 270 392 270"/><path class="hub-flow tone-green" d="M340 150 C366 150 366 270 392 270"/>
+<div class="apps-hero-art"><svg class="hub" viewBox="0 0 544 300" role="img" aria-label="Your hoandat.com account, reached with Google, GitHub or Apple, signs you in to Localman, Tunelo, Chat, Scribe, and Web Nhanh." data-id="apps-hub">
+<path class="hub-line" d="M132 70 C156 70 156 150 180 150"/><path class="hub-flow tone-primary" d="M132 70 C156 70 156 150 180 150"/><path class="hub-line" d="M132 150 C156 150 156 150 180 150"/><path class="hub-flow tone-primary" d="M132 150 C156 150 156 150 180 150"/><path class="hub-line" d="M132 230 C156 230 156 150 180 150"/><path class="hub-flow tone-primary" d="M132 230 C156 230 156 150 180 150"/><path class="hub-line" d="M340 150 C366 150 366 30 392 30"/><path class="hub-flow tone-violet" d="M340 150 C366 150 366 30 392 30"/><path class="hub-line" d="M340 150 C366 150 366 90 392 90"/><path class="hub-flow tone-amber" d="M340 150 C366 150 366 90 392 90"/><path class="hub-line" d="M340 150 C366 150 366 150 392 150"/><path class="hub-flow tone-blue" d="M340 150 C366 150 366 150 392 150"/><path class="hub-line" d="M340 150 C366 150 366 210 392 210"/><path class="hub-flow tone-red" d="M340 150 C366 150 366 210 392 210"/><path class="hub-line" d="M340 150 C366 150 366 270 392 270"/><path class="hub-flow tone-green" d="M340 150 C366 150 366 270 392 270"/>
 <g class="hub-node">
-<rect x="8" y="90" width="124" height="40" rx="10"/>
-<svg x="20" y="102" width="16" height="16" viewBox="0 0 24 24"><path class="hub-mark" d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"/></svg>
-<text class="hub-text" x="46" y="115">Google</text>
+<rect x="8" y="50" width="124" height="40" rx="10"/>
+<svg x="20" y="62" width="16" height="16" viewBox="0 0 24 24"><path class="hub-mark" d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"/></svg>
+<text class="hub-text" x="46" y="75">Google</text>
 </g><g class="hub-node">
-<rect x="8" y="170" width="124" height="40" rx="10"/>
-<svg x="20" y="182" width="16" height="16" viewBox="0 0 24 24"><path class="hub-mark" d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
-<text class="hub-text" x="46" y="195">GitHub</text>
+<rect x="8" y="130" width="124" height="40" rx="10"/>
+<svg x="20" y="142" width="16" height="16" viewBox="0 0 24 24"><path class="hub-mark" d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+<text class="hub-text" x="46" y="155">GitHub</text>
+</g><g class="hub-node">
+<rect x="8" y="210" width="124" height="40" rx="10"/>
+<svg x="20" y="222" width="16" height="16" viewBox="0 0 24 24"><path class="hub-mark" d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/></svg>
+<text class="hub-text" x="46" y="235">Apple</text>
 </g>
 <g class="hub-node hub-core">
 <rect x="180" y="110" width="160" height="80" rx="16"/>
@@ -189,7 +193,7 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 </section>
 <section class="apps-section" id="how-sign-in-works" aria-labelledby="apps-steps-title" data-id="apps-steps">
 <h2 class="apps-section-title" id="apps-steps-title">How sign-in works</h2>
-<ol class="apps-steps"><li class="apps-step"><span class="apps-step-number" aria-hidden="true">1</span><div><h3 class="apps-step-title">Pick an app</h3><p class="apps-step-body">Choose Sign in on its site, or run <code class="mono">tunelo login</code> in a terminal.</p></div></li><li class="apps-step"><span class="apps-step-number" aria-hidden="true">2</span><div><h3 class="apps-step-title">Continue with Google or GitHub</h3><p class="apps-step-body">The account you linked signs you in. The first time, you pick a username.</p></div></li><li class="apps-step"><span class="apps-step-number" aria-hidden="true">3</span><div><h3 class="apps-step-title">You are back in the app</h3><p class="apps-step-body">Apps from outside hoandat.com, such as AI tools, ask for your approval first.</p></div></li></ol>
+<ol class="apps-steps"><li class="apps-step"><span class="apps-step-number" aria-hidden="true">1</span><div><h3 class="apps-step-title">Pick an app</h3><p class="apps-step-body">Choose Sign in on its site, or run <code class="mono">tunelo login</code> in a terminal.</p></div></li><li class="apps-step"><span class="apps-step-number" aria-hidden="true">2</span><div><h3 class="apps-step-title">Continue with Google, GitHub or Apple</h3><p class="apps-step-body">The account you linked signs you in. The first time, you pick a username.</p></div></li><li class="apps-step"><span class="apps-step-number" aria-hidden="true">3</span><div><h3 class="apps-step-title">You are back in the app</h3><p class="apps-step-body">Apps from outside hoandat.com, such as AI tools, ask for your approval first.</p></div></li></ol>
 </section>
 <p class="apps-manage" data-id="apps-manage">To see or remove the apps that can access your account, open <a class="link" href="/account">Account</a>.</p></div></main><footer class="shell-foot shell-container" data-id="public-footer"><div class="shell-foot-switches"><nav class="shell-lang-switch" aria-label="Language" data-id="lang-switch"><a class="shell-lang-option" lang="en" data-id="lang-en" href="/lang?set=en&amp;return=%2Fapps" hrefLang="en" aria-current="true">English</a><a class="shell-lang-option" lang="zh-CN" data-id="lang-zh-CN" href="/lang?set=zh-CN&amp;return=%2Fapps" hrefLang="zh-CN">中文</a><a class="shell-lang-option" lang="vi" data-id="lang-vi" href="/lang?set=vi&amp;return=%2Fapps" hrefLang="vi">Tiếng Việt</a></nav><fieldset class="shell-theme-switch" data-id="theme-switch" data-domain="hoandat.com"><legend class="shell-sr-only">Theme</legend><button type="button" class="shell-theme-option" value="light" aria-label="Light" title="Light" aria-pressed="false" data-id="theme-light"><svg class="shell-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0"></path><path d="M3 12h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path></svg></button><button type="button" class="shell-theme-option" value="dark" aria-label="Dark" title="Dark" aria-pressed="false" data-id="theme-dark"><svg class="shell-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path></svg></button><button type="button" class="shell-theme-option" value="system" aria-label="System" title="System" aria-pressed="true" data-id="theme-system"><svg class="shell-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 5a1 1 0 0 1 1 -1h16a1 1 0 0 1 1 1v10a1 1 0 0 1 -1 1h-16a1 1 0 0 1 -1 -1v-10z"></path><path d="M7 20h10"></path><path d="M9 16v4"></path><path d="M15 16v4"></path></svg></button></fieldset></div><nav class="shell-foot-links" aria-label="Footer links"><a class="shell-foot-link" href="https://hoandat.com" data-id="foot-home">An app from hoandat.com</a><a href="/privacy" class="shell-foot-link" data-id="foot-privacy">Privacy</a></nav></footer></div>
 </body>
@@ -232,23 +236,27 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <div class="apps-hero-text">
 <p class="apps-eyebrow">Đăng nhập hoandat.com</p>
 <h1 class="apps-title">Một tài khoản cho mọi ứng dụng hoandat.com</h1>
-<p class="apps-lead">Đăng nhập một lần bằng Google hoặc GitHub, rồi dùng cùng tài khoản đó trong mọi ứng dụng bên dưới.</p>
-<ul class="apps-trust"><li><svg class="icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12l4 4 10-10"/></svg><span>Đăng nhập bằng Google hoặc GitHub</span></li><li><svg class="icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12l4 4 10-10"/></svg><span>Không phải tạo hay nhớ mật khẩu</span></li><li><svg class="icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12l4 4 10-10"/></svg><span>Bạn chọn ứng dụng nào được quyền truy cập</span></li></ul>
+<p class="apps-lead">Đăng nhập một lần bằng Google, GitHub hoặc Apple, rồi dùng cùng tài khoản đó trong mọi ứng dụng bên dưới.</p>
+<ul class="apps-trust"><li><svg class="icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12l4 4 10-10"/></svg><span>Đăng nhập bằng Google, GitHub hoặc Apple</span></li><li><svg class="icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12l4 4 10-10"/></svg><span>Không phải tạo hay nhớ mật khẩu</span></li><li><svg class="icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12l4 4 10-10"/></svg><span>Bạn chọn ứng dụng nào được quyền truy cập</span></li></ul>
 <div class="apps-actions">
 <a class="btn btn-primary" href="/account" data-id="apps-manage-account">Quản lý tài khoản</a>
 <a class="btn btn-secondary" href="#how-sign-in-works" data-id="apps-how">Đăng nhập diễn ra thế nào</a>
 </div>
 </div>
-<div class="apps-hero-art"><svg class="hub" viewBox="0 0 544 300" role="img" aria-label="Tài khoản hoandat.com, vào bằng Google hoặc GitHub, đăng nhập cho bạn vào Localman, Tunelo, Chat, Scribe và Web Nhanh." data-id="apps-hub">
-<path class="hub-line" d="M132 110 C156 110 156 150 180 150"/><path class="hub-flow tone-primary" d="M132 110 C156 110 156 150 180 150"/><path class="hub-line" d="M132 190 C156 190 156 150 180 150"/><path class="hub-flow tone-primary" d="M132 190 C156 190 156 150 180 150"/><path class="hub-line" d="M340 150 C366 150 366 30 392 30"/><path class="hub-flow tone-violet" d="M340 150 C366 150 366 30 392 30"/><path class="hub-line" d="M340 150 C366 150 366 90 392 90"/><path class="hub-flow tone-amber" d="M340 150 C366 150 366 90 392 90"/><path class="hub-line" d="M340 150 C366 150 366 150 392 150"/><path class="hub-flow tone-blue" d="M340 150 C366 150 366 150 392 150"/><path class="hub-line" d="M340 150 C366 150 366 210 392 210"/><path class="hub-flow tone-red" d="M340 150 C366 150 366 210 392 210"/><path class="hub-line" d="M340 150 C366 150 366 270 392 270"/><path class="hub-flow tone-green" d="M340 150 C366 150 366 270 392 270"/>
+<div class="apps-hero-art"><svg class="hub" viewBox="0 0 544 300" role="img" aria-label="Tài khoản hoandat.com, vào bằng Google, GitHub hoặc Apple, đăng nhập cho bạn vào Localman, Tunelo, Chat, Scribe và Web Nhanh." data-id="apps-hub">
+<path class="hub-line" d="M132 70 C156 70 156 150 180 150"/><path class="hub-flow tone-primary" d="M132 70 C156 70 156 150 180 150"/><path class="hub-line" d="M132 150 C156 150 156 150 180 150"/><path class="hub-flow tone-primary" d="M132 150 C156 150 156 150 180 150"/><path class="hub-line" d="M132 230 C156 230 156 150 180 150"/><path class="hub-flow tone-primary" d="M132 230 C156 230 156 150 180 150"/><path class="hub-line" d="M340 150 C366 150 366 30 392 30"/><path class="hub-flow tone-violet" d="M340 150 C366 150 366 30 392 30"/><path class="hub-line" d="M340 150 C366 150 366 90 392 90"/><path class="hub-flow tone-amber" d="M340 150 C366 150 366 90 392 90"/><path class="hub-line" d="M340 150 C366 150 366 150 392 150"/><path class="hub-flow tone-blue" d="M340 150 C366 150 366 150 392 150"/><path class="hub-line" d="M340 150 C366 150 366 210 392 210"/><path class="hub-flow tone-red" d="M340 150 C366 150 366 210 392 210"/><path class="hub-line" d="M340 150 C366 150 366 270 392 270"/><path class="hub-flow tone-green" d="M340 150 C366 150 366 270 392 270"/>
 <g class="hub-node">
-<rect x="8" y="90" width="124" height="40" rx="10"/>
-<svg x="20" y="102" width="16" height="16" viewBox="0 0 24 24"><path class="hub-mark" d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"/></svg>
-<text class="hub-text" x="46" y="115">Google</text>
+<rect x="8" y="50" width="124" height="40" rx="10"/>
+<svg x="20" y="62" width="16" height="16" viewBox="0 0 24 24"><path class="hub-mark" d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"/></svg>
+<text class="hub-text" x="46" y="75">Google</text>
 </g><g class="hub-node">
-<rect x="8" y="170" width="124" height="40" rx="10"/>
-<svg x="20" y="182" width="16" height="16" viewBox="0 0 24 24"><path class="hub-mark" d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
-<text class="hub-text" x="46" y="195">GitHub</text>
+<rect x="8" y="130" width="124" height="40" rx="10"/>
+<svg x="20" y="142" width="16" height="16" viewBox="0 0 24 24"><path class="hub-mark" d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+<text class="hub-text" x="46" y="155">GitHub</text>
+</g><g class="hub-node">
+<rect x="8" y="210" width="124" height="40" rx="10"/>
+<svg x="20" y="222" width="16" height="16" viewBox="0 0 24 24"><path class="hub-mark" d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/></svg>
+<text class="hub-text" x="46" y="235">Apple</text>
 </g>
 <g class="hub-node hub-core">
 <rect x="180" y="110" width="160" height="80" rx="16"/>
@@ -368,7 +376,7 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 </section>
 <section class="apps-section" id="how-sign-in-works" aria-labelledby="apps-steps-title" data-id="apps-steps">
 <h2 class="apps-section-title" id="apps-steps-title">Đăng nhập diễn ra thế nào</h2>
-<ol class="apps-steps"><li class="apps-step"><span class="apps-step-number" aria-hidden="true">1</span><div><h3 class="apps-step-title">Chọn một ứng dụng</h3><p class="apps-step-body">Chọn Đăng nhập trên trang của nó, hoặc chạy <code class="mono">tunelo login</code> trong terminal.</p></div></li><li class="apps-step"><span class="apps-step-number" aria-hidden="true">2</span><div><h3 class="apps-step-title">Tiếp tục với Google hoặc GitHub</h3><p class="apps-step-body">Tài khoản bạn đã liên kết sẽ đăng nhập cho bạn. Lần đầu, bạn chọn một tên đăng nhập.</p></div></li><li class="apps-step"><span class="apps-step-number" aria-hidden="true">3</span><div><h3 class="apps-step-title">Quay lại ứng dụng</h3><p class="apps-step-body">Ứng dụng bên ngoài hoandat.com, như công cụ AI, sẽ hỏi bạn đồng ý trước.</p></div></li></ol>
+<ol class="apps-steps"><li class="apps-step"><span class="apps-step-number" aria-hidden="true">1</span><div><h3 class="apps-step-title">Chọn một ứng dụng</h3><p class="apps-step-body">Chọn Đăng nhập trên trang của nó, hoặc chạy <code class="mono">tunelo login</code> trong terminal.</p></div></li><li class="apps-step"><span class="apps-step-number" aria-hidden="true">2</span><div><h3 class="apps-step-title">Tiếp tục với Google, GitHub hoặc Apple</h3><p class="apps-step-body">Tài khoản bạn đã liên kết sẽ đăng nhập cho bạn. Lần đầu, bạn chọn một tên đăng nhập.</p></div></li><li class="apps-step"><span class="apps-step-number" aria-hidden="true">3</span><div><h3 class="apps-step-title">Quay lại ứng dụng</h3><p class="apps-step-body">Ứng dụng bên ngoài hoandat.com, như công cụ AI, sẽ hỏi bạn đồng ý trước.</p></div></li></ol>
 </section>
 <p class="apps-manage" data-id="apps-manage">Để xem hoặc gỡ các ứng dụng đang có quyền vào tài khoản, mở trang <a class="link" href="/account">Tài khoản</a>.</p></div></main><footer class="shell-foot shell-container" data-id="public-footer"><div class="shell-foot-switches"><nav class="shell-lang-switch" aria-label="Ngôn ngữ" data-id="lang-switch"><a class="shell-lang-option" lang="en" data-id="lang-en" href="/lang?set=en&amp;return=%2Fapps" hrefLang="en">English</a><a class="shell-lang-option" lang="zh-CN" data-id="lang-zh-CN" href="/lang?set=zh-CN&amp;return=%2Fapps" hrefLang="zh-CN">中文</a><a class="shell-lang-option" lang="vi" data-id="lang-vi" href="/lang?set=vi&amp;return=%2Fapps" hrefLang="vi" aria-current="true">Tiếng Việt</a></nav><fieldset class="shell-theme-switch" data-id="theme-switch" data-domain="hoandat.com"><legend class="shell-sr-only">Giao diện</legend><button type="button" class="shell-theme-option" value="light" aria-label="Sáng" title="Sáng" aria-pressed="false" data-id="theme-light"><svg class="shell-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0"></path><path d="M3 12h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path></svg></button><button type="button" class="shell-theme-option" value="dark" aria-label="Tối" title="Tối" aria-pressed="false" data-id="theme-dark"><svg class="shell-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path></svg></button><button type="button" class="shell-theme-option" value="system" aria-label="Theo máy" title="Theo máy" aria-pressed="true" data-id="theme-system"><svg class="shell-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 5a1 1 0 0 1 1 -1h16a1 1 0 0 1 1 1v10a1 1 0 0 1 -1 1h-16a1 1 0 0 1 -1 -1v-10z"></path><path d="M7 20h10"></path><path d="M9 16v4"></path><path d="M15 16v4"></path></svg></button></fieldset></div><nav class="shell-foot-links" aria-label="Liên kết cuối trang"><a class="shell-foot-link" href="https://hoandat.com" data-id="foot-home">Một app của hoandat.com</a><a href="/privacy" class="shell-foot-link" data-id="foot-privacy">Quyền riêng tư</a></nav></footer></div>
 </body>
@@ -411,23 +419,27 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <div class="apps-hero-text">
 <p class="apps-eyebrow">hoandat.com 登录</p>
 <h1 class="apps-title">一个账号，通用所有 hoandat.com 应用</h1>
-<p class="apps-lead">用 Google 或 GitHub 登录一次，即可在下方所有应用中使用同一个账号。</p>
-<ul class="apps-trust"><li><svg class="icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12l4 4 10-10"/></svg><span>使用 Google 或 GitHub 登录</span></li><li><svg class="icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12l4 4 10-10"/></svg><span>无需创建或记住密码</span></li><li><svg class="icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12l4 4 10-10"/></svg><span>由你决定哪些应用可以访问</span></li></ul>
+<p class="apps-lead">用 Google、GitHub 或 Apple 登录一次，即可在下方所有应用中使用同一个账号。</p>
+<ul class="apps-trust"><li><svg class="icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12l4 4 10-10"/></svg><span>使用 Google、GitHub 或 Apple 登录</span></li><li><svg class="icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12l4 4 10-10"/></svg><span>无需创建或记住密码</span></li><li><svg class="icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12l4 4 10-10"/></svg><span>由你决定哪些应用可以访问</span></li></ul>
 <div class="apps-actions">
 <a class="btn btn-primary" href="/account" data-id="apps-manage-account">管理你的账号</a>
 <a class="btn btn-secondary" href="#how-sign-in-works" data-id="apps-how">登录如何进行</a>
 </div>
 </div>
-<div class="apps-hero-art"><svg class="hub" viewBox="0 0 544 300" role="img" aria-label="通过 Google 或 GitHub 进入你的 hoandat.com 账号，即可登录 Localman、Tunelo、Chat、Scribe和Web Nhanh。" data-id="apps-hub">
-<path class="hub-line" d="M132 110 C156 110 156 150 180 150"/><path class="hub-flow tone-primary" d="M132 110 C156 110 156 150 180 150"/><path class="hub-line" d="M132 190 C156 190 156 150 180 150"/><path class="hub-flow tone-primary" d="M132 190 C156 190 156 150 180 150"/><path class="hub-line" d="M340 150 C366 150 366 30 392 30"/><path class="hub-flow tone-violet" d="M340 150 C366 150 366 30 392 30"/><path class="hub-line" d="M340 150 C366 150 366 90 392 90"/><path class="hub-flow tone-amber" d="M340 150 C366 150 366 90 392 90"/><path class="hub-line" d="M340 150 C366 150 366 150 392 150"/><path class="hub-flow tone-blue" d="M340 150 C366 150 366 150 392 150"/><path class="hub-line" d="M340 150 C366 150 366 210 392 210"/><path class="hub-flow tone-red" d="M340 150 C366 150 366 210 392 210"/><path class="hub-line" d="M340 150 C366 150 366 270 392 270"/><path class="hub-flow tone-green" d="M340 150 C366 150 366 270 392 270"/>
+<div class="apps-hero-art"><svg class="hub" viewBox="0 0 544 300" role="img" aria-label="通过 Google、GitHub 或 Apple 进入你的 hoandat.com 账号，即可登录 Localman、Tunelo、Chat、Scribe和Web Nhanh。" data-id="apps-hub">
+<path class="hub-line" d="M132 70 C156 70 156 150 180 150"/><path class="hub-flow tone-primary" d="M132 70 C156 70 156 150 180 150"/><path class="hub-line" d="M132 150 C156 150 156 150 180 150"/><path class="hub-flow tone-primary" d="M132 150 C156 150 156 150 180 150"/><path class="hub-line" d="M132 230 C156 230 156 150 180 150"/><path class="hub-flow tone-primary" d="M132 230 C156 230 156 150 180 150"/><path class="hub-line" d="M340 150 C366 150 366 30 392 30"/><path class="hub-flow tone-violet" d="M340 150 C366 150 366 30 392 30"/><path class="hub-line" d="M340 150 C366 150 366 90 392 90"/><path class="hub-flow tone-amber" d="M340 150 C366 150 366 90 392 90"/><path class="hub-line" d="M340 150 C366 150 366 150 392 150"/><path class="hub-flow tone-blue" d="M340 150 C366 150 366 150 392 150"/><path class="hub-line" d="M340 150 C366 150 366 210 392 210"/><path class="hub-flow tone-red" d="M340 150 C366 150 366 210 392 210"/><path class="hub-line" d="M340 150 C366 150 366 270 392 270"/><path class="hub-flow tone-green" d="M340 150 C366 150 366 270 392 270"/>
 <g class="hub-node">
-<rect x="8" y="90" width="124" height="40" rx="10"/>
-<svg x="20" y="102" width="16" height="16" viewBox="0 0 24 24"><path class="hub-mark" d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"/></svg>
-<text class="hub-text" x="46" y="115">Google</text>
+<rect x="8" y="50" width="124" height="40" rx="10"/>
+<svg x="20" y="62" width="16" height="16" viewBox="0 0 24 24"><path class="hub-mark" d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"/></svg>
+<text class="hub-text" x="46" y="75">Google</text>
 </g><g class="hub-node">
-<rect x="8" y="170" width="124" height="40" rx="10"/>
-<svg x="20" y="182" width="16" height="16" viewBox="0 0 24 24"><path class="hub-mark" d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
-<text class="hub-text" x="46" y="195">GitHub</text>
+<rect x="8" y="130" width="124" height="40" rx="10"/>
+<svg x="20" y="142" width="16" height="16" viewBox="0 0 24 24"><path class="hub-mark" d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+<text class="hub-text" x="46" y="155">GitHub</text>
+</g><g class="hub-node">
+<rect x="8" y="210" width="124" height="40" rx="10"/>
+<svg x="20" y="222" width="16" height="16" viewBox="0 0 24 24"><path class="hub-mark" d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/></svg>
+<text class="hub-text" x="46" y="235">Apple</text>
 </g>
 <g class="hub-node hub-core">
 <rect x="180" y="110" width="160" height="80" rx="16"/>
@@ -547,7 +559,7 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 </section>
 <section class="apps-section" id="how-sign-in-works" aria-labelledby="apps-steps-title" data-id="apps-steps">
 <h2 class="apps-section-title" id="apps-steps-title">登录流程</h2>
-<ol class="apps-steps"><li class="apps-step"><span class="apps-step-number" aria-hidden="true">1</span><div><h3 class="apps-step-title">选择一个应用</h3><p class="apps-step-body">在它的网站上选择登录，或在终端运行 <code class="mono">tunelo login</code>。</p></div></li><li class="apps-step"><span class="apps-step-number" aria-hidden="true">2</span><div><h3 class="apps-step-title">使用 Google 或 GitHub 继续</h3><p class="apps-step-body">你关联的账号会为你登录。第一次登录时需选择用户名。</p></div></li><li class="apps-step"><span class="apps-step-number" aria-hidden="true">3</span><div><h3 class="apps-step-title">回到应用</h3><p class="apps-step-body">来自 hoandat.com 以外的应用（例如 AI 工具）会先请求你的同意。</p></div></li></ol>
+<ol class="apps-steps"><li class="apps-step"><span class="apps-step-number" aria-hidden="true">1</span><div><h3 class="apps-step-title">选择一个应用</h3><p class="apps-step-body">在它的网站上选择登录，或在终端运行 <code class="mono">tunelo login</code>。</p></div></li><li class="apps-step"><span class="apps-step-number" aria-hidden="true">2</span><div><h3 class="apps-step-title">使用 Google、GitHub 或 Apple 继续</h3><p class="apps-step-body">你关联的账号会为你登录。第一次登录时需选择用户名。</p></div></li><li class="apps-step"><span class="apps-step-number" aria-hidden="true">3</span><div><h3 class="apps-step-title">回到应用</h3><p class="apps-step-body">来自 hoandat.com 以外的应用（例如 AI 工具）会先请求你的同意。</p></div></li></ol>
 </section>
 <p class="apps-manage" data-id="apps-manage">如需查看或移除可以访问你账号的应用，请打开<a class="link" href="/account">账号</a>页面。</p></div></main><footer class="shell-foot shell-container" data-id="public-footer"><div class="shell-foot-switches"><nav class="shell-lang-switch" aria-label="语言" data-id="lang-switch"><a class="shell-lang-option" lang="en" data-id="lang-en" href="/lang?set=en&amp;return=%2Fapps" hrefLang="en">English</a><a class="shell-lang-option" lang="zh-CN" data-id="lang-zh-CN" href="/lang?set=zh-CN&amp;return=%2Fapps" hrefLang="zh-CN" aria-current="true">中文</a><a class="shell-lang-option" lang="vi" data-id="lang-vi" href="/lang?set=vi&amp;return=%2Fapps" hrefLang="vi">Tiếng Việt</a></nav><fieldset class="shell-theme-switch" data-id="theme-switch" data-domain="hoandat.com"><legend class="shell-sr-only">颜色模式</legend><button type="button" class="shell-theme-option" value="light" aria-label="浅色主题" title="浅色主题" aria-pressed="false" data-id="theme-light"><svg class="shell-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0"></path><path d="M3 12h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path></svg></button><button type="button" class="shell-theme-option" value="dark" aria-label="深色主题" title="深色主题" aria-pressed="false" data-id="theme-dark"><svg class="shell-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path></svg></button><button type="button" class="shell-theme-option" value="system" aria-label="跟随系统" title="跟随系统" aria-pressed="true" data-id="theme-system"><svg class="shell-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 5a1 1 0 0 1 1 -1h16a1 1 0 0 1 1 1v10a1 1 0 0 1 -1 1h-16a1 1 0 0 1 -1 -1v-10z"></path><path d="M7 20h10"></path><path d="M9 16v4"></path><path d="M15 16v4"></path></svg></button></fieldset></div><nav class="shell-foot-links" aria-label="页脚链接"><a class="shell-foot-link" href="https://hoandat.com" data-id="foot-home">hoandat.com 旗下应用</a><a href="/privacy" class="shell-foot-link" data-id="foot-privacy">隐私政策</a></nav></footer></div>
 </body>
@@ -1302,7 +1314,7 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in en 
   "account.devices.empty": "No machine has signed in with {command} yet.",
   "account.devices.signOut": "Sign out device",
   "account.devices.title": "Devices",
-  "account.emailReclaimed": "The email {email} was removed from this account on {date}, because its owner verified it with Google or GitHub.",
+  "account.emailReclaimed": "The email {email} was removed from this account on {date}, because its owner verified it with Google, GitHub or Apple.",
   "account.emailUnverified": "email not verified",
   "account.emailVerified": "verified by {provider}",
   "account.group.account": "Account",
@@ -1329,8 +1341,8 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in en 
   "account.sessions.title": "Open sessions",
   "account.sessions.unknownBrowser": "Unknown browser",
   "account.sessions.unknownSystem": "unknown system",
-  "account.signIn.description": "No password: you sign in with Google or GitHub. Link both to keep a way in if you lose one.",
-  "account.signIn.empty": "Sign-in with Google and GitHub is turned off for now.",
+  "account.signIn.description": "No password: you sign in with Google, GitHub or Apple. Link more than one to keep a way in if you lose one.",
+  "account.signIn.empty": "Sign-in with Google, GitHub and Apple is turned off for now.",
   "account.signIn.link": "Link {provider}",
   "account.signIn.linked": "Linked ({identity})",
   "account.signIn.linkedOff": "Linked ({identity}) · signing in this way is turned off for now",
@@ -1362,7 +1374,7 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in en 
   "apps.clipWeb.signIn": "Choose Sign in on the site to make videos.",
   "apps.cta.account": "Manage your account",
   "apps.cta.how": "How sign-in works",
-  "apps.diagram.label": "Your hoandat.com account, reached with Google or GitHub, signs you in to {apps}.",
+  "apps.diagram.label": "Your hoandat.com account, reached with Google, GitHub or Apple, signs you in to {apps}.",
   "apps.eyebrow": "hoandat.com sign-in",
   "apps.group.fun.lead": "Play, learn and have fun with the same account.",
   "apps.group.fun.title": "Apps for fun",
@@ -1389,15 +1401,15 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in en 
   "apps.steps.choose.body": "Choose Sign in on its site, or run {command} in a terminal.",
   "apps.steps.choose.title": "Pick an app",
   "apps.steps.provider.body": "The account you linked signs you in. The first time, you pick a username.",
-  "apps.steps.provider.title": "Continue with Google or GitHub",
+  "apps.steps.provider.title": "Continue with Google, GitHub or Apple",
   "apps.steps.title": "How sign-in works",
-  "apps.subtitle": "Sign in once with Google or GitHub and use the same account in every app below.",
+  "apps.subtitle": "Sign in once with Google, GitHub or Apple and use the same account in every app below.",
   "apps.tieudeWeb.description": "An AI bot that does small writing jobs for free and lives on voluntary tips.",
   "apps.tieudeWeb.signIn": "Choose Sign in on the site to get more free uses.",
   "apps.title": "One account for every hoandat.com app",
   "apps.trust.control": "You choose which apps get access",
   "apps.trust.noPassword": "No password to create or remember",
-  "apps.trust.providers": "Sign in with Google or GitHub",
+  "apps.trust.providers": "Sign in with Google, GitHub or Apple",
   "apps.tuneloCli.description": "Opens tunnels from your computer to the internet.",
   "apps.tuneloCli.signIn": "Run {command} in a terminal, then enter the code it shows at {device}.",
   "apps.tuneloWeb.description": "Your tunnels in the browser.",
@@ -1415,7 +1427,7 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in en 
   "bot.link.moved": "hoandat.com account @{username} moved its link to another Telegram chat. This chat won't get notices anymore.",
   "bot.link.otherAccount": "This Telegram chat is already linked to another hoandat.com account. Unlink it there first.",
   "bot.link.otherAccountShort": "Chat linked to another account",
-  "bot.notice.emailReclaimed": "Email {email} was removed from hoandat.com account @{username} because its owner verified it with {provider}. You can still sign in with the Google or GitHub account linked to that account.",
+  "bot.notice.emailReclaimed": "Email {email} was removed from hoandat.com account @{username} because its owner verified it with {provider}. You can still sign in with the Google, GitHub or Apple account linked to that account.",
   "bot.notice.providerLinked": "hoandat.com account @{username} was just linked to {provider}. If this wasn't you, unlink it on your account page.",
   "bot.start.howTo": "To link this chat, open your hoandat.com account page and press “{button}”. A link expires after 10 minutes and works only once.",
   "client.external": "External app",
@@ -1499,7 +1511,7 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in en 
   "login.continueTo": "To continue to {app}.",
   "login.firstTime": "Signing in with one of these for the first time creates a new hoandat.com account.",
   "login.forDevice": "Sign in to approve a device.",
-  "login.noProvider": "Sign-in with Google and GitHub is turned off for now, so you can't sign in or sign up. Try again later.",
+  "login.noProvider": "Sign-in with Google, GitHub and Apple is turned off for now, so you can't sign in or sign up. Try again later.",
   "login.tagline": "One hoandat.com account for every app.",
   "login.title": "Sign in",
   "login.titleForApp": "Sign in to continue to {app}",
@@ -1517,7 +1529,7 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in en 
   "notice.deleteMismatch": "The username didn't match. Your account was not deleted.",
   "notice.deviceRevoked": "Signed out the device.",
   "notice.expired": "The form expired. Try again.",
-  "notice.lastMethod": "Couldn't unlink: it's your account's last way to sign in. Link the other of Google or GitHub first.",
+  "notice.lastMethod": "Couldn't unlink: it's your account's last way to sign in. Link another one (Google, GitHub or Apple) first.",
   "notice.linkedApple": "Linked Apple.",
   "notice.linkedGithub": "Linked GitHub.",
   "notice.linkedGoogle": "Linked Google.",
@@ -1628,7 +1640,7 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in en 
   "username.invalid": "A username needs 3–30 characters: lowercase letters, digits or underscores.",
   "username.label": "Username",
   "username.reclaimLink": "sign in that way",
-  "username.reclaimWarning": "This email belongs to another hoandat.com account that nobody has verified. If that account is yours and it is linked to another Google or GitHub account, {link} and link {provider} on your account page. If you continue, the email moves to the new account; the other account keeps its other ways to sign in.",
+  "username.reclaimWarning": "This email belongs to another hoandat.com account that nobody has verified. If that account is yours and it is linked to another Google, GitHub or Apple account, {link} and link {provider} on your account page. If you continue, the email moves to the new account; the other account keeps its other ways to sign in.",
   "username.submit": "Create account",
   "username.subtitle": "Create your hoandat.com account with {provider} for {email} (verified).",
   "username.taken": "This username is taken. Choose another one.",
@@ -1652,7 +1664,7 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in vi 
   "account.devices.empty": "Chưa có máy nào đăng nhập bằng {command}.",
   "account.devices.signOut": "Đăng xuất thiết bị",
   "account.devices.title": "Thiết bị",
-  "account.emailReclaimed": "Email {email} đã được gỡ khỏi tài khoản này lúc {date}, vì người sở hữu email đã xác minh nó qua Google/GitHub.",
+  "account.emailReclaimed": "Email {email} đã được gỡ khỏi tài khoản này lúc {date}, vì người sở hữu email đã xác minh nó qua Google, GitHub hoặc Apple.",
   "account.emailUnverified": "email chưa xác minh",
   "account.emailVerified": "đã xác minh qua {provider}",
   "account.group.account": "Tài khoản",
@@ -1679,8 +1691,8 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in vi 
   "account.sessions.title": "Phiên đang mở",
   "account.sessions.unknownBrowser": "Trình duyệt không rõ",
   "account.sessions.unknownSystem": "hệ điều hành không rõ",
-  "account.signIn.description": "hoandat.com không dùng mật khẩu: bạn đăng nhập bằng Google hoặc GitHub. Liên kết cả hai để vẫn vào được tài khoản khi mất một cách.",
-  "account.signIn.empty": "Đăng nhập bằng Google và GitHub đang tạm tắt.",
+  "account.signIn.description": "hoandat.com không dùng mật khẩu: bạn đăng nhập bằng Google, GitHub hoặc Apple. Liên kết từ hai cách trở lên để vẫn vào được tài khoản khi mất một cách.",
+  "account.signIn.empty": "Đăng nhập bằng Google, GitHub và Apple đang tạm tắt.",
   "account.signIn.link": "Liên kết {provider}",
   "account.signIn.linked": "Đã liên kết ({identity})",
   "account.signIn.linkedOff": "Đã liên kết ({identity}) · đăng nhập bằng cách này đang tạm tắt",
@@ -1712,7 +1724,7 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in vi 
   "apps.clipWeb.signIn": "Chọn Đăng nhập trên trang để làm video.",
   "apps.cta.account": "Quản lý tài khoản",
   "apps.cta.how": "Đăng nhập diễn ra thế nào",
-  "apps.diagram.label": "Tài khoản hoandat.com, vào bằng Google hoặc GitHub, đăng nhập cho bạn vào {apps}.",
+  "apps.diagram.label": "Tài khoản hoandat.com, vào bằng Google, GitHub hoặc Apple, đăng nhập cho bạn vào {apps}.",
   "apps.eyebrow": "Đăng nhập hoandat.com",
   "apps.group.fun.lead": "Chơi, học và giải trí với cùng một tài khoản.",
   "apps.group.fun.title": "Ứng dụng giải trí",
@@ -1739,15 +1751,15 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in vi 
   "apps.steps.choose.body": "Chọn Đăng nhập trên trang của nó, hoặc chạy {command} trong terminal.",
   "apps.steps.choose.title": "Chọn một ứng dụng",
   "apps.steps.provider.body": "Tài khoản bạn đã liên kết sẽ đăng nhập cho bạn. Lần đầu, bạn chọn một tên đăng nhập.",
-  "apps.steps.provider.title": "Tiếp tục với Google hoặc GitHub",
+  "apps.steps.provider.title": "Tiếp tục với Google, GitHub hoặc Apple",
   "apps.steps.title": "Đăng nhập diễn ra thế nào",
-  "apps.subtitle": "Đăng nhập một lần bằng Google hoặc GitHub, rồi dùng cùng tài khoản đó trong mọi ứng dụng bên dưới.",
+  "apps.subtitle": "Đăng nhập một lần bằng Google, GitHub hoặc Apple, rồi dùng cùng tài khoản đó trong mọi ứng dụng bên dưới.",
   "apps.tieudeWeb.description": "Bot AI làm giúp miễn phí các việc viết nhỏ, sống nhờ tiền ủng hộ tự nguyện.",
   "apps.tieudeWeb.signIn": "Chọn Đăng nhập trên trang để có thêm lượt dùng miễn phí.",
   "apps.title": "Một tài khoản cho mọi ứng dụng hoandat.com",
   "apps.trust.control": "Bạn chọn ứng dụng nào được quyền truy cập",
   "apps.trust.noPassword": "Không phải tạo hay nhớ mật khẩu",
-  "apps.trust.providers": "Đăng nhập bằng Google hoặc GitHub",
+  "apps.trust.providers": "Đăng nhập bằng Google, GitHub hoặc Apple",
   "apps.tuneloCli.description": "Mở tunnel từ máy của bạn ra internet.",
   "apps.tuneloCli.signIn": "Chạy {command} trong terminal, rồi nhập mã nó hiện ở {device}.",
   "apps.tuneloWeb.description": "Tunnel của bạn trên trình duyệt.",
@@ -1765,7 +1777,7 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in vi 
   "bot.link.moved": "Tài khoản hoandat.com @{username} đã chuyển liên kết sang một chat Telegram khác. Chat này sẽ không nhận thông báo nữa.",
   "bot.link.otherAccount": "Chat Telegram này đã liên kết với một tài khoản hoandat.com khác. Huỷ liên kết ở tài khoản đó trước.",
   "bot.link.otherAccountShort": "Chat đã liên kết tài khoản khác",
-  "bot.notice.emailReclaimed": "Email {email} đã được gỡ khỏi tài khoản hoandat.com @{username} vì người sở hữu email đã xác minh nó qua {provider}. Bạn vẫn đăng nhập được bằng Google/GitHub đã liên kết với tài khoản đó.",
+  "bot.notice.emailReclaimed": "Email {email} đã được gỡ khỏi tài khoản hoandat.com @{username} vì người sở hữu email đã xác minh nó qua {provider}. Bạn vẫn đăng nhập được bằng Google, GitHub hoặc Apple đã liên kết với tài khoản đó.",
   "bot.notice.providerLinked": "Tài khoản hoandat.com @{username} vừa được liên kết với {provider}. Nếu không phải bạn, hãy huỷ liên kết ở trang tài khoản.",
   "bot.start.howTo": "Để liên kết, mở trang tài khoản hoandat.com và bấm “{button}”. Link cũ hết hạn sau 10 phút và chỉ dùng được một lần.",
   "client.external": "Ứng dụng bên ngoài",
@@ -1849,7 +1861,7 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in vi 
   "login.continueTo": "Để tiếp tục tới {app}.",
   "login.firstTime": "Lần đầu đăng nhập bằng một trong các cách trên sẽ tạo tài khoản hoandat.com mới.",
   "login.forDevice": "Đăng nhập để duyệt thiết bị.",
-  "login.noProvider": "Đăng nhập bằng Google và GitHub đang tạm tắt, nên chưa đăng nhập hay đăng ký được. Thử lại sau.",
+  "login.noProvider": "Đăng nhập bằng Google, GitHub và Apple đang tạm tắt, nên chưa đăng nhập hay đăng ký được. Thử lại sau.",
   "login.tagline": "Một tài khoản hoandat.com cho mọi ứng dụng.",
   "login.title": "Đăng nhập",
   "login.titleForApp": "Đăng nhập để tiếp tục tới {app}",
@@ -1867,7 +1879,7 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in vi 
   "notice.deleteMismatch": "Tên đăng nhập không khớp. Tài khoản chưa bị xoá.",
   "notice.deviceRevoked": "Đã đăng xuất thiết bị.",
   "notice.expired": "Biểu mẫu đã hết hạn. Thử lại.",
-  "notice.lastMethod": "Không huỷ được: đây là cách đăng nhập cuối cùng của tài khoản. Liên kết Google hoặc GitHub còn lại trước.",
+  "notice.lastMethod": "Không huỷ được: đây là cách đăng nhập cuối cùng của tài khoản. Liên kết thêm một cách khác (Google, GitHub hoặc Apple) trước.",
   "notice.linkedApple": "Đã liên kết Apple.",
   "notice.linkedGithub": "Đã liên kết GitHub.",
   "notice.linkedGoogle": "Đã liên kết Google.",
@@ -1978,7 +1990,7 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in vi 
   "username.invalid": "Username cần 3–30 ký tự gồm chữ thường, số hoặc dấu gạch dưới.",
   "username.label": "Username",
   "username.reclaimLink": "đăng nhập bằng cách đó",
-  "username.reclaimWarning": "Email này đang gắn với một tài khoản hoandat.com khác nhưng chưa ai xác minh. Nếu đó là tài khoản của bạn và nó đã liên kết Google hoặc GitHub khác, hãy {link} rồi liên kết {provider} ở trang tài khoản. Nếu tiếp tục, email chuyển sang tài khoản mới; tài khoản kia giữ các cách đăng nhập khác của nó.",
+  "username.reclaimWarning": "Email này đang gắn với một tài khoản hoandat.com khác nhưng chưa ai xác minh. Nếu đó là tài khoản của bạn và nó đã liên kết Google, GitHub hoặc Apple khác, hãy {link} rồi liên kết {provider} ở trang tài khoản. Nếu tiếp tục, email chuyển sang tài khoản mới; tài khoản kia giữ các cách đăng nhập khác của nó.",
   "username.submit": "Tạo tài khoản",
   "username.subtitle": "Tạo tài khoản hoandat.com bằng {provider} cho {email} (đã xác minh).",
   "username.taken": "Username này đã có người dùng. Chọn username khác.",
@@ -2002,7 +2014,7 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in zh-
   "account.devices.empty": "还没有机器通过 {command} 登录。",
   "account.devices.signOut": "退出此设备",
   "account.devices.title": "设备",
-  "account.emailReclaimed": "邮箱 {email} 已于 {date} 从此账号移除，因为该邮箱的所有者已通过 Google 或 GitHub 验证了它。",
+  "account.emailReclaimed": "邮箱 {email} 已于 {date} 从此账号移除，因为该邮箱的所有者已通过 Google、GitHub 或 Apple 验证了它。",
   "account.emailUnverified": "邮箱未验证",
   "account.emailVerified": "已通过 {provider} 验证",
   "account.group.account": "账号",
@@ -2029,8 +2041,8 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in zh-
   "account.sessions.title": "已打开的会话",
   "account.sessions.unknownBrowser": "未知浏览器",
   "account.sessions.unknownSystem": "未知系统",
-  "account.signIn.description": "无需密码：使用 Google 或 GitHub 登录。两个都关联，丢失其中一个时仍能登录。",
-  "account.signIn.empty": "Google 和 GitHub 登录暂时关闭。",
+  "account.signIn.description": "无需密码：使用 Google、GitHub 或 Apple 登录。关联两种以上方式，丢失其中一种时仍能登录。",
+  "account.signIn.empty": "Google、GitHub 和 Apple 登录暂时关闭。",
   "account.signIn.link": "关联 {provider}",
   "account.signIn.linked": "已关联（{identity}）",
   "account.signIn.linkedOff": "已关联（{identity}）· 此登录方式暂时关闭",
@@ -2062,7 +2074,7 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in zh-
   "apps.clipWeb.signIn": "在网站上选择登录，即可制作视频。",
   "apps.cta.account": "管理你的账号",
   "apps.cta.how": "登录如何进行",
-  "apps.diagram.label": "通过 Google 或 GitHub 进入你的 hoandat.com 账号，即可登录 {apps}。",
+  "apps.diagram.label": "通过 Google、GitHub 或 Apple 进入你的 hoandat.com 账号，即可登录 {apps}。",
   "apps.eyebrow": "hoandat.com 登录",
   "apps.group.fun.lead": "用同一个账号玩、学、娱乐。",
   "apps.group.fun.title": "娱乐应用",
@@ -2089,15 +2101,15 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in zh-
   "apps.steps.choose.body": "在它的网站上选择登录，或在终端运行 {command}。",
   "apps.steps.choose.title": "选择一个应用",
   "apps.steps.provider.body": "你关联的账号会为你登录。第一次登录时需选择用户名。",
-  "apps.steps.provider.title": "使用 Google 或 GitHub 继续",
+  "apps.steps.provider.title": "使用 Google、GitHub 或 Apple 继续",
   "apps.steps.title": "登录流程",
-  "apps.subtitle": "用 Google 或 GitHub 登录一次，即可在下方所有应用中使用同一个账号。",
+  "apps.subtitle": "用 Google、GitHub 或 Apple 登录一次，即可在下方所有应用中使用同一个账号。",
   "apps.tieudeWeb.description": "免费帮你写些小东西的 AI 机器人，靠自愿打赏维持运行。",
   "apps.tieudeWeb.signIn": "在网站上选择登录，即可获得更多免费次数。",
   "apps.title": "一个账号，通用所有 hoandat.com 应用",
   "apps.trust.control": "由你决定哪些应用可以访问",
   "apps.trust.noPassword": "无需创建或记住密码",
-  "apps.trust.providers": "使用 Google 或 GitHub 登录",
+  "apps.trust.providers": "使用 Google、GitHub 或 Apple 登录",
   "apps.tuneloCli.description": "从你的电脑向互联网打开隧道。",
   "apps.tuneloCli.signIn": "在终端运行 {command}，然后在 {device} 输入它显示的代码。",
   "apps.tuneloWeb.description": "在浏览器中查看你的隧道。",
@@ -2115,7 +2127,7 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in zh-
   "bot.link.moved": "hoandat.com 账号 @{username} 已将关联转移到另一个 Telegram 聊天。此聊天将不再收到通知。",
   "bot.link.otherAccount": "此 Telegram 聊天已关联到另一个 hoandat.com 账号。请先在该账号中取消关联。",
   "bot.link.otherAccountShort": "聊天已关联其他账号",
-  "bot.notice.emailReclaimed": "邮箱 {email} 已从 hoandat.com 账号 @{username} 中移除，因为该邮箱的所有者已通过 {provider} 验证了它。你仍可使用该账号已关联的 Google 或 GitHub 登录。",
+  "bot.notice.emailReclaimed": "邮箱 {email} 已从 hoandat.com 账号 @{username} 中移除，因为该邮箱的所有者已通过 {provider} 验证了它。你仍可使用该账号已关联的 Google、GitHub 或 Apple 登录。",
   "bot.notice.providerLinked": "hoandat.com 账号 @{username} 刚刚关联了 {provider}。如果不是你本人操作，请在账号页面取消关联。",
   "bot.start.howTo": "要关联此聊天，请打开你的 hoandat.com 账号页面并点击“{button}”。链接 10 分钟后过期，且只能使用一次。",
   "client.external": "外部应用",
@@ -2199,7 +2211,7 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in zh-
   "login.continueTo": "以继续使用 {app}。",
   "login.firstTime": "首次使用以上任一方式登录将创建新的 hoandat.com 账号。",
   "login.forDevice": "登录以批准设备。",
-  "login.noProvider": "Google 和 GitHub 登录暂时关闭，因此目前无法登录或注册。请稍后重试。",
+  "login.noProvider": "Google、GitHub 和 Apple 登录暂时关闭，因此目前无法登录或注册。请稍后重试。",
   "login.tagline": "一个 hoandat.com 账号，通用于所有应用。",
   "login.title": "登录",
   "login.titleForApp": "登录以继续使用 {app}",
@@ -2217,7 +2229,7 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in zh-
   "notice.deleteMismatch": "用户名不匹配，账号未被删除。",
   "notice.deviceRevoked": "已退出该设备。",
   "notice.expired": "表单已过期，请重试。",
-  "notice.lastMethod": "无法取消关联：这是账号最后一种登录方式。请先关联 Google 或 GitHub 中的另一个。",
+  "notice.lastMethod": "无法取消关联：这是账号最后一种登录方式。请先关联另一种方式（Google、GitHub 或 Apple）。",
   "notice.linkedApple": "已关联 Apple。",
   "notice.linkedGithub": "已关联 GitHub。",
   "notice.linkedGoogle": "已关联 Google。",
@@ -2328,7 +2340,7 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in zh-
   "username.invalid": "用户名需为 3–30 个字符，只能包含小写字母、数字或下划线。",
   "username.label": "用户名",
   "username.reclaimLink": "用那种方式登录",
-  "username.reclaimWarning": "此邮箱属于另一个尚未验证邮箱的 hoandat.com 账号。如果那是你的账号，并且已关联另一个 Google 或 GitHub 账号，请{link}，然后在账号页面关联 {provider}。如果继续，该邮箱将转移到新账号；原账号保留其他登录方式。",
+  "username.reclaimWarning": "此邮箱属于另一个尚未验证邮箱的 hoandat.com 账号。如果那是你的账号，并且已关联另一个 Google、GitHub 或 Apple 账号，请{link}，然后在账号页面关联 {provider}。如果继续，该邮箱将转移到新账号；原账号保留其他登录方式。",
   "username.submit": "创建账号",
   "username.subtitle": "使用 {provider} 为 {email}（已验证）创建 hoandat.com 账号。",
   "username.taken": "该用户名已被使用，请换一个。",

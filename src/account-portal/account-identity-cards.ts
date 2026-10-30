@@ -117,7 +117,7 @@ export function signInCount(view: AccountView): string {
 }
 
 /**
- * How this account signs in: Google and GitHub, the only ways in. Shown are
+ * How this account signs in: Google, GitHub and Apple, the only ways in. Shown are
  * the configured providers (to link) plus any already linked, even if its
  * sign-in is switched off now: a linked identity is always visible.
  */

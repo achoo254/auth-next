@@ -63,7 +63,7 @@ export function portalCsrfScope(portal: PortalContext): string {
 
 /**
  * Sends the browser through a normal authorization request of the portal
- * client, so signing in uses the same login pages (Google/GitHub). The code
+ * client, so signing in uses the same login pages (Google/GitHub/Apple). The code
  * it returns is never redeemed: only the session cookie set on the way
  * matters, and without the discarded PKCE verifier the code is useless.
  */

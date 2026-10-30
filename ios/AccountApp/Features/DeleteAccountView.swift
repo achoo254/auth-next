@@ -18,7 +18,7 @@ struct DeleteAccountView: View {
                         .font(.headline)
                     consequence("You can no longer sign in with this account to Localman, Tunelo, Chat, Scribe or any other app that uses it.")
                     consequence("Your profile, linked sign-in methods, sessions, devices and app access are deleted right away, and Apple sign-in is revoked.")
-                    consequence("Data inside the other apps (projects, messages, notes) is not deleted by this. Domains you own keep following your Google or GitHub account.")
+                    consequence("Data inside the other apps (projects, messages, notes) is not deleted by this. Domains you own keep following your Google, GitHub or Apple account.")
                     consequence("Signing in again later with the same Google, GitHub or Apple account creates a new, empty account.")
                 }
                 Section {

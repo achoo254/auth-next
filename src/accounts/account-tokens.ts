@@ -13,7 +13,7 @@ import {
 
 /**
  * The channel a token was delivered through or will act on: a Telegram
- * chat, or a Google/GitHub account. The token only works while that channel
+ * chat, or a Google/GitHub/Apple account. The token only works while that channel
  * is still linked to the account.
  */
 export type TokenChannel =

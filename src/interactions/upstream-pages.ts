@@ -22,7 +22,7 @@ interface UpstreamPageBase {
 	readonly error?: string;
 }
 
-/** New account through Google/GitHub: only the username is left to choose. */
+/** New account through Google/GitHub/Apple: only the username is left to choose. */
 export function renderChooseUsername(
 	view: UpstreamPageBase & {
 		readonly suggestion: string;
