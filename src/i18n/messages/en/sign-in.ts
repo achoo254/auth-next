@@ -22,6 +22,8 @@ export const enSignIn = {
 		"Create your {brand} account with {provider} for {email} (verified).",
 	"username.reclaimWarning":
 		"This email belongs to another {brand} account that nobody has verified. If that account is yours and it is linked to another Google or GitHub account, {link} and link {provider} on your account page. If you continue, the email moves to the new account; the other account keeps its other ways to sign in.",
+	"username.existingAccount":
+		"Already have a {brand} account? Do not create a new one: {link} (the Google, GitHub or Apple account you used) and link {provider} on your account page. With Apple, hiding your email always gives a new address, so your existing account is not recognised.",
 	"username.reclaimLink": "sign in that way",
 	"username.label": "Username",
 	"username.help":

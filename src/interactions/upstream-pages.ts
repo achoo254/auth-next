@@ -44,7 +44,13 @@ ${
 					link: html`<a class="link" href="/interaction/${view.uid}">${i18n.t("username.reclaimLink")}</a>`,
 				}),
 			)
-		: ""
+		: alertBox(
+				"info",
+				i18n.rich("username.existingAccount", {
+					provider,
+					link: html`<a class="link" href="/interaction/${view.uid}" data-id="upstream-signup-existing">${i18n.t("username.reclaimLink")}</a>`,
+				}),
+			)
 }
 <form class="auth-form" method="post" action="/interaction/${view.uid}/upstream/signup" novalidate>
 ${csrfField(view.csrf)}

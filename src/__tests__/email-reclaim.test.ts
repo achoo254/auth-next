@@ -41,6 +41,7 @@ describe("emails from Google/GitHub", () => {
 		const html = await response.text();
 		expect(html).toContain("Choose a username");
 		expect(html).toContain("that nobody has verified");
+		expect(html).not.toContain('data-id="upstream-signup-existing"');
 		expect(html).not.toContain(squatter.username);
 		const done = await page.browser.navigate(
 			`${idp.issuer}/interaction/${page.uid}/upstream/signup`,

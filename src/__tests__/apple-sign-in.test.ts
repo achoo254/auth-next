@@ -109,6 +109,8 @@ describe("Sign in with Apple", () => {
 		);
 		const html = await response.text();
 		expect(html).toContain("k3x9@privaterelay.appleid.com");
+		// A hidden Apple email never matches an existing account: say how to link instead.
+		expect(html).toContain('data-id="upstream-signup-existing"');
 		const done = await page.browser.navigate(
 			`${idp.issuer}/interaction/${page.uid}/upstream/signup`,
 			{ form: { csrf: formField(html, "csrf"), username: "apple_user" } },
