@@ -28,6 +28,7 @@ import { createTelegramLinkRouter } from "./telegram/link-routes.js";
 import { createTelegramWebhookRouter } from "./telegram/webhook-routes.js";
 import { PRIMARY_TENANT_ID } from "./tenants/env-tenant.js";
 import { bindRequestTenant } from "./tenants/request-tenant.js";
+import { createGrowthNumbersRouter } from "./usage/growth-numbers-router.js";
 
 export interface TenantAppOptions {
 	readonly services: AppServices;
@@ -73,6 +74,8 @@ export function createTenantApp(options: TenantAppOptions): Express {
 	app.use(createPrivacyRouter());
 	app.use(createLanguageRouter(services));
 	app.use(createAppsRouter(tenant));
+	// Counts for Tiểu Đệ on the same server; loopback only (ADR 0014).
+	app.use(createGrowthNumbersRouter({ db: services.db, tenant }));
 	// The iOS account app (primary tenant only, like its client).
 	if (tenant.id === PRIMARY_TENANT_ID) {
 		app.use(createAasaRouter(env.IOS_APP_ID));

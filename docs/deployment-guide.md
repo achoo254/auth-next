@@ -25,7 +25,7 @@ Access log của nginx che token trong đường dẫn `/reset/...` (link đặt
 3. Trên server, trong `/var/www/hoandat-auth`: `bash infra/setup-server.sh` (sinh khoá ký và `.env` với secret ngẫu nhiên; chạy lại không ghi đè).
 4. Tạo user MongoDB bằng một user quản trị (trên .65 là `hoandat_admin`, thông tin nằm ở mục `SSH_SERVER_STAGING` của file server ngoài repo) (mật khẩu đọc từ stdin, không lộ qua argv):
    `bash infra/create-mongo-user.sh <admin-user> < <file-chứa-mật-khẩu-admin>`
-5. nginx: chép `infra/nginx/auth.hoandat.com.conf` vào `/etc/nginx/conf.d/`, chạy `nginx -t`, rồi `systemctl reload nginx`.
+5. nginx: chép `infra/nginx/auth.hoandat.com.conf` vào `/etc/nginx/conf.d/`, chạy `nginx -t`, rồi `systemctl reload nginx`. Bản này có khối `location ^~ /internal/ { return 404; }` (ADR 0014): kiểm sau reload bằng `curl -s -o /dev/null -w '%{http_code}' https://auth.hoandat.com/internal/growth-numbers` phải ra 404, còn `curl -s -H 'Host: auth.hoandat.com' http://127.0.0.1:4500/internal/growth-numbers` trên server ra JSON.
 6. Chạy lại `infra/deploy.sh` để khởi động pm2 và kiểm `/healthz`.
 7. Cron backup: `30 2 * * * /var/www/hoandat-auth/infra/backup-auth-db.sh >> /var/log/hoandat-auth-backup.log 2>&1`.
 8. Kiểm cấu hình client: `node --env-file=.env dist/seed-clients.mjs` (chỉ đọc).

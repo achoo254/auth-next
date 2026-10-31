@@ -26,6 +26,7 @@ const DATA_ACCESS_MODULES = new Set([
 	"src/usage/client-usage-model.ts",
 	// The growth report lists every tenant with data, then reads each one.
 	"src/usage/growth-report-queries.ts",
+	"src/usage/growth-numbers.ts",
 	"src/tenants/tenant-collections.ts",
 	"src/services.ts",
 ]);
