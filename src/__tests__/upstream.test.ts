@@ -17,7 +17,7 @@ import {
 	type TestIdp,
 	startTestIdp,
 } from "./helpers/test-idp.js";
-import { signInWith } from "./helpers/upstream-sign-in.js";
+import { continuePastWelcome, signInWith } from "./helpers/upstream-sign-in.js";
 
 let idp: TestIdp;
 
@@ -51,11 +51,16 @@ describe("Google and GitHub sign-in", () => {
 		const html = await response.text();
 		expect(html).toContain("Choose a username");
 		expect(html).toContain('value="new_person"');
-		const done = await page.browser.navigate(
+		const signup = await page.browser.navigate(
 			`${idp.issuer}/interaction/${page.uid}/upstream/signup`,
 			{
 				form: { csrf: formField(html, "csrf"), username: "new_person" },
 			},
+			LOCALMAN_CALLBACK,
+		);
+		const done = await continuePastWelcome(
+			page.browser,
+			signup,
 			LOCALMAN_CALLBACK,
 		);
 		expect(done.location?.searchParams.get("code")).toEqual(expect.any(String));
@@ -98,11 +103,12 @@ describe("Google and GitHub sign-in", () => {
 		);
 		const html = await chosen.response.text();
 		expect(html).toContain("Choose a username");
-		const done = await browser.navigate(
+		const signup = await browser.navigate(
 			`${idp.issuer}/interaction/${uid}/upstream/signup`,
 			{ form: { csrf: formField(html, "csrf"), username: "created_here" } },
 			LOCALMAN_CALLBACK,
 		);
+		const done = await continuePastWelcome(browser, signup, LOCALMAN_CALLBACK);
 		expect(done.location?.searchParams.get("code")).toEqual(expect.any(String));
 		expect(
 			await repositoryOf(idp).findByProvider("google", "g-create"),

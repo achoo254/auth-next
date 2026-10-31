@@ -65,10 +65,15 @@ export async function dropPendingUpstream(
 }
 
 /**
- * Signs in through the provider and forgets the pending profile. `amr`:
- * "fed", the provider, and "reauth" when it proved a fresh authentication
- * (clients that asked for one check it with `auth_time`).
+ * `amr` of a sign-in through the provider: "fed", the provider, and
+ * "reauth" when it proved a fresh authentication (clients that asked for
+ * one check it with `auth_time`).
  */
+export function upstreamAmr(profile: UpstreamProfile): string[] {
+	return ["fed", profile.provider, ...(profile.freshAuth ? ["reauth"] : [])];
+}
+
+/** Signs in through the provider and forgets the pending profile. */
 export async function finishUpstream(
 	services: AppServices,
 	req: Request,
@@ -78,12 +83,7 @@ export async function finishUpstream(
 	profile: UpstreamProfile,
 ): Promise<void> {
 	await dropPendingUpstream(services, interaction.uid);
-	const amr = [
-		"fed",
-		profile.provider,
-		...(profile.freshAuth ? ["reauth"] : []),
-	];
-	await finishLogin(services, req, res, accountId, amr);
+	await finishLogin(services, req, res, accountId, upstreamAmr(profile));
 }
 
 /** Loads the interaction and its pending Google/GitHub/Apple profile. */

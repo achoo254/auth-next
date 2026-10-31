@@ -35,6 +35,15 @@ export const zhSignIn: Translation<typeof enSignIn> = {
 	"username.invalid":
 		"用户名需为 3–30 个字符，只能包含小写字母、数字或下划线。",
 	"username.emailTaken": "该邮箱刚被另一个账号使用。请改用那个账号登录。",
+	"welcome.title": "欢迎来到 {brand}",
+	"welcome.subtitle": "你的账号已就绪。同一个账号也可以登录下面这些应用：",
+	"welcome.benefit.tuvi": "一分钟用越南语排出紫微命盘，并导出图片分享。",
+	"welcome.benefit.miu": "让孩子边玩边学数学和越南语的 3D 世界。",
+	"welcome.benefit.webnhanh": "用现成模板制作网站，立即发布到你自己的地址。",
+	"welcome.open": "打开",
+	"welcome.newTab": "（在新标签页中打开）",
+	"welcome.continueTo": "继续前往 {app}",
+	"welcome.continue": "继续",
 	"upstream.expired": "{provider} 登录已过期，请重新开始。",
 	"upstream.failed": "无法使用 {provider} 登录。请几分钟后重试。",
 	"upstream.link.ownedByOther":

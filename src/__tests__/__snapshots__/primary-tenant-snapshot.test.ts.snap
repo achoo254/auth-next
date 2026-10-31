@@ -1645,6 +1645,15 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in en 
   "username.subtitle": "Create your hoandat.com account with {provider} for {email} (verified).",
   "username.taken": "This username is taken. Choose another one.",
   "username.title": "Choose a username",
+  "welcome.benefit.miu": "A 3D world where kids play while learning maths and Vietnamese.",
+  "welcome.benefit.tuvi": "Draw your Vietnamese horoscope chart in a minute and share it as an image.",
+  "welcome.benefit.webnhanh": "Make a website from a ready template and publish it at your own address.",
+  "welcome.continue": "Continue",
+  "welcome.continueTo": "Continue to {app}",
+  "welcome.newTab": "(opens in a new tab)",
+  "welcome.open": "Open",
+  "welcome.subtitle": "Your account is ready. The same account signs you in to these apps too:",
+  "welcome.title": "Welcome to hoandat.com",
 }
 `;
 
@@ -1995,6 +2004,15 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in vi 
   "username.subtitle": "Tạo tài khoản hoandat.com bằng {provider} cho {email} (đã xác minh).",
   "username.taken": "Username này đã có người dùng. Chọn username khác.",
   "username.title": "Chọn username",
+  "welcome.benefit.miu": "Thế giới 3D cho bé vừa chơi vừa học Toán và Tiếng Việt.",
+  "welcome.benefit.tuvi": "Lập lá số tử vi bằng tiếng Việt trong một phút, xuất ảnh để chia sẻ.",
+  "welcome.benefit.webnhanh": "Làm website từ mẫu có sẵn và đăng ngay ở địa chỉ riêng của bạn.",
+  "welcome.continue": "Tiếp tục",
+  "welcome.continueTo": "Tiếp tục vào {app}",
+  "welcome.newTab": "(mở trong tab mới)",
+  "welcome.open": "Mở",
+  "welcome.subtitle": "Tài khoản của bạn đã sẵn sàng. Cùng tài khoản này, bạn dùng được cả các ứng dụng dưới đây:",
+  "welcome.title": "Chào mừng đến với hoandat.com",
 }
 `;
 
@@ -2345,5 +2363,14 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in zh-
   "username.subtitle": "使用 {provider} 为 {email}（已验证）创建 hoandat.com 账号。",
   "username.taken": "该用户名已被使用，请换一个。",
   "username.title": "选择用户名",
+  "welcome.benefit.miu": "让孩子边玩边学数学和越南语的 3D 世界。",
+  "welcome.benefit.tuvi": "一分钟用越南语排出紫微命盘，并导出图片分享。",
+  "welcome.benefit.webnhanh": "用现成模板制作网站，立即发布到你自己的地址。",
+  "welcome.continue": "继续",
+  "welcome.continueTo": "继续前往 {app}",
+  "welcome.newTab": "（在新标签页中打开）",
+  "welcome.open": "打开",
+  "welcome.subtitle": "你的账号已就绪。同一个账号也可以登录下面这些应用：",
+  "welcome.title": "欢迎来到 hoandat.com",
 }
 `;

@@ -16,7 +16,10 @@ import {
 	startTestIdp,
 } from "./helpers/test-idp.js";
 import { RESOURCES } from "./helpers/test-tenant.js";
-import { linkedGoogleProfile } from "./helpers/upstream-sign-in.js";
+import {
+	continuePastWelcome,
+	linkedGoogleProfile,
+} from "./helpers/upstream-sign-in.js";
 
 const MCP_REDIRECT = "http://127.0.0.1:33422/callback";
 const SIGNUP_TITLE = "Create your hoandat.com account";
@@ -67,12 +70,13 @@ async function signUp(browser: TestBrowser, uid: string) {
 	const chosen = await browser.navigate(
 		`${idp.issuer}/interaction/${uid}/upstream/google`,
 	);
-	const done = await submitForm(
+	const signup = await submitForm(
 		browser,
 		`${idp.issuer}/interaction/${uid}/upstream/signup`,
 		{ csrf: formField(await chosen.response.text(), "csrf"), username: name },
 		LOCALMAN_CALLBACK,
 	);
+	const done = await continuePastWelcome(browser, signup, LOCALMAN_CALLBACK);
 	return { name, location: done.location };
 }
 

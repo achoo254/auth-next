@@ -1,5 +1,10 @@
 import { expect, test } from "@playwright/test";
-import { googleProfile, newUser, routeUpstream } from "./support/flows.js";
+import {
+	continuePastWelcome,
+	googleProfile,
+	newUser,
+	routeUpstream,
+} from "./support/flows.js";
 
 test.use({ locale: "en-US" });
 
@@ -15,6 +20,14 @@ test("signs in, reads /account in English, then switches to 中文 without scrip
 	await page.locator('[data-id="upstream-google"]').click();
 	await page.getByLabel("Username").fill(user.username);
 	await page.locator('[data-id="upstream-signup-submit"]').click();
+	await expect(
+		page.getByRole("heading", { name: "Welcome to hoandat.com" }),
+	).toBeVisible();
+	// The account page is the IdP itself: a neutral "Continue".
+	await expect(page.locator('[data-id="welcome-continue"]')).toHaveText(
+		"Continue",
+	);
+	await continuePastWelcome(page);
 
 	await expect(page).toHaveURL(/\/account$/);
 	await expect(page.locator("html")).toHaveAttribute("lang", "en");
@@ -56,6 +69,14 @@ test("/account fits a 375 px phone without sideways scrolling", async ({
 	await page.locator('[data-id="upstream-google"]').click();
 	await page.getByLabel("Username").fill(user.username);
 	await page.locator('[data-id="upstream-signup-submit"]').click();
+	// The welcome screen fits the phone too.
+	await expect(page.locator('[data-id="welcome-apps"]')).toBeVisible();
+	expect(
+		await page.evaluate(
+			() => document.documentElement.scrollWidth - window.innerWidth,
+		),
+	).toBeLessThanOrEqual(0);
+	await continuePastWelcome(page);
 	await expect(page.locator('[data-id="account-sessions"]')).toBeVisible();
 	const overflow = await page.evaluate(
 		() => document.documentElement.scrollWidth - window.innerWidth,
@@ -69,7 +90,7 @@ test("/apps fits a 375 px phone without sideways scrolling", async ({
 	await page.setViewportSize({ width: 375, height: 812 });
 	await page.goto("/apps");
 	await expect(page.locator('[data-id="apps-hub"]')).toBeVisible();
-	await expect(page.locator('[data-id^="app-list-"] > li')).toHaveCount(3);
+	await expect(page.locator('[data-id^="app-list-"] > li')).toHaveCount(6);
 	const overflow = await page.evaluate(
 		() => document.documentElement.scrollWidth - window.innerWidth,
 	);

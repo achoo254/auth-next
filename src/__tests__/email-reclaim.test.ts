@@ -8,7 +8,7 @@ import {
 	type TestIdp,
 	startTestIdp,
 } from "./helpers/test-idp.js";
-import { signInWith } from "./helpers/upstream-sign-in.js";
+import { continuePastWelcome, signInWith } from "./helpers/upstream-sign-in.js";
 
 let idp: TestIdp;
 
@@ -43,9 +43,14 @@ describe("emails from Google/GitHub", () => {
 		expect(html).toContain("that nobody has verified");
 		expect(html).not.toContain('data-id="upstream-signup-existing"');
 		expect(html).not.toContain(squatter.username);
-		const done = await page.browser.navigate(
+		const signup = await page.browser.navigate(
 			`${idp.issuer}/interaction/${page.uid}/upstream/signup`,
 			{ form: { csrf: formField(html, "csrf"), username: "real_victim" } },
+			LOCALMAN_CALLBACK,
+		);
+		const done = await continuePastWelcome(
+			page.browser,
+			signup,
 			LOCALMAN_CALLBACK,
 		);
 		expect(done.location?.href.startsWith(LOCALMAN_CALLBACK)).toBe(true);
@@ -87,7 +92,7 @@ describe("emails from Google/GitHub", () => {
 			email: "Mixed.Case@Example.com",
 			emailVerified: true,
 		});
-		const done = await page.browser.navigate(
+		const signup = await page.browser.navigate(
 			`${idp.issuer}/interaction/${page.uid}/upstream/signup`,
 			{
 				form: {
@@ -95,6 +100,11 @@ describe("emails from Google/GitHub", () => {
 					username: "mixed_case",
 				},
 			},
+			LOCALMAN_CALLBACK,
+		);
+		const done = await continuePastWelcome(
+			page.browser,
+			signup,
 			LOCALMAN_CALLBACK,
 		);
 		expect(done.location).toBeDefined();

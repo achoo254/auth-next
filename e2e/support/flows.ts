@@ -81,7 +81,7 @@ export async function logIn(page: Page, user: TestUser): Promise<void> {
 
 /**
  * From the login page: sign in with a Google account nobody has yet, which
- * creates the account once a username is chosen.
+ * creates the account once a username is chosen, then past the welcome.
  */
 export async function signUp(page: Page, user: TestUser): Promise<void> {
 	await logIn(page, user);
@@ -90,6 +90,20 @@ export async function signUp(page: Page, user: TestUser): Promise<void> {
 	).toBeVisible();
 	await page.getByLabel("Username").fill(user.username);
 	await page.locator('[data-id="upstream-signup-submit"]').click();
+	await continuePastWelcome(page);
+}
+
+/**
+ * The new account's welcome screen: the three hero apps open in a new tab,
+ * and "Continue" finishes the sign-in.
+ */
+export async function continuePastWelcome(page: Page): Promise<void> {
+	await expect(page.locator('[data-id="welcome-apps"] > li')).toHaveCount(3);
+	await expect(page.locator('[data-id="welcome-open-tuvi"]')).toHaveAttribute(
+		"target",
+		"_blank",
+	);
+	await page.locator('[data-id="welcome-continue"]').click();
 }
 
 /** Signs up through /account and ends on the account page, signed in. */

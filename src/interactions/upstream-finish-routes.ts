@@ -15,12 +15,14 @@ import {
 	interactionPage,
 } from "./interaction-helpers.js";
 import { renderChooseUsername } from "./upstream-pages.js";
-import { finishUpstream, loadPending } from "./upstream-pending.js";
+import { loadPending } from "./upstream-pending.js";
+import { welcomeNewAccount } from "./welcome-routes.js";
 
 /**
  * Finishes a Google/GitHub/Apple sign-up: the username for the new account. When
  * an account held this email unverified, the email moves to the new account
  * (its proven owner); the old account keeps its other sign-in methods.
+ * The new account sees the welcome screen before the sign-in finishes.
  */
 export function registerUpstreamFinishRoutes(
 	router: Router,
@@ -94,7 +96,7 @@ export function registerUpstreamFinishRoutes(
 					{ accountId: account._id, provider: profile.provider },
 					"Account created via provider",
 				);
-				await finishUpstream(
+				await welcomeNewAccount(
 					services,
 					req,
 					res,

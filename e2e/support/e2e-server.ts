@@ -29,6 +29,7 @@ import {
 	envClientSecrets,
 	envMiuClients,
 	envScribeClients,
+	envSignInOnlyApps,
 	envTenant,
 } from "../../src/tenants/env-tenant.js";
 import {
@@ -64,6 +65,12 @@ const env = parseEnv({
 	TUNELO_WEB_CLIENT_SECRET: randomBytes(32).toString("base64url"),
 	CHAT_WEB_CLIENT_SECRET: randomBytes(32).toString("base64url"),
 	LOCALMAN_WEB_URL: E2E_TOOLS,
+	// The hero apps a new account is welcomed with (links only, never opened).
+	TUVI_WEB_URL: "https://tuvi.hoandat.com",
+	TUVI_WEB_CLIENT_SECRET: randomBytes(32).toString("base64url"),
+	MIU_WEB_CLIENT_SECRET: randomBytes(32).toString("base64url"),
+	WEBNHANH_WEB_URL: "https://webnhanh.hoandat.com",
+	WEBNHANH_WEB_CLIENT_SECRET: randomBytes(32).toString("base64url"),
 	LOG_LEVEL: process.env.E2E_LOG_LEVEL ?? "warn",
 	...FAKE_UPSTREAM_ENV,
 });
@@ -83,6 +90,7 @@ const provider = createProvider({
 	chatMobileRedirectUri: env.CHAT_MOBILE_REDIRECT_URI,
 	scribeClients: envScribeClients(env),
 	miuClients: envMiuClients(env),
+	signInOnlyApps: envSignInOnlyApps(env),
 	clientSecrets: envClientSecrets(env),
 	accountStore: accounts,
 	logger,

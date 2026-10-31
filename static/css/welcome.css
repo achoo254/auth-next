@@ -1,0 +1,55 @@
+/* Welcome screen of a new account (interaction /welcome): the hero apps as
+   cards, each a link that opens in a new tab. Colours come only from
+   tokens.css; each app's hue (--tone) comes from apps.css. */
+
+.welcome-apps {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: grid;
+	gap: var(--space-3);
+}
+.welcome-app-link {
+	display: flex;
+	align-items: center;
+	gap: var(--space-3);
+	padding: var(--space-3) var(--space-4);
+	color: var(--c-text);
+	text-decoration: none;
+	background: var(--c-surface);
+	border: 1px solid var(--c-border);
+	border-left: 3px solid var(--tone);
+	border-radius: var(--radius-md);
+	transition: border-color var(--dur-base) var(--ease-standard),
+		box-shadow var(--dur-base) var(--ease-standard);
+}
+.welcome-app-link:hover {
+	border-color: color-mix(in srgb, var(--tone) 50%, var(--c-border));
+	border-left-color: var(--tone);
+	box-shadow: var(--shadow-sm);
+}
+.welcome-app-icon {
+	flex: none;
+	display: inline-grid;
+	width: 40px;
+	height: 40px;
+}
+.welcome-app-text {
+	display: grid;
+	gap: var(--space-1);
+	min-width: 0;
+	flex: 1;
+}
+.welcome-app-name {
+	font-weight: 600;
+}
+.welcome-app-benefit {
+	font-size: 14px;
+	color: var(--c-text-muted);
+}
+.welcome-app-open {
+	flex: none;
+	font-size: 14px;
+	font-weight: 500;
+	color: var(--tone-text);
+}

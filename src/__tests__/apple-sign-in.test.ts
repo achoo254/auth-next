@@ -14,6 +14,7 @@ import {
 	type TestIdp,
 	startTestIdp,
 } from "./helpers/test-idp.js";
+import { continuePastWelcome } from "./helpers/upstream-sign-in.js";
 
 const apple = sharedFakeApple();
 let idp: TestIdp;
@@ -111,9 +112,14 @@ describe("Sign in with Apple", () => {
 		expect(html).toContain("k3x9@privaterelay.appleid.com");
 		// A hidden Apple email never matches an existing account: say how to link instead.
 		expect(html).toContain('data-id="upstream-signup-existing"');
-		const done = await page.browser.navigate(
+		const signup = await page.browser.navigate(
 			`${idp.issuer}/interaction/${page.uid}/upstream/signup`,
 			{ form: { csrf: formField(html, "csrf"), username: "apple_user" } },
+			LOCALMAN_CALLBACK,
+		);
+		const done = await continuePastWelcome(
+			page.browser,
+			signup,
 			LOCALMAN_CALLBACK,
 		);
 		expect(done.location?.searchParams.get("code")).toEqual(expect.any(String));

@@ -141,7 +141,7 @@ function scribeMcp(tenant: AppDirectoryTenant, i18n: Translator): ListedApp {
  * entry is set from the environment): Scribe, Web Nhanh, Miu World, Tiểu Đệ,
  * Tử Vi, Clip.
  */
-const OPTIONAL_WEB_APPS = [
+export const OPTIONAL_WEB_APPS = [
 	{
 		key: "scribe",
 		id: STATIC_CLIENT_IDS.scribeWeb,

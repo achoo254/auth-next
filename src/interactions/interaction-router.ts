@@ -14,6 +14,7 @@ import {
 import { showLogin, showSignup } from "./login-handler.js";
 import { registerReviewLoginRoutes } from "./review-login-routes.js";
 import { registerUpstreamInteractionRoutes } from "./upstream-routes.js";
+import { registerWelcomeRoutes } from "./welcome-routes.js";
 
 /**
  * Login, consent and the rest of the interaction pages under
@@ -102,5 +103,6 @@ export function createInteractionRouter(services: AppServices): Router {
 
 	registerUpstreamInteractionRoutes(router, services);
 	registerReviewLoginRoutes(router, services);
+	registerWelcomeRoutes(router, services);
 	return router;
 }

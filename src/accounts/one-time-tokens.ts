@@ -19,6 +19,8 @@ export type FreeTokenKind =
 	/** A provider's form_post answer, until the same-site GET that reads it. */
 	| "upstream-form-post"
 	| "upstream-pending"
+	/** A new account's sign-in, held while the welcome screen shows. */
+	| "welcome-pending"
 	/** An ID token already spent on re-authenticating an /api/account call. */
 	| "reauth-id-token"
 	/** An app link state already opened in a browser (it opens once). */

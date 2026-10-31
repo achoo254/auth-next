@@ -37,6 +37,19 @@ export const viSignIn: Translation<typeof enSignIn> = {
 		"Username cần 3–30 ký tự gồm chữ thường, số hoặc dấu gạch dưới.",
 	"username.emailTaken":
 		"Email này vừa được dùng cho một tài khoản khác. Hãy đăng nhập bằng tài khoản đó.",
+	"welcome.title": "Chào mừng đến với {brand}",
+	"welcome.subtitle":
+		"Tài khoản của bạn đã sẵn sàng. Cùng tài khoản này, bạn dùng được cả các ứng dụng dưới đây:",
+	"welcome.benefit.tuvi":
+		"Lập lá số tử vi bằng tiếng Việt trong một phút, xuất ảnh để chia sẻ.",
+	"welcome.benefit.miu":
+		"Thế giới 3D cho bé vừa chơi vừa học Toán và Tiếng Việt.",
+	"welcome.benefit.webnhanh":
+		"Làm website từ mẫu có sẵn và đăng ngay ở địa chỉ riêng của bạn.",
+	"welcome.open": "Mở",
+	"welcome.newTab": "(mở trong tab mới)",
+	"welcome.continueTo": "Tiếp tục vào {app}",
+	"welcome.continue": "Tiếp tục",
 	"upstream.expired":
 		"Phiên đăng nhập bằng {provider} đã hết hạn. Thử lại từ đầu.",
 	"upstream.failed":

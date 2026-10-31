@@ -35,6 +35,19 @@ export const enSignIn = {
 		"A username needs 3–30 characters: lowercase letters, digits or underscores.",
 	"username.emailTaken":
 		"This email was just used for another account. Sign in with that account instead.",
+	"welcome.title": "Welcome to {brand}",
+	"welcome.subtitle":
+		"Your account is ready. The same account signs you in to these apps too:",
+	"welcome.benefit.tuvi":
+		"Draw your Vietnamese horoscope chart in a minute and share it as an image.",
+	"welcome.benefit.miu":
+		"A 3D world where kids play while learning maths and Vietnamese.",
+	"welcome.benefit.webnhanh":
+		"Make a website from a ready template and publish it at your own address.",
+	"welcome.open": "Open",
+	"welcome.newTab": "(opens in a new tab)",
+	"welcome.continueTo": "Continue to {app}",
+	"welcome.continue": "Continue",
 	"upstream.expired": "The {provider} sign-in has expired. Start again.",
 	"upstream.failed":
 		"Couldn't sign in with {provider}. Try again in a few minutes.",

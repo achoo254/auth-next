@@ -11,6 +11,7 @@ import { TestBrowser, formField } from "./helpers/test-browser.js";
 import { type TestIdp, startTestIdp } from "./helpers/test-idp.js";
 import { shown } from "./helpers/test-page.js";
 import { RESOURCES } from "./helpers/test-tenant.js";
+import { continuePastWelcome } from "./helpers/upstream-sign-in.js";
 
 const MCP_REDIRECT = "http://127.0.0.1:33419/callback";
 let idp: TestIdp;
@@ -77,11 +78,12 @@ describe("sign-up, consent and return to an MCP client", () => {
 		);
 		const usernamePage = await chosen.response.text();
 		expect(usernamePage).toContain("Choose a username");
-		const consent = await submitForm(
+		const signup = await submitForm(
 			browser,
 			`${idp.issuer}/interaction/${uid}/upstream/signup`,
 			{ csrf: formField(usernamePage, "csrf"), username: "minh_anh" },
 		);
+		const consent = await continuePastWelcome(browser, signup);
 		const consentPage = await consent.response.text();
 		expect(consentPage).toContain(shown("consent.externalNotice"));
 		expect(consentPage).toContain("127.0.0.1:33419");
