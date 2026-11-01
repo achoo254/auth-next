@@ -198,3 +198,14 @@ describe("prompt=create (OIDC Prompt Create 1.0)", () => {
 		expect(page).not.toContain(SIGNUP_TITLE);
 	});
 });
+
+describe("account portal sign-up link", () => {
+	it("opens on making an account with ?signup=1, on sign-in without it", async () => {
+		const signUp = await new TestBrowser().navigate(
+			`${idp.issuer}/account?signup=1`,
+		);
+		expect(await signUp.response.text()).toContain(SIGNUP_TITLE);
+		const signIn = await new TestBrowser().navigate(`${idp.issuer}/account`);
+		expect(await signIn.response.text()).not.toContain(SIGNUP_TITLE);
+	});
+});

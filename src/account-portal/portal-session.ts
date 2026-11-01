@@ -73,6 +73,8 @@ export function redirectToPortalLogin(
 	options: {
 		readonly reauthenticate?: boolean;
 		readonly returnTo?: string;
+		/** A sign-up link (`/account?signup=1`, e.g. hoandat.com's "free account" button): open on making an account. */
+		readonly signUp?: boolean;
 	} = {},
 ): void {
 	const verifier = randomBytes(32).toString("base64url");
@@ -86,7 +88,11 @@ export function redirectToPortalLogin(
 		code_challenge: createHash("sha256").update(verifier).digest("base64url"),
 		code_challenge_method: "S256",
 		// prompt=login asks to sign in again even with a live session.
-		...(options.reauthenticate ? { prompt: "login" } : {}),
+		...(options.reauthenticate
+			? { prompt: "login" }
+			: options.signUp
+				? { prompt: "create" }
+				: {}),
 		state: options.reauthenticate ? `${REAUTH_STATE_PREFIX}${nonce}` : nonce,
 	}).toString();
 	res.cookie(portalStateCookie(services), nonce, {
@@ -145,7 +151,10 @@ export function portalRoute(
 			const returnTo = `${req.baseUrl}${req.path}`;
 			if (!portal) {
 				if (req.method === "GET")
-					redirectToPortalLogin(services, res, { returnTo });
+					redirectToPortalLogin(services, res, {
+						returnTo,
+						signUp: req.query.signup === "1",
+					});
 				else
 					res.redirect(
 						303,
