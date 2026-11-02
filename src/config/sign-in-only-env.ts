@@ -7,8 +7,8 @@ const appOrigin = z
 	.optional();
 
 /**
- * Tiểu Đệ, Tử Vi, Clip and Web Nhanh (primary tenant only). Each is optional and
- * all-or-nothing: the IdP registers an app's web client only when both its
+ * Tiểu Đệ, Tử Vi, Clip, Web Nhanh and Truyện (primary tenant only). Each is
+ * optional and all-or-nothing: the IdP registers an app's web client only when both its
  * origin and its client secret are set, and boots as before when neither is.
  */
 export const signInOnlyEnvShape = {
@@ -20,6 +20,8 @@ export const signInOnlyEnvShape = {
 	CLIP_WEB_CLIENT_SECRET: appClientSecret.optional(),
 	WEBNHANH_WEB_URL: appOrigin,
 	WEBNHANH_WEB_CLIENT_SECRET: appClientSecret.optional(),
+	TRUYEN_WEB_URL: appOrigin,
+	TRUYEN_WEB_CLIENT_SECRET: appClientSecret.optional(),
 };
 
 /** The origin variables, which must be public https in production. */
@@ -28,6 +30,7 @@ export const SIGN_IN_ONLY_URL_KEYS = [
 	"TUVI_WEB_URL",
 	"CLIP_WEB_URL",
 	"WEBNHANH_WEB_URL",
+	"TRUYEN_WEB_URL",
 ] as const;
 
 /** Reports an app of which only the URL or the secret is set. */
@@ -39,4 +42,5 @@ export function checkSignInOnlyGroups(
 	checkDevPair(env, "TUVI_WEB_URL", "TUVI_WEB_CLIENT_SECRET", ctx);
 	checkDevPair(env, "CLIP_WEB_URL", "CLIP_WEB_CLIENT_SECRET", ctx);
 	checkDevPair(env, "WEBNHANH_WEB_URL", "WEBNHANH_WEB_CLIENT_SECRET", ctx);
+	checkDevPair(env, "TRUYEN_WEB_URL", "TRUYEN_WEB_CLIENT_SECRET", ctx);
 }

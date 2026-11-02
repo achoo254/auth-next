@@ -67,6 +67,10 @@ export const viApps: Translation<typeof enApps> = {
 	"apps.clipWeb.description":
 		"Chọn mẫu, gõ vài dòng, thêm ảnh để có video dọc ngắn.",
 	"apps.clipWeb.signIn": "Chọn Đăng nhập trên trang để làm video.",
+	"apps.truyenWeb.description":
+		"Truyện cổ Việt Nam và thế giới kể lại bằng lời mới.",
+	"apps.truyenWeb.signIn":
+		"Chọn Đăng nhập trên trang để lưu truyện yêu thích và đọc tiếp trên mọi máy.",
 	"apps.steps.title": "Đăng nhập diễn ra thế nào",
 	"apps.steps.choose.title": "Chọn một ứng dụng",
 	"apps.steps.choose.body":

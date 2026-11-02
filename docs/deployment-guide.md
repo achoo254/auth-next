@@ -99,9 +99,9 @@ Bật trên production (không in secret ra terminal):
 
 Rollback: xoá dòng `MIU_WEB_CLIENT_SECRET` rồi reload; IdP không còn client Miu (Miu sẽ báo đăng nhập không khả dụng).
 
-## Client của Tiểu Đệ, Tử Vi, Clip và Web Nhanh
+## Client của Tiểu Đệ, Tử Vi, Clip, Web Nhanh và Truyện
 
-Bốn app đăng nhập để biết khách có tài khoản dùng chung một kiểu client (`src/oidc/sign-in-only-clients.ts`): confidential, `client_secret_basic`, không refresh token, redirect `/auth/callback`. Tiểu Đệ chỉ có scope `openid`; Tử Vi, Clip và Web Nhanh có `openid profile email` (tên, ảnh, email cho menu tài khoản trên header).
+Năm app đăng nhập để biết khách có tài khoản dùng chung một kiểu client (`src/oidc/sign-in-only-clients.ts`): confidential, `client_secret_basic`, không refresh token, redirect `/auth/callback`. Tiểu Đệ chỉ có scope `openid`; Tử Vi, Clip, Web Nhanh và Truyện có `openid profile email` (tên, ảnh, email cho menu tài khoản trên header).
 
 | App | Repo, origin | Client | Biến (đặt **cả hai**, secret ≥ 32 ký tự) | Secret phía app |
 |---|---|---|---|---|
@@ -109,8 +109,9 @@ Bốn app đăng nhập để biết khách có tài khoản dùng chung một k
 | Tử Vi | `tu-vi-next`, `https://tuvi.hoandat.com` | `tuvi-web` | `TUVI_WEB_URL`, `TUVI_WEB_CLIENT_SECRET` | `AUTH_CLIENT_SECRET` trong `/var/www/tuvi/.env` |
 | Clip | `clip-next`, `https://clip.hoandat.com` | `clip-web` | `CLIP_WEB_URL`, `CLIP_WEB_CLIENT_SECRET` | `AUTH_CLIENT_SECRET` trong `/var/www/clip/.env` |
 | Web Nhanh | `webnhanh-next`, `https://webnhanh.hoandat.com` | `webnhanh-web` | `WEBNHANH_WEB_URL`, `WEBNHANH_WEB_CLIENT_SECRET` | `AUTH_CLIENT_SECRET` trong `/etc/webnhanh/production.env` |
+| Truyện | `truyen-next`, `https://truyen.hoandat.com` | `truyen-web` | `TRUYEN_WEB_URL`, `TRUYEN_WEB_CLIENT_SECRET` | `AUTH_CLIENT_SECRET` trong `.env` của Truyện |
 
-Khi đã bật, app hiện trên `/apps`, trừ Web Nhanh: app này chỉ vào danh sách khi ra mắt (cần ảnh mark).
+Khi đã bật, app hiện trên `/apps` (Tiểu Đệ, Tử Vi, Clip và Truyện ở nhóm giải trí).
 
 Gặp `invalid_client` dù `seed-clients` liệt kê client ⟹ bản `dist` trên server cũ: `grep -c tieude-web /var/www/hoandat-auth/dist/server.mjs` phải ≥ 1, không thì chạy lại `infra/deploy.sh`. Kiểm từ ngoài: `curl -s -o /dev/null -w '%{http_code}\n' "https://tieude.hoandat.com/auth/login?lang=vi&cid=probe1234567890abcdef"` → 302 sang `auth.hoandat.com/auth`, và authorize của `tieude-web` trả 303 (như `chat-web`).
 

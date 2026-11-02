@@ -16,7 +16,7 @@ export const PRIMARY_TENANT_ID = "primary";
  * `TENANT_DOMAIN` (resources and audiences follow from it), its web apps
  * `LOCALMAN_WEB_URL`, `TUNELO_WEB_URL`, `CHAT_WEB_URL` and, once their client
  * secrets are set, `SCRIBE_WEB_URL`, `MIU_WEB_URL`, `TIEUDE_WEB_URL`,
- * `TUVI_WEB_URL`, `CLIP_WEB_URL` and `WEBNHANH_WEB_URL`.
+ * `TUVI_WEB_URL`, `CLIP_WEB_URL`, `WEBNHANH_WEB_URL` and `TRUYEN_WEB_URL`.
  */
 export function envTenant(
 	env: Pick<
@@ -39,6 +39,8 @@ export function envTenant(
 		| "CLIP_WEB_CLIENT_SECRET"
 		| "WEBNHANH_WEB_URL"
 		| "WEBNHANH_WEB_CLIENT_SECRET"
+		| "TRUYEN_WEB_URL"
+		| "TRUYEN_WEB_CLIENT_SECRET"
 	>,
 ): Tenant {
 	return {
@@ -109,8 +111,8 @@ export function envScribeClients(
 }
 
 /**
- * The primary tenant's Tiểu Đệ, Tử Vi, Clip and Web Nhanh clients, from the
- * environment: an app is left out unless both its origin and its secret
+ * The primary tenant's Tiểu Đệ, Tử Vi, Clip, Web Nhanh and Truyện clients,
+ * from the environment: an app is left out unless both its origin and its secret
  * are set (parseEnv rejects one alone).
  */
 export function envSignInOnlyApps(
@@ -124,6 +126,8 @@ export function envSignInOnlyApps(
 		| "CLIP_WEB_CLIENT_SECRET"
 		| "WEBNHANH_WEB_URL"
 		| "WEBNHANH_WEB_CLIENT_SECRET"
+		| "TRUYEN_WEB_URL"
+		| "TRUYEN_WEB_CLIENT_SECRET"
 	>,
 ): SignInOnlyApps {
 	const app = (url?: string, secret?: string) =>
@@ -133,6 +137,7 @@ export function envSignInOnlyApps(
 		tuvi: app(env.TUVI_WEB_URL, env.TUVI_WEB_CLIENT_SECRET),
 		clip: app(env.CLIP_WEB_URL, env.CLIP_WEB_CLIENT_SECRET),
 		webnhanh: app(env.WEBNHANH_WEB_URL, env.WEBNHANH_WEB_CLIENT_SECRET),
+		truyen: app(env.TRUYEN_WEB_URL, env.TRUYEN_WEB_CLIENT_SECRET),
 	};
 	return Object.fromEntries(
 		Object.entries(apps).filter(([, value]) => value !== undefined),
@@ -142,7 +147,7 @@ export function envSignInOnlyApps(
 /** The origins of the configured apps, for `Tenant.webApps`. */
 function signInOnlyOrigins(
 	apps: SignInOnlyApps,
-): Pick<Tenant["webApps"], "tieude" | "tuvi" | "clip" | "webnhanh"> {
+): Pick<Tenant["webApps"], "tieude" | "tuvi" | "clip" | "webnhanh" | "truyen"> {
 	return Object.fromEntries(
 		Object.entries(apps).map(([key, app]) => [key, app.url]),
 	);

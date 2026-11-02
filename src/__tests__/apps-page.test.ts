@@ -195,6 +195,32 @@ describe("app list page", () => {
 		);
 	});
 
+	it("lists Truyện as a fun app with its mark once its client is configured", () => {
+		const truyen = "https://truyen.staging.example";
+		const withTruyen = { ...STAGING, webApps: { ...STAGING.webApps, truyen } };
+		const html = renderAppsPage(withTruyen, testPage("en", "/apps"));
+		expect(html).toContain('data-id="app-open-truyen-web"');
+		expect(html).toContain(`href="${truyen}"`);
+		expect(html).toContain("/assets/img/apps/truyen-mark-128.webp");
+		expect(existsSync(`${STATIC_DIR}/img/apps/truyen-mark-128.webp`)).toBe(
+			true,
+		);
+		expect(html).toContain("world folk tales, retold in fresh words");
+		// An app for fun: in its own group, not drawn in the work diagram.
+		expect(html).not.toContain(">Truyện</text>");
+		const fun = html.slice(html.indexOf('data-id="apps-group-fun"'));
+		expect(fun).toContain('data-id="app-truyen-web"');
+		expect(renderAppsPage(withTruyen, testPage("vi", "/apps"))).toContain(
+			"lưu truyện yêu thích và đọc tiếp trên mọi máy",
+		);
+		expect(renderAppsPage(withTruyen, testPage("zh-CN", "/apps"))).toContain(
+			"民间故事",
+		);
+		expect(renderAppsPage(STAGING, testPage("en", "/apps"))).not.toContain(
+			'data-id="app-truyen-web"',
+		);
+	});
+
 	it("ends every page with the brand's home link and the privacy policy", () => {
 		const html = renderAppsPage(STAGING, testPage("vi", "/apps"));
 		expect(html).toContain(

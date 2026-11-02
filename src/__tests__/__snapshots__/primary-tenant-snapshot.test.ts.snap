@@ -189,6 +189,15 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <p class="app-card-desc">Pick a template, type a few lines and add photos to get a short vertical video.</p>
 <div class="app-card-how"><p class="app-card-how-label">How to sign in</p><p>Choose Sign in on the site to make videos.</p></div>
 <div class="app-card-foot"><a class="btn btn-secondary" href="https://clip.hoandat.com" data-id="app-open-clip-web">Open</a></div>
+</li><li class="app-card tone-red" data-id="app-truyen-web">
+<div class="app-card-head">
+<span class="app-card-icon"><img class="app-mark" src="/assets/img/apps/truyen-mark-128.webp" width="44" height="44" alt=""></span>
+<div class="app-card-heading"><h3 class="app-card-name">Truyện</h3>
+<p class="app-card-meta"><span class="badge badge-neutral">Web app</span><span class="mono">truyen.hoandat.com</span></p></div>
+</div>
+<p class="app-card-desc">Vietnamese and world folk tales, retold in fresh words.</p>
+<div class="app-card-how"><p class="app-card-how-label">How to sign in</p><p>Choose Sign in on the site to save your favourite tales and keep reading on any device.</p></div>
+<div class="app-card-foot"><a class="btn btn-secondary" href="https://truyen.hoandat.com" data-id="app-open-truyen-web">Open</a></div>
 </li></ul>
 </section>
 <section class="apps-section" id="how-sign-in-works" aria-labelledby="apps-steps-title" data-id="apps-steps">
@@ -372,6 +381,15 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <p class="app-card-desc">Chọn mẫu, gõ vài dòng, thêm ảnh để có video dọc ngắn.</p>
 <div class="app-card-how"><p class="app-card-how-label">Cách đăng nhập</p><p>Chọn Đăng nhập trên trang để làm video.</p></div>
 <div class="app-card-foot"><a class="btn btn-secondary" href="https://clip.hoandat.com" data-id="app-open-clip-web">Mở</a></div>
+</li><li class="app-card tone-red" data-id="app-truyen-web">
+<div class="app-card-head">
+<span class="app-card-icon"><img class="app-mark" src="/assets/img/apps/truyen-mark-128.webp" width="44" height="44" alt=""></span>
+<div class="app-card-heading"><h3 class="app-card-name">Truyện</h3>
+<p class="app-card-meta"><span class="badge badge-neutral">Ứng dụng web</span><span class="mono">truyen.hoandat.com</span></p></div>
+</div>
+<p class="app-card-desc">Truyện cổ Việt Nam và thế giới kể lại bằng lời mới.</p>
+<div class="app-card-how"><p class="app-card-how-label">Cách đăng nhập</p><p>Chọn Đăng nhập trên trang để lưu truyện yêu thích và đọc tiếp trên mọi máy.</p></div>
+<div class="app-card-foot"><a class="btn btn-secondary" href="https://truyen.hoandat.com" data-id="app-open-truyen-web">Mở</a></div>
 </li></ul>
 </section>
 <section class="apps-section" id="how-sign-in-works" aria-labelledby="apps-steps-title" data-id="apps-steps">
@@ -555,6 +573,15 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <p class="app-card-desc">选一个模板，写几行字，加几张照片，生成竖屏短视频。</p>
 <div class="app-card-how"><p class="app-card-how-label">登录方式</p><p>在网站上选择登录，即可制作视频。</p></div>
 <div class="app-card-foot"><a class="btn btn-secondary" href="https://clip.hoandat.com" data-id="app-open-clip-web">打开</a></div>
+</li><li class="app-card tone-red" data-id="app-truyen-web">
+<div class="app-card-head">
+<span class="app-card-icon"><img class="app-mark" src="/assets/img/apps/truyen-mark-128.webp" width="44" height="44" alt=""></span>
+<div class="app-card-heading"><h3 class="app-card-name">Truyện</h3>
+<p class="app-card-meta"><span class="badge badge-neutral">网页应用</span><span class="mono">truyen.hoandat.com</span></p></div>
+</div>
+<p class="app-card-desc">用新的语言重新讲述越南和世界各地的民间故事。</p>
+<div class="app-card-how"><p class="app-card-how-label">登录方式</p><p>在网站上选择登录，即可收藏喜欢的故事，并在任何设备上接着读。</p></div>
+<div class="app-card-foot"><a class="btn btn-secondary" href="https://truyen.hoandat.com" data-id="app-open-truyen-web">打开</a></div>
 </li></ul>
 </section>
 <section class="apps-section" id="how-sign-in-works" aria-labelledby="apps-steps-title" data-id="apps-steps">
@@ -1295,6 +1322,32 @@ exports[`primary tenant (hoandat.com) is unchanged > serves the same static clie
     "subject_type": "public",
     "token_endpoint_auth_method": "client_secret_basic",
   },
+  {
+    "allowed_resources": [],
+    "application_type": "web",
+    "backchannel_logout_session_required": false,
+    "client_id": "truyen-web",
+    "client_name": "Truyện",
+    "dpop_bound_access_tokens": false,
+    "grant_types": [
+      "authorization_code",
+    ],
+    "id_token_signed_response_alg": "ES256",
+    "post_logout_redirect_uris": [
+      "https://truyen.hoandat.com/",
+    ],
+    "redirect_uris": [
+      "https://truyen.hoandat.com/auth/callback",
+    ],
+    "require_auth_time": false,
+    "require_pushed_authorization_requests": false,
+    "response_types": [
+      "code",
+    ],
+    "scope": "openid profile email",
+    "subject_type": "public",
+    "token_endpoint_auth_method": "client_secret_basic",
+  },
 ]
 `;
 
@@ -1410,6 +1463,8 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in en 
   "apps.trust.control": "You choose which apps get access",
   "apps.trust.noPassword": "No password to create or remember",
   "apps.trust.providers": "Sign in with Google, GitHub or Apple",
+  "apps.truyenWeb.description": "Vietnamese and world folk tales, retold in fresh words.",
+  "apps.truyenWeb.signIn": "Choose Sign in on the site to save your favourite tales and keep reading on any device.",
   "apps.tuneloCli.description": "Opens tunnels from your computer to the internet.",
   "apps.tuneloCli.signIn": "Run {command} in a terminal, then enter the code it shows at {device}.",
   "apps.tuneloWeb.description": "Your tunnels in the browser.",
@@ -1769,6 +1824,8 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in vi 
   "apps.trust.control": "Bạn chọn ứng dụng nào được quyền truy cập",
   "apps.trust.noPassword": "Không phải tạo hay nhớ mật khẩu",
   "apps.trust.providers": "Đăng nhập bằng Google, GitHub hoặc Apple",
+  "apps.truyenWeb.description": "Truyện cổ Việt Nam và thế giới kể lại bằng lời mới.",
+  "apps.truyenWeb.signIn": "Chọn Đăng nhập trên trang để lưu truyện yêu thích và đọc tiếp trên mọi máy.",
   "apps.tuneloCli.description": "Mở tunnel từ máy của bạn ra internet.",
   "apps.tuneloCli.signIn": "Chạy {command} trong terminal, rồi nhập mã nó hiện ở {device}.",
   "apps.tuneloWeb.description": "Tunnel của bạn trên trình duyệt.",
@@ -2128,6 +2185,8 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in zh-
   "apps.trust.control": "由你决定哪些应用可以访问",
   "apps.trust.noPassword": "无需创建或记住密码",
   "apps.trust.providers": "使用 Google、GitHub 或 Apple 登录",
+  "apps.truyenWeb.description": "用新的语言重新讲述越南和世界各地的民间故事。",
+  "apps.truyenWeb.signIn": "在网站上选择登录，即可收藏喜欢的故事，并在任何设备上接着读。",
   "apps.tuneloCli.description": "从你的电脑向互联网打开隧道。",
   "apps.tuneloCli.signIn": "在终端运行 {command}，然后在 {device} 输入它显示的代码。",
   "apps.tuneloWeb.description": "在浏览器中查看你的隧道。",

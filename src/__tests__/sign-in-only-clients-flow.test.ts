@@ -21,6 +21,8 @@ import {
 	CLIP_WEB_URL,
 	TIEUDE_WEB_SECRET,
 	TIEUDE_WEB_URL,
+	TRUYEN_WEB_SECRET,
+	TRUYEN_WEB_URL,
 	TUVI_WEB_SECRET,
 	TUVI_WEB_URL,
 	type TestIdp,
@@ -30,12 +32,12 @@ import {
 } from "./helpers/test-idp.js";
 import { OTHER_TEST_TENANT } from "./helpers/test-tenant.js";
 
-/** Tử Vi, Clip and Web Nhanh show the account in their header; Tiểu Đệ does not. */
+/** All but Tiểu Đệ show the account in their header. */
 const PROFILE_SCOPE = "openid profile email";
 
 /**
- * Tiểu Đệ, Tử Vi, Clip and Web Nhanh sign visitors in to learn they have an
- * account: a confidential web client, no refresh token, no API resource.
+ * Tiểu Đệ, Tử Vi, Clip, Web Nhanh and Truyện sign visitors in to learn they
+ * have an account: a confidential web client, no refresh token, no API resource.
  * Tiểu Đệ asks for `openid` alone; the others also for the name, picture
  * and email of their account menu.
  */
@@ -75,6 +77,15 @@ const APPS = [
 		url: WEBNHANH_WEB_URL,
 		secret: WEBNHANH_WEB_SECRET,
 		env: "WEBNHANH",
+	},
+	{
+		app: "truyen",
+		scope: PROFILE_SCOPE,
+		name: "Truyện",
+		clientId: STATIC_CLIENT_IDS.truyenWeb,
+		url: TRUYEN_WEB_URL,
+		secret: TRUYEN_WEB_SECRET,
+		env: "TRUYEN",
 	},
 ] as const;
 
