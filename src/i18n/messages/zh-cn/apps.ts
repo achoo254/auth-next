@@ -63,6 +63,9 @@ export const zhApps: Translation<typeof enApps> = {
 	"apps.truyenWeb.description": "用新的语言重新讲述越南和世界各地的民间故事。",
 	"apps.truyenWeb.signIn":
 		"在网站上选择登录，即可收藏喜欢的故事，并在任何设备上接着读。",
+	"apps.lockinWeb.description": "用一个链接和朋友敲定出游计划。",
+	"apps.lockinWeb.signIn":
+		"在网站上选择登录，即可发起计划；朋友通过链接加入，无需账号。",
 	"apps.steps.title": "登录流程",
 	"apps.steps.choose.title": "选择一个应用",
 	"apps.steps.choose.body": "在它的网站上选择登录，或在终端运行 {command}。",

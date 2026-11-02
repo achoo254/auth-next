@@ -13,6 +13,7 @@ export type AppIconName =
 	| "tuvi"
 	| "clip"
 	| "truyen"
+	| "lockin"
 	| "webnhanh";
 
 /**
@@ -31,6 +32,7 @@ const ICON_FILES: Readonly<Record<AppIconName, string>> = {
 	tuvi: "tuvi-mark-128.webp",
 	clip: "clip-mark-128.webp",
 	truyen: "truyen-mark-128.webp",
+	lockin: "lockin-mark-128.webp",
 	webnhanh: "webnhanh-mark-128.webp",
 };
 

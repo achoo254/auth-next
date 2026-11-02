@@ -198,6 +198,15 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <p class="app-card-desc">Vietnamese and world folk tales, retold in fresh words.</p>
 <div class="app-card-how"><p class="app-card-how-label">How to sign in</p><p>Choose Sign in on the site to save your favourite tales and keep reading on any device.</p></div>
 <div class="app-card-foot"><a class="btn btn-secondary" href="https://truyen.hoandat.com" data-id="app-open-truyen-web">Open</a></div>
+</li><li class="app-card tone-amber" data-id="app-lockin-web">
+<div class="app-card-head">
+<span class="app-card-icon"><img class="app-mark" src="/assets/img/apps/lockin-mark-128.webp" width="44" height="44" alt=""></span>
+<div class="app-card-heading"><h3 class="app-card-name">Lockin</h3>
+<p class="app-card-meta"><span class="badge badge-neutral">Web app</span><span class="mono">lockin.hoandat.com</span></p></div>
+</div>
+<p class="app-card-desc">Lock in hangout plans with your friends through one link.</p>
+<div class="app-card-how"><p class="app-card-how-label">How to sign in</p><p>Choose Sign in on the site to create a plan; friends join through the link without an account.</p></div>
+<div class="app-card-foot"><a class="btn btn-secondary" href="https://lockin.hoandat.com" data-id="app-open-lockin-web">Open</a></div>
 </li></ul>
 </section>
 <section class="apps-section" id="how-sign-in-works" aria-labelledby="apps-steps-title" data-id="apps-steps">
@@ -390,6 +399,15 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <p class="app-card-desc">Truyện cổ Việt Nam và thế giới kể lại bằng lời mới.</p>
 <div class="app-card-how"><p class="app-card-how-label">Cách đăng nhập</p><p>Chọn Đăng nhập trên trang để lưu truyện yêu thích và đọc tiếp trên mọi máy.</p></div>
 <div class="app-card-foot"><a class="btn btn-secondary" href="https://truyen.hoandat.com" data-id="app-open-truyen-web">Mở</a></div>
+</li><li class="app-card tone-amber" data-id="app-lockin-web">
+<div class="app-card-head">
+<span class="app-card-icon"><img class="app-mark" src="/assets/img/apps/lockin-mark-128.webp" width="44" height="44" alt=""></span>
+<div class="app-card-heading"><h3 class="app-card-name">Lockin</h3>
+<p class="app-card-meta"><span class="badge badge-neutral">Ứng dụng web</span><span class="mono">lockin.hoandat.com</span></p></div>
+</div>
+<p class="app-card-desc">Chốt kèo đi chơi với nhóm bạn bằng một link.</p>
+<div class="app-card-how"><p class="app-card-how-label">Cách đăng nhập</p><p>Chọn Đăng nhập trên trang để tạo kèo; bạn bè vào bằng link, không cần tài khoản.</p></div>
+<div class="app-card-foot"><a class="btn btn-secondary" href="https://lockin.hoandat.com" data-id="app-open-lockin-web">Mở</a></div>
 </li></ul>
 </section>
 <section class="apps-section" id="how-sign-in-works" aria-labelledby="apps-steps-title" data-id="apps-steps">
@@ -582,6 +600,15 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <p class="app-card-desc">用新的语言重新讲述越南和世界各地的民间故事。</p>
 <div class="app-card-how"><p class="app-card-how-label">登录方式</p><p>在网站上选择登录，即可收藏喜欢的故事，并在任何设备上接着读。</p></div>
 <div class="app-card-foot"><a class="btn btn-secondary" href="https://truyen.hoandat.com" data-id="app-open-truyen-web">打开</a></div>
+</li><li class="app-card tone-amber" data-id="app-lockin-web">
+<div class="app-card-head">
+<span class="app-card-icon"><img class="app-mark" src="/assets/img/apps/lockin-mark-128.webp" width="44" height="44" alt=""></span>
+<div class="app-card-heading"><h3 class="app-card-name">Lockin</h3>
+<p class="app-card-meta"><span class="badge badge-neutral">网页应用</span><span class="mono">lockin.hoandat.com</span></p></div>
+</div>
+<p class="app-card-desc">用一个链接和朋友敲定出游计划。</p>
+<div class="app-card-how"><p class="app-card-how-label">登录方式</p><p>在网站上选择登录，即可发起计划；朋友通过链接加入，无需账号。</p></div>
+<div class="app-card-foot"><a class="btn btn-secondary" href="https://lockin.hoandat.com" data-id="app-open-lockin-web">打开</a></div>
 </li></ul>
 </section>
 <section class="apps-section" id="how-sign-in-works" aria-labelledby="apps-steps-title" data-id="apps-steps">
@@ -1348,6 +1375,32 @@ exports[`primary tenant (hoandat.com) is unchanged > serves the same static clie
     "subject_type": "public",
     "token_endpoint_auth_method": "client_secret_basic",
   },
+  {
+    "allowed_resources": [],
+    "application_type": "web",
+    "backchannel_logout_session_required": false,
+    "client_id": "lockin-web",
+    "client_name": "Lockin",
+    "dpop_bound_access_tokens": false,
+    "grant_types": [
+      "authorization_code",
+    ],
+    "id_token_signed_response_alg": "ES256",
+    "post_logout_redirect_uris": [
+      "https://lockin.hoandat.com/",
+    ],
+    "redirect_uris": [
+      "https://lockin.hoandat.com/auth/callback",
+    ],
+    "require_auth_time": false,
+    "require_pushed_authorization_requests": false,
+    "response_types": [
+      "code",
+    ],
+    "scope": "openid profile email",
+    "subject_type": "public",
+    "token_endpoint_auth_method": "client_secret_basic",
+  },
 ]
 `;
 
@@ -1440,6 +1493,8 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in en 
   "apps.localmanMcp.signIn": "Add {address} to your AI tool as an MCP server, then approve what it may do on the consent page.",
   "apps.localmanWeb.description": "Mock APIs and an API client in your browser.",
   "apps.localmanWeb.signIn": "Choose Sign in on the site.",
+  "apps.lockinWeb.description": "Lock in hangout plans with your friends through one link.",
+  "apps.lockinWeb.signIn": "Choose Sign in on the site to create a plan; friends join through the link without an account.",
   "apps.manage": "To see or remove the apps that can access your account, open {account}.",
   "apps.miuWeb.description": "A 3D world to play and learn maths and Vietnamese with friends.",
   "apps.miuWeb.signIn": "Choose Sign in on the site or in the iPhone or Android app.",
@@ -1801,6 +1856,8 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in vi 
   "apps.localmanMcp.signIn": "Thêm {address} vào công cụ AI làm MCP server, rồi duyệt những gì nó được làm ở trang cấp quyền.",
   "apps.localmanWeb.description": "Mock API và API client ngay trên trình duyệt.",
   "apps.localmanWeb.signIn": "Chọn Đăng nhập trên trang.",
+  "apps.lockinWeb.description": "Chốt kèo đi chơi với nhóm bạn bằng một link.",
+  "apps.lockinWeb.signIn": "Chọn Đăng nhập trên trang để tạo kèo; bạn bè vào bằng link, không cần tài khoản.",
   "apps.manage": "Để xem hoặc gỡ các ứng dụng đang có quyền vào tài khoản, mở trang {account}.",
   "apps.miuWeb.description": "Thế giới 3D vừa chơi vừa học Toán và Tiếng Việt, chơi cùng bạn bè.",
   "apps.miuWeb.signIn": "Chọn Đăng nhập trên trang hoặc trong app iPhone, Android.",
@@ -2162,6 +2219,8 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in zh-
   "apps.localmanMcp.signIn": "在 AI 工具中把 {address} 添加为 MCP 服务器，然后在授权页面批准它可以执行的操作。",
   "apps.localmanWeb.description": "在浏览器中使用 Mock API 和 API 客户端。",
   "apps.localmanWeb.signIn": "在网站上选择登录。",
+  "apps.lockinWeb.description": "用一个链接和朋友敲定出游计划。",
+  "apps.lockinWeb.signIn": "在网站上选择登录，即可发起计划；朋友通过链接加入，无需账号。",
   "apps.manage": "如需查看或移除可以访问你账号的应用，请打开{account}页面。",
   "apps.miuWeb.description": "边玩边学数学和越南语的 3D 世界，可与朋友一起玩。",
   "apps.miuWeb.signIn": "在网站或 iPhone、Android 应用中选择登录。",

@@ -221,6 +221,31 @@ describe("app list page", () => {
 		);
 	});
 
+	it("lists Lockin as a fun app with its mark once its client is configured", () => {
+		const lockin = "https://lockin.staging.example";
+		const withLockin = { ...STAGING, webApps: { ...STAGING.webApps, lockin } };
+		const html = renderAppsPage(withLockin, testPage("en", "/apps"));
+		expect(html).toContain('data-id="app-open-lockin-web"');
+		expect(html).toContain(`href="${lockin}"`);
+		expect(html).toContain("/assets/img/apps/lockin-mark-128.webp");
+		expect(existsSync(`${STATIC_DIR}/img/apps/lockin-mark-128.webp`)).toBe(
+			true,
+		);
+		expect(html).toContain("Lock in hangout plans with your friends");
+		expect(html).not.toContain(">Lockin</text>");
+		const fun = html.slice(html.indexOf('data-id="apps-group-fun"'));
+		expect(fun).toContain('data-id="app-lockin-web"');
+		expect(renderAppsPage(withLockin, testPage("vi", "/apps"))).toContain(
+			"Chốt kèo đi chơi với nhóm bạn bằng một link",
+		);
+		expect(renderAppsPage(withLockin, testPage("zh-CN", "/apps"))).toContain(
+			"敲定出游计划",
+		);
+		expect(renderAppsPage(STAGING, testPage("en", "/apps"))).not.toContain(
+			'data-id="app-lockin-web"',
+		);
+	});
+
 	it("ends every page with the brand's home link and the privacy policy", () => {
 		const html = renderAppsPage(STAGING, testPage("vi", "/apps"));
 		expect(html).toContain(

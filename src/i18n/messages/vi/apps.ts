@@ -71,6 +71,9 @@ export const viApps: Translation<typeof enApps> = {
 		"Truyện cổ Việt Nam và thế giới kể lại bằng lời mới.",
 	"apps.truyenWeb.signIn":
 		"Chọn Đăng nhập trên trang để lưu truyện yêu thích và đọc tiếp trên mọi máy.",
+	"apps.lockinWeb.description": "Chốt kèo đi chơi với nhóm bạn bằng một link.",
+	"apps.lockinWeb.signIn":
+		"Chọn Đăng nhập trên trang để tạo kèo; bạn bè vào bằng link, không cần tài khoản.",
 	"apps.steps.title": "Đăng nhập diễn ra thế nào",
 	"apps.steps.choose.title": "Chọn một ứng dụng",
 	"apps.steps.choose.body":

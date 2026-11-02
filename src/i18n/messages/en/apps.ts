@@ -69,6 +69,10 @@ export const enApps = {
 		"Vietnamese and world folk tales, retold in fresh words.",
 	"apps.truyenWeb.signIn":
 		"Choose Sign in on the site to save your favourite tales and keep reading on any device.",
+	"apps.lockinWeb.description":
+		"Lock in hangout plans with your friends through one link.",
+	"apps.lockinWeb.signIn":
+		"Choose Sign in on the site to create a plan; friends join through the link without an account.",
 	"apps.steps.title": "How sign-in works",
 	"apps.steps.choose.title": "Pick an app",
 	"apps.steps.choose.body":
