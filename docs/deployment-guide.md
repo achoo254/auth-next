@@ -131,7 +131,7 @@ Bật trên production: sinh secret thẳng vào `.env` của IdP như Miu (`pri
 
 Rollback: xoá hai dòng `KB_WEB_*` rồi reload; nút đăng nhập của KnowFlow trả lỗi, thẻ KnowFlow rời `/apps`.
 
-Trạng thái production (04/11/2026): đã deploy code và bật `kb-web-dev` (`KB_WEB_DEV_URL=http://localhost:5321`, secret sinh trên server, bản sao ở thư mục iCloud `ENV production/kb-next/`). `kb-web` chưa bật vì `kb.hoandat.com` chưa chạy: bật sớm thì thẻ trên `/apps` dẫn tới trang chết. Secret của nó đã sinh sẵn trong cùng thư mục iCloud (bản production); khi deploy KnowFlow, đặt `KB_WEB_URL` và `KB_WEB_CLIENT_SECRET` với đúng giá trị đó. File env của IdP trước thay đổi được giữ trên server với hậu tố `.bak-20261104-kb`.
+Trạng thái production (04/11/2026): cả `kb-web-dev` (`KB_WEB_DEV_URL=http://localhost:5321`) và `kb-web` (`KB_WEB_URL=https://kb.hoandat.com`) đã bật, cùng ngày KnowFlow lên `kb.hoandat.com`. Secret của `kb-web` sinh trên server, cùng giá trị ghi vào env của KnowFlow (`/etc/kb/production.env`). File env của IdP trước mỗi lần thay đổi được giữ trên server với hậu tố `.bak-20261104-kb` và `.bak-<stamp>-kbweb`.
 
 ## App iOS "Tài khoản" (`account-ios`, AASA, APNs)
 
