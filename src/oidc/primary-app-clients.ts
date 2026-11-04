@@ -27,13 +27,8 @@ export interface PrimaryAppClientsConfig {
 	readonly dev?: PrimaryWebApp;
 }
 
-/** The fixed parts of one app's clients. */
-export interface PrimaryAppSpec {
-	readonly ids: {
-		readonly web: string;
-		readonly mobile: string;
-		readonly webDev: string;
-	};
+/** What every web client of one app shares: everything but its id and origin. */
+export interface WebClientSpec {
 	readonly name: string;
 	readonly scope: string;
 	/** Grants of every client of the app (refresh only if the app uses it). */
@@ -42,12 +37,22 @@ export interface PrimaryAppSpec {
 	readonly backchannelLogoutPath: string;
 }
 
+/** The fixed parts of one app's clients. */
+export interface PrimaryAppSpec extends WebClientSpec {
+	readonly ids: {
+		readonly web: string;
+		readonly mobile: string;
+		readonly webDev: string;
+	};
+}
+
 /**
  * A confidential web client: Code + PKCE (oidc-provider requires PKCE for
- * every client here), no API resource.
+ * every client here), no API resource. `backchannel` only for an origin the
+ * IdP can reach (never a developer's loopback machine).
  */
-function webClient(
-	spec: PrimaryAppSpec,
+export function webClient(
+	spec: WebClientSpec,
 	clientId: string,
 	app: PrimaryWebApp,
 	backchannel: boolean,

@@ -246,6 +246,28 @@ describe("app list page", () => {
 		);
 	});
 
+	it("lists KnowFlow as a fun app with its mark once its client is configured", () => {
+		const kb = "https://kb.staging.example";
+		const withKb = { ...STAGING, webApps: { ...STAGING.webApps, kb } };
+		const html = renderAppsPage(withKb, testPage("en", "/apps"));
+		expect(html).toContain('data-id="app-open-kb-web"');
+		expect(html).toContain(`href="${kb}"`);
+		expect(html).toContain("/assets/img/apps/kb-mark-128.webp");
+		expect(existsSync(`${STATIC_DIR}/img/apps/kb-mark-128.webp`)).toBe(true);
+		expect(html).toContain("A bilingual knowledge base");
+		const fun = html.slice(html.indexOf('data-id="apps-group-fun"'));
+		expect(fun).toContain('data-id="app-kb-web"');
+		expect(renderAppsPage(withKb, testPage("vi", "/apps"))).toContain(
+			"Knowledge base song ngữ",
+		);
+		expect(renderAppsPage(withKb, testPage("zh-CN", "/apps"))).toContain(
+			"双语知识库",
+		);
+		expect(renderAppsPage(STAGING, testPage("en", "/apps"))).not.toContain(
+			'data-id="app-kb-web"',
+		);
+	});
+
 	it("ends every page with the brand's home link and the privacy policy", () => {
 		const html = renderAppsPage(STAGING, testPage("vi", "/apps"));
 		expect(html).toContain(

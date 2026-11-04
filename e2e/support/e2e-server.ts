@@ -27,6 +27,7 @@ import {
 } from "../../src/services.js";
 import {
 	envClientSecrets,
+	envKbClients,
 	envMiuClients,
 	envScribeClients,
 	envSignInOnlyApps,
@@ -91,6 +92,7 @@ const provider = createProvider({
 	scribeClients: envScribeClients(env),
 	miuClients: envMiuClients(env),
 	signInOnlyApps: envSignInOnlyApps(env),
+	kbClients: envKbClients(env),
 	clientSecrets: envClientSecrets(env),
 	accountStore: accounts,
 	logger,

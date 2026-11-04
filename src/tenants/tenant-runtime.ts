@@ -8,6 +8,7 @@ import { createProvider } from "../oidc/provider.js";
 import { type AppServices, createServices } from "../services.js";
 import {
 	envClientSecrets,
+	envKbClients,
 	envMiuClients,
 	envScribeClients,
 	envSignInOnlyApps,
@@ -47,6 +48,7 @@ export function buildPrimaryRuntime(
 		scribeClients: envScribeClients(env),
 		miuClients: envMiuClients(env),
 		signInOnlyApps: envSignInOnlyApps(env),
+		kbClients: envKbClients(env),
 		clientSecrets: envClientSecrets(env),
 		accountStore: accounts,
 		logger,

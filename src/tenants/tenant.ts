@@ -31,6 +31,8 @@ export interface Tenant {
 		readonly webnhanh?: string;
 		readonly truyen?: string;
 		readonly lockin?: string;
+		/** KnowFlow, once its URL and secret are configured. */
+		readonly kb?: string;
 	};
 }
 

@@ -1,5 +1,6 @@
 import type { Env } from "../config/env.js";
 import type { StaticClientSecrets } from "../oidc/clients.js";
+import type { KbClientsConfig } from "../oidc/kb-clients.js";
 import type { PrimaryAppClientsConfig } from "../oidc/primary-app-clients.js";
 import type { SignInOnlyApps } from "../oidc/sign-in-only-clients.js";
 import type { Tenant } from "./tenant.js";
@@ -16,8 +17,8 @@ export const PRIMARY_TENANT_ID = "primary";
  * `TENANT_DOMAIN` (resources and audiences follow from it), its web apps
  * `LOCALMAN_WEB_URL`, `TUNELO_WEB_URL`, `CHAT_WEB_URL` and, once their client
  * secrets are set, `SCRIBE_WEB_URL`, `MIU_WEB_URL`, `TIEUDE_WEB_URL`,
- * `TUVI_WEB_URL`, `CLIP_WEB_URL`, `WEBNHANH_WEB_URL`, `TRUYEN_WEB_URL` and
- * `LOCKIN_WEB_URL`.
+ * `TUVI_WEB_URL`, `CLIP_WEB_URL`, `WEBNHANH_WEB_URL`, `TRUYEN_WEB_URL`,
+ * `LOCKIN_WEB_URL` and `KB_WEB_URL`.
  */
 export function envTenant(
 	env: Pick<
@@ -44,6 +45,8 @@ export function envTenant(
 		| "TRUYEN_WEB_CLIENT_SECRET"
 		| "LOCKIN_WEB_URL"
 		| "LOCKIN_WEB_CLIENT_SECRET"
+		| "KB_WEB_URL"
+		| "KB_WEB_CLIENT_SECRET"
 	>,
 ): Tenant {
 	return {
@@ -58,6 +61,9 @@ export function envTenant(
 			...(env.SCRIBE_WEB_CLIENT_SECRET ? { scribe: env.SCRIBE_WEB_URL } : {}),
 			...(env.MIU_WEB_CLIENT_SECRET ? { miu: env.MIU_WEB_URL } : {}),
 			...signInOnlyOrigins(envSignInOnlyApps(env)),
+			...(env.KB_WEB_URL && env.KB_WEB_CLIENT_SECRET
+				? { kb: env.KB_WEB_URL }
+				: {}),
 		},
 	};
 }
@@ -180,4 +186,33 @@ export function envMiuClients(
 		env.MIU_WEB_DEV_URL,
 		env.MIU_WEB_DEV_CLIENT_SECRET,
 	);
+}
+
+/**
+ * The primary tenant's KnowFlow clients, from the environment: each pair
+ * counts only when both its origin and its secret are set (parseEnv rejects
+ * one alone).
+ */
+export function envKbClients(
+	env: Pick<
+		Env,
+		| "KB_WEB_URL"
+		| "KB_WEB_CLIENT_SECRET"
+		| "KB_WEB_DEV_URL"
+		| "KB_WEB_DEV_CLIENT_SECRET"
+	>,
+): KbClientsConfig {
+	return {
+		...(env.KB_WEB_URL && env.KB_WEB_CLIENT_SECRET
+			? { web: { url: env.KB_WEB_URL, secret: env.KB_WEB_CLIENT_SECRET } }
+			: {}),
+		...(env.KB_WEB_DEV_URL && env.KB_WEB_DEV_CLIENT_SECRET
+			? {
+					dev: {
+						url: env.KB_WEB_DEV_URL,
+						secret: env.KB_WEB_DEV_CLIENT_SECRET,
+					},
+				}
+			: {}),
+	};
 }

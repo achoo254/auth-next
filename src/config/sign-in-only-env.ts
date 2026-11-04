@@ -1,10 +1,5 @@
-import { z } from "zod";
-import { appClientSecret, checkDevPair } from "./primary-app-env.js";
-
-/** An app's origin, e.g. https://tieude.hoandat.com. */
-const appOrigin = z
-	.url({ protocol: /^https?$/, error: "must be an http(s) URL" })
-	.optional();
+import type { z } from "zod";
+import { appClientSecret, appOrigin, checkDevPair } from "./primary-app-env.js";
 
 /**
  * Tiểu Đệ, Tử Vi, Clip, Web Nhanh, Truyện and Lockin (primary tenant only). Each is

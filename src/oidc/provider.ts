@@ -24,6 +24,7 @@ import {
 	promptValuesSupported,
 } from "./interaction-policy.js";
 import { SIGNING_ALG, type SigningJwks, idTokenSigningAlgs } from "./jwks.js";
+import type { KbClientsConfig } from "./kb-clients.js";
 import { createMongoAdapterFactory } from "./mongo-adapter.js";
 import type { PrimaryAppClientsConfig } from "./primary-app-clients.js";
 import { buildProviderFeatures } from "./provider-features.js";
@@ -93,6 +94,8 @@ export interface ProviderDependencies {
 	readonly miuClients?: PrimaryAppClientsConfig;
 	/** The sign-in-only apps' web clients (Tử Vi, Clip, Truyện...); primary tenant only. */
 	readonly signInOnlyApps?: SignInOnlyApps;
+	/** KnowFlow's web and development clients; primary tenant only. */
+	readonly kbClients?: KbClientsConfig;
 	readonly accountStore: AccountStore;
 	readonly logger: Logger;
 }
@@ -142,6 +145,7 @@ export function buildProviderConfiguration(
 			deps.scribeClients,
 			deps.miuClients,
 			deps.signInOnlyApps ?? {},
+			deps.kbClients,
 		),
 		findAccount: createFindAccount(accountStore),
 		jwks: { keys: jwks.keys.map((key) => ({ ...key })) },

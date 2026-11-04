@@ -3,7 +3,7 @@ import { PRIVATE_USE_REDIRECT } from "../oidc/chat-clients.js";
 
 /*
  * Building blocks of the environment of a primary-tenant app (Scribe, Miu
- * World): an optional web client, the app's private-use redirect and an
+ * World, KnowFlow, the sign-in-only apps): an optional web client, the app's private-use redirect and an
  * all-or-nothing development client that only ever redirects to loopback.
  */
 
@@ -31,6 +31,14 @@ export function appMobileRedirect(fallback: string) {
 			"must be a private-use scheme redirect like com.example.app:/auth/callback",
 		);
 }
+
+/**
+ * An optional app origin, e.g. https://tieude.hoandat.com; production
+ * requires public https (env.ts, OPTIONAL_PRODUCTION_URLS).
+ */
+export const appOrigin = z
+	.url({ protocol: /^https?$/, error: "must be an http(s) URL" })
+	.optional();
 
 /** Origin of a developer's local app, e.g. http://localhost:5174. */
 export const appDevUrl = z

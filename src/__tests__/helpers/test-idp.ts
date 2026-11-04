@@ -24,6 +24,7 @@ import {
 } from "../../services.js";
 import {
 	envClientSecrets,
+	envKbClients,
 	envMiuClients,
 	envScribeClients,
 	envSignInOnlyApps,
@@ -154,6 +155,7 @@ export async function startTestIdp(options: TestIdpOptions): Promise<TestIdp> {
 		scribeClients: envScribeClients(env),
 		miuClients: envMiuClients(env),
 		signInOnlyApps: envSignInOnlyApps(env),
+		kbClients: envKbClients(env),
 		clientSecrets: envClientSecrets(env),
 		accountStore:
 			options.interactions === "real"

@@ -14,6 +14,7 @@ export type AppIconName =
 	| "clip"
 	| "truyen"
 	| "lockin"
+	| "kb"
 	| "webnhanh";
 
 /**
@@ -33,6 +34,7 @@ const ICON_FILES: Readonly<Record<AppIconName, string>> = {
 	clip: "clip-mark-128.webp",
 	truyen: "truyen-mark-128.webp",
 	lockin: "lockin-mark-128.webp",
+	kb: "kb-mark-128.webp",
 	webnhanh: "webnhanh-mark-128.webp",
 };
 

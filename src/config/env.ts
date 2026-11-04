@@ -11,6 +11,7 @@ import {
 	integrationEnvShape,
 } from "./integrations-env.js";
 import { iosEnvShape } from "./ios-env.js";
+import { KB_URL_KEYS, checkKbGroups, kbEnvShape } from "./kb-env.js";
 import { checkMiuDevGroup, miuEnvShape } from "./miu-env.js";
 import { checkScribeDevGroup, scribeEnvShape } from "./scribe-env.js";
 import {
@@ -58,6 +59,7 @@ const PRODUCTION_URLS = [
 const OPTIONAL_PRODUCTION_URLS = [
 	"AUDIT_EVENTS_URL",
 	...SIGN_IN_ONLY_URL_KEYS,
+	...KB_URL_KEYS,
 ] as const;
 
 const envSchema = z
@@ -157,6 +159,7 @@ const envSchema = z
 		...scribeEnvShape,
 		...miuEnvShape,
 		...signInOnlyEnvShape,
+		...kbEnvShape,
 		...iosEnvShape,
 		...usageEnvShape,
 	})
@@ -166,6 +169,7 @@ const envSchema = z
 		checkScribeDevGroup(env, ctx);
 		checkMiuDevGroup(env, ctx);
 		checkSignInOnlyGroups(env, ctx);
+		checkKbGroups(env, ctx);
 		if (env.NODE_ENV !== "production") return;
 		for (const key of PRODUCTION_URLS) {
 			if (!isPublicHttpsUrl(env[key])) {
