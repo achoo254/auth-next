@@ -246,7 +246,7 @@ describe("app list page", () => {
 		);
 	});
 
-	it("lists KnowFlow as a fun app with its mark once its client is configured", () => {
+	it("lists KnowFlow as a main app with its mark once its client is configured", () => {
 		const kb = "https://kb.staging.example";
 		const withKb = { ...STAGING, webApps: { ...STAGING.webApps, kb } };
 		const html = renderAppsPage(withKb, testPage("en", "/apps"));
@@ -255,8 +255,11 @@ describe("app list page", () => {
 		expect(html).toContain("/assets/img/apps/kb-mark-128.webp");
 		expect(existsSync(`${STATIC_DIR}/img/apps/kb-mark-128.webp`)).toBe(true);
 		expect(html).toContain("A bilingual knowledge base");
-		const fun = html.slice(html.indexOf('data-id="apps-group-fun"'));
-		expect(fun).toContain('data-id="app-kb-web"');
+		const work = html.slice(
+			html.indexOf('data-id="apps-group-work"'),
+			html.indexOf('data-id="apps-group-fun"'),
+		);
+		expect(work).toContain('data-id="app-kb-web"');
 		expect(renderAppsPage(withKb, testPage("vi", "/apps"))).toContain(
 			"Knowledge base song ngữ",
 		);

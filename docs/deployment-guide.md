@@ -124,7 +124,7 @@ KnowFlow (repo `kb-next`, `https://kb.hoandat.com`, knowledge base song ngữ) d
 
 | Biến | Ý nghĩa |
 |---|---|
-| `KB_WEB_URL` + `KB_WEB_CLIENT_SECRET` | đặt cả hai hoặc không (secret ≥ 32 ký tự; production bắt buộc https công khai): bật `kb-web` và thẻ KnowFlow ở `/apps` (nhóm giải trí). Cùng secret là `AUTH_CLIENT_SECRET` trong `.env` của KnowFlow |
+| `KB_WEB_URL` + `KB_WEB_CLIENT_SECRET` | đặt cả hai hoặc không (secret ≥ 32 ký tự; production bắt buộc https công khai): bật `kb-web` và thẻ KnowFlow ở `/apps` (nhóm app chính). Cùng secret là `AUTH_CLIENT_SECRET` trong `.env` của KnowFlow |
 | `KB_WEB_DEV_URL` + `KB_WEB_DEV_CLIENT_SECRET` | đặt cả hai hoặc không: bật `kb-web-dev` (redirect loopback cổng khớp chính xác, vd `http://localhost:5321/auth/callback`, không back-channel vì IdP không gọi được máy dev) |
 
 Bật trên production: sinh secret thẳng vào `.env` của IdP như Miu (`printf 'KB_WEB_CLIENT_SECRET=%s\n' "$(openssl rand -base64 48 | tr -d '\n')" >> /var/www/hoandat-auth/.env`, thêm dòng `KB_WEB_URL=https://kb.hoandat.com`), chép secret sang `.env` của KnowFlow, `pm2 startOrReload infra/ecosystem.config.cjs --update-env`, rồi `pnpm seed:clients` phải liệt kê `kb-web "KnowFlow"` với back-channel `https://kb.hoandat.com/auth/backchannel-logout`.

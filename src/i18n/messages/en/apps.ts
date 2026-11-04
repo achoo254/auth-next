@@ -74,7 +74,7 @@ export const enApps = {
 	"apps.lockinWeb.signIn":
 		"Choose Sign in on the site to create a plan; friends join through the link without an account.",
 	"apps.kbWeb.description":
-		"A bilingual knowledge base: cloud, networking, Linux and DevOps as one universe to read, search and ask AI.",
+		"A bilingual knowledge base, mostly IT, laid out as one universe to read, search and ask AI.",
 	"apps.kbWeb.signIn":
 		"Choose Sign in on the site to read the Universe and ask AI about it.",
 	"apps.steps.title": "How sign-in works",

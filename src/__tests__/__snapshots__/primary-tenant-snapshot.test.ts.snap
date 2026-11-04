@@ -60,8 +60,8 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <a class="btn btn-secondary" href="#how-sign-in-works" data-id="apps-how">How sign-in works</a>
 </div>
 </div>
-<div class="apps-hero-art"><svg class="hub" viewBox="0 0 544 300" role="img" aria-label="Your hoandat.com account, reached with Google, GitHub or Apple, signs you in to Localman, Tunelo, Chat, Scribe, and Web Nhanh." data-id="apps-hub">
-<path class="hub-line" d="M132 70 C156 70 156 150 180 150"/><path class="hub-flow tone-primary" d="M132 70 C156 70 156 150 180 150"/><path class="hub-line" d="M132 150 C156 150 156 150 180 150"/><path class="hub-flow tone-primary" d="M132 150 C156 150 156 150 180 150"/><path class="hub-line" d="M132 230 C156 230 156 150 180 150"/><path class="hub-flow tone-primary" d="M132 230 C156 230 156 150 180 150"/><path class="hub-line" d="M340 150 C366 150 366 30 392 30"/><path class="hub-flow tone-violet" d="M340 150 C366 150 366 30 392 30"/><path class="hub-line" d="M340 150 C366 150 366 90 392 90"/><path class="hub-flow tone-amber" d="M340 150 C366 150 366 90 392 90"/><path class="hub-line" d="M340 150 C366 150 366 150 392 150"/><path class="hub-flow tone-blue" d="M340 150 C366 150 366 150 392 150"/><path class="hub-line" d="M340 150 C366 150 366 210 392 210"/><path class="hub-flow tone-red" d="M340 150 C366 150 366 210 392 210"/><path class="hub-line" d="M340 150 C366 150 366 270 392 270"/><path class="hub-flow tone-green" d="M340 150 C366 150 366 270 392 270"/>
+<div class="apps-hero-art"><svg class="hub" viewBox="0 0 544 300" role="img" aria-label="Your hoandat.com account, reached with Google, GitHub or Apple, signs you in to Localman, Tunelo, Chat, Scribe, Web Nhanh, and KnowFlow." data-id="apps-hub">
+<path class="hub-line" d="M132 70 C156 70 156 150 180 150"/><path class="hub-flow tone-primary" d="M132 70 C156 70 156 150 180 150"/><path class="hub-line" d="M132 150 C156 150 156 150 180 150"/><path class="hub-flow tone-primary" d="M132 150 C156 150 156 150 180 150"/><path class="hub-line" d="M132 230 C156 230 156 150 180 150"/><path class="hub-flow tone-primary" d="M132 230 C156 230 156 150 180 150"/><path class="hub-line" d="M340 150 C366 150 366 25 392 25"/><path class="hub-flow tone-violet" d="M340 150 C366 150 366 25 392 25"/><path class="hub-line" d="M340 150 C366 150 366 75 392 75"/><path class="hub-flow tone-amber" d="M340 150 C366 150 366 75 392 75"/><path class="hub-line" d="M340 150 C366 150 366 125 392 125"/><path class="hub-flow tone-blue" d="M340 150 C366 150 366 125 392 125"/><path class="hub-line" d="M340 150 C366 150 366 175 392 175"/><path class="hub-flow tone-red" d="M340 150 C366 150 366 175 392 175"/><path class="hub-line" d="M340 150 C366 150 366 225 392 225"/><path class="hub-flow tone-green" d="M340 150 C366 150 366 225 392 225"/><path class="hub-line" d="M340 150 C366 150 366 275 392 275"/><path class="hub-flow tone-blue" d="M340 150 C366 150 366 275 392 275"/>
 <g class="hub-node">
 <rect x="8" y="50" width="124" height="40" rx="10"/>
 <svg x="20" y="62" width="16" height="16" viewBox="0 0 24 24"><path class="hub-mark" d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"/></svg>
@@ -81,25 +81,29 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <text class="hub-text hub-sub" x="260" y="168" text-anchor="middle">ISSUER_HOST</text>
 </g>
 <g class="hub-node tone-violet">
-<rect x="392" y="10" width="148" height="40" rx="10"/>
-<image href="/assets/img/apps/localman-mark-128.webp" x="398" y="16" width="28" height="28" aria-hidden="true"/>
-<text class="hub-text hub-app" x="434" y="35">Localman</text>
+<rect x="392" y="5" width="148" height="40" rx="10"/>
+<image href="/assets/img/apps/localman-mark-128.webp" x="398" y="11" width="28" height="28" aria-hidden="true"/>
+<text class="hub-text hub-app" x="434" y="30">Localman</text>
 </g><g class="hub-node tone-amber">
-<rect x="392" y="70" width="148" height="40" rx="10"/>
-<image href="/assets/img/apps/tunelo-mark-128.webp" x="398" y="76" width="28" height="28" aria-hidden="true"/>
-<text class="hub-text hub-app" x="434" y="95">Tunelo</text>
+<rect x="392" y="55" width="148" height="40" rx="10"/>
+<image href="/assets/img/apps/tunelo-mark-128.webp" x="398" y="61" width="28" height="28" aria-hidden="true"/>
+<text class="hub-text hub-app" x="434" y="80">Tunelo</text>
 </g><g class="hub-node tone-blue">
-<rect x="392" y="130" width="148" height="40" rx="10"/>
-<image href="/assets/img/apps/chat-mark-128.webp" x="398" y="136" width="28" height="28" aria-hidden="true"/>
-<text class="hub-text hub-app" x="434" y="155">Chat</text>
+<rect x="392" y="105" width="148" height="40" rx="10"/>
+<image href="/assets/img/apps/chat-mark-128.webp" x="398" y="111" width="28" height="28" aria-hidden="true"/>
+<text class="hub-text hub-app" x="434" y="130">Chat</text>
 </g><g class="hub-node tone-red">
-<rect x="392" y="190" width="148" height="40" rx="10"/>
-<image href="/assets/img/apps/scribe-mark-128.webp" x="398" y="196" width="28" height="28" aria-hidden="true"/>
-<text class="hub-text hub-app" x="434" y="215">Scribe</text>
+<rect x="392" y="155" width="148" height="40" rx="10"/>
+<image href="/assets/img/apps/scribe-mark-128.webp" x="398" y="161" width="28" height="28" aria-hidden="true"/>
+<text class="hub-text hub-app" x="434" y="180">Scribe</text>
 </g><g class="hub-node tone-green">
-<rect x="392" y="250" width="148" height="40" rx="10"/>
-<image href="/assets/img/apps/webnhanh-mark-128.webp" x="398" y="256" width="28" height="28" aria-hidden="true"/>
-<text class="hub-text hub-app" x="434" y="275">Web Nhanh</text>
+<rect x="392" y="205" width="148" height="40" rx="10"/>
+<image href="/assets/img/apps/webnhanh-mark-128.webp" x="398" y="211" width="28" height="28" aria-hidden="true"/>
+<text class="hub-text hub-app" x="434" y="230">Web Nhanh</text>
+</g><g class="hub-node tone-blue">
+<rect x="392" y="255" width="148" height="40" rx="10"/>
+<image href="/assets/img/apps/kb-mark-128.webp" x="398" y="261" width="28" height="28" aria-hidden="true"/>
+<text class="hub-text hub-app" x="434" y="280">KnowFlow</text>
 </g>
 </svg></div>
 </section>
@@ -150,6 +154,15 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <p class="app-card-desc">Make a website from a template and publish it at its own address; developers deploy from a git link or a zip.</p>
 <div class="app-card-how"><p class="app-card-how-label">How to sign in</p><p>Choose Sign in on the site to make and publish websites.</p></div>
 <div class="app-card-foot"><a class="btn btn-secondary" href="https://webnhanh.hoandat.com" data-id="app-open-webnhanh-web">Open</a></div>
+</li><li class="app-card tone-blue" data-id="app-kb-web">
+<div class="app-card-head">
+<span class="app-card-icon"><img class="app-mark" src="/assets/img/apps/kb-mark-128.webp" width="44" height="44" alt=""></span>
+<div class="app-card-heading"><h3 class="app-card-name">KnowFlow</h3>
+<p class="app-card-meta"><span class="badge badge-neutral">Web app</span><span class="mono">kb.hoandat.com</span></p></div>
+</div>
+<p class="app-card-desc">A bilingual knowledge base, mostly IT, laid out as one universe to read, search and ask AI.</p>
+<div class="app-card-how"><p class="app-card-how-label">How to sign in</p><p>Choose Sign in on the site to read the Universe and ask AI about it.</p></div>
+<div class="app-card-foot"><a class="btn btn-secondary" href="https://kb.hoandat.com" data-id="app-open-kb-web">Open</a></div>
 </li></ul>
 </section><section class="apps-section apps-group" aria-labelledby="apps-group-fun" data-id="apps-group-fun">
 <div class="apps-group-head"><h2 class="apps-group-title" id="apps-group-fun">Apps for fun</h2><p class="apps-group-lead">Play, learn and have fun with the same account.</p></div>
@@ -207,15 +220,6 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <p class="app-card-desc">Lock in hangout plans with your friends through one link.</p>
 <div class="app-card-how"><p class="app-card-how-label">How to sign in</p><p>Choose Sign in on the site to create a plan; friends join through the link without an account.</p></div>
 <div class="app-card-foot"><a class="btn btn-secondary" href="https://lockin.hoandat.com" data-id="app-open-lockin-web">Open</a></div>
-</li><li class="app-card tone-blue" data-id="app-kb-web">
-<div class="app-card-head">
-<span class="app-card-icon"><img class="app-mark" src="/assets/img/apps/kb-mark-128.webp" width="44" height="44" alt=""></span>
-<div class="app-card-heading"><h3 class="app-card-name">KnowFlow</h3>
-<p class="app-card-meta"><span class="badge badge-neutral">Web app</span><span class="mono">kb.hoandat.com</span></p></div>
-</div>
-<p class="app-card-desc">A bilingual knowledge base: cloud, networking, Linux and DevOps as one universe to read, search and ask AI.</p>
-<div class="app-card-how"><p class="app-card-how-label">How to sign in</p><p>Choose Sign in on the site to read the Universe and ask AI about it.</p></div>
-<div class="app-card-foot"><a class="btn btn-secondary" href="https://kb.hoandat.com" data-id="app-open-kb-web">Open</a></div>
 </li></ul>
 </section>
 <section class="apps-section" id="how-sign-in-works" aria-labelledby="apps-steps-title" data-id="apps-steps">
@@ -270,8 +274,8 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <a class="btn btn-secondary" href="#how-sign-in-works" data-id="apps-how">Đăng nhập diễn ra thế nào</a>
 </div>
 </div>
-<div class="apps-hero-art"><svg class="hub" viewBox="0 0 544 300" role="img" aria-label="Tài khoản hoandat.com, vào bằng Google, GitHub hoặc Apple, đăng nhập cho bạn vào Localman, Tunelo, Chat, Scribe và Web Nhanh." data-id="apps-hub">
-<path class="hub-line" d="M132 70 C156 70 156 150 180 150"/><path class="hub-flow tone-primary" d="M132 70 C156 70 156 150 180 150"/><path class="hub-line" d="M132 150 C156 150 156 150 180 150"/><path class="hub-flow tone-primary" d="M132 150 C156 150 156 150 180 150"/><path class="hub-line" d="M132 230 C156 230 156 150 180 150"/><path class="hub-flow tone-primary" d="M132 230 C156 230 156 150 180 150"/><path class="hub-line" d="M340 150 C366 150 366 30 392 30"/><path class="hub-flow tone-violet" d="M340 150 C366 150 366 30 392 30"/><path class="hub-line" d="M340 150 C366 150 366 90 392 90"/><path class="hub-flow tone-amber" d="M340 150 C366 150 366 90 392 90"/><path class="hub-line" d="M340 150 C366 150 366 150 392 150"/><path class="hub-flow tone-blue" d="M340 150 C366 150 366 150 392 150"/><path class="hub-line" d="M340 150 C366 150 366 210 392 210"/><path class="hub-flow tone-red" d="M340 150 C366 150 366 210 392 210"/><path class="hub-line" d="M340 150 C366 150 366 270 392 270"/><path class="hub-flow tone-green" d="M340 150 C366 150 366 270 392 270"/>
+<div class="apps-hero-art"><svg class="hub" viewBox="0 0 544 300" role="img" aria-label="Tài khoản hoandat.com, vào bằng Google, GitHub hoặc Apple, đăng nhập cho bạn vào Localman, Tunelo, Chat, Scribe, Web Nhanh và KnowFlow." data-id="apps-hub">
+<path class="hub-line" d="M132 70 C156 70 156 150 180 150"/><path class="hub-flow tone-primary" d="M132 70 C156 70 156 150 180 150"/><path class="hub-line" d="M132 150 C156 150 156 150 180 150"/><path class="hub-flow tone-primary" d="M132 150 C156 150 156 150 180 150"/><path class="hub-line" d="M132 230 C156 230 156 150 180 150"/><path class="hub-flow tone-primary" d="M132 230 C156 230 156 150 180 150"/><path class="hub-line" d="M340 150 C366 150 366 25 392 25"/><path class="hub-flow tone-violet" d="M340 150 C366 150 366 25 392 25"/><path class="hub-line" d="M340 150 C366 150 366 75 392 75"/><path class="hub-flow tone-amber" d="M340 150 C366 150 366 75 392 75"/><path class="hub-line" d="M340 150 C366 150 366 125 392 125"/><path class="hub-flow tone-blue" d="M340 150 C366 150 366 125 392 125"/><path class="hub-line" d="M340 150 C366 150 366 175 392 175"/><path class="hub-flow tone-red" d="M340 150 C366 150 366 175 392 175"/><path class="hub-line" d="M340 150 C366 150 366 225 392 225"/><path class="hub-flow tone-green" d="M340 150 C366 150 366 225 392 225"/><path class="hub-line" d="M340 150 C366 150 366 275 392 275"/><path class="hub-flow tone-blue" d="M340 150 C366 150 366 275 392 275"/>
 <g class="hub-node">
 <rect x="8" y="50" width="124" height="40" rx="10"/>
 <svg x="20" y="62" width="16" height="16" viewBox="0 0 24 24"><path class="hub-mark" d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"/></svg>
@@ -291,25 +295,29 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <text class="hub-text hub-sub" x="260" y="168" text-anchor="middle">ISSUER_HOST</text>
 </g>
 <g class="hub-node tone-violet">
-<rect x="392" y="10" width="148" height="40" rx="10"/>
-<image href="/assets/img/apps/localman-mark-128.webp" x="398" y="16" width="28" height="28" aria-hidden="true"/>
-<text class="hub-text hub-app" x="434" y="35">Localman</text>
+<rect x="392" y="5" width="148" height="40" rx="10"/>
+<image href="/assets/img/apps/localman-mark-128.webp" x="398" y="11" width="28" height="28" aria-hidden="true"/>
+<text class="hub-text hub-app" x="434" y="30">Localman</text>
 </g><g class="hub-node tone-amber">
-<rect x="392" y="70" width="148" height="40" rx="10"/>
-<image href="/assets/img/apps/tunelo-mark-128.webp" x="398" y="76" width="28" height="28" aria-hidden="true"/>
-<text class="hub-text hub-app" x="434" y="95">Tunelo</text>
+<rect x="392" y="55" width="148" height="40" rx="10"/>
+<image href="/assets/img/apps/tunelo-mark-128.webp" x="398" y="61" width="28" height="28" aria-hidden="true"/>
+<text class="hub-text hub-app" x="434" y="80">Tunelo</text>
 </g><g class="hub-node tone-blue">
-<rect x="392" y="130" width="148" height="40" rx="10"/>
-<image href="/assets/img/apps/chat-mark-128.webp" x="398" y="136" width="28" height="28" aria-hidden="true"/>
-<text class="hub-text hub-app" x="434" y="155">Chat</text>
+<rect x="392" y="105" width="148" height="40" rx="10"/>
+<image href="/assets/img/apps/chat-mark-128.webp" x="398" y="111" width="28" height="28" aria-hidden="true"/>
+<text class="hub-text hub-app" x="434" y="130">Chat</text>
 </g><g class="hub-node tone-red">
-<rect x="392" y="190" width="148" height="40" rx="10"/>
-<image href="/assets/img/apps/scribe-mark-128.webp" x="398" y="196" width="28" height="28" aria-hidden="true"/>
-<text class="hub-text hub-app" x="434" y="215">Scribe</text>
+<rect x="392" y="155" width="148" height="40" rx="10"/>
+<image href="/assets/img/apps/scribe-mark-128.webp" x="398" y="161" width="28" height="28" aria-hidden="true"/>
+<text class="hub-text hub-app" x="434" y="180">Scribe</text>
 </g><g class="hub-node tone-green">
-<rect x="392" y="250" width="148" height="40" rx="10"/>
-<image href="/assets/img/apps/webnhanh-mark-128.webp" x="398" y="256" width="28" height="28" aria-hidden="true"/>
-<text class="hub-text hub-app" x="434" y="275">Web Nhanh</text>
+<rect x="392" y="205" width="148" height="40" rx="10"/>
+<image href="/assets/img/apps/webnhanh-mark-128.webp" x="398" y="211" width="28" height="28" aria-hidden="true"/>
+<text class="hub-text hub-app" x="434" y="230">Web Nhanh</text>
+</g><g class="hub-node tone-blue">
+<rect x="392" y="255" width="148" height="40" rx="10"/>
+<image href="/assets/img/apps/kb-mark-128.webp" x="398" y="261" width="28" height="28" aria-hidden="true"/>
+<text class="hub-text hub-app" x="434" y="280">KnowFlow</text>
 </g>
 </svg></div>
 </section>
@@ -360,6 +368,15 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <p class="app-card-desc">Làm website từ mẫu có sẵn và đăng ngay ở địa chỉ riêng; lập trình viên gắn link git hoặc tải file zip lên.</p>
 <div class="app-card-how"><p class="app-card-how-label">Cách đăng nhập</p><p>Chọn Đăng nhập trên trang để làm và đăng website.</p></div>
 <div class="app-card-foot"><a class="btn btn-secondary" href="https://webnhanh.hoandat.com" data-id="app-open-webnhanh-web">Mở</a></div>
+</li><li class="app-card tone-blue" data-id="app-kb-web">
+<div class="app-card-head">
+<span class="app-card-icon"><img class="app-mark" src="/assets/img/apps/kb-mark-128.webp" width="44" height="44" alt=""></span>
+<div class="app-card-heading"><h3 class="app-card-name">KnowFlow</h3>
+<p class="app-card-meta"><span class="badge badge-neutral">Ứng dụng web</span><span class="mono">kb.hoandat.com</span></p></div>
+</div>
+<p class="app-card-desc">Knowledge base song ngữ, phần lớn về CNTT, xếp thành một vũ trụ để đọc, tìm và hỏi AI.</p>
+<div class="app-card-how"><p class="app-card-how-label">Cách đăng nhập</p><p>Chọn Đăng nhập trên trang để đọc Universe và hỏi AI về nó.</p></div>
+<div class="app-card-foot"><a class="btn btn-secondary" href="https://kb.hoandat.com" data-id="app-open-kb-web">Mở</a></div>
 </li></ul>
 </section><section class="apps-section apps-group" aria-labelledby="apps-group-fun" data-id="apps-group-fun">
 <div class="apps-group-head"><h2 class="apps-group-title" id="apps-group-fun">Ứng dụng giải trí</h2><p class="apps-group-lead">Chơi, học và giải trí với cùng một tài khoản.</p></div>
@@ -417,15 +434,6 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <p class="app-card-desc">Chốt kèo đi chơi với nhóm bạn bằng một link.</p>
 <div class="app-card-how"><p class="app-card-how-label">Cách đăng nhập</p><p>Chọn Đăng nhập trên trang để tạo kèo; bạn bè vào bằng link, không cần tài khoản.</p></div>
 <div class="app-card-foot"><a class="btn btn-secondary" href="https://lockin.hoandat.com" data-id="app-open-lockin-web">Mở</a></div>
-</li><li class="app-card tone-blue" data-id="app-kb-web">
-<div class="app-card-head">
-<span class="app-card-icon"><img class="app-mark" src="/assets/img/apps/kb-mark-128.webp" width="44" height="44" alt=""></span>
-<div class="app-card-heading"><h3 class="app-card-name">KnowFlow</h3>
-<p class="app-card-meta"><span class="badge badge-neutral">Ứng dụng web</span><span class="mono">kb.hoandat.com</span></p></div>
-</div>
-<p class="app-card-desc">Knowledge base song ngữ: cloud, mạng, Linux và DevOps thành một vũ trụ để đọc, tìm và hỏi AI.</p>
-<div class="app-card-how"><p class="app-card-how-label">Cách đăng nhập</p><p>Chọn Đăng nhập trên trang để đọc Universe và hỏi AI về nó.</p></div>
-<div class="app-card-foot"><a class="btn btn-secondary" href="https://kb.hoandat.com" data-id="app-open-kb-web">Mở</a></div>
 </li></ul>
 </section>
 <section class="apps-section" id="how-sign-in-works" aria-labelledby="apps-steps-title" data-id="apps-steps">
@@ -480,8 +488,8 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <a class="btn btn-secondary" href="#how-sign-in-works" data-id="apps-how">登录如何进行</a>
 </div>
 </div>
-<div class="apps-hero-art"><svg class="hub" viewBox="0 0 544 300" role="img" aria-label="通过 Google、GitHub 或 Apple 进入你的 hoandat.com 账号，即可登录 Localman、Tunelo、Chat、Scribe和Web Nhanh。" data-id="apps-hub">
-<path class="hub-line" d="M132 70 C156 70 156 150 180 150"/><path class="hub-flow tone-primary" d="M132 70 C156 70 156 150 180 150"/><path class="hub-line" d="M132 150 C156 150 156 150 180 150"/><path class="hub-flow tone-primary" d="M132 150 C156 150 156 150 180 150"/><path class="hub-line" d="M132 230 C156 230 156 150 180 150"/><path class="hub-flow tone-primary" d="M132 230 C156 230 156 150 180 150"/><path class="hub-line" d="M340 150 C366 150 366 30 392 30"/><path class="hub-flow tone-violet" d="M340 150 C366 150 366 30 392 30"/><path class="hub-line" d="M340 150 C366 150 366 90 392 90"/><path class="hub-flow tone-amber" d="M340 150 C366 150 366 90 392 90"/><path class="hub-line" d="M340 150 C366 150 366 150 392 150"/><path class="hub-flow tone-blue" d="M340 150 C366 150 366 150 392 150"/><path class="hub-line" d="M340 150 C366 150 366 210 392 210"/><path class="hub-flow tone-red" d="M340 150 C366 150 366 210 392 210"/><path class="hub-line" d="M340 150 C366 150 366 270 392 270"/><path class="hub-flow tone-green" d="M340 150 C366 150 366 270 392 270"/>
+<div class="apps-hero-art"><svg class="hub" viewBox="0 0 544 300" role="img" aria-label="通过 Google、GitHub 或 Apple 进入你的 hoandat.com 账号，即可登录 Localman、Tunelo、Chat、Scribe、Web Nhanh和KnowFlow。" data-id="apps-hub">
+<path class="hub-line" d="M132 70 C156 70 156 150 180 150"/><path class="hub-flow tone-primary" d="M132 70 C156 70 156 150 180 150"/><path class="hub-line" d="M132 150 C156 150 156 150 180 150"/><path class="hub-flow tone-primary" d="M132 150 C156 150 156 150 180 150"/><path class="hub-line" d="M132 230 C156 230 156 150 180 150"/><path class="hub-flow tone-primary" d="M132 230 C156 230 156 150 180 150"/><path class="hub-line" d="M340 150 C366 150 366 25 392 25"/><path class="hub-flow tone-violet" d="M340 150 C366 150 366 25 392 25"/><path class="hub-line" d="M340 150 C366 150 366 75 392 75"/><path class="hub-flow tone-amber" d="M340 150 C366 150 366 75 392 75"/><path class="hub-line" d="M340 150 C366 150 366 125 392 125"/><path class="hub-flow tone-blue" d="M340 150 C366 150 366 125 392 125"/><path class="hub-line" d="M340 150 C366 150 366 175 392 175"/><path class="hub-flow tone-red" d="M340 150 C366 150 366 175 392 175"/><path class="hub-line" d="M340 150 C366 150 366 225 392 225"/><path class="hub-flow tone-green" d="M340 150 C366 150 366 225 392 225"/><path class="hub-line" d="M340 150 C366 150 366 275 392 275"/><path class="hub-flow tone-blue" d="M340 150 C366 150 366 275 392 275"/>
 <g class="hub-node">
 <rect x="8" y="50" width="124" height="40" rx="10"/>
 <svg x="20" y="62" width="16" height="16" viewBox="0 0 24 24"><path class="hub-mark" d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"/></svg>
@@ -501,25 +509,29 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <text class="hub-text hub-sub" x="260" y="168" text-anchor="middle">ISSUER_HOST</text>
 </g>
 <g class="hub-node tone-violet">
-<rect x="392" y="10" width="148" height="40" rx="10"/>
-<image href="/assets/img/apps/localman-mark-128.webp" x="398" y="16" width="28" height="28" aria-hidden="true"/>
-<text class="hub-text hub-app" x="434" y="35">Localman</text>
+<rect x="392" y="5" width="148" height="40" rx="10"/>
+<image href="/assets/img/apps/localman-mark-128.webp" x="398" y="11" width="28" height="28" aria-hidden="true"/>
+<text class="hub-text hub-app" x="434" y="30">Localman</text>
 </g><g class="hub-node tone-amber">
-<rect x="392" y="70" width="148" height="40" rx="10"/>
-<image href="/assets/img/apps/tunelo-mark-128.webp" x="398" y="76" width="28" height="28" aria-hidden="true"/>
-<text class="hub-text hub-app" x="434" y="95">Tunelo</text>
+<rect x="392" y="55" width="148" height="40" rx="10"/>
+<image href="/assets/img/apps/tunelo-mark-128.webp" x="398" y="61" width="28" height="28" aria-hidden="true"/>
+<text class="hub-text hub-app" x="434" y="80">Tunelo</text>
 </g><g class="hub-node tone-blue">
-<rect x="392" y="130" width="148" height="40" rx="10"/>
-<image href="/assets/img/apps/chat-mark-128.webp" x="398" y="136" width="28" height="28" aria-hidden="true"/>
-<text class="hub-text hub-app" x="434" y="155">Chat</text>
+<rect x="392" y="105" width="148" height="40" rx="10"/>
+<image href="/assets/img/apps/chat-mark-128.webp" x="398" y="111" width="28" height="28" aria-hidden="true"/>
+<text class="hub-text hub-app" x="434" y="130">Chat</text>
 </g><g class="hub-node tone-red">
-<rect x="392" y="190" width="148" height="40" rx="10"/>
-<image href="/assets/img/apps/scribe-mark-128.webp" x="398" y="196" width="28" height="28" aria-hidden="true"/>
-<text class="hub-text hub-app" x="434" y="215">Scribe</text>
+<rect x="392" y="155" width="148" height="40" rx="10"/>
+<image href="/assets/img/apps/scribe-mark-128.webp" x="398" y="161" width="28" height="28" aria-hidden="true"/>
+<text class="hub-text hub-app" x="434" y="180">Scribe</text>
 </g><g class="hub-node tone-green">
-<rect x="392" y="250" width="148" height="40" rx="10"/>
-<image href="/assets/img/apps/webnhanh-mark-128.webp" x="398" y="256" width="28" height="28" aria-hidden="true"/>
-<text class="hub-text hub-app" x="434" y="275">Web Nhanh</text>
+<rect x="392" y="205" width="148" height="40" rx="10"/>
+<image href="/assets/img/apps/webnhanh-mark-128.webp" x="398" y="211" width="28" height="28" aria-hidden="true"/>
+<text class="hub-text hub-app" x="434" y="230">Web Nhanh</text>
+</g><g class="hub-node tone-blue">
+<rect x="392" y="255" width="148" height="40" rx="10"/>
+<image href="/assets/img/apps/kb-mark-128.webp" x="398" y="261" width="28" height="28" aria-hidden="true"/>
+<text class="hub-text hub-app" x="434" y="280">KnowFlow</text>
 </g>
 </svg></div>
 </section>
@@ -570,6 +582,15 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <p class="app-card-desc">用现成模板制作网站，并发布到专属地址；开发者可通过 git 链接或上传 zip 部署。</p>
 <div class="app-card-how"><p class="app-card-how-label">登录方式</p><p>在网站上选择登录，即可制作并发布网站。</p></div>
 <div class="app-card-foot"><a class="btn btn-secondary" href="https://webnhanh.hoandat.com" data-id="app-open-webnhanh-web">打开</a></div>
+</li><li class="app-card tone-blue" data-id="app-kb-web">
+<div class="app-card-head">
+<span class="app-card-icon"><img class="app-mark" src="/assets/img/apps/kb-mark-128.webp" width="44" height="44" alt=""></span>
+<div class="app-card-heading"><h3 class="app-card-name">KnowFlow</h3>
+<p class="app-card-meta"><span class="badge badge-neutral">网页应用</span><span class="mono">kb.hoandat.com</span></p></div>
+</div>
+<p class="app-card-desc">双语知识库，以 IT 为主，汇成一个宇宙，供你阅读、搜索并向 AI 提问。</p>
+<div class="app-card-how"><p class="app-card-how-label">登录方式</p><p>在网站上选择登录，即可阅读 Universe 并就其内容向 AI 提问。</p></div>
+<div class="app-card-foot"><a class="btn btn-secondary" href="https://kb.hoandat.com" data-id="app-open-kb-web">打开</a></div>
 </li></ul>
 </section><section class="apps-section apps-group" aria-labelledby="apps-group-fun" data-id="apps-group-fun">
 <div class="apps-group-head"><h2 class="apps-group-title" id="apps-group-fun">娱乐应用</h2><p class="apps-group-lead">用同一个账号玩、学、娱乐。</p></div>
@@ -627,15 +648,6 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <p class="app-card-desc">用一个链接和朋友敲定出游计划。</p>
 <div class="app-card-how"><p class="app-card-how-label">登录方式</p><p>在网站上选择登录，即可发起计划；朋友通过链接加入，无需账号。</p></div>
 <div class="app-card-foot"><a class="btn btn-secondary" href="https://lockin.hoandat.com" data-id="app-open-lockin-web">打开</a></div>
-</li><li class="app-card tone-blue" data-id="app-kb-web">
-<div class="app-card-head">
-<span class="app-card-icon"><img class="app-mark" src="/assets/img/apps/kb-mark-128.webp" width="44" height="44" alt=""></span>
-<div class="app-card-heading"><h3 class="app-card-name">KnowFlow</h3>
-<p class="app-card-meta"><span class="badge badge-neutral">网页应用</span><span class="mono">kb.hoandat.com</span></p></div>
-</div>
-<p class="app-card-desc">双语知识库：将云计算、网络、Linux 和 DevOps 汇成一个宇宙，供你阅读、搜索并向 AI 提问。</p>
-<div class="app-card-how"><p class="app-card-how-label">登录方式</p><p>在网站上选择登录，即可阅读 Universe 并就其内容向 AI 提问。</p></div>
-<div class="app-card-foot"><a class="btn btn-secondary" href="https://kb.hoandat.com" data-id="app-open-kb-web">打开</a></div>
 </li></ul>
 </section>
 <section class="apps-section" id="how-sign-in-works" aria-labelledby="apps-steps-title" data-id="apps-steps">
@@ -1566,7 +1578,7 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in en 
   "apps.group.fun.title": "Apps for fun",
   "apps.group.work.lead": "Build, test and share faster: mock APIs, tunnels, chat and transcripts.",
   "apps.group.work.title": "Apps for work",
-  "apps.kbWeb.description": "A bilingual knowledge base: cloud, networking, Linux and DevOps as one universe to read, search and ask AI.",
+  "apps.kbWeb.description": "A bilingual knowledge base, mostly IT, laid out as one universe to read, search and ask AI.",
   "apps.kbWeb.signIn": "Choose Sign in on the site to read the Universe and ask AI about it.",
   "apps.kind.cli": "Command line",
   "apps.kind.mcp": "MCP server",
@@ -1931,7 +1943,7 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in vi 
   "apps.group.fun.title": "Ứng dụng giải trí",
   "apps.group.work.lead": "Làm, thử và chia sẻ nhanh hơn: mock API, tunnel, nhắn tin và chép lời.",
   "apps.group.work.title": "Ứng dụng cho công việc",
-  "apps.kbWeb.description": "Knowledge base song ngữ: cloud, mạng, Linux và DevOps thành một vũ trụ để đọc, tìm và hỏi AI.",
+  "apps.kbWeb.description": "Knowledge base song ngữ, phần lớn về CNTT, xếp thành một vũ trụ để đọc, tìm và hỏi AI.",
   "apps.kbWeb.signIn": "Chọn Đăng nhập trên trang để đọc Universe và hỏi AI về nó.",
   "apps.kind.cli": "Dòng lệnh",
   "apps.kind.mcp": "MCP server",
@@ -2296,7 +2308,7 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in zh-
   "apps.group.fun.title": "娱乐应用",
   "apps.group.work.lead": "更快地构建、测试和分享：模拟 API、隧道、聊天和转写。",
   "apps.group.work.title": "工作应用",
-  "apps.kbWeb.description": "双语知识库：将云计算、网络、Linux 和 DevOps 汇成一个宇宙，供你阅读、搜索并向 AI 提问。",
+  "apps.kbWeb.description": "双语知识库，以 IT 为主，汇成一个宇宙，供你阅读、搜索并向 AI 提问。",
   "apps.kbWeb.signIn": "在网站上选择登录，即可阅读 Universe 并就其内容向 AI 提问。",
   "apps.kind.cli": "命令行",
   "apps.kind.mcp": "MCP 服务器",
