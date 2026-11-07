@@ -1,7 +1,7 @@
 ---
 title: "App iOS Tài khoản trên App Store"
 description: "App SwiftUI native quản lý tài khoản hoandat (hồ sơ, phiên, thiết bị, phương thức đăng nhập, xoá tài khoản, thông báo đẩy, Face ID), đăng nhập qua IdP bằng ASWebAuthenticationSession."
-status: pending
+status: paused
 priority: P2
 effort: "XL (6 phase: 1×XL, 2×L, 2×M, 1×S)"
 branch: "main"
@@ -10,6 +10,8 @@ blockedBy: []
 blocks: []
 created: 2026-10-20
 ---
+
+> Tạm dừng 07/11/2026: dừng App Store từ 02/11 (Apple từ chối Scribe, Miu, Localman theo 4.3 Spam). Xét lại khi web có khoảng 100 người dùng thường xuyên. Không huỷ.
 
 # App iOS Tài khoản
 
