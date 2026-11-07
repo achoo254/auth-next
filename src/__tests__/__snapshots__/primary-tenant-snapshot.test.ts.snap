@@ -160,7 +160,7 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <div class="app-card-heading"><h3 class="app-card-name">KnowFlow</h3>
 <p class="app-card-meta"><span class="badge badge-neutral">Web app</span><span class="mono">kb.hoandat.com</span></p></div>
 </div>
-<p class="app-card-desc">A bilingual knowledge base, mostly IT, laid out as one universe to read, search and ask AI.</p>
+<p class="app-card-desc">A bilingual knowledge base on all kinds of topics, laid out as one universe to read, search and ask AI.</p>
 <div class="app-card-how"><p class="app-card-how-label">How to sign in</p><p>Choose Sign in on the site to read the Universe and ask AI about it.</p></div>
 <div class="app-card-foot"><a class="btn btn-secondary" href="https://kb.hoandat.com" data-id="app-open-kb-web">Open</a></div>
 </li></ul>
@@ -374,7 +374,7 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <div class="app-card-heading"><h3 class="app-card-name">KnowFlow</h3>
 <p class="app-card-meta"><span class="badge badge-neutral">Ứng dụng web</span><span class="mono">kb.hoandat.com</span></p></div>
 </div>
-<p class="app-card-desc">Knowledge base song ngữ, phần lớn về CNTT, xếp thành một vũ trụ để đọc, tìm và hỏi AI.</p>
+<p class="app-card-desc">Knowledge base song ngữ về đủ mọi chủ đề, xếp thành một vũ trụ để đọc, tìm và hỏi AI.</p>
 <div class="app-card-how"><p class="app-card-how-label">Cách đăng nhập</p><p>Chọn Đăng nhập trên trang để đọc Universe và hỏi AI về nó.</p></div>
 <div class="app-card-foot"><a class="btn btn-secondary" href="https://kb.hoandat.com" data-id="app-open-kb-web">Mở</a></div>
 </li></ul>
@@ -1578,7 +1578,7 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in en 
   "apps.group.fun.title": "Apps for fun",
   "apps.group.work.lead": "Build, test and share faster: mock APIs, tunnels, chat and transcripts.",
   "apps.group.work.title": "Apps for work",
-  "apps.kbWeb.description": "A bilingual knowledge base, mostly IT, laid out as one universe to read, search and ask AI.",
+  "apps.kbWeb.description": "A bilingual knowledge base on all kinds of topics, laid out as one universe to read, search and ask AI.",
   "apps.kbWeb.signIn": "Choose Sign in on the site to read the Universe and ask AI about it.",
   "apps.kind.cli": "Command line",
   "apps.kind.mcp": "MCP server",
@@ -1943,7 +1943,7 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in vi 
   "apps.group.fun.title": "Ứng dụng giải trí",
   "apps.group.work.lead": "Làm, thử và chia sẻ nhanh hơn: mock API, tunnel, nhắn tin và chép lời.",
   "apps.group.work.title": "Ứng dụng cho công việc",
-  "apps.kbWeb.description": "Knowledge base song ngữ, phần lớn về CNTT, xếp thành một vũ trụ để đọc, tìm và hỏi AI.",
+  "apps.kbWeb.description": "Knowledge base song ngữ về đủ mọi chủ đề, xếp thành một vũ trụ để đọc, tìm và hỏi AI.",
   "apps.kbWeb.signIn": "Chọn Đăng nhập trên trang để đọc Universe và hỏi AI về nó.",
   "apps.kind.cli": "Dòng lệnh",
   "apps.kind.mcp": "MCP server",
