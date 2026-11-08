@@ -79,6 +79,9 @@ export const zhConsent: Translation<typeof enConsent> = {
 	"device.approve.question": "允许 {device}？",
 	"device.approve.code": "代码：{code}",
 	"device.approve.ip": "请求来自 IP {ip}",
+	"device.approve.origin": "请求来自 {machine}，IP {ip}。",
+	"device.approve.ipMismatch":
+		"此请求来自 IP {ip}，与你当前使用的浏览器所在网络（{here}）不同。如果不是你本人刚在那台电脑上发起的，请拒绝。",
 	"device.approve.inApp": "在 {app} 中，它将可以：",
 	"device.approve.agentWarning":
 		"仅当你刚刚在自己的电脑上运行了该命令时才批准。批准后，这台电脑可以打开隧道，并以你的身份使用 Chat 和 Localman，直到你在账户页面将其退出。",

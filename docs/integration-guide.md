@@ -253,10 +253,31 @@ const tokens = await oidc.pollDeviceAuthorizationGrant(cli, device);
 
 **Tiến trình máy Tunelo 2.x (`tunelo-agent`)**: một device login cho ba tài nguyên, một refresh token.
 
-- Device authorization gửi **đủ ba** `resource` (tunnel, `https://chat.hoandat.com/mcp`, `https://localman.hoandat.com/mcp`) và scope ở bảng mục 2. Refresh chỉ đổi được sang tài nguyên đã nằm trong device login; thiếu thì phải đăng nhập lại.
-- Mỗi lần refresh gửi `resource=<tài nguyên cần>` và nhận JWT 15 phút có đúng `aud` đó, scope lọc theo tài nguyên (`machines:write` chỉ có trong token Chat và Localman). Refresh bị từ chối (`invalid_target`: tài nguyên ngoài device login hoặc ngoài danh sách) **vẫn tiêu refresh token**: lần sau nhận `invalid_grant`. Chỉ xin đúng ba tài nguyên trên.
+```ts
+const TUNNEL = "https://tunnel.hoandat.com";
+const CHAT = "https://chat.hoandat.com/mcp";
+const LOCALMAN = "https://localman.hoandat.com/mcp";
+const agent = await oidc.discovery(new URL(ISSUER), "tunelo-agent", {}, oidc.None());
+const body = new URLSearchParams({
+	scope: "openid offline_access tunnels:open tunnels:read chat:read chat:write machines:write mock:read mock:write client:read client:write client:send",
+	device_name: os.hostname().slice(0, 64),
+});
+for (const r of [TUNNEL, CHAT, LOCALMAN]) body.append("resource", r);
+const device = await oidc.initiateDeviceAuthorization(agent, body);
+// Không có verification_uri_complete: in verification_uri và user_code để người dùng tự gõ mã.
+console.log(`Mở ${device.verification_uri} và nhập mã ${device.user_code}`);
+// Đổi device_code LUÔN kèm resource, kể cả mỗi lần poll.
+const tokens = await oidc.pollDeviceAuthorizationGrant(agent, device, { resource: TUNNEL });
+// Mỗi refresh LUÔN kèm resource (trong khoá chung, mục 8).
+const chat = await oidc.refreshTokenGrant(agent, tokens.refresh_token, { resource: CHAT });
+```
+
+- Device authorization gửi **đủ ba** `resource` và scope ở bảng mục 2. Refresh chỉ đổi được sang tài nguyên đã nằm trong device login; thiếu thì phải đăng nhập lại.
+- **Mọi request ở token endpoint phải có `resource`**, cả lần đổi `device_code` lẫn mỗi lần refresh. Grant có ba tài nguyên nên request không có `resource` không chọn được tài nguyên nào (kể cả khi chỉ xin `scope` của một tài nguyên) và nhận `invalid_target`. Lỗi đó **vẫn tiêu token**: `device_code` đã được duyệt bị đốt (lần đổi sau nhận `invalid_grant`, người dùng phải duyệt lại), refresh token bị đốt (lần sau nhận `invalid_grant`, máy phải đăng nhập lại). Tài nguyên ngoài device login hay ngoài danh sách cũng vậy. Chỉ xin đúng ba tài nguyên trên.
+- Mỗi refresh nhận JWT 15 phút có đúng `aud` đã xin, scope lọc theo tài nguyên (`machines:write` chỉ có trong token Chat và Localman).
 - Một refresh token dùng chung cho mọi tài nguyên nên mọi refresh đi qua một khoá duy nhất (mục 8); hai refresh song song cho hai tài nguyên sẽ thu hồi cả grant.
-- Trang duyệt liệt kê việc được làm theo từng app (Tunelo, Chat, Localman), IP gửi yêu cầu và cảnh báo chỉ duyệt khi chính bạn vừa chạy lệnh trên máy của mình. Grant theo thiết bị như `chat-mobile`: không chết khi đăng xuất IdP, không trần 90 ngày, thu hồi từng máy ở `/account`.
+- Mã phải gõ tay: response device authorization của `tunelo-agent` không có `verification_uri_complete`, và link `/device?user_code=…` của nó chỉ mở trang nhập mã (mã không được điền sẵn). Client khác giữ link điền sẵn.
+- Trang duyệt liệt kê việc được làm theo từng app (Tunelo, Chat, Localman), đặt tên máy và IP gửi yêu cầu ngay dưới câu hỏi, cảnh báo đỏ khi IP của trình duyệt đang duyệt khác IP đó (chỉ cảnh báo, máy chủ headless qua SSH vẫn duyệt được), và cảnh báo chỉ duyệt khi chính bạn vừa chạy lệnh trên máy của mình. Grant theo thiết bị như `chat-mobile`: không chết khi đăng xuất IdP, không trần 90 ngày, thu hồi từng máy ở `/account` (tên "Tunelo Agent · <tên máy>").
 
 ## 8. Refresh token và phiên trượt
 

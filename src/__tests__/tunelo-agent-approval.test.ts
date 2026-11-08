@@ -1,23 +1,21 @@
 import * as client from "openid-client";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { LOCALES } from "../i18n/locales.js";
-import { renderDeviceApproval } from "../interactions/device-verify-page.js";
-import { DEVICE_CODE_GRANT, STATIC_CLIENT_IDS } from "../oidc/clients.js";
+import { LOCALES, type Locale } from "../i18n/locales.js";
+import {
+	type DeviceApprovalView,
+	renderDeviceApproval,
+} from "../interactions/device-verify-page.js";
+import { STATIC_CLIENT_IDS } from "../oidc/clients.js";
 import { TUNELO_AGENT_SCOPES } from "../oidc/tunelo-agent-client.js";
 import { discoverClient } from "./helpers/flows.js";
-import {
-	createTestAccount,
-	repositoryOf,
-	submitForm,
-} from "./helpers/test-accounts.js";
-import { formField } from "./helpers/test-browser.js";
+import { submitForm } from "./helpers/test-accounts.js";
+import { TestBrowser, formField } from "./helpers/test-browser.js";
 import { type TestIdp, startTestIdp } from "./helpers/test-idp.js";
 import { shown, testPage } from "./helpers/test-page.js";
 import { RESOURCES } from "./helpers/test-tenant.js";
-import { linkedGoogleProfile, signInWith } from "./helpers/upstream-sign-in.js";
 
 const AGENT = STATIC_CLIENT_IDS.tuneloAgent;
-const { tunnel, chatMcp, localmanMcp } = RESOURCES;
+const MACHINE_IP = "203.0.113.7";
 
 let idp: TestIdp;
 
@@ -29,120 +27,140 @@ afterAll(async () => {
 	await idp?.close();
 });
 
+function agentApproval(
+	locale: Locale,
+	extra: Partial<DeviceApprovalView> = {},
+): string {
+	return renderDeviceApproval({
+		page: testPage(locale),
+		csrf: "csrf-token",
+		uid: "uid-1",
+		clientId: AGENT,
+		clientName: "Tunelo Agent",
+		params: { device_name: "mac-mini" },
+		deviceInfo: { ip: MACHINE_IP, ua: "tunelo/2.0.0" },
+		userCode: "BCDFGHJK",
+		scopes: TUNELO_AGENT_SCOPES,
+		username: "minh_anh",
+		...extra,
+	});
+}
+
 describe("tunelo-agent approval page", () => {
 	it.each(LOCALES)(
-		"lists the three apps, the IP and the warning in %s",
+		"lists the three apps, the requesting machine and IP, and the warning in %s",
 		(locale) => {
-			const page = renderDeviceApproval({
-				page: testPage(locale),
-				csrf: "csrf-token",
-				uid: "uid-1",
-				clientId: AGENT,
-				clientName: "Tunelo",
-				params: { device_name: "mac-mini" },
-				deviceInfo: { ip: "203.0.113.7", ua: "tunelo/2.0.0" },
-				userCode: "BCDFGHJK",
-				scopes: TUNELO_AGENT_SCOPES,
-				username: "minh_anh",
-			});
+			const page = agentApproval(locale, { approverIp: MACHINE_IP });
 			expect(page).toContain("<code>tunelo</code>");
-			expect(page).toContain("<b>mac-mini</b>");
-			expect(page).toContain("<code>203.0.113.7</code>");
+			expect(page).toContain('data-id="device-origin"');
+			expect(page).toContain(
+				`<code data-id="device-origin-ip">${MACHINE_IP}</code>`,
+			);
+			expect(page).not.toContain('data-id="device-ip-mismatch"');
 			expect(page).toContain('data-id="device-agent-warning"');
 			expect(page).toContain(shown("device.approve.agentWarning", locale));
 			for (const app of ["tunelo", "chat", "localman"]) {
 				expect(page).toContain(`data-id="device-app-${app}"`);
 			}
 			expect(page).toContain(shown("scope.machinesWrite", locale));
-			expect(page).toContain(shown("scope.chatWrite", locale));
 			expect(page).not.toContain(shown("scope.botsAdmin", locale));
+			// The origin sits right under the question, before the access lists.
+			expect(page.indexOf('data-id="device-question"')).toBeLessThan(
+				page.indexOf('data-id="device-origin"'),
+			);
+			expect(page.indexOf('data-id="device-origin"')).toBeLessThan(
+				page.indexOf('data-id="device-scopes"'),
+			);
 		},
 	);
 
-	it("keeps the plain list for tunelo-cli", () => {
+	it.each(LOCALES)(
+		"warns in %s when the approving browser has another IP",
+		(locale) => {
+			const page = agentApproval(locale, { approverIp: "198.51.100.20" });
+			expect(page).toContain('data-id="device-ip-mismatch"');
+			expect(page).toContain("<code>198.51.100.20</code>");
+			const before = page.indexOf('data-id="device-ip-mismatch"');
+			expect(before).toBeLessThan(page.indexOf('data-id="device-allow"'));
+		},
+	);
+
+	it("treats an IPv4-mapped address as the same IP", () => {
+		const page = agentApproval("en", { approverIp: `::ffff:${MACHINE_IP}` });
+		expect(page).not.toContain('data-id="device-ip-mismatch"');
+	});
+
+	it("keeps the plain list and the IP in the code line for tunelo-cli", () => {
 		const page = renderDeviceApproval({
 			page: testPage("en"),
 			csrf: "csrf-token",
 			uid: "uid-1",
 			clientId: STATIC_CLIENT_IDS.tuneloCli,
 			params: undefined,
-			deviceInfo: { ip: "203.0.113.7" },
+			deviceInfo: { ip: MACHINE_IP },
 			userCode: "BCDFGHJK",
 			scopes: ["openid", "tunnels:open"],
 			username: "minh_anh",
+			approverIp: "198.51.100.20",
 		});
+		expect(page).toContain(`requested from IP <code>${MACHINE_IP}</code>`);
+		expect(page).not.toContain('data-id="device-origin"');
+		expect(page).not.toContain('data-id="device-ip-mismatch"');
 		expect(page).not.toContain('data-id="device-agent-warning"');
 		expect(page).not.toContain('data-id="device-app-tunelo"');
 	});
 });
 
-describe("tunelo-agent device login", () => {
-	it("is approved on the real pages, refreshes for each app, and dies when revoked at /account", async () => {
-		const account = await createTestAccount(repositoryOf(idp));
-		const { page } = await signInWith(
-			idp,
-			"google",
-			linkedGoogleProfile(account),
-		);
-		const agent = await discoverClient(idp, AGENT, client.None());
-		const body = new URLSearchParams({
-			scope: TUNELO_AGENT_SCOPES.join(" "),
-			device_name: "mac-mini",
-		});
-		for (const resource of [tunnel, chatMcp, localmanMcp]) {
-			body.append("resource", resource);
-		}
-		const device = await client.initiateDeviceAuthorization(agent, body);
-		const input = await (
-			await page.browser.request(device.verification_uri)
-		).text();
-		const approval = await submitForm(page.browser, device.verification_uri, {
-			xsrf: formField(input, "xsrf"),
-			user_code: device.user_code,
-			confirm: "yes",
-		});
-		const approvalPage = await approval.response.text();
-		expect(approvalPage).toContain(
-			"Allow <code>tunelo</code> on <b>mac-mini</b>?",
-		);
-		expect(approvalPage).toMatch(/requested from IP <code>[^<]+<\/code>/);
-		expect(approvalPage).toContain('data-id="device-agent-warning"');
-		expect(approvalPage).toContain('data-id="device-app-localman"');
+describe("the device code of tunelo-agent is typed, never prefilled", () => {
+	async function authorize(
+		clientId: string,
+		scope: string,
+		resource: string,
+	): Promise<client.DeviceAuthorizationResponse> {
+		const config = await discoverClient(idp, clientId, client.None());
+		return client.initiateDeviceAuthorization(config, { scope, resource });
+	}
 
-		const uid = /\/interaction\/([\w-]+)/.exec(approval.response.url)?.[1];
-		const done = await submitForm(
-			page.browser,
-			`${idp.issuer}/interaction/${uid ?? ""}/consent`,
-			{ csrf: formField(approvalPage, "csrf") },
-		);
-		expect(await done.response.text()).toContain("Allowed");
-		const tokens = await client.genericGrantRequest(agent, DEVICE_CODE_GRANT, {
-			device_code: device.device_code,
-			resource: tunnel,
+	/**
+	 * The verification page opened from a link carrying the code: the
+	 * provider answers with a form the browser posts by itself.
+	 */
+	async function linkPage(
+		device: client.DeviceAuthorizationResponse,
+	): Promise<string> {
+		const url = new URL(device.verification_uri);
+		url.searchParams.set("user_code", device.user_code);
+		const browser = new TestBrowser();
+		const autoPost = await (await browser.request(url.href)).text();
+		const { response } = await submitForm(browser, device.verification_uri, {
+			xsrf: formField(autoPost, "xsrf"),
+			user_code: formField(autoPost, "user_code"),
 		});
-		// The real consent page granted all three resources.
-		let refreshToken = tokens.refresh_token ?? "";
-		for (const resource of [chatMcp, localmanMcp, tunnel]) {
-			const next = await client.refreshTokenGrant(agent, refreshToken, {
-				resource,
-			});
-			refreshToken = next.refresh_token ?? "";
-		}
+		return response.text();
+	}
 
-		const accountPage = await (
-			await page.browser.request(`${idp.issuer}/account`)
-		).text();
-		expect(accountPage).toContain("mac-mini");
-		const grantId =
-			/\/account\/devices\/([\w-]+)\/revoke/.exec(accountPage)?.[1] ?? "";
-		const revoked = await submitForm(
-			page.browser,
-			`${idp.issuer}/account/devices/${grantId}/revoke`,
-			{ csrf: formField(accountPage, "csrf") },
+	it("gives the agent no prefilled link and asks for the code on the link page", async () => {
+		const device = await authorize(
+			AGENT,
+			"openid tunnels:open",
+			RESOURCES.tunnel,
 		);
-		expect(await revoked.response.text()).toContain("Signed out the device.");
-		await expect(
-			client.refreshTokenGrant(agent, refreshToken, { resource: chatMcp }),
-		).rejects.toMatchObject({ error: "invalid_grant" });
+		expect(device.verification_uri_complete).toBeUndefined();
+		const page = await linkPage(device);
+		expect(page).toContain('data-id="device-user-code"');
+		expect(page).not.toContain('data-id="device-confirm"');
+		expect(page).not.toContain(device.user_code);
+	});
+
+	it("keeps the prefilled link and the confirm page for tunelo-cli", async () => {
+		const device = await authorize(
+			STATIC_CLIENT_IDS.tuneloCli,
+			"openid tunnels:open",
+			RESOURCES.tunnel,
+		);
+		expect(device.verification_uri_complete).toEqual(expect.any(String));
+		const page = await linkPage(device);
+		expect(page).toContain('data-id="device-confirm"');
+		expect(page).toContain(device.user_code);
 	});
 });

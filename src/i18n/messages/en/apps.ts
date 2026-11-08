@@ -33,7 +33,7 @@ export const enApps = {
 	"apps.chatMcp.signIn":
 		"Add {address} to your AI tool as an MCP server, then approve what it may do on the consent page.",
 	"apps.tuneloCli.description":
-		"Opens tunnels from your computer to the internet and connects it to Chat and Localman.",
+		"Opens tunnels from your computer to the internet.",
 	"apps.tuneloCli.signIn":
 		"Run {command} in a terminal, then enter the code it shows at {device}.",
 	"apps.tuneloWeb.description": "Your tunnels in the browser.",

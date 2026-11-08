@@ -150,6 +150,48 @@ describe("one tunelo-agent grant, three resources", () => {
 		).toBe("invalid_grant");
 	});
 
+	// With three resources in the grant, a request naming none cannot pick
+	// one: the device code or refresh token is spent and the machine must
+	// sign in again. The agent always sends `resource`.
+	it("refuses a device code exchange without resource, spending the approved code", async () => {
+		const config = await discoverClient(idp, AGENT, client.None());
+		const body = new URLSearchParams({ scope: SCOPE });
+		for (const resource of [tunnel, chatMcp, localmanMcp]) {
+			body.append("resource", resource);
+		}
+		const authorization = await client.initiateDeviceAuthorization(
+			config,
+			body,
+		);
+		await approveDevice(
+			authorization.verification_uri,
+			authorization.user_code,
+		);
+		const redeem = (params: Record<string, string>) =>
+			client
+				.genericGrantRequest(config, DEVICE_CODE_GRANT, {
+					device_code: authorization.device_code,
+					...params,
+				})
+				.then(() => "accepted")
+				.catch((error: { error?: string }) => error.error ?? "error");
+		expect(await redeem({})).toBe("invalid_target");
+		expect(await redeem({ resource: tunnel })).toBe("invalid_grant");
+	});
+
+	it("refuses a refresh without resource, spending the refresh token", async () => {
+		const { config, tokens } = await agentLogin([tunnel, chatMcp, localmanMcp]);
+		const refreshToken = tokens.refresh_token ?? "";
+		const outcome = await client
+			.refreshTokenGrant(config, refreshToken, { scope: "chat:read" })
+			.then(() => "accepted")
+			.catch((error: { error?: string }) => error.error ?? "error");
+		expect(outcome).toBe("invalid_target");
+		expect(await refreshOutcome(config, refreshToken, chatMcp)).toBe(
+			"invalid_grant",
+		);
+	});
+
 	it("refuses a resource outside its allowed list, spending the refresh token", async () => {
 		const { config, tokens } = await agentLogin([tunnel, chatMcp, localmanMcp]);
 		expect(

@@ -40,7 +40,8 @@ export function buildTuneloAgentClients(
 	return [
 		{
 			client_id: TUNELO_AGENT_CLIENT_ID,
-			client_name: "Tunelo",
+			// Told apart from Tunelo CLI and the Tunelo website at /account.
+			client_name: "Tunelo Agent",
 			application_type: "native",
 			token_endpoint_auth_method: "none",
 			grant_types: [

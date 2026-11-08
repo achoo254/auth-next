@@ -1,8 +1,10 @@
 import * as client from "openid-client";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { parseEnv } from "../config/env.js";
 import {
 	DEVICE_CODE_GRANT,
 	STATIC_CLIENT_IDS,
+	buildStaticClients,
 	refreshesPerDevice,
 	refreshesWithSession,
 } from "../oidc/clients.js";
@@ -16,8 +18,21 @@ import {
 	createResourcePolicy,
 } from "../oidc/resources.js";
 import { hasHardCap } from "../oidc/sliding-grants.js";
+import {
+	envClientSecrets,
+	envKbClients,
+	envMiuClients,
+	envScribeClients,
+	envSignInOnlyApps,
+	envTenant,
+} from "../tenants/env-tenant.js";
+import { resourcesFor } from "../tenants/tenant-resources.js";
 import { discoverClient } from "./helpers/flows.js";
-import { type TestIdp, startTestIdp } from "./helpers/test-idp.js";
+import {
+	PRIMARY_APP_TEST_ENV,
+	type TestIdp,
+	startTestIdp,
+} from "./helpers/test-idp.js";
 import { RESOURCES } from "./helpers/test-tenant.js";
 
 let idp: TestIdp;
@@ -78,15 +93,38 @@ describe("tunelo-agent leaves every other client as it was", () => {
 		});
 	});
 
-	it("gives machines:write to no other static client", async () => {
-		for (const id of Object.values(STATIC_CLIENT_IDS)) {
-			if (id === AGENT) continue;
-			const found = await idp.provider.Client.find(id);
-			if (!found) continue;
-			expect(String(found.metadata().scope).split(" "), id).not.toContain(
-				MACHINES_WRITE_SCOPE,
-			);
-		}
+	it("gives machines:write to no other static client, those turned on by the environment included", () => {
+		const env = parseEnv({
+			MONGO_URL: "mongodb://127.0.0.1:27017/auth",
+			SIGNING_KEYS_PATH: "unused.json",
+			COOKIE_KEYS: "k".repeat(32),
+			LOCALMAN_WEB_CLIENT_SECRET: "l".repeat(32),
+			TUNELO_WEB_CLIENT_SECRET: "t".repeat(32),
+			CHAT_WEB_CLIENT_SECRET: "c".repeat(32),
+			...PRIMARY_APP_TEST_ENV,
+		});
+		const clients = buildStaticClients(
+			envTenant(env),
+			resourcesFor(env.TENANT_DOMAIN),
+			envClientSecrets(env),
+			env.CHAT_MOBILE_REDIRECT_URI,
+			envScribeClients(env),
+			envMiuClients(env),
+			envSignInOnlyApps(env),
+			envKbClients(env),
+		);
+		// Every static client is built, optional ones included.
+		expect(clients.map((entry) => entry.client_id).sort()).toEqual(
+			Object.values(STATIC_CLIENT_IDS).sort(),
+		);
+		const holders = clients
+			.filter((entry) =>
+				String(entry.scope ?? "")
+					.split(" ")
+					.includes(MACHINES_WRITE_SCOPE),
+			)
+			.map((entry) => entry.client_id);
+		expect(holders).toEqual([AGENT]);
 	});
 
 	it("adds machines:write to the Chat and Localman MCP resources for the agent only", () => {

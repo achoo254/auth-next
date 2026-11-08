@@ -18,6 +18,7 @@ import {
 	refreshesWithSession,
 } from "./clients.js";
 import { cookieConfig } from "./cookies.js";
+import { dropPrefilledCodeLinkOfAgent } from "./device-code-link.js";
 import { ignoreOfflineAccessOfDynamicClients } from "./dynamic-client-scopes.js";
 import {
 	buildInteractionPolicy,
@@ -219,6 +220,7 @@ export function createProvider(deps: ProviderDependencies): Provider {
 		tenantResourcePolicy(deps.tenant),
 	);
 	ignoreOfflineAccessOfDynamicClients(provider, OIDC_ROUTES.authorization);
+	dropPrefilledCodeLinkOfAgent(provider, OIDC_ROUTES.device_authorization);
 	logProviderEvents(provider, deps.logger);
 	return provider;
 }

@@ -34,8 +34,7 @@ export const viApps: Translation<typeof enApps> = {
 		"Cho công cụ AI như Claude Code đọc, gửi tin nhắn và quản lý bot của bạn trên Chat.",
 	"apps.chatMcp.signIn":
 		"Thêm {address} vào công cụ AI làm MCP server, rồi duyệt những gì nó được làm ở trang cấp quyền.",
-	"apps.tuneloCli.description":
-		"Mở tunnel từ máy của bạn ra internet và kết nối máy với Chat, Localman.",
+	"apps.tuneloCli.description": "Mở tunnel từ máy của bạn ra internet.",
 	"apps.tuneloCli.signIn":
 		"Chạy {command} trong terminal, rồi nhập mã nó hiện ở {device}.",
 	"apps.tuneloWeb.description": "Tunnel của bạn trên trình duyệt.",

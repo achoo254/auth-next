@@ -85,6 +85,9 @@ export const viConsent: Translation<typeof enConsent> = {
 	"device.approve.question": "Cho phép {device}?",
 	"device.approve.code": "Mã: {code}",
 	"device.approve.ip": "yêu cầu từ IP {ip}",
+	"device.approve.origin": "Yêu cầu gửi từ {machine}, IP {ip}.",
+	"device.approve.ipMismatch":
+		"Yêu cầu này đến từ IP {ip}, khác mạng của trình duyệt bạn đang dùng ({here}). Nếu không phải chính bạn vừa chạy lệnh trên máy đó, hãy từ chối.",
 	"device.approve.inApp": "Trên {app}, nó sẽ được:",
 	"device.approve.agentWarning":
 		"Chỉ duyệt nếu bạn vừa chạy lệnh trên chính máy của bạn. Sau khi duyệt, máy này mở được tunnel và thay bạn làm việc trên Chat và Localman cho tới khi bạn đăng xuất nó ở trang tài khoản.",

@@ -11,7 +11,11 @@ import { type SafeHtml, html } from "../ui/html.js";
 import { renderPage } from "../ui/layout.js";
 import { type PageContext, koaPageContext } from "../ui/page-context.js";
 import { describeScopes } from "./consent-page.js";
-import { appAccessBlock, approvalListsApps } from "./device-app-access.js";
+import {
+	appAccessBlock,
+	isMachineAgent,
+	requestOrigin,
+} from "./device-app-access.js";
 import { deviceClientLabel, deviceIpOf, deviceNameOf } from "./device-info.js";
 import { sendKoaPage, xsrfFromProviderForm } from "./koa-page.js";
 
@@ -82,6 +86,11 @@ export async function userCodeConfirmSource(
 	deviceInfo: UnknownObject,
 	userCode: string,
 ): Promise<void> {
+	// The agent's code is typed, never taken from a link someone sent.
+	if (isMachineAgent(client.clientId)) {
+		await userCodeInputSource(ctx, form);
+		return;
+	}
 	const page = koaPageContext(ctx);
 	const { i18n } = page;
 	const action = ctx.oidc.urlFor("code_verification");
@@ -134,6 +143,8 @@ export interface DeviceApprovalView {
 	readonly userCode?: string;
 	readonly scopes: readonly string[];
 	readonly username: string;
+	/** IP of the browser approving, compared with the device's for the agent. */
+	readonly approverIp?: string;
 }
 
 /** The "Allow tunelo on …?" page, shown after sign-in. */
@@ -142,12 +153,14 @@ export function renderDeviceApproval(view: DeviceApprovalView): string {
 	const label = deviceClientLabel(view.clientId, view.clientName);
 	const machine = deviceNameOf(view.params, view.deviceInfo);
 	const ip = deviceIpOf(view.deviceInfo);
+	const agent = isMachineAgent(view.clientId);
 	const title = i18n.t("device.approve.title");
 	const body = html`${pageTitle(title, i18n.rich("common.signedInAs", { username: html`<b>@${view.username}</b>` }))}
 <p class="device-question" data-id="device-question">${i18n.rich("device.approve.question", { device: deviceLabel(i18n, label, machine) })}</p>
-${view.userCode ? html`<p class="help">${i18n.rich("device.approve.code", { code: html`<code data-id="device-approval-code">${formatUserCode(view.userCode)}</code>` })}${ip ? html` · ${i18n.rich("device.approve.ip", { ip: html`<code>${ip}</code>` })}` : ""}</p>` : ""}
+${agent ? requestOrigin(i18n, machine, ip, view.approverIp) : ""}
+${view.userCode ? html`<p class="help">${i18n.rich("device.approve.code", { code: html`<code data-id="device-approval-code">${formatUserCode(view.userCode)}</code>` })}${ip && !agent ? html` · ${i18n.rich("device.approve.ip", { ip: html`<code>${ip}</code>` })}` : ""}</p>` : ""}
 ${
-	approvalListsApps(view.clientId)
+	agent
 		? appAccessBlock(i18n, view.scopes)
 		: html`<ul class="scope-list">${describeScopes(i18n, view.scopes).map((text) => html`<li>${text}</li>`)}</ul>`
 }

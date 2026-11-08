@@ -148,6 +148,7 @@ export async function showConsent(
 				userCode: code?.userCode,
 				scopes: requestedScopes(interaction),
 				username: account.username,
+				approverIp: clientIp(req),
 			}),
 		);
 		return;

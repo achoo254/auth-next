@@ -25,12 +25,47 @@ const APP_SCOPES: ReadonlySet<string> = new Set(
 );
 
 /**
- * Whether the approval page lists access app by app and warns: the Tunelo
- * agent gets one grant for tunnels, Chat and Localman, so approving a code
- * someone else started would hand them all three.
+ * The Tunelo agent gets one grant for tunnels, Chat and Localman, so
+ * approving a code someone else started would hand them all three. Its
+ * device login is guarded harder: the user types the code (no prefilled
+ * link), and the approval page lists access app by app, puts the requesting
+ * machine and IP next to the question and warns.
  */
-export function approvalListsApps(clientId: string): boolean {
+export function isMachineAgent(clientId: string): boolean {
 	return clientId === TUNELO_AGENT_CLIENT_ID;
+}
+
+/** `::ffff:203.0.113.7` and `203.0.113.7` are the same IPv4 client. */
+function plainIp(ip: string): string {
+	return ip.startsWith("::ffff:") ? ip.slice("::ffff:".length) : ip;
+}
+
+/**
+ * The machine and IP that asked for the code, and a red warning when the
+ * browser approving it is elsewhere. A headless machine reached over SSH is
+ * a legitimate mismatch, so this warns and never blocks.
+ */
+export function requestOrigin(
+	i18n: Translator,
+	machine: string | undefined,
+	ip: string | undefined,
+	approverIp: string | undefined,
+): SafeHtml {
+	if (!ip) return html``;
+	const mismatch =
+		approverIp !== undefined && plainIp(approverIp) !== plainIp(ip);
+	return html`<p data-id="device-origin">${i18n.rich("device.approve.origin", {
+		machine: html`<b>${machine ?? i18n.t("device.unknownName")}</b>`,
+		ip: html`<code data-id="device-origin-ip">${ip}</code>`,
+	})}</p>
+${
+	mismatch
+		? alertBox(
+				"error",
+				html`<span data-id="device-ip-mismatch">${i18n.rich("device.approve.ipMismatch", { ip: html`<code>${ip}</code>`, here: html`<code>${approverIp}</code>` })}</span>`,
+			)
+		: ""
+}`;
 }
 
 function scopeList(
