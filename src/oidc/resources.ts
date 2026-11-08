@@ -37,6 +37,21 @@ export const TUNNEL_SCOPES = ["tunnels:open", "tunnels:read"] as const;
  */
 export const BOTS_ADMIN_SCOPE = "bots:admin";
 
+/**
+ * Lets the Tunelo machine agent add the machine it runs on to the user's
+ * machines in Chat and Localman. Like `bots:admin`, it is kept out of every
+ * shared scope list: only `TUNELO_AGENT_CLIENT_ID` holds it, and only on
+ * the Chat and Localman MCP resources (`resourceServerInfo`).
+ */
+export const MACHINES_WRITE_SCOPE = "machines:write";
+
+/**
+ * The Tunelo machine agent (`tunelo-agent-client.ts`), the only client
+ * whose Chat and Localman tokens may carry `machines:write`. Declared here
+ * because scopes by resource are declared only in this file.
+ */
+export const TUNELO_AGENT_CLIENT_ID = "tunelo-agent";
+
 /** Scopes the Chat MCP endpoint accepts. */
 export const CHAT_MCP_SCOPES = [
 	"chat:read",
@@ -79,6 +94,7 @@ export const SUPPORTED_SCOPES = [
 	...TUNNEL_SCOPES,
 	...CHAT_MCP_SCOPES,
 	...SCRIBE_MCP_SCOPES,
+	MACHINES_WRITE_SCOPE,
 ];
 
 const ACCESS_TOKEN_TTL_SECONDS = 15 * 60;
@@ -101,8 +117,11 @@ export interface ResourcePolicy {
 		resourceIndicator: string,
 		client: Client,
 	): Promise<ResourceServer>;
-	/** How tokens for `resource` are issued, whichever grant issues them. */
-	resourceServerInfo(resource: string): ResourceServer;
+	/**
+	 * How tokens for `resource` are issued to `clientId`, whichever grant
+	 * issues them; without a client, the resource's own scopes only.
+	 */
+	resourceServerInfo(resource: string, clientId?: string): ResourceServer;
 	/** `features.resourceIndicators.defaultResource` of oidc-provider. */
 	defaultResource(
 		ctx: KoaContextWithOIDC,
@@ -127,8 +146,22 @@ export function createResourcePolicy(
 		const value: unknown = client[ALLOWED_RESOURCES_PROPERTY];
 		return Array.isArray(value) ? value.filter(isResourceIndicator) : [];
 	};
-	const resourceServerInfo = (resource: string): ResourceServer => ({
-		scope: (scopesByResource.get(resource) ?? []).join(" "),
+	const machineResources: ReadonlySet<string> = new Set([
+		resources.chatMcp,
+		resources.localmanMcp,
+	]);
+	const scopesOf = (resource: string, clientId?: string): string[] => {
+		const scopes = [...(scopesByResource.get(resource) ?? [])];
+		if (clientId === TUNELO_AGENT_CLIENT_ID && machineResources.has(resource)) {
+			scopes.push(MACHINES_WRITE_SCOPE);
+		}
+		return scopes;
+	};
+	const resourceServerInfo = (
+		resource: string,
+		clientId?: string,
+	): ResourceServer => ({
+		scope: scopesOf(resource, clientId).join(" "),
 		audience: resource,
 		accessTokenTTL: ACCESS_TOKEN_TTL_SECONDS,
 		accessTokenFormat: "jwt",
@@ -154,7 +187,7 @@ export function createResourcePolicy(
 					"resource is not allowed for this client",
 				);
 			}
-			return resourceServerInfo(resourceIndicator);
+			return resourceServerInfo(resourceIndicator, client.clientId);
 		},
 		/**
 		 * When a request names no resource but asks for scopes of exactly

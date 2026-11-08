@@ -53,6 +53,8 @@ export const viConsent: Translation<typeof enConsent> = {
 		"Đặt hoặc gỡ webhook, cấp lại token và xoá bot của bạn trên Chat",
 	"scope.scribeRead":
 		"Đọc bản ghi và tệp của bạn trên Scribe: bản chép lời, biên bản, bản dịch, người nói và dấu mốc, tìm kiếm và đặt câu hỏi trên chúng (chỉ đọc)",
+	"scope.machinesWrite":
+		"Thêm máy này vào danh sách máy của bạn trên Chat và Localman",
 	"scope.unknown": "Quyền “{scope}”",
 	"device.input.title": "Đăng nhập thiết bị",
 	"device.input.subtitle":
@@ -83,4 +85,7 @@ export const viConsent: Translation<typeof enConsent> = {
 	"device.approve.question": "Cho phép {device}?",
 	"device.approve.code": "Mã: {code}",
 	"device.approve.ip": "yêu cầu từ IP {ip}",
+	"device.approve.inApp": "Trên {app}, nó sẽ được:",
+	"device.approve.agentWarning":
+		"Chỉ duyệt nếu bạn vừa chạy lệnh trên chính máy của bạn. Sau khi duyệt, máy này mở được tunnel và thay bạn làm việc trên Chat và Localman cho tới khi bạn đăng xuất nó ở trang tài khoản.",
 };

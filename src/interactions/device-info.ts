@@ -57,7 +57,8 @@ export function deviceClientLabel(
 	clientId: string,
 	clientName?: string,
 ): string {
-	return clientId === STATIC_CLIENT_IDS.tuneloCli
+	return clientId === STATIC_CLIENT_IDS.tuneloCli ||
+		clientId === STATIC_CLIENT_IDS.tuneloAgent
 		? "tunelo"
 		: (clientName ?? clientId);
 }

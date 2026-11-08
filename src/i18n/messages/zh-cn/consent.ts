@@ -50,6 +50,7 @@ export const zhConsent: Translation<typeof enConsent> = {
 		"在 Chat 上设置或移除 webhook、重新签发 token 并删除你的机器人",
 	"scope.scribeRead":
 		"读取你在 Scribe 上的录音和文件：文字稿、会议纪要、翻译、说话人和书签，并可搜索和就其提问（只读）",
+	"scope.machinesWrite": "将这台电脑添加到你在 Chat 和 Localman 的电脑列表",
 	"scope.unknown": "权限“{scope}”",
 	"device.input.title": "设备登录",
 	"device.input.subtitle":
@@ -78,4 +79,7 @@ export const zhConsent: Translation<typeof enConsent> = {
 	"device.approve.question": "允许 {device}？",
 	"device.approve.code": "代码：{code}",
 	"device.approve.ip": "请求来自 IP {ip}",
+	"device.approve.inApp": "在 {app} 中，它将可以：",
+	"device.approve.agentWarning":
+		"仅当你刚刚在自己的电脑上运行了该命令时才批准。批准后，这台电脑可以打开隧道，并以你的身份使用 Chat 和 Localman，直到你在账户页面将其退出。",
 };

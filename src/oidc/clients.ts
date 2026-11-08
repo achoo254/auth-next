@@ -25,6 +25,10 @@ import {
 	type SignInOnlyApps,
 	buildSignInOnlyClients,
 } from "./sign-in-only-clients.js";
+import {
+	TUNELO_AGENT_CLIENT_IDS,
+	buildTuneloAgentClients,
+} from "./tunelo-agent-client.js";
 
 /** Secrets of the tenant's confidential first-party clients (from the environment). */
 export interface StaticClientSecrets {
@@ -42,6 +46,7 @@ export const STATIC_CLIENT_IDS = {
 	localmanWeb: "localman-web",
 	tuneloCli: "tunelo-cli",
 	tuneloWeb: "tunelo-web",
+	...TUNELO_AGENT_CLIENT_IDS,
 	/** The IdP's own /account pages; signs the user in, never redeems a code. */
 	accountPortal: "hoandat-account",
 	...CHAT_CLIENT_IDS,
@@ -99,6 +104,7 @@ const DEVICE_BOUND_STATIC_CLIENTS: ReadonlySet<string> = new Set([
 	STATIC_CLIENT_IDS.chatMobile,
 	STATIC_CLIENT_IDS.scribeMobile,
 	STATIC_CLIENT_IDS.accountIos,
+	STATIC_CLIENT_IDS.tuneloAgent,
 ]);
 
 export function refreshesPerDevice(clientId: string | undefined): boolean {
@@ -193,6 +199,7 @@ export function buildStaticClients(
 			scope: scopeOf(["openid", "profile", "email"], TUNNEL_SCOPES),
 			[ALLOWED_RESOURCES_PROPERTY]: [resources.tunnel],
 		},
+		...buildTuneloAgentClients(resources),
 		{
 			// Public client with PKCE: /account signs in through the usual
 			// login pages; then only the IdP session cookie matters.

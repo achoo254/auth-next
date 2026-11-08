@@ -36,6 +36,7 @@ ID token mặc định ký **ES256**. Discovery quảng bá `id_token_signing_al
 |---|---|---|---|---|---|
 | `localman-web` | confidential (`client_secret_basic`) | Code + PKCE, refresh (gắn phiên IdP), **token exchange** | `openid profile email telegram` + scope API Localman (không có `offline_access`) | `https://localman.hoandat.com` (chỉ khi xin scope API); đổi được token `https://tunnel.hoandat.com` | `https://localman.hoandat.com/auth/backchannel-logout` |
 | `tunelo-cli` | public (`none`) | Device flow, refresh | `openid offline_access tunnels:open tunnels:read` | `https://tunnel.hoandat.com` | không |
+| `tunelo-agent` | public, native (`none`) | Device flow, refresh (theo thiết bị, không trần 90 ngày; mục 7) | `openid offline_access tunnels:open tunnels:read chat:read chat:write machines:write mock:read mock:write client:read client:write client:send` (không bao giờ có `bots:*`, `credentials:write`) | một trong ba, theo `resource` của từng lần refresh: `https://tunnel.hoandat.com`, `https://chat.hoandat.com/mcp`, `https://localman.hoandat.com/mcp` | không |
 | `tunelo-web` | confidential (`client_secret_basic`) | Code + PKCE, refresh (gắn phiên IdP) | `openid profile email tunnels:open tunnels:read` (không có `offline_access`; trang web Tunelo xin `openid profile`) | `https://tunnel.hoandat.com` | `https://tunnel.hoandat.com/auth/backchannel-logout` |
 | `chat-web` | confidential (`client_secret_basic`) | Code + PKCE, refresh (gắn phiên IdP) | `openid profile email` (không có `offline_access`) | không có: access token opaque chỉ dùng cho userinfo | `https://chat.hoandat.com/auth/backchannel-logout` |
 | `chat-mobile` | public, native (`none`) | Code + PKCE qua trình duyệt hệ thống, refresh (theo thiết bị, mục 8) | `openid profile email` | không có | không |
@@ -59,9 +60,9 @@ Redirect URI: `${LOCALMAN_WEB_URL}/auth/callback`, `${TUNELO_WEB_URL}/auth/callb
 | Resource server | `aud` | Scope |
 |---|---|---|
 | API Localman | `https://localman.hoandat.com` | `mock:*`, `client:*` |
-| MCP của Localman | `https://localman.hoandat.com/mcp` | `mock:*`, `client:*`, `credentials:write` |
+| MCP của Localman | `https://localman.hoandat.com/mcp` | `mock:*`, `client:*`, `credentials:write`; `machines:write` chỉ cho `tunelo-agent` |
 | API Tunelo | `https://tunnel.hoandat.com` | `tunnels:open`, `tunnels:read` |
-| MCP của Chat | `https://chat.hoandat.com/mcp` | `chat:read`, `chat:write`, `bots:read`, `bots:write`, `bots:admin` |
+| MCP của Chat | `https://chat.hoandat.com/mcp` | `chat:read`, `chat:write`, `bots:read`, `bots:write`, `bots:admin`; `machines:write` chỉ cho `tunelo-agent` |
 | MCP của Scribe | `https://scribe.hoandat.com/mcp` | `scribe:read` (chỉ đọc) |
 
 **Scope API và câu hiện trên trang consent** (nguồn: `SCOPE_TEXT` trong `src/interactions/consent-page.ts`; danh sách "Ứng dụng đã cấp quyền" ở `/account` dùng cùng câu):
@@ -82,6 +83,7 @@ Redirect URI: `${LOCALMAN_WEB_URL}/auth/callback`, `${TUNELO_WEB_URL}/auth/callb
 | `bots:write` | MCP của Chat | có | Tạo bot, sửa thông tin và lệnh của bot, gửi lại hoặc bỏ các tin giao lỗi trên Chat |
 | `bots:admin` | MCP của Chat | **không** | Đặt hoặc gỡ webhook, cấp lại token và xoá bot của bạn trên Chat; kèm cảnh báo đỏ "Cho phép chuyển mọi tin gửi tới bot sang địa chỉ khác (webhook), cấp lại token và xoá bot. Chỉ cấp cho ứng dụng bạn tin tưởng." |
 | `scribe:read` | MCP của Scribe | có | Đọc bản ghi và tệp của bạn trên Scribe: bản chép lời, biên bản, bản dịch, người nói và dấu mốc, tìm kiếm và đặt câu hỏi trên chúng (chỉ đọc) |
+| `machines:write` | MCP của Chat và của Localman | **không** (chỉ `tunelo-agent`, không client nào khác hay DCR xin được) | Thêm máy này vào danh sách máy của bạn trên Chat và Localman |
 
 `credentials:write` (tool MCP tạo PAT, tạo/xoay secret service account, tạo access key) không bao giờ được cấp ngầm: client MCP phải khai nó trong `scope` lúc đăng ký (client đăng ký không khai `scope` chỉ nhận các scope mặc định, xin thêm thì bị `invalid_scope`), rồi xin nó trong authorization request; user thấy cảnh báo đỏ trên trang consent. `localman-web` không có scope này. Endpoint MCP phải kiểm `credentials:write` trong `scope` của access token trước khi chạy các tool đó. `bots:admin` (đặt/gỡ webhook, cấp lại token, xoá bot) theo đúng quy tắc đó, với cảnh báo đỏ riêng; endpoint MCP của Chat phải kiểm nó.
 
@@ -249,10 +251,17 @@ const tokens = await oidc.pollDeviceAuthorizationGrant(cli, device);
 - Trang duyệt luôn hỏi "Cho phép `tunelo` trên máy <device_name>?"; đã đăng nhập IdP thì không phải đăng nhập lại. Mỗi máy một grant, thu hồi từng máy ở `/account`.
 - Lưu refresh token với quyền file `0600`. `tunelo logout`: gọi `revocation_endpoint` với refresh token rồi xoá file.
 
+**Tiến trình máy Tunelo 2.x (`tunelo-agent`)**: một device login cho ba tài nguyên, một refresh token.
+
+- Device authorization gửi **đủ ba** `resource` (tunnel, `https://chat.hoandat.com/mcp`, `https://localman.hoandat.com/mcp`) và scope ở bảng mục 2. Refresh chỉ đổi được sang tài nguyên đã nằm trong device login; thiếu thì phải đăng nhập lại.
+- Mỗi lần refresh gửi `resource=<tài nguyên cần>` và nhận JWT 15 phút có đúng `aud` đó, scope lọc theo tài nguyên (`machines:write` chỉ có trong token Chat và Localman). Refresh bị từ chối (`invalid_target`: tài nguyên ngoài device login hoặc ngoài danh sách) **vẫn tiêu refresh token**: lần sau nhận `invalid_grant`. Chỉ xin đúng ba tài nguyên trên.
+- Một refresh token dùng chung cho mọi tài nguyên nên mọi refresh đi qua một khoá duy nhất (mục 8); hai refresh song song cho hai tài nguyên sẽ thu hồi cả grant.
+- Trang duyệt liệt kê việc được làm theo từng app (Tunelo, Chat, Localman), IP gửi yêu cầu và cảnh báo chỉ duyệt khi chính bạn vừa chạy lệnh trên máy của mình. Grant theo thiết bị như `chat-mobile`: không chết khi đăng xuất IdP, không trần 90 ngày, thu hồi từng máy ở `/account`.
+
 ## 8. Refresh token và phiên trượt
 
 - Refresh token **dùng một lần, xoay vòng**: mỗi lần refresh nhận token mới; đưa lại token cũ làm IdP thu hồi cả grant. Hai refresh song song cùng một token thì một cái nhận `invalid_grant`. Vì vậy **phải khoá khi refresh** (Tunelo CLI: file lock vì nhiều tiến trình; app web: mutex theo phiên) và ghi token mới trước khi nhả khoá.
-- **Phiên trượt 30/90 ngày**: mỗi lần refresh thành công, grant được gia hạn tới 30 ngày sau lần đó, nhưng không quá 90 ngày kể từ lúc đăng nhập. Không refresh quá 30 ngày thì phải đăng nhập lại; tới ngày 90 thì luôn phải đăng nhập lại ở app web. Riêng thiết bị Tunelo CLI (`tunelo-cli`), app chat native (`chat-mobile`) và app Scribe (`scribe-mobile`) không có trần 90 ngày: còn refresh trong 30 ngày là phiên còn mãi (thu hồi từng máy ở `/account`).
+- **Phiên trượt 30/90 ngày**: mỗi lần refresh thành công, grant được gia hạn tới 30 ngày sau lần đó, nhưng không quá 90 ngày kể từ lúc đăng nhập. Không refresh quá 30 ngày thì phải đăng nhập lại; tới ngày 90 thì luôn phải đăng nhập lại ở app web. Riêng thiết bị Tunelo CLI (`tunelo-cli`), tiến trình máy Tunelo (`tunelo-agent`), app chat native (`chat-mobile`) và app Scribe (`scribe-mobile`) không có trần 90 ngày: còn refresh trong 30 ngày là phiên còn mãi (thu hồi từng máy ở `/account`).
 - `chat-mobile` nhận refresh token không cần `offline_access`, và refresh token của nó không chết khi người dùng đăng xuất trên trình duyệt: mỗi máy là một grant riêng.
 - Mỗi lần duyệt đăng nhập của `chat-mobile` (và `scribe-mobile`) tạo một grant mới cho máy đó; `/account` liệt kê từng máy dưới mục "Thiết bị" (`<tên app> · <tên máy>`) và đăng xuất riêng từng máy (refresh của máy đó nhận `invalid_grant`, máy khác không ảnh hưởng). App nên gửi `device_name=<tên máy>` trong authorization request (tối đa 64 ký tự chữ, số, khoảng trắng, `._'()-`; sai định dạng thì IdP trả `invalid_request`); thiếu thì IdP ghi User-Agent của trình duyệt đã duyệt.
 - `localman-web`, `tunelo-web`, `chat-web` và client MCP không có `offline_access` (client MCP xin thì bị bỏ qua, mục 9): refresh token của chúng gắn với phiên trình duyệt ở IdP (đăng xuất ở IdP là hết), vẫn theo trần 30/90 ngày.

@@ -17,6 +17,7 @@ const APP_OF_STATIC_CLIENT: Readonly<Record<string, string>> = {
 	[ids.localmanWeb]: "localman",
 	[ids.tuneloCli]: "tunelo",
 	[ids.tuneloWeb]: "tunelo",
+	[ids.tuneloAgent]: "tunelo",
 	[ids.chatWeb]: "chat",
 	[ids.chatMobile]: "chat",
 	[ids.scribeWeb]: "scribe",

@@ -11,6 +11,7 @@ import { type SafeHtml, html } from "../ui/html.js";
 import { renderPage } from "../ui/layout.js";
 import { type PageContext, koaPageContext } from "../ui/page-context.js";
 import { describeScopes } from "./consent-page.js";
+import { appAccessBlock, approvalListsApps } from "./device-app-access.js";
 import { deviceClientLabel, deviceIpOf, deviceNameOf } from "./device-info.js";
 import { sendKoaPage, xsrfFromProviderForm } from "./koa-page.js";
 
@@ -145,7 +146,11 @@ export function renderDeviceApproval(view: DeviceApprovalView): string {
 	const body = html`${pageTitle(title, i18n.rich("common.signedInAs", { username: html`<b>@${view.username}</b>` }))}
 <p class="device-question" data-id="device-question">${i18n.rich("device.approve.question", { device: deviceLabel(i18n, label, machine) })}</p>
 ${view.userCode ? html`<p class="help">${i18n.rich("device.approve.code", { code: html`<code data-id="device-approval-code">${formatUserCode(view.userCode)}</code>` })}${ip ? html` · ${i18n.rich("device.approve.ip", { ip: html`<code>${ip}</code>` })}` : ""}</p>` : ""}
-<ul class="scope-list">${describeScopes(i18n, view.scopes).map((text) => html`<li>${text}</li>`)}</ul>
+${
+	approvalListsApps(view.clientId)
+		? appAccessBlock(i18n, view.scopes)
+		: html`<ul class="scope-list">${describeScopes(i18n, view.scopes).map((text) => html`<li>${text}</li>`)}</ul>`
+}
 <div class="auth-form">
 <form method="post" action="/interaction/${view.uid}/consent">${csrfField(view.csrf)}${submitButton(i18n.t("consent.allow"), { block: true, dataId: "device-allow" })}</form>
 <form method="post" action="/interaction/${view.uid}/abort">${csrfField(view.csrf)}${submitButton(i18n.t("consent.deny"), { block: true, variant: "secondary", dataId: "device-deny" })}</form>

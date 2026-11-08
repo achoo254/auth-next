@@ -15,7 +15,7 @@ export const GRANT_MAX_SECONDS = 90 * DAY;
 
 /**
  * Whether a client's grants end 90 days after sign-in. Device grants are
- * exempt: Tunelo CLI (Jev 0.98), whose lab servers run tunnels unattended
+ * exempt: Tunelo CLI (Jev 0.98) and the Tunelo agent, whose machines run unattended
  * for months, and the chat mobile app, which stays signed in
  * like any messaging app. A device that keeps refreshing stays signed in;
  * one idle for 30 days still expires, and each stays revocable at /account.

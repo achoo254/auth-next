@@ -50,6 +50,8 @@ export const enConsent = {
 		"Set or remove webhooks, issue new tokens and delete your bots on Chat",
 	"scope.scribeRead":
 		"Read your Scribe recordings and files: their transcripts, summaries, translations, speakers and bookmarks, search them and ask questions about them (read only)",
+	"scope.machinesWrite":
+		"Add this machine to your machines in Chat and Localman",
 	"scope.unknown": "Permission “{scope}”",
 	"device.input.title": "Device sign-in",
 	"device.input.subtitle":
@@ -83,4 +85,7 @@ export const enConsent = {
 	"device.approve.question": "Allow {device}?",
 	"device.approve.code": "Code: {code}",
 	"device.approve.ip": "requested from IP {ip}",
+	"device.approve.inApp": "In {app}, it will be able to:",
+	"device.approve.agentWarning":
+		"Only approve if you just ran the command on your own machine. Once approved, this machine can open tunnels and act as you in Chat and Localman until you sign it out on your account page.",
 };

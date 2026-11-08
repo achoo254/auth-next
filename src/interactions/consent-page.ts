@@ -1,6 +1,10 @@
 import type { MessageKey } from "../i18n/dictionaries.js";
 import type { Translator } from "../i18n/translator.js";
-import { BOTS_ADMIN_SCOPE, CREDENTIALS_SCOPE } from "../oidc/resources.js";
+import {
+	BOTS_ADMIN_SCOPE,
+	CREDENTIALS_SCOPE,
+	MACHINES_WRITE_SCOPE,
+} from "../oidc/resources.js";
 import {
 	alertBox,
 	csrfField,
@@ -33,6 +37,7 @@ const SCOPE_TEXT: ReadonlyMap<string, MessageKey> = new Map([
 	["bots:write", "scope.botsWrite"],
 	[BOTS_ADMIN_SCOPE, "scope.botsAdmin"],
 	["scribe:read", "scope.scribeRead"],
+	[MACHINES_WRITE_SCOPE, "scope.machinesWrite"],
 ]);
 
 /**
