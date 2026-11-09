@@ -29,7 +29,7 @@ const HUB_PAD = 14;
 const MONO_EM = 0.6;
 const BRAND_PX = 20;
 const HOST_PX = 10;
-const APP = { x: 392, width: 148, height: 40 } as const;
+const APP = { x: 380, width: 160, height: 40 } as const;
 
 const KEYS: readonly {
 	readonly provider: UpstreamProvider;

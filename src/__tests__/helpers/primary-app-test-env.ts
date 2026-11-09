@@ -2,7 +2,7 @@ import { randomBytes } from "node:crypto";
 
 /*
  * Client secrets and local origins of the primary-tenant apps (Scribe, Miu
- * World, Tiểu Đệ, Tử Vi, Clip, Web Nhanh, Truyện, Lockin, KnowFlow) in the test IdP: all their clients exist.
+ * World, Tiểu Đệ, Tử Vi, Clip, Web Nhanh, Truyện, Lockin, Knowledge Base) in the test IdP: all their clients exist.
  */
 
 export const SCRIBE_WEB_SECRET = randomBytes(32).toString("base64url");
@@ -29,7 +29,7 @@ export const LOCKIN_WEB_URL = "https://lockin.hoandat.com";
 export const KB_WEB_SECRET = randomBytes(32).toString("base64url");
 export const KB_WEB_URL = "https://kb.hoandat.com";
 export const KB_WEB_DEV_SECRET = randomBytes(32).toString("base64url");
-/** A developer's local KnowFlow, served the kb-web-dev client. */
+/** A developer's local Knowledge Base, served the kb-web-dev client. */
 export const KB_WEB_DEV_URL = "http://localhost:5321";
 
 /** The environment that turns those clients on. */

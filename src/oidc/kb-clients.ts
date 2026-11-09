@@ -8,21 +8,21 @@ import {
 } from "./primary-app-clients.js";
 
 /**
- * Clients of KnowFlow (repo kb-next, kb.hoandat.com): a web client used by
+ * Clients of Knowledge Base (repo kb-next, kb.hoandat.com): a web client used by
  * its server (BFF) and an optional web client for a developer's own machine.
- * KnowFlow has no mobile app, and it is served for the primary tenant only.
+ * Knowledge Base has no mobile app, and it is served for the primary tenant only.
  */
 export const KB_CLIENT_IDS = {
 	kbWeb: "kb-web",
 	kbWebDev: "kb-web-dev",
 } as const;
 
-/** Where KnowFlow's server receives the code and back-channel logout. */
+/** Where Knowledge Base's server receives the code and back-channel logout. */
 export const KB_CALLBACK_PATH = "/auth/callback";
 export const KB_BACKCHANNEL_LOGOUT_PATH = "/auth/backchannel-logout";
 
 /**
- * What the primary tenant's environment configures for KnowFlow: `web`
+ * What the primary tenant's environment configures for Knowledge Base: `web`
  * enables kb-web, `dev` enables kb-web-dev (loopback redirect).
  */
 export interface KbClientsConfig {
@@ -31,26 +31,26 @@ export interface KbClientsConfig {
 }
 
 /**
- * KnowFlow keeps its own session and reads the name, picture and email
+ * Knowledge Base keeps its own session and reads the name, picture and email
  * (userinfo) for its account menu: no refresh token (authorization code
  * only), no API resource.
  */
 const KB_SPEC: WebClientSpec = {
-	name: "KnowFlow",
+	name: "Knowledge Base",
 	scope: "openid profile email",
 	grantTypes: ["authorization_code"],
 	callbackPath: KB_CALLBACK_PATH,
 	backchannelLogoutPath: KB_BACKCHANNEL_LOGOUT_PATH,
 };
 
-/** Whether `clientId` is one of KnowFlow's (they exist only when configured). */
+/** Whether `clientId` is one of Knowledge Base's (they exist only when configured). */
 export function isKbClientId(clientId: string): boolean {
 	return Object.values<string>(KB_CLIENT_IDS).includes(clientId);
 }
 
 /**
- * The KnowFlow clients of `tenant` that `config` enables, primary tenant
- * only: other tenants have no host for KnowFlow and must never redirect to
+ * The Knowledge Base clients of `tenant` that `config` enables, primary tenant
+ * only: other tenants have no host for Knowledge Base and must never redirect to
  * the primary tenant's. kb-web has a back-channel logout; kb-web-dev has
  * none, as a developer's machine is unreachable from the IdP.
  */

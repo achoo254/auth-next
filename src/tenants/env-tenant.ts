@@ -189,7 +189,7 @@ export function envMiuClients(
 }
 
 /**
- * The primary tenant's KnowFlow clients, from the environment: each pair
+ * The primary tenant's Knowledge Base clients, from the environment: each pair
  * counts only when both its origin and its secret are set (parseEnv rejects
  * one alone).
  */

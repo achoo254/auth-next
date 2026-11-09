@@ -30,7 +30,7 @@ import {
 import { OTHER_TEST_TENANT } from "./helpers/test-tenant.js";
 
 /**
- * KnowFlow signs readers in through its server (BFF) with
+ * Knowledge Base signs readers in through its server (BFF) with
  * `openid profile email`, keeps its own session (no refresh token) and
  * learns of IdP sign-outs by back-channel. oidc-provider refuses outgoing
  * calls to special-use addresses, so the back-channel logout is checked on
@@ -98,7 +98,7 @@ describe("kb-web", () => {
 			await idp.provider.Client.find(STATIC_CLIENT_IDS.kbWeb)
 		)?.metadata();
 		expect(metadata).toMatchObject({
-			client_name: "KnowFlow",
+			client_name: "Knowledge Base",
 			token_endpoint_auth_method: "client_secret_basic",
 			grant_types: ["authorization_code"],
 			response_types: ["code"],
@@ -220,7 +220,7 @@ describe("no mobile client", () => {
 });
 
 describe("other tenants", () => {
-	it("have no KnowFlow client even with the same environment", async () => {
+	it("have no Knowledge Base client even with the same environment", async () => {
 		const other = await startTestIdp({
 			interactions: "auto",
 			rateLimits: [],
@@ -298,7 +298,7 @@ describe("configuration", () => {
 		).toThrow(/KB_WEB_CLIENT_SECRET: must be at least 32/);
 	});
 
-	it("registers kb-web-dev only with its loopback pair, without listing KnowFlow", () => {
+	it("registers kb-web-dev only with its loopback pair, without listing Knowledge Base", () => {
 		const configured = parseEnv({
 			...BASE_ENV,
 			KB_WEB_DEV_URL: devUrl,

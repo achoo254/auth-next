@@ -95,7 +95,7 @@ export interface ProviderDependencies {
 	readonly miuClients?: PrimaryAppClientsConfig;
 	/** The sign-in-only apps' web clients (Tử Vi, Clip, Truyện...); primary tenant only. */
 	readonly signInOnlyApps?: SignInOnlyApps;
-	/** KnowFlow's web and development clients; primary tenant only. */
+	/** Knowledge Base's web and development clients; primary tenant only. */
 	readonly kbClients?: KbClientsConfig;
 	readonly accountStore: AccountStore;
 	readonly logger: Logger;

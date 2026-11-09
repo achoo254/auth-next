@@ -95,7 +95,7 @@ export async function inspectStaticClients(deps: {
 	const clients: StaticClientSummary[] = [];
 	for (const clientId of Object.values(STATIC_CLIENT_IDS)) {
 		const client = await provider.Client.find(clientId);
-		// Scribe's, Miu's, KnowFlow's and the sign-in-only apps' exist only
+		// Scribe's, Miu's, Knowledge Base's and the sign-in-only apps' exist only
 		// when configured.
 		if (!client && isOptionalClientId(clientId)) continue;
 		if (!client) throw new Error(`Static client ${clientId} is missing`);

@@ -3,7 +3,7 @@ import { PRIVATE_USE_REDIRECT } from "../oidc/chat-clients.js";
 
 /*
  * Building blocks of the environment of a primary-tenant app (Scribe, Miu
- * World, KnowFlow, the sign-in-only apps): an optional web client, the app's private-use redirect and an
+ * World, Knowledge Base, the sign-in-only apps): an optional web client, the app's private-use redirect and an
  * all-or-nothing development client that only ever redirects to loopback.
  */
 

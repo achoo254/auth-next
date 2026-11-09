@@ -139,7 +139,7 @@ function scribeMcp(tenant: AppDirectoryTenant, i18n: Translator): ListedApp {
 /**
  * Web apps listed only once their client is configured (their `webApps`
  * entry is set from the environment): Scribe, Web Nhanh, Miu World, Tiểu Đệ,
- * Tử Vi, Clip, Truyện, Lockin, KnowFlow.
+ * Tử Vi, Clip, Truyện, Lockin, Knowledge Base.
  */
 export const OPTIONAL_WEB_APPS = [
 	{
@@ -217,7 +217,7 @@ export const OPTIONAL_WEB_APPS = [
 	{
 		key: "kb",
 		id: STATIC_CLIENT_IDS.kbWeb,
-		name: "KnowFlow",
+		name: "Knowledge Base",
 		tone: "blue",
 		icon: "kb",
 		description: "apps.kbWeb.description",

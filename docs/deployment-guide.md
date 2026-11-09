@@ -118,20 +118,20 @@ Gặp `invalid_client` dù `seed-clients` liệt kê client ⟹ bản `dist` tr�
 
 Rollback: xoá hai dòng `<APP>_WEB_*` của app đó rồi reload; nút đăng nhập ở app trả lỗi, phần còn lại của app chạy bình thường.
 
-## Client của KnowFlow
+## Client của Knowledge Base
 
-KnowFlow (repo `kb-next`, `https://kb.hoandat.com`, knowledge base song ngữ) dùng `kb-web` (confidential, BFF: server KnowFlow đổi code rồi giữ phiên riêng) và `kb-web-dev` (tuỳ chọn, chỉ cho dev local) — `src/oidc/kb-clients.ts`. Không có client mobile. Scope `openid profile email`, chỉ grant `authorization_code` (không refresh token), không API resource; redirect `/auth/callback`, post-logout `/`. Khác các app ở mục trên, `kb-web` có back-channel logout `/auth/backchannel-logout` (`backchannel_logout_session_required`): đăng xuất ở IdP thì KnowFlow huỷ phiên của nó.
+Knowledge Base (repo `kb-next`, `https://kb.hoandat.com`, knowledge base song ngữ) dùng `kb-web` (confidential, BFF: server Knowledge Base đổi code rồi giữ phiên riêng) và `kb-web-dev` (tuỳ chọn, chỉ cho dev local) — `src/oidc/kb-clients.ts`. Không có client mobile. Scope `openid profile email`, chỉ grant `authorization_code` (không refresh token), không API resource; redirect `/auth/callback`, post-logout `/`. Khác các app ở mục trên, `kb-web` có back-channel logout `/auth/backchannel-logout` (`backchannel_logout_session_required`): đăng xuất ở IdP thì Knowledge Base huỷ phiên của nó.
 
 | Biến | Ý nghĩa |
 |---|---|
-| `KB_WEB_URL` + `KB_WEB_CLIENT_SECRET` | đặt cả hai hoặc không (secret ≥ 32 ký tự; production bắt buộc https công khai): bật `kb-web` và thẻ KnowFlow ở `/apps` (nhóm app chính). Cùng secret là `AUTH_CLIENT_SECRET` trong `.env` của KnowFlow |
+| `KB_WEB_URL` + `KB_WEB_CLIENT_SECRET` | đặt cả hai hoặc không (secret ≥ 32 ký tự; production bắt buộc https công khai): bật `kb-web` và thẻ Knowledge Base ở `/apps` (nhóm app chính). Cùng secret là `AUTH_CLIENT_SECRET` trong `.env` của Knowledge Base |
 | `KB_WEB_DEV_URL` + `KB_WEB_DEV_CLIENT_SECRET` | đặt cả hai hoặc không: bật `kb-web-dev` (redirect loopback cổng khớp chính xác, vd `http://localhost:5321/auth/callback`, không back-channel vì IdP không gọi được máy dev) |
 
-Bật trên production: sinh secret thẳng vào `.env` của IdP như Miu (`printf 'KB_WEB_CLIENT_SECRET=%s\n' "$(openssl rand -base64 48 | tr -d '\n')" >> /var/www/hoandat-auth/.env`, thêm dòng `KB_WEB_URL=https://kb.hoandat.com`), chép secret sang `.env` của KnowFlow, `pm2 startOrReload infra/ecosystem.config.cjs --update-env`, rồi `pnpm seed:clients` phải liệt kê `kb-web "KnowFlow"` với back-channel `https://kb.hoandat.com/auth/backchannel-logout`.
+Bật trên production: sinh secret thẳng vào `.env` của IdP như Miu (`printf 'KB_WEB_CLIENT_SECRET=%s\n' "$(openssl rand -base64 48 | tr -d '\n')" >> /var/www/hoandat-auth/.env`, thêm dòng `KB_WEB_URL=https://kb.hoandat.com`), chép secret sang `.env` của Knowledge Base, `pm2 startOrReload infra/ecosystem.config.cjs --update-env`, rồi `pnpm seed:clients` phải liệt kê `kb-web "Knowledge Base"` với back-channel `https://kb.hoandat.com/auth/backchannel-logout`.
 
-Rollback: xoá hai dòng `KB_WEB_*` rồi reload; nút đăng nhập của KnowFlow trả lỗi, thẻ KnowFlow rời `/apps`.
+Rollback: xoá hai dòng `KB_WEB_*` rồi reload; nút đăng nhập của Knowledge Base trả lỗi, thẻ Knowledge Base rời `/apps`.
 
-Trạng thái production (04/11/2026): cả `kb-web-dev` (`KB_WEB_DEV_URL=http://localhost:5321`) và `kb-web` (`KB_WEB_URL=https://kb.hoandat.com`) đã bật, cùng ngày KnowFlow lên `kb.hoandat.com`. Secret của `kb-web` sinh trên server, cùng giá trị ghi vào env của KnowFlow (`/etc/kb/production.env`). File env của IdP trước mỗi lần thay đổi được giữ trên server với hậu tố `.bak-20261104-kb` và `.bak-<stamp>-kbweb`.
+Trạng thái production (04/11/2026): cả `kb-web-dev` (`KB_WEB_DEV_URL=http://localhost:5321`) và `kb-web` (`KB_WEB_URL=https://kb.hoandat.com`) đã bật, cùng ngày Knowledge Base lên `kb.hoandat.com`. Secret của `kb-web` sinh trên server, cùng giá trị ghi vào env của Knowledge Base (`/etc/kb/production.env`). File env của IdP trước mỗi lần thay đổi được giữ trên server với hậu tố `.bak-20261104-kb` và `.bak-<stamp>-kbweb`.
 
 ## App iOS "Tài khoản" (`account-ios`, AASA, APNs)
 
