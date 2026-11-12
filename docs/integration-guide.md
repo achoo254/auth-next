@@ -251,7 +251,7 @@ const tokens = await oidc.pollDeviceAuthorizationGrant(cli, device);
 - Trang duyệt luôn hỏi "Cho phép `tunelo` trên máy <device_name>?"; đã đăng nhập IdP thì không phải đăng nhập lại. Mỗi máy một grant, thu hồi từng máy ở `/account`.
 - Lưu refresh token với quyền file `0600`. `tunelo logout`: gọi `revocation_endpoint` với refresh token rồi xoá file.
 
-**Tiến trình máy Tunelo 2.x (`tunelo-agent`)**: một device login cho ba tài nguyên, một refresh token.
+**Tiến trình máy Tunelo (`tunelo-agent`)**: một device login cho ba tài nguyên, một refresh token.
 
 ```ts
 const TUNNEL = "https://tunnel.hoandat.com";
@@ -264,8 +264,8 @@ const body = new URLSearchParams({
 });
 for (const r of [TUNNEL, CHAT, LOCALMAN]) body.append("resource", r);
 const device = await oidc.initiateDeviceAuthorization(agent, body);
-// Không có verification_uri_complete: in verification_uri và user_code để người dùng tự gõ mã.
-console.log(`Mở ${device.verification_uri} và nhập mã ${device.user_code}`);
+// Mở verification_uri_complete trong trình duyệt của chính máy này; luôn in user_code cho trường hợp khác IP (SSH).
+console.log(`Mở ${device.verification_uri_complete} hoặc ${device.verification_uri} và nhập mã ${device.user_code}`);
 // Đổi device_code LUÔN kèm resource, kể cả mỗi lần poll.
 const tokens = await oidc.pollDeviceAuthorizationGrant(agent, device, { resource: TUNNEL });
 // Mỗi refresh LUÔN kèm resource (trong khoá chung, mục 8).
@@ -276,7 +276,19 @@ const chat = await oidc.refreshTokenGrant(agent, tokens.refresh_token, { resourc
 - **Mọi request ở token endpoint phải có `resource`**, cả lần đổi `device_code` lẫn mỗi lần refresh. Grant có ba tài nguyên nên request không có `resource` không chọn được tài nguyên nào (kể cả khi chỉ xin `scope` của một tài nguyên) và nhận `invalid_target`. Lỗi đó **vẫn tiêu token**: `device_code` đã được duyệt bị đốt (lần đổi sau nhận `invalid_grant`, người dùng phải duyệt lại), refresh token bị đốt (lần sau nhận `invalid_grant`, máy phải đăng nhập lại). Tài nguyên ngoài device login hay ngoài danh sách cũng vậy. Chỉ xin đúng ba tài nguyên trên.
 - Mỗi refresh nhận JWT 15 phút có đúng `aud` đã xin, scope lọc theo tài nguyên (`machines:write` chỉ có trong token Chat và Localman).
 - Một refresh token dùng chung cho mọi tài nguyên nên mọi refresh đi qua một khoá duy nhất (mục 8); hai refresh song song cho hai tài nguyên sẽ thu hồi cả grant.
-- Mã phải gõ tay: response device authorization của `tunelo-agent` không có `verification_uri_complete`, và link `/device?user_code=…` của nó chỉ mở trang nhập mã (mã không được điền sẵn). Client khác giữ link điền sẵn.
+- Link điền sẵn mã chỉ dùng được từ cùng IP: response device authorization của `tunelo-agent` có `verification_uri_complete` như client khác, nhưng trang mở từ link chỉ nhận mã điền sẵn khi IP trình duyệt trùng IP máy đã xin mã (dạng `::ffff:` của IPv4 coi là một). Khác IP (máy qua SSH, link bị gửi sang người khác) thì trang hiện ô gõ mã kèm câu "Mã đang hiện trong terminal của máy bạn muốn kết nối", nên agent luôn phải in `user_code`. Lý do: grant này là quyền mạnh nhất hệ thống (tunnel, Chat, Localman, thêm máy); link điền sẵn bị chuyển tiếp không được trao nó. Cùng NAT (cùng mạng gia đình/công ty) vẫn lọt: chấp nhận.
+- Mọi access token JWT của `tunelo-agent` mang claim `grant_id` (id grant của lần đăng nhập đó, giữ nguyên qua các lần refresh). Không phải credential; Chat đọc nó cùng `sub` khi máy đăng ký.
+- **Thu hồi grant của máy (chỉ Chat server)**: khi chủ xoá máy hoặc máy tự `tunelo logout`, Chat gọi
+
+  ```http
+  POST /api/tunelo-agent/grants/revoke
+  Authorization: Basic base64(urlencode("chat-web") ":" urlencode(CHAT_WEB_CLIENT_SECRET))
+  Content-Type: application/json
+
+  {"sub": "<sub của token máy>", "grant_id": "<grant_id của token máy>"}
+  ```
+
+  `204`: đã thu hồi, hoặc grant không còn (thu hồi rồi, hết hạn, tài khoản đã xoá); gọi lại an toàn. `400 {"error":"invalid_request"}`: body sai (`sub`, `grant_id` là chuỗi `[A-Za-z0-9_-]{1,128}`). `401 {"error":"invalid_client"}`: thiếu/sai Basic hoặc không phải `chat-web`. `404 {"error":"unknown_grant"}`: grant còn nhưng không phải `tunelo-agent` của `sub` đó. `5xx`: thử lại sau. Sau đó refresh của máy nhận `invalid_grant` và máy phải `tunelo login` lại (chủ bấm đồng ý); JWT đã cấp vẫn sống tới hết hạn (≤ 15 phút) nên Chat vẫn tự từ chối máy đã xoá. IdP ghi audit `grant.revoked` với `cause: "machine-removed"`. Endpoint nằm ngoài `/internal/` vì Chat gọi IdP qua URL công khai.
 - Trang duyệt liệt kê việc được làm theo từng app (Tunelo, Chat, Localman), đặt tên máy và IP gửi yêu cầu ngay dưới câu hỏi, cảnh báo đỏ khi IP của trình duyệt đang duyệt khác IP đó (chỉ cảnh báo, máy chủ headless qua SSH vẫn duyệt được), và cảnh báo chỉ duyệt khi chính bạn vừa chạy lệnh trên máy của mình. Grant theo thiết bị như `chat-mobile`: không chết khi đăng xuất IdP, không trần 90 ngày, thu hồi từng máy ở `/account` (tên "Tunelo Agent · <tên máy>").
 
 ## 8. Refresh token và phiên trượt
@@ -346,7 +358,7 @@ Body là Security Event Token (RFC 8417), header `{alg: "ES256", kid, typ: "sece
 | `email.reclaimed` | (tài khoản `sub` mất email chưa xác minh cho chủ đã xác minh) |
 | `account.deleted` | `source` (`web`, `app`). Tài khoản `sub` đã bị xoá vĩnh viễn (ADR 0009): `sub` không bao giờ quay lại; đăng nhập lại cùng Google/GitHub/Apple tạo `sub` mới. App nhận sự kiện nên xoá hoặc ẩn dữ liệu của `sub` theo chính sách của mình |
 | `grant.created` | `clientId`, `kind` (`device`: duyệt máy Tunelo, có `deviceName`; `third-party-app`: consent client MCP). App first-party đăng nhập không sinh sự kiện này |
-| `session.revoked`, `grant.revoked` | `count`, `cause` (`account-page`, `token-revocation`: client thu hồi refresh token ở `revocation_endpoint`), có thể có `clientId` |
+| `session.revoked`, `grant.revoked` | `count`, `cause` (`account-page`, `token-revocation`: client thu hồi refresh token ở `revocation_endpoint`, `machine-removed`: Chat thu hồi grant của máy Tunelo bị xoá, không kèm `ip`/`user_agent` vì request đến từ server Chat), có thể có `clientId` |
 | `session.logout` | `scope` (`all`: đăng xuất khỏi IdP; `client`: chỉ khỏi một app), có thể có `clientId` (RP-initiated logout) |
 
 `ip`, `user_agent` có khi sự kiện đến từ một request của user; sự kiện nằm chờ quá 30 ngày (Localman chưa nhận) bị xoá hai trường này trước khi gửi. Sự kiện đã gửi được giữ 30 ngày trong outbox rồi tự xoá. Payload không bao giờ chứa mã, token, link hay secret. Từ khi bỏ mật khẩu (ADR 0004) IdP không còn phát `login.failed` (trừ đăng nhập cho người duyệt, ADR 0010), `login.locked`, `password.changed`, `password.reset`, `recovery_codes.regenerated`, và `cause` không còn `password-change`, `password-reset`, `security-review`; sự kiện cũ loại đó đã nằm trong outbox vẫn được gửi. Thứ tự gửi theo lúc xảy ra (cũ trước), nhưng thử lại có thể làm sự kiện tới không theo thứ tự: sắp theo `toe`.

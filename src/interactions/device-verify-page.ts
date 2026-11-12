@@ -15,6 +15,7 @@ import {
 	appAccessBlock,
 	isMachineAgent,
 	requestOrigin,
+	sameIp,
 } from "./device-app-access.js";
 import { deviceClientLabel, deviceIpOf, deviceNameOf } from "./device-info.js";
 import { sendKoaPage, xsrfFromProviderForm } from "./koa-page.js";
@@ -47,6 +48,11 @@ function deviceLabel(
 	});
 }
 
+/** What approving the agent is for, in one sentence. */
+function agentPurpose(i18n: Translator): SafeHtml {
+	return html`<p data-id="device-agent-purpose">${i18n.t("device.agent.purpose")}</p>`;
+}
+
 /**
  * `features.deviceFlow.userCodeInputSource`. The form also sends
  * `confirm=yes`: the explicit "allow?" question comes after sign-in, on the
@@ -58,11 +64,22 @@ export async function userCodeInputSource(
 	_out?: unknown,
 	error?: Error,
 ): Promise<void> {
+	renderCodeInput(ctx, form, error);
+}
+
+/** The code entry form; `hint` says where the code to type is shown. */
+function renderCodeInput(
+	ctx: KoaContextWithOIDC,
+	form: string,
+	error?: Error,
+	hint?: MessageKey,
+): void {
 	const page = koaPageContext(ctx);
 	const { i18n } = page;
 	const action = ctx.oidc.urlFor("code_verification");
 	const body = html`${pageTitle(i18n.t("device.input.title"), i18n.t("device.input.subtitle"))}
 ${inputMessage(i18n, error)}
+${hint ? alertBox("info", html`<span data-id="device-agent-type-code">${i18n.t(hint)}</span>`) : ""}
 <form class="auth-form" method="post" action="${action}">
 <input type="hidden" name="xsrf" value="${xsrfFromProviderForm(form)}">
 <input type="hidden" name="confirm" value="yes">
@@ -77,7 +94,10 @@ ${submitButton(i18n.t("common.continue"), { block: true, dataId: "device-continu
 /**
  * `features.deviceFlow.userCodeConfirmSource`: reached from the link with
  * the code prefilled (verification_uri_complete). The user checks the code
- * matches their screen before signing in.
+ * matches their screen before signing in. The agent's prefilled code is
+ * taken only by a browser on the IP that asked for it, so a forwarded link
+ * cannot hand someone else's machine the account; elsewhere the user types
+ * the code from the machine's terminal.
  */
 export async function userCodeConfirmSource(
 	ctx: KoaContextWithOIDC,
@@ -86,9 +106,9 @@ export async function userCodeConfirmSource(
 	deviceInfo: UnknownObject,
 	userCode: string,
 ): Promise<void> {
-	// The agent's code is typed, never taken from a link someone sent.
-	if (isMachineAgent(client.clientId)) {
-		await userCodeInputSource(ctx, form);
+	const agent = isMachineAgent(client.clientId);
+	if (agent && !sameIp(ctx.ip, deviceIpOf(deviceInfo))) {
+		renderCodeInput(ctx, form, undefined, "device.input.agentHint");
 		return;
 	}
 	const page = koaPageContext(ctx);
@@ -99,6 +119,7 @@ export async function userCodeConfirmSource(
 	const machine = deviceNameOf(ctx.oidc.deviceCode?.params, deviceInfo);
 	const title = i18n.t("device.confirm.title");
 	const body = html`${pageTitle(title, i18n.rich("device.confirm.subtitle", { device: deviceLabel(i18n, label, machine) }))}
+${agent ? agentPurpose(i18n) : ""}
 <p class="device-code" data-id="device-code">${userCode}</p>
 <p class="help">${i18n.t("device.confirm.help")}</p>
 <div class="auth-form">
@@ -157,6 +178,7 @@ export function renderDeviceApproval(view: DeviceApprovalView): string {
 	const title = i18n.t("device.approve.title");
 	const body = html`${pageTitle(title, i18n.rich("common.signedInAs", { username: html`<b>@${view.username}</b>` }))}
 <p class="device-question" data-id="device-question">${i18n.rich("device.approve.question", { device: deviceLabel(i18n, label, machine) })}</p>
+${agent ? agentPurpose(i18n) : ""}
 ${agent ? requestOrigin(i18n, machine, ip, view.approverIp) : ""}
 ${view.userCode ? html`<p class="help">${i18n.rich("device.approve.code", { code: html`<code data-id="device-approval-code">${formatUserCode(view.userCode)}</code>` })}${ip && !agent ? html` · ${i18n.rich("device.approve.ip", { ip: html`<code>${ip}</code>` })}` : ""}</p>` : ""}
 ${

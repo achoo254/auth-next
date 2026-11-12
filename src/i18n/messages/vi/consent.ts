@@ -60,6 +60,10 @@ export const viConsent: Translation<typeof enConsent> = {
 	"device.input.subtitle":
 		"Nhập mã đang hiện trên máy (ví dụ trong cửa sổ dòng lệnh của tunelo).",
 	"device.input.label": "Mã thiết bị",
+	"device.input.agentHint":
+		"Mã đang hiện trong terminal của máy bạn muốn kết nối.",
+	"device.agent.purpose":
+		"Cho phép Tunelo trên máy này dùng tài khoản của bạn để điều khiển máy từ xa.",
 	"device.error.noCode": "Hãy nhập mã đang hiện trên máy của bạn.",
 	"device.error.notFound": "Mã không đúng. Kiểm tra lại mã trên máy của bạn.",
 	"device.error.expired":

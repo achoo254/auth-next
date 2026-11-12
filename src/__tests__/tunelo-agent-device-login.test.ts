@@ -1,17 +1,10 @@
 import * as client from "openid-client";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { DEVICE_CODE_GRANT, STATIC_CLIENT_IDS } from "../oidc/clients.js";
-import { TUNELO_AGENT_SCOPES } from "../oidc/tunelo-agent-client.js";
-import { discoverClient } from "./helpers/flows.js";
-import {
-	createTestAccount,
-	repositoryOf,
-	submitForm,
-} from "./helpers/test-accounts.js";
-import { type TestBrowser, formField } from "./helpers/test-browser.js";
+import { submitForm } from "./helpers/test-accounts.js";
+import { formField } from "./helpers/test-browser.js";
 import { type TestIdp, startTestIdp } from "./helpers/test-idp.js";
 import { RESOURCES } from "./helpers/test-tenant.js";
-import { linkedGoogleProfile, signInWith } from "./helpers/upstream-sign-in.js";
+import { approveAgent } from "./helpers/tunelo-agent-login.js";
 
 const { tunnel, chatMcp, localmanMcp } = RESOURCES;
 
@@ -25,69 +18,12 @@ afterAll(async () => {
 	await idp?.close();
 });
 
-interface ApprovedAgent {
-	readonly browser: TestBrowser;
-	readonly agent: client.Configuration;
-	readonly approvalPage: string;
-	readonly refreshToken: string;
-}
-
-/**
- * A signed-in user types the agent's code on the real pages and allows it;
- * the agent redeems the device code for the tunnel.
- */
-async function approveAgent(deviceName: string): Promise<ApprovedAgent> {
-	const account = await createTestAccount(repositoryOf(idp));
-	const { page } = await signInWith(
-		idp,
-		"google",
-		linkedGoogleProfile(account),
-	);
-	const agent = await discoverClient(
-		idp,
-		STATIC_CLIENT_IDS.tuneloAgent,
-		client.None(),
-	);
-	const body = new URLSearchParams({
-		scope: TUNELO_AGENT_SCOPES.join(" "),
-		device_name: deviceName,
-	});
-	for (const resource of [tunnel, chatMcp, localmanMcp]) {
-		body.append("resource", resource);
-	}
-	const device = await client.initiateDeviceAuthorization(agent, body);
-	const input = await (
-		await page.browser.request(device.verification_uri)
-	).text();
-	const approval = await submitForm(page.browser, device.verification_uri, {
-		xsrf: formField(input, "xsrf"),
-		user_code: device.user_code,
-		confirm: "yes",
-	});
-	const approvalPage = await approval.response.text();
-	const uid = /\/interaction\/([\w-]+)/.exec(approval.response.url)?.[1];
-	const done = await submitForm(
-		page.browser,
-		`${idp.issuer}/interaction/${uid ?? ""}/consent`,
-		{ csrf: formField(approvalPage, "csrf") },
-	);
-	expect(await done.response.text()).toContain("Allowed");
-	const tokens = await client.genericGrantRequest(agent, DEVICE_CODE_GRANT, {
-		device_code: device.device_code,
-		resource: tunnel,
-	});
-	return {
-		browser: page.browser,
-		agent,
-		approvalPage,
-		refreshToken: tokens.refresh_token ?? "",
-	};
-}
-
 describe("tunelo-agent device login on the real pages", () => {
 	it("shows the origin, refreshes for each app, and dies when revoked at /account", async () => {
-		const { browser, agent, approvalPage, refreshToken } =
-			await approveAgent("mac-mini");
+		const { browser, agent, approvalPage, refreshToken } = await approveAgent(
+			idp,
+			"mac-mini",
+		);
 		expect(approvalPage).toContain(
 			"Allow <code>tunelo</code> on <b>mac-mini</b>?",
 		);
@@ -126,7 +62,10 @@ describe("tunelo-agent device login on the real pages", () => {
 	});
 
 	it("keeps its grant when the user signs out of the IdP", async () => {
-		const { browser, agent, refreshToken } = await approveAgent("lab-server");
+		const { browser, agent, refreshToken } = await approveAgent(
+			idp,
+			"lab-server",
+		);
 		const ask = await (
 			await browser.request(`${idp.issuer}/session/end`)
 		).text();

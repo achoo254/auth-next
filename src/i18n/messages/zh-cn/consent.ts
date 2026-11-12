@@ -56,6 +56,9 @@ export const zhConsent: Translation<typeof enConsent> = {
 	"device.input.subtitle":
 		"输入你机器上显示的代码（例如 tunelo 的终端窗口中）。",
 	"device.input.label": "设备代码",
+	"device.input.agentHint": "代码显示在你要连接的机器的终端里。",
+	"device.agent.purpose":
+		"允许此机器上的 Tunelo 使用你的账号远程控制这台机器。",
 	"device.error.noCode": "请输入你机器上显示的代码。",
 	"device.error.notFound": "代码不正确。请核对你机器上的代码。",
 	"device.error.expired":

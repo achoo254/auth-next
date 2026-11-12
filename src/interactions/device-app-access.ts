@@ -27,9 +27,11 @@ const APP_SCOPES: ReadonlySet<string> = new Set(
 /**
  * The Tunelo agent gets one grant for tunnels, Chat and Localman, so
  * approving a code someone else started would hand them all three. Its
- * device login is guarded harder: the user types the code (no prefilled
- * link), and the approval page lists access app by app, puts the requesting
- * machine and IP next to the question and warns.
+ * device login is guarded harder: the link with the code filled in only
+ * works from the IP that asked for the code (elsewhere the user types the
+ * code shown in the machine's terminal), and the approval page lists access
+ * app by app, puts the requesting machine and IP next to the question and
+ * warns.
  */
 export function isMachineAgent(clientId: string): boolean {
 	return clientId === TUNELO_AGENT_CLIENT_ID;
@@ -38,6 +40,11 @@ export function isMachineAgent(clientId: string): boolean {
 /** `::ffff:203.0.113.7` and `203.0.113.7` are the same IPv4 client. */
 function plainIp(ip: string): string {
 	return ip.startsWith("::ffff:") ? ip.slice("::ffff:".length) : ip;
+}
+
+/** Both known and the same client address. */
+export function sameIp(a: string | undefined, b: string | undefined): boolean {
+	return a !== undefined && b !== undefined && plainIp(a) === plainIp(b);
 }
 
 /**
@@ -52,8 +59,7 @@ export function requestOrigin(
 	approverIp: string | undefined,
 ): SafeHtml {
 	if (!ip) return html``;
-	const mismatch =
-		approverIp !== undefined && plainIp(approverIp) !== plainIp(ip);
+	const mismatch = approverIp !== undefined && !sameIp(approverIp, ip);
 	return html`<p data-id="device-origin">${i18n.rich("device.approve.origin", {
 		machine: html`<b>${machine ?? i18n.t("device.unknownName")}</b>`,
 		ip: html`<code data-id="device-origin-ip">${ip}</code>`,

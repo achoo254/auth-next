@@ -1,4 +1,9 @@
-import type { ClientMetadata } from "oidc-provider";
+import type {
+	AccessToken,
+	ClientCredentials,
+	ClientMetadata,
+	JWTStructured,
+} from "oidc-provider";
 import type { TenantResources } from "../tenants/tenant-resources.js";
 import {
 	ALLOWED_RESOURCES_PROPERTY,
@@ -9,10 +14,12 @@ import {
 } from "./resources.js";
 
 /**
- * The Tunelo machine agent (`tunelo` 2.x, repo chat-next): one device
+ * The Tunelo machine agent (`tunelo`, repo chat-next): one device
  * login gives the machine one refresh token for three resources (tunnel,
  * Chat MCP, Localman MCP); each refresh names the resource it wants a
  * 15-minute token for. Its grant belongs to the device (`refreshesPerDevice`).
+ * Removing the machine in Chat revokes that grant
+ * (`src/oidc/agent-grant-revocation.ts`).
  */
 export const TUNELO_AGENT_CLIENT_IDS = {
 	tuneloAgent: TUNELO_AGENT_CLIENT_ID,
@@ -58,4 +65,24 @@ export function buildTuneloAgentClients(
 			],
 		},
 	];
+}
+
+/**
+ * JWT claim naming the grant of an agent's access token. Chat stores it when
+ * the machine registers and sends it back to revoke the grant once the
+ * owner removes the machine; the id is no credential by itself.
+ */
+export const AGENT_GRANT_CLAIM = "grant_id";
+
+/** `formats.customizers.jwt`: tags the agent's access tokens with their grant. */
+export function addAgentGrantClaim(
+	token: AccessToken | ClientCredentials,
+	parts: JWTStructured,
+): void {
+	if (token.clientId !== TUNELO_AGENT_CLIENT_ID || !("grantId" in token)) {
+		return;
+	}
+	if (typeof token.grantId === "string") {
+		parts.payload[AGENT_GRANT_CLAIM] = token.grantId;
+	}
 }

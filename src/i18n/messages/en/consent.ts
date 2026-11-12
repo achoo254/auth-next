@@ -57,6 +57,10 @@ export const enConsent = {
 	"device.input.subtitle":
 		"Enter the code shown on your machine (for example in the tunelo terminal window).",
 	"device.input.label": "Device code",
+	"device.input.agentHint":
+		"The code is shown in the terminal of the machine you want to connect.",
+	"device.agent.purpose":
+		"Allow Tunelo on this machine to use your account to control the machine remotely.",
 	"device.error.noCode": "Enter the code shown on your machine.",
 	"device.error.notFound":
 		"That code isn't right. Check the code on your machine.",

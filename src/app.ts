@@ -22,6 +22,7 @@ import { createLanguageRouter } from "./i18n/language-route.js";
 import { createInteractionRouter } from "./interactions/interaction-router.js";
 import { createUpstreamCallbackRouter } from "./interactions/upstream-callback.js";
 import { createPrivacyRouter } from "./legal/privacy-page.js";
+import { createAgentGrantRevocationRouter } from "./oidc/agent-grant-revocation.js";
 import { INTERACTION_PATH } from "./oidc/provider.js";
 import type { AppServices } from "./services.js";
 import { createTelegramLinkRouter } from "./telegram/link-routes.js";
@@ -76,6 +77,8 @@ export function createTenantApp(options: TenantAppOptions): Express {
 	app.use(createAppsRouter(tenant));
 	// Counts for Tiểu Đệ on the same server; loopback only (ADR 0014).
 	app.use(createGrowthNumbersRouter({ db: services.db, tenant }));
+	// Chat revokes the grant of a Tunelo machine its owner removed.
+	app.use(createAgentGrantRevocationRouter(services));
 	// The iOS account app (primary tenant only, like its client).
 	if (tenant.id === PRIMARY_TENANT_ID) {
 		app.use(createAasaRouter(env.IOS_APP_ID));

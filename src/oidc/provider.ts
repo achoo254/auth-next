@@ -18,7 +18,6 @@ import {
 	refreshesWithSession,
 } from "./clients.js";
 import { cookieConfig } from "./cookies.js";
-import { dropPrefilledCodeLinkOfAgent } from "./device-code-link.js";
 import { ignoreOfflineAccessOfDynamicClients } from "./dynamic-client-scopes.js";
 import {
 	buildInteractionPolicy,
@@ -44,6 +43,7 @@ import {
 	refreshTokenTtl,
 } from "./sliding-grants.js";
 import { addActorClaims, enableTokenExchange } from "./token-exchange.js";
+import { addAgentGrantClaim } from "./tunelo-agent-client.js";
 
 /**
  * Endpoint paths, declared once so the HTTP layer (rate limits) and the
@@ -179,7 +179,14 @@ export function buildProviderConfiguration(
 		// Tunelo CLI names the machine so the approval page can show it.
 		extraParams: DEVICE_NAME_EXTRA_PARAM,
 		renderError: renderProviderError,
-		formats: { customizers: { jwt: addActorClaims } },
+		formats: {
+			customizers: {
+				jwt: (ctx, token, parts) => {
+					addActorClaims(ctx, token, parts);
+					addAgentGrantClaim(token, parts);
+				},
+			},
+		},
 		cookies: cookieConfig(tenant.issuer, deps.cookieKeys),
 		ttl: { ...TTL_SECONDS, RefreshToken: refreshTokenTtl },
 		// Every refresh rotates (presenting a consumed one revokes the grant)
@@ -220,7 +227,6 @@ export function createProvider(deps: ProviderDependencies): Provider {
 		tenantResourcePolicy(deps.tenant),
 	);
 	ignoreOfflineAccessOfDynamicClients(provider, OIDC_ROUTES.authorization);
-	dropPrefilledCodeLinkOfAgent(provider, OIDC_ROUTES.device_authorization);
 	logProviderEvents(provider, deps.logger);
 	return provider;
 }

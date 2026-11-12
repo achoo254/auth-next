@@ -6,6 +6,12 @@
 export class TestBrowser {
 	private readonly cookies = new Map<string, string>();
 
+	/**
+	 * `forwardedFor`: the client IP the trusted loopback proxy reports, to
+	 * act as a browser on another network than the test process.
+	 */
+	constructor(private readonly forwardedFor?: string) {}
+
 	async request(
 		url: string | URL,
 		init: { method?: string; form?: Record<string, string> } = {},
@@ -15,6 +21,7 @@ export class TestBrowser {
 			.map(([name, value]) => `${name}=${value}`)
 			.join("; ");
 		if (cookie) headers.set("cookie", cookie);
+		if (this.forwardedFor) headers.set("x-forwarded-for", this.forwardedFor);
 		let body: URLSearchParams | undefined;
 		if (init.form) {
 			body = new URLSearchParams(init.form);

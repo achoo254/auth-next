@@ -4,7 +4,11 @@ import type { UpstreamProvider } from "../accounts/user-model.js";
 export type LinkedMethod = UpstreamProvider | "telegram";
 
 /** Why sessions or grants were revoked. */
-export type RevocationCause = "account-page" | "token-revocation";
+export type RevocationCause =
+	| "account-page"
+	| "token-revocation"
+	/** The owner removed a Tunelo machine in Chat, which revoked its grant. */
+	| "machine-removed";
 
 /**
  * Credential events sent to Localman, and the data each carries. Data never
