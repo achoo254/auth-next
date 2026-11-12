@@ -12,8 +12,37 @@ REMOTE_DIR="${REMOTE_DIR:-/var/www/hoandat-auth}"
 PNPM="npx --yes pnpm@11.9.0"
 # Extra ssh options, e.g. SSH_OPTS="-F /path/to/ssh_config" for a key kept outside ~/.ssh.
 SSH="ssh ${SSH_OPTS:-}"
+LOCK=/run/lock/hoandat-auth-deploy
 
-echo "== build"
+echo "== guards"
+# The release must be exactly a commit that is already on origin/main.
+if [ -n "$(git status --porcelain)" ]; then
+	echo "working tree is not clean: commit or stash first (git status)" >&2
+	exit 1
+fi
+git fetch --quiet origin main
+if ! git merge-base --is-ancestor HEAD origin/main; then
+	echo "HEAD $(git rev-parse --short HEAD) is not on origin/main: push it first" >&2
+	exit 1
+fi
+# One deploy at a time across machines and agent sessions; a lock older than 30 minutes is a crashed run.
+owner="$(hostname -s) $(git rev-parse --short HEAD) $(date -u +%FT%TZ)"
+if ! $SSH "$SSH_TARGET" "find $LOCK -maxdepth 0 -mmin +30 -exec rm -rf {} + 2>/dev/null; mkdir $LOCK 2>/dev/null && echo '$owner' >$LOCK/owner"; then
+	echo "another deploy is running: $($SSH "$SSH_TARGET" "cat $LOCK/owner" 2>/dev/null)" >&2
+	exit 1
+fi
+trap '$SSH "$SSH_TARGET" "rm -rf $LOCK" || true' EXIT
+
+echo "== gates and build"
+# The full test suite runs only in CI (CLAUDE.md): this commit's ci run must be green.
+sha="$(git rev-parse HEAD)"
+ci="$(gh run list --workflow ci.yml --commit "$sha" --json status,conclusion --jq '.[0] | "\(.status) \(.conclusion)"')"
+if [ "$ci" != "completed success" ]; then
+	echo "ci for $sha is '${ci:-missing}', not green: gh run watch, then deploy" >&2
+	exit 1
+fi
+pnpm lint
+pnpm typecheck
 pnpm build
 
 echo "== back up the running release (rollback: docs/deployment-guide.md), keep the 3 newest"
