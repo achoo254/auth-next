@@ -27,8 +27,14 @@ if ! git merge-base --is-ancestor HEAD origin/main; then
 fi
 # One deploy at a time across machines and agent sessions; a lock older than 30 minutes is a crashed run.
 owner="$(hostname -s) $(git rev-parse --short HEAD) $(date -u +%FT%TZ)"
-if ! $SSH "$SSH_TARGET" "find $LOCK -maxdepth 0 -mmin +30 -exec rm -rf {} + 2>/dev/null; mkdir $LOCK 2>/dev/null && echo '$owner' >$LOCK/owner"; then
+# Exit 3 from the server means the lock is held; anything else is ssh failing.
+rc=0
+$SSH "$SSH_TARGET" "find $LOCK -maxdepth 0 -mmin +30 -exec rm -rf {} + 2>/dev/null; mkdir $LOCK 2>/dev/null || exit 3; echo '$owner' >$LOCK/owner" || rc=$?
+if [ "$rc" -eq 3 ]; then
 	echo "another deploy is running: $($SSH "$SSH_TARGET" "cat $LOCK/owner" 2>/dev/null)" >&2
+	exit 1
+elif [ "$rc" -ne 0 ]; then
+	echo "could not take the deploy lock on the server (ssh exit $rc)" >&2
 	exit 1
 fi
 trap '$SSH "$SSH_TARGET" "rm -rf $LOCK" || true' EXIT
