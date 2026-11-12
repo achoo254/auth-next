@@ -1,18 +1,18 @@
 #!/bin/bash
-# Build locally and deploy hoandat-auth to the shared server under pm2.
-#   SSH_TARGET=<ssh host alias or user@host> [SSH_OPTS="-F ssh_config"] bash infra/deploy.sh
-# The server keeps .env and secrets/ in /var/www/hoandat-auth; they are never
-# synced from here. First-time setup: infra/setup-server.sh (see
-# docs/deployment-guide.md).
+# Break-glass deploy of hoandat-auth; a push to main deploys through .github/workflows/deploy.yml.
+#   SSH_TARGET=<ssh host alias or root@host> [SSH_OPTS="-F ssh_config"] bash infra/deploy.sh
+# Refuses a dirty tree, a commit not on origin/main or a commit whose ci run is not green, runs lint, typecheck and
+# the build here, packs (infra/pack-release.sh), uploads to /var/www/hoandat-auth/ci-incoming/<id> and runs the same
+# activation as CI (infra/activate-incoming.sh: flock, install, indexes, switch, /healthz, rollback). The server keeps
+# .env and secrets/ in /var/www/hoandat-auth; they are never synced from here. First-time setup:
+# infra/setup-server.sh (see docs/deployment-guide.md).
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
 SSH_TARGET="${SSH_TARGET:?set SSH_TARGET to the server ssh alias}"
-REMOTE_DIR="${REMOTE_DIR:-/var/www/hoandat-auth}"
-PNPM="npx --yes pnpm@11.9.0"
+REMOTE_DIR=/var/www/hoandat-auth
 # Extra ssh options, e.g. SSH_OPTS="-F /path/to/ssh_config" for a key kept outside ~/.ssh.
 SSH="ssh ${SSH_OPTS:-}"
-LOCK=/run/lock/hoandat-auth-deploy
 
 echo "== guards"
 # The release must be exactly a commit that is already on origin/main.
@@ -25,21 +25,6 @@ if ! git merge-base --is-ancestor HEAD origin/main; then
 	echo "HEAD $(git rev-parse --short HEAD) is not on origin/main: push it first" >&2
 	exit 1
 fi
-# One deploy at a time across machines and agent sessions; a lock older than 30 minutes is a crashed run.
-owner="$(hostname -s) $(git rev-parse --short HEAD) $(date -u +%FT%TZ)"
-# Exit 3 from the server means the lock is held; anything else is ssh failing.
-rc=0
-$SSH "$SSH_TARGET" "find $LOCK -maxdepth 0 -mmin +30 -exec rm -rf {} + 2>/dev/null; mkdir $LOCK 2>/dev/null || exit 3; echo '$owner' >$LOCK/owner" || rc=$?
-if [ "$rc" -eq 3 ]; then
-	echo "another deploy is running: $($SSH "$SSH_TARGET" "cat $LOCK/owner" 2>/dev/null)" >&2
-	exit 1
-elif [ "$rc" -ne 0 ]; then
-	echo "could not take the deploy lock on the server (ssh exit $rc)" >&2
-	exit 1
-fi
-trap '$SSH "$SSH_TARGET" "rm -rf $LOCK" || true' EXIT
-
-echo "== gates and build"
 # The full test suite runs only in CI (CLAUDE.md): this commit's ci run must be green.
 sha="$(git rev-parse HEAD)"
 ci="$(gh run list --workflow ci.yml --commit "$sha" --json status,conclusion --jq '.[0] | "\(.status) \(.conclusion)"')"
@@ -47,41 +32,20 @@ if [ "$ci" != "completed success" ]; then
 	echo "ci for $sha is '${ci:-missing}', not green: gh run watch, then deploy" >&2
 	exit 1
 fi
+
+echo "== gates and build"
 pnpm lint
 pnpm typecheck
 pnpm build
 
-echo "== back up the running release (rollback: docs/deployment-guide.md), keep the 3 newest"
-$SSH "$SSH_TARGET" "set -euo pipefail
-	cd $REMOTE_DIR
-	if [ ! -d dist ]; then echo 'no release yet, nothing to back up'; exit 0; fi
-	backup=/root/hoandat-auth-backup-\$(date +%Y%m%d-%H%M%S)
-	mkdir -p \"\$backup\"
-	cp -a dist static infra package.json pnpm-lock.yaml pnpm-workspace.yaml \"\$backup\"/
-	# brand/ (icons, web manifest) is absent in releases made before it shipped.
-	if [ -d brand ]; then cp -a brand \"\$backup\"/; fi
-	echo \"backup: \$backup\"
-	ls -1d /root/hoandat-auth-backup-[0-9]*-[0-9]* | sort | head -n -3 | while read -r old; do
-		echo \"remove old backup: \$old\"; rm -rf -- \"\$old\"
-	done"
+release="$(date -u +%Y%m%d-%H%M%S)-$(git rev-parse --short=12 HEAD)"
+stage="$(mktemp -d)"
+trap 'rm -rf "$stage"' EXIT
+bash infra/pack-release.sh "$stage/release"
 
-echo "== sync release files (no owner/group: files land owned by the remote root)"
-rsync -rlptz --delete -e "$SSH" \
-	--exclude .env --exclude secrets/ --exclude node_modules/ --exclude backups/ \
-	dist static brand infra package.json pnpm-lock.yaml pnpm-workspace.yaml \
-	"$SSH_TARGET:$REMOTE_DIR/"
+echo "== upload $release"
+$SSH "$SSH_TARGET" "mkdir -p $REMOTE_DIR/ci-incoming/$release" </dev/null
+rsync -rlptz -e "$SSH" "$stage/release/" "$SSH_TARGET:$REMOTE_DIR/ci-incoming/$release/"
 
-echo "== install runtime dependencies, create indexes, restart"
-$SSH "$SSH_TARGET" "set -euo pipefail
-	source /root/.nvm/nvm.sh >/dev/null
-	cd $REMOTE_DIR
-	MONGOMS_DISABLE_POSTINSTALL=1 $PNPM install --prod --frozen-lockfile --reporter=silent
-	# Indexes first (idempotent), so the new release starts without building them.
-	node --env-file=.env dist/create-indexes.mjs
-	pm2 startOrReload infra/ecosystem.config.cjs --update-env
-	pm2 save >/dev/null
-	for i in \$(seq 1 20); do
-		if curl -fsS http://127.0.0.1:4500/healthz >/dev/null; then echo healthz ok; exit 0; fi
-		sleep 1
-	done
-	echo 'healthz failed; recent log:'; pm2 logs hoandat-auth --lines 40 --nostream; exit 1"
+echo "== activate (the same step CI runs; it waits for any other activation)"
+$SSH "$SSH_TARGET" "install -m 755 -o root -g root $REMOTE_DIR/ci-incoming/$release/infra/activate-incoming.sh /usr/local/sbin/hoandat-auth-activate-incoming && /usr/local/sbin/hoandat-auth-activate-incoming $release" </dev/null

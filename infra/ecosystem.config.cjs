@@ -1,6 +1,6 @@
 // PM2 process for auth.hoandat.com on the shared server.
-// Usage on the server:
-//   cd /var/www/hoandat-auth && pm2 startOrReload infra/ecosystem.config.cjs --update-env && pm2 save
+// Each release lives in /var/www/hoandat-auth/releases/<id> with this file; infra/activate-incoming.sh points
+// /var/www/hoandat-auth/current at it and runs pm2 start current/infra/ecosystem.config.cjs.
 // Environment comes from /var/www/hoandat-auth/.env through Node's --env-file.
 
 module.exports = {
@@ -8,7 +8,7 @@ module.exports = {
 		{
 			name: "hoandat-auth",
 			script: "dist/server.mjs",
-			cwd: "/var/www/hoandat-auth",
+			cwd: "/var/www/hoandat-auth/current",
 			node_args: "--env-file=/var/www/hoandat-auth/.env --enable-source-maps",
 			instances: 1,
 			exec_mode: "fork",

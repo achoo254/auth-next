@@ -21,22 +21,47 @@ Access log của nginx che token trong đường dẫn `/reset/...` (link đặt
 ## Lần đầu
 
 1. DNS: tạo bản ghi ở trên (proxied).
-2. Đồng bộ bản build: `SSH_TARGET=<alias> bash infra/deploy.sh`. Bước restart sẽ báo lỗi ở lần đầu vì chưa có `.env`; đó là bình thường.
+2. Dựng user deploy và secret của CI như mục "Các lần sau", rồi push `main` (hoặc chạy `infra/deploy.sh`). Bước khởi động sẽ báo lỗi ở lần đầu vì chưa có env; đó là bình thường.
 3. Trên server, trong `/var/www/hoandat-auth`: `bash infra/setup-server.sh` (sinh khoá ký và `.env` với secret ngẫu nhiên; chạy lại không ghi đè).
 4. Tạo user MongoDB bằng một user quản trị (trên .65 là `hoandat_admin`, thông tin nằm ở mục `SSH_SERVER_STAGING` của file server ngoài repo) (mật khẩu đọc từ stdin, không lộ qua argv):
    `bash infra/create-mongo-user.sh <admin-user> < <file-chứa-mật-khẩu-admin>`
 5. nginx: chép `infra/nginx/auth.hoandat.com.conf` vào `/etc/nginx/conf.d/`, chạy `nginx -t`, rồi `systemctl reload nginx`. Bản này có khối `location ^~ /internal/ { return 404; }` (ADR 0014): kiểm sau reload bằng `curl -s -o /dev/null -w '%{http_code}' https://auth.hoandat.com/internal/growth-numbers` phải ra 404, còn `curl -s -H 'Host: auth.hoandat.com' http://127.0.0.1:4500/internal/growth-numbers` trên server ra JSON.
-6. Chạy lại `infra/deploy.sh` để khởi động pm2 và kiểm `/healthz`.
+6. Chạy lại workflow deploy (hoặc `infra/deploy.sh`) để khởi động pm2 và kiểm `/healthz`.
 7. Cron backup: `30 2 * * * /var/www/hoandat-auth/infra/backup-auth-db.sh >> /var/log/hoandat-auth-backup.log 2>&1`.
 8. Kiểm cấu hình client: `node --env-file=.env dist/seed-clients.mjs` (chỉ đọc).
 
 ## Các lần sau
 
+**Bình thường: push `main`.** CI (`ci.yml`) xanh thì `.github/workflows/deploy.yml` build, đóng gói
+([`infra/pack-release.sh`](../infra/pack-release.sh): `dist/ static/ brand/ infra/ package.json pnpm-lock.yaml
+pnpm-workspace.yaml`), upload bằng user `hoandat-auth-deploy` vào `/var/www/hoandat-auth/ci-incoming/<id>` rồi chạy
+`sudo /usr/local/sbin/hoandat-auth-activate-incoming <id>` ([`infra/activate-incoming.sh`](../infra/activate-incoming.sh)),
+cuối cùng kiểm từ ngoài: discovery trả đúng `issuer`, `/healthz` 200. Theo dõi bằng `gh run watch`. auth-next đứng đầu
+thứ tự deploy giữa các repo: khi đổi hợp đồng, đợi deploy này xanh rồi mới push repo sau. Quy tắc chung:
+`docs/deploy-standard.md` của workspace `hoandat-app`.
+
+Activate (root, `flock` trên `/run/hoandat-auth-activate.lock`):
+
+- bản upload thành `/var/www/hoandat-auth/releases/<id>` (từ chối link, file đặc biệt, thiếu bundle);
+- cài dependency production bằng pnpm 11.9 và dựng index (`dist/create-indexes.mjs`) trong lúc bản cũ còn phục vụ; lỗi ở
+  đây thì không đổi gì;
+- symlink `current` trỏ sang bản mới, `pm2 delete` + `pm2 start current/infra/ecosystem.config.cjs`, đợi `/healthz` 20
+  giây; hỏng thì trỏ lại bản trước (lần đầu: các file cũ nằm thẳng trong `/var/www/hoandat-auth`) và thoát 1;
+- giữ 5 release. `.env`, `secrets/`, `backups/` nằm ngoài các release.
+
+User deploy dựng một lần: chép `infra/setup-deploy-user.sh` và `infra/activate-incoming.sh` lên server, chạy
+`bash infra/setup-deploy-user.sh < hoandat-auth-deploy.pub` bằng root (thư mục gốc thành `751` để user đó đi qua tới
+`ci-incoming` mà không liệt kê hay đọc được gì khác).
+
+**Dự phòng khi CI hỏng:**
+
 ```bash
-SSH_TARGET=<alias> [SSH_OPTS="-F ssh_config"] bash infra/deploy.sh
+SSH_TARGET=<alias root> [SSH_OPTS="-F ssh_config"] bash infra/deploy.sh
 ```
 
-Trước khi làm gì, script từ chối chạy khi: worktree còn thay đổi chưa commit; `HEAD` chưa nằm trên `origin/main`; CI (`ci.yml`) của đúng commit chưa xanh (bộ test đầy đủ chỉ chạy trên CI); hoặc đang có lần deploy khác giữ khoá `/run/lock/hoandat-auth-deploy` trên server (khoá ghi máy, commit, giờ; khoá cũ hơn 30 phút coi như lần chạy đã chết và bị gỡ). Sau đó chạy `lint`, `typecheck`, build, sao lưu bản đang chạy (mục Rollback), rsync `dist/ static/ brand/ infra/ package.json pnpm-lock.yaml pnpm-workspace.yaml` (chủ sở hữu `root`), cài dependency production bằng pnpm 11.9, `pm2 startOrReload`, `pm2 save`, rồi đợi `/healthz`. Dependency production có `@achoo254/app-shell` và `@achoo254/brand` cài từ tag git của `achoo254/shared-next` (khung trang, `tokens.css`, `app-shell.css`, `app-shell-enhance.js` được phục vụ thẳng từ `node_modules`), nên server phải tải được từ GitHub lúc cài; lockfile ghi tarball và integrity của đúng tag.
+Script từ chối worktree chưa sạch, `HEAD` chưa nằm trên `origin/main` hoặc CI của commit chưa xanh, chạy `lint`,
+`typecheck`, build ở máy, đóng gói, upload vào `ci-incoming`, cài lại `activate-incoming.sh` rồi chạy đúng bước activate
+như CI. Dependency production có `@achoo254/app-shell` và `@achoo254/brand` cài từ tag git của `achoo254/shared-next` (khung trang, `tokens.css`, `app-shell.css`, `app-shell-enhance.js` được phục vụ thẳng từ `node_modules`), nên server phải tải được từ GitHub lúc cài; lockfile ghi tarball và integrity của đúng tag.
 
 ## Dữ liệu có `tenantId` (ADR 0006, 0013)
 
@@ -211,13 +236,13 @@ Ngoài server, mọi secret của IdP (Google/GitHub client, bot Telegram, admin
 
 ## Rollback
 
-**Quay về bản phát hành trước** (cách thường dùng). Trước khi rsync, [`infra/deploy.sh`](../infra/deploy.sh) chép `dist static infra package.json pnpm-lock.yaml pnpm-workspace.yaml` (và `brand` nếu có) của thư mục app vào `/root/hoandat-auth-backup-<YYYYMMDD-HHMMSS>/` và chỉ giữ 3 bản mới nhất (`.env`, `secrets/` không bị deploy đụng tới nên không nằm trong đó). Deploy tay thì sao lưu đúng các mục đó trước. Quay lại, trong thư mục app:
+**Quay về bản phát hành trước** (cách thường dùng). 5 release gần nhất nằm trong `/var/www/hoandat-auth/releases/`. Trong
+`/var/www/hoandat-auth`:
 
 ```bash
-B=/root/hoandat-auth-backup-<YYYYMMDD-HHMMSS>
-rm -rf dist static infra brand && cp -a "$B"/. .
-source /root/.nvm/nvm.sh && npx --yes pnpm@11.9.0 install --prod --frozen-lockfile
-pm2 reload hoandat-auth
+source /root/.nvm/nvm.sh
+ln -sfn releases/<id-trước> current.next && mv -T current.next current
+pm2 delete hoandat-auth && pm2 start current/infra/ecosystem.config.cjs && pm2 save
 ```
 
 Rồi kiểm `/healthz` và `/.well-known/openid-configuration` (200) qua `https://auth.hoandat.com`.

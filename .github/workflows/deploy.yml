@@ -1,0 +1,95 @@
+# Continuous deploy of auth.hoandat.com: after `ci` passes on a push to main, build and pack the release
+# (infra/pack-release.sh), upload it as the restricted `hoandat-auth-deploy` user to
+# /var/www/hoandat-auth/ci-incoming/<id> and switch through the one sudo command that user has
+# (infra/activate-incoming.sh: flock, production dependencies and indexes while the running release serves, `current`,
+# pm2, /healthz, previous release back on failure). Building (which runs dependency code) happens in a job without the
+# deploy key; the deploy job only downloads the artifact, uploads and activates it. auth-next is first in the
+# cross-repo deploy order: when a contract changes, push the next repo only after this deploy is green.
+# The rule for every repo: docs/deploy-standard.md in the hoandat-app workspace.
+name: deploy
+
+on:
+  workflow_run:
+    workflows: [ci]
+    types: [completed]
+    branches: [main]
+
+permissions:
+  contents: read
+
+# Never cancel a deploy halfway; later runs wait their turn.
+concurrency:
+  group: deploy-prod
+  cancel-in-progress: false
+
+jobs:
+  build:
+    if: github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    outputs:
+      release_id: ${{ steps.release.outputs.id }}
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+      - uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # v4.4.0
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+        env:
+          MONGOMS_DISABLE_POSTINSTALL: "1"
+      - id: release
+        name: build release
+        env:
+          SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          echo "id=$(date -u +%Y%m%d-%H%M%S)-${SHA:0:12}" >>"$GITHUB_OUTPUT"
+          pnpm build
+          bash infra/pack-release.sh release
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: release
+          path: release/
+          retention-days: 7
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: production
+    env:
+      RELEASE_ID: ${{ needs.build.outputs.release_id }}
+      # The server address and SSH port are secrets so the public repository does not show them.
+      DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+      DEPLOY_PORT: ${{ secrets.DEPLOY_PORT }}
+      TARGET: hoandat-auth-deploy@${{ secrets.DEPLOY_HOST }}
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: release
+          path: release/
+      - name: ssh setup
+        env:
+          SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+        run: |
+          install -d -m 700 ~/.ssh
+          printf '%s\n' "$SSH_KEY" >~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          printf '%s\n' "$KNOWN_HOSTS" >~/.ssh/known_hosts
+          printf 'Host %s\n  Port %s\n  IdentityFile ~/.ssh/deploy_key\n  IdentitiesOnly yes\n  StrictHostKeyChecking yes\n' "$DEPLOY_HOST" "$DEPLOY_PORT" >~/.ssh/config
+      - name: upload and activate
+        run: |
+          rsync -rltz --chmod=Du=rwx,Dgo=rx,Fu=rw,Fgo=r release/ "$TARGET:/var/www/hoandat-auth/ci-incoming/$RELEASE_ID/"
+          ssh "$TARGET" "sudo -n /usr/local/sbin/hoandat-auth-activate-incoming $RELEASE_ID"
+      - name: smoke from outside
+        run: |
+          issuer="$(curl -fsS https://auth.hoandat.com/.well-known/openid-configuration | jq -r .issuer)"
+          [ "$issuer" = "https://auth.hoandat.com" ] || { echo "discovery issuer is '$issuer'" >&2; exit 1; }
+          code="$(curl -s -o /dev/null -w '%{http_code}' https://auth.hoandat.com/healthz)"
+          [ "$code" = 200 ] || { echo "https://auth.hoandat.com/healthz -> $code" >&2; exit 1; }
+      - if: always()
+        run: rm -f ~/.ssh/deploy_key
