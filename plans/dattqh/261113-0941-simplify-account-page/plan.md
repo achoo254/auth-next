@@ -32,9 +32,10 @@ App iOS "Tài khoản" (đang dừng), `/api/account`.
 - Ô số liệu đầu trang: cách đăng nhập, nơi đang đăng nhập, app bên ngoài (khi có).
 - i18n vi/en/zh-cn, snapshot, e2e liên quan.
 
-## Phase 3: Thông báo qua app Chat (L, auth-next + chat-next) — đang làm
+## Phase 3: Thông báo qua app Chat (L, auth-next + chat-next) — đã lên prod 13/11, chờ chủ sở hữu bật thử
 Thiết kế chốt 13/11 (chủ sở hữu chọn "gửi theo mã tài khoản"): xem `docs/decisions/0017-account-notices-in-chat.md`. Không mã liên kết, không token bot, không webhook.
 - auth-next: env `CHAT_NOTICES_URL`; trường `chatNotices` trên tài khoản (bật/tắt qua `AccountLinks`, `$inc securityVersion`, audit `method: "chat"`); thẻ Telegram thành "Thông báo bảo mật" có thêm công tắc Chat; `notifyAccount` gửi bản dịch của push tới Chat bằng token tự ký.
+- Prod: auth-next `e904753`, chat-next `6599624`; nginx của Chat cài bằng root (bản cũ ở `/root/chat.hoandat.com.conf.bak-20261113`); `.env` IdP thêm `CHAT_NOTICES_URL` (bản cũ `/root/hoandat-auth.env.bak-20261113`, iCloud đã chép).
 - chat-next: `POST /api/account-notices` kiểm token IdP (`VerifyAccessToken`, `client_id` + `scope`), tìm người dùng theo `idp_sub`, gửi qua bot trợ lý (như `NotifyModeration`); không có người dùng thì vẫn `204`.
 
 ## Tiêu chí xong
