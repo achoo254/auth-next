@@ -3,6 +3,7 @@ import {
 	grantsPerDevice,
 	recordDeviceGrant,
 } from "../account-portal/device-grants.js";
+import { replaceOlderDeviceGrants } from "../account-portal/revoke-access.js";
 import { auditContext, auditLabel } from "../audit/audit-context.js";
 import { clientIp } from "../http/client-ip.js";
 import { isStaticClientId } from "../oidc/clients.js";
@@ -78,6 +79,12 @@ export async function completeConsent(
 			},
 			// Device grants slide on every refresh; the metadata slides with them.
 			GRANT_IDLE_SECONDS,
+		);
+		await replaceOlderDeviceGrants(
+			services,
+			accountId,
+			{ clientId, deviceName, grantId },
+			auditContext(req),
 		);
 		services.logger.info(
 			{ accountId, clientId, ip: clientIp(req) },

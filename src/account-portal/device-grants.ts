@@ -1,5 +1,6 @@
 import type Provider from "oidc-provider";
 import { STATIC_CLIENT_IDS, refreshesPerDevice } from "../oidc/clients.js";
+import { collectionNameFor } from "../oidc/mongo-adapter.js";
 import { PUSH_DEVICES_COLLECTION } from "../push/push-devices.js";
 import { type TenantDb, inTenant, tenantTag } from "../tenants/tenant-data.js";
 import type { GrantSummary } from "./grant-directory.js";
@@ -100,4 +101,40 @@ export async function forgetDeviceGrants(
 	await db
 		.collection(PUSH_DEVICES_COLLECTION)
 		.deleteMany({ grantId: { $in: [...grantIds] }, ...inTenant(tenant) });
+}
+
+/**
+ * Older grants of the same account, client and machine name as `grantId`:
+ * signing in again on a machine replaces its previous grant instead of
+ * adding a second row at /account. Unnamed machines are never matched.
+ */
+export async function replacedDeviceGrantIds(
+	{ db, tenant }: TenantDb,
+	accountId: string,
+	clientId: string,
+	deviceName: string | undefined,
+	grantId: string,
+): Promise<string[]> {
+	if (!deviceName) return [];
+	const sameName = await db
+		.collection<DeviceMetaDocument>(GRANT_META_COLLECTION)
+		.find(
+			{ accountId, deviceName, _id: { $ne: grantId }, ...inTenant(tenant) },
+			{ projection: { _id: 1 } },
+		)
+		.toArray();
+	if (sameName.length === 0) return [];
+	const grants = await db
+		.collection<{ _id: string }>(collectionNameFor("Grant"))
+		.find(
+			{
+				_id: { $in: sameName.map((meta) => meta._id) },
+				"payload.accountId": accountId,
+				"payload.clientId": clientId,
+				...inTenant(tenant),
+			},
+			{ projection: { _id: 1 } },
+		)
+		.toArray();
+	return grants.map((grant) => grant._id);
 }

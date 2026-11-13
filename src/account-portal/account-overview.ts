@@ -8,14 +8,13 @@ import type { AccountView } from "./account-page.js";
 export type AccountCardId =
 	| "profile"
 	| "sign-in"
+	| "telegram"
 	| "sessions"
-	| "devices"
-	| "apps"
-	| "telegram";
+	| "apps";
 
 /** The card groups of /account, in page order; the section nav follows it. */
 export const ACCOUNT_SECTIONS: readonly {
-	readonly group: "account" | "security" | "connections";
+	readonly group: "account" | "access";
 	readonly title: MessageKey;
 	readonly cards: readonly {
 		readonly id: AccountCardId;
@@ -29,22 +28,15 @@ export const ACCOUNT_SECTIONS: readonly {
 		cards: [
 			{ id: "profile", icon: "profile", title: "account.profile.title" },
 			{ id: "sign-in", icon: "signIn", title: "account.signIn.title" },
-		],
-	},
-	{
-		group: "security",
-		title: "account.group.security",
-		cards: [
-			{ id: "sessions", icon: "sessions", title: "account.sessions.title" },
-			{ id: "devices", icon: "devices", title: "account.devices.title" },
-		],
-	},
-	{
-		group: "connections",
-		title: "account.group.connections",
-		cards: [
-			{ id: "apps", icon: "apps", title: "account.apps.title" },
 			{ id: "telegram", icon: "telegram", title: "account.telegram.title" },
+		],
+	},
+	{
+		group: "access",
+		title: "account.group.access",
+		cards: [
+			{ id: "sessions", icon: "sessions", title: "account.places.title" },
+			{ id: "apps", icon: "apps", title: "account.apps.title" },
 		],
 	},
 ];
@@ -96,8 +88,7 @@ export function accountOverview(view: AccountView): SafeHtml {
 </div>
 <ul class="account-stats">
 ${stat("#account-sign-in", signInCount(view), i18n.t("account.stat.signIn"), "stat-sign-in")}
-${stat("#account-sessions", view.sessions.length, i18n.t("account.stat.sessions"), "stat-sessions")}
-${stat("#account-devices", view.devices.length, i18n.t("account.stat.devices"), "stat-devices")}
+${stat("#account-sessions", view.sessions.length + view.devices.length, i18n.t("account.stat.places"), "stat-sessions")}
 ${stat("#account-apps", view.apps.length, i18n.t("account.stat.apps"), "stat-apps")}
 </ul>
 </section>`;

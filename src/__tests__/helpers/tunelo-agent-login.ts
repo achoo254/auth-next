@@ -37,6 +37,17 @@ export async function approveAgent(
 		"google",
 		linkedGoogleProfile(account),
 	);
+	return approveAgentAs(idp, account._id, page.browser, deviceName);
+}
+
+/** The same approval by an account already signed in on `browser`. */
+export async function approveAgentAs(
+	idp: TestIdp,
+	accountId: string,
+	browser: TestBrowser,
+	deviceName: string,
+): Promise<ApprovedAgent> {
+	const page = { browser };
 	const agent = await discoverClient(
 		idp,
 		STATIC_CLIENT_IDS.tuneloAgent,
@@ -72,8 +83,8 @@ export async function approveAgent(
 		resource: RESOURCES.tunnel,
 	});
 	return {
-		accountId: account._id,
-		browser: page.browser,
+		accountId,
+		browser,
 		agent,
 		approvalPage,
 		accessToken: tokens.access_token,

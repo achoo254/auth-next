@@ -17,7 +17,7 @@ import {
 	accountNav,
 	accountOverview,
 } from "./account-overview.js";
-import { devicesCard, sessionsCard } from "./account-sections.js";
+import { placesCard } from "./account-sections.js";
 import type { DeviceGrant } from "./device-grants.js";
 import type { AuthorizedApp } from "./grant-directory.js";
 import { ACCOUNT_NOTICES } from "./notices.js";
@@ -41,10 +41,9 @@ const CARDS: Readonly<Record<AccountCardId, (view: AccountView) => SafeHtml>> =
 	{
 		profile: profileCard,
 		"sign-in": signInCard,
-		sessions: sessionsCard,
-		devices: devicesCard,
-		apps: appsCard,
 		telegram: telegramCard,
+		sessions: placesCard,
+		apps: appsCard,
 	};
 
 /** Last on the page, outside the groups: the one action with no way back. */
@@ -79,8 +78,8 @@ ${notice ? alertBox(notice.tone, i18n.t(notice.text)) : ""}`;
 
 /**
  * /account: everything a user can manage about their account. An overview
- * on top, then a section nav beside three groups of cards (account,
- * security, connections), one card under another.
+ * on top, then a section nav beside two groups of cards (account, where
+ * it is signed in and which outside apps may use it).
  */
 export function renderAccountPage(view: AccountView): string {
 	const { i18n } = view.page;

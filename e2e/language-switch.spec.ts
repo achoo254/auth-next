@@ -31,7 +31,7 @@ test("signs in, reads /account in English, then switches to 中文 without scrip
 
 	await expect(page).toHaveURL(/\/account$/);
 	await expect(page.locator("html")).toHaveAttribute("lang", "en");
-	for (const group of ["Account", "Security", "Connections"]) {
+	for (const group of ["Account", "Sign-ins & apps"]) {
 		await expect(
 			page.getByRole("heading", { level: 2, name: group }),
 		).toBeVisible();

@@ -251,3 +251,11 @@
 .account-card .item-row > .btn {
 	flex: none;
 }
+
+/* places past the first few fold under "Show N more" (plain <details>) */
+.account-more > summary {
+	cursor: pointer;
+	padding-block: var(--space-2);
+	color: var(--c-primary);
+	font-weight: 600;
+}

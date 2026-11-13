@@ -1,7 +1,8 @@
+import type { AuditContext } from "../audit/audit-events.js";
 import { collectionNameFor } from "../oidc/mongo-adapter.js";
 import type { AppServices } from "../services.js";
 import { type TenantDb, inTenant } from "../tenants/tenant-data.js";
-import { forgetDeviceGrants } from "./device-grants.js";
+import { forgetDeviceGrants, replacedDeviceGrantIds } from "./device-grants.js";
 import { revokeGrant } from "./grant-directory.js";
 
 /** Every grant id of an account (optionally of one client); no page limit. */
@@ -75,4 +76,37 @@ export async function revokeGrants(
 	}
 	await forgetDeviceGrants(services, grantIds);
 	return revoked;
+}
+
+/**
+ * A machine just approved a new grant: revokes the older grants it held for
+ * the same app, so each machine shows once at /account and a token left on
+ * its disk from before stops working.
+ */
+export async function replaceOlderDeviceGrants(
+	services: AppServices,
+	accountId: string,
+	device: {
+		readonly clientId: string;
+		readonly deviceName: string | undefined;
+		readonly grantId: string;
+	},
+	context: AuditContext,
+): Promise<void> {
+	const older = await replacedDeviceGrantIds(
+		services,
+		accountId,
+		device.clientId,
+		device.deviceName,
+		device.grantId,
+	);
+	if (older.length === 0) return;
+	const revoked = await revokeGrants(services, accountId, older);
+	if (revoked === 0) return;
+	await services.audit.record(
+		"grant.revoked",
+		accountId,
+		{ count: revoked, cause: "replaced", clientId: device.clientId },
+		context,
+	);
 }

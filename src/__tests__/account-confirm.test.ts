@@ -37,37 +37,31 @@ async function ageSignIn(account: TestAccount, seconds: number): Promise<void> {
 }
 
 describe("/account buttons say what they do", () => {
-	it("labels sign-outs by effect and keeps red for removing an app", async () => {
+	it("labels sign-outs by effect and lists only outside apps", async () => {
 		const account = await createTestAccount(repositoryOf(idp));
 		const browser = await signedInBrowser(idp, account);
 		const alone = await (await get(browser, "/account")).text();
 		expect(alone).toContain("Sign out this browser");
 		expect(alone).toContain('data-id="session-current"');
-		expect(alone).not.toContain("Sign out every other session");
+		expect(alone).not.toContain("Sign out every other browser");
 
 		await signedInBrowser(idp, account);
 		const page = await (await get(browser, "/account")).text();
-		expect(page).toContain("Sign out session");
+		expect(page).toContain("Sign out every other browser");
 		expect(page).toContain('href="/account/sessions/revoke-others"');
-		// Signing in through localman-web authorized "Localman".
-		expect(page).toContain('href="/account/apps/localman-web/revoke"');
-		// Red only for removing the app and deleting the account.
-		expect(page.match(/btn-danger/g)).toHaveLength(2);
+		// Signing in through localman-web consented silently: our own app is
+		// not access to manage, so it is not listed.
+		expect(page).not.toContain('href="/account/apps/localman-web/revoke"');
+		expect(page).toContain('data-id="account-apps-empty"');
+		// Red only for deleting the account.
+		expect(page.match(/btn-danger/g)).toHaveLength(1);
 		expect(page).toMatch(
 			/class="btn btn-danger-outline" href="\/account\/delete"/,
 		);
-		expect(page).toContain("Remove app access");
-		for (const id of [
-			"profile",
-			"sign-in",
-			"sessions",
-			"devices",
-			"apps",
-			"telegram",
-		]) {
+		for (const id of ["profile", "sign-in", "telegram", "sessions", "apps"]) {
 			expect(page).toContain(`data-id="account-${id}"`);
 		}
-		expect(page).toContain('data-id="account-devices-empty"');
+		expect(page).not.toContain('data-id="account-devices"');
 	});
 });
 

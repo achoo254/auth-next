@@ -8,7 +8,9 @@ export type RevocationCause =
 	| "account-page"
 	| "token-revocation"
 	/** The owner removed a Tunelo machine in Chat, which revoked its grant. */
-	| "machine-removed";
+	| "machine-removed"
+	/** The machine signed in again; its older grant of the same app was revoked. */
+	| "replaced";
 
 /**
  * Credential events sent to Localman, and the data each carries. Data never

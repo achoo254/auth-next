@@ -44,9 +44,9 @@ test("with a session, approving a device asks to sign in no more", async ({
 	);
 	expect(tokens.refresh_token).toEqual(expect.any(String));
 
-	// The account page lists the machine under Devices.
+	// The account page lists the machine with the browsers.
 	await page.goto("/account");
-	await expect(page.locator('[data-id="account-devices"]')).toContainText(
+	await expect(page.locator('[data-id="account-sessions"]')).toContainText(
 		"laptop-cua-dat",
 	);
 });

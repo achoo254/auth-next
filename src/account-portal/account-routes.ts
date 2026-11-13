@@ -87,7 +87,9 @@ export function createAccountRouter(services: AppServices): Router {
 						telegramEnabled: services.telegram !== undefined,
 						sessions,
 						devices,
-						apps,
+						// Our own apps consent silently and leave with a sign-out;
+						// only apps registered through DCR are access to manage.
+						apps: apps.filter((app) => !app.firstParty),
 						notice: queryValue(req, "notice"),
 					}),
 				);

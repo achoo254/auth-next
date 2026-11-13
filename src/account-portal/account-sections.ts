@@ -1,7 +1,7 @@
 import type { Translator } from "../i18n/translator.js";
 import { actionButton, actionLink } from "../ui/components.js";
 import { type SafeHtml, html } from "../ui/html.js";
-import { accountCard, emptyState, itemList } from "./account-card.js";
+import { accountCard, emptyState } from "./account-card.js";
 import { accountIcon } from "./account-icons.js";
 import type { AccountView } from "./account-page.js";
 import type { DeviceGrant } from "./device-grants.js";
@@ -49,6 +49,18 @@ export function describeUserAgent(
 	});
 }
 
+/** How many places show before the rest fold under "Show N more". */
+const VISIBLE_PLACES = 5;
+
+/** Native apps without a machine name sent their User-Agent instead. */
+function deviceLabel(view: AccountView, device: DeviceGrant): string {
+	const { i18n } = view.page;
+	const name = device.deviceName?.startsWith("Mozilla/")
+		? describeUserAgent(i18n, device.deviceName)
+		: device.deviceName;
+	return `${device.appName} · ${name ?? i18n.t("device.unknownName")}`;
+}
+
 function sessionRow(view: AccountView, session: OpenSession): SafeHtml {
 	const { i18n } = view.page;
 	const current = session.uid === view.currentSessionUid;
@@ -64,71 +76,80 @@ ${actionButton(
 	current
 		? i18n.t("account.sessions.signOutThis")
 		: i18n.t("account.sessions.signOut"),
-	{ dataId: `session-revoke-${session.uid}` },
+	{ variant: "minimal", dataId: `session-revoke-${session.uid}` },
 )}
 </li>`;
 }
 
-export function sessionsCard(view: AccountView): SafeHtml {
+function deviceRow(view: AccountView, device: DeviceGrant): SafeHtml {
 	const { i18n } = view.page;
-	const { sessions } = view;
+	const signedIn = i18n.t("account.sessions.signedInAt", {
+		date: i18n.date(device.grantedAt),
+	});
+	return html`<li class="item-row" data-id="device-${device.grantId}">
+<div><b>${deviceLabel(view, device)}</b>
+<p class="help">${signedIn}</p></div>
+${actionButton(`/account/devices/${device.grantId}/revoke`, view.csrf, i18n.t("account.sessions.signOut"), { variant: "minimal", dataId: `device-revoke-${device.grantId}` })}
+</li>`;
+}
+
+interface Place {
+	readonly row: SafeHtml;
+	/** Sorts this browser first, then the most recent sign-in. */
+	readonly rank: number;
+}
+
+/** Every browser session and signed-in machine, this browser first. */
+function places(view: AccountView): Place[] {
+	const sessions = view.sessions.map((session) => ({
+		row: sessionRow(view, session),
+		rank:
+			session.uid === view.currentSessionUid
+				? Number.POSITIVE_INFINITY
+				: ((session.lastSeenAt ?? session.loginAt)?.getTime() ?? 0),
+	}));
+	const devices = view.devices.map((device) => ({
+		row: deviceRow(view, device),
+		rank: device.grantedAt?.getTime() ?? 0,
+	}));
+	return [...sessions, ...devices].sort((a, b) => b.rank - a.rank);
+}
+
+/** The first rows, then the rest folded in a plain <details> (no script). */
+function foldedList(view: AccountView, rows: readonly SafeHtml[]): SafeHtml {
+	const { i18n } = view.page;
+	const shown = html`<ul class="item-list">${rows.slice(0, VISIBLE_PLACES)}</ul>`;
+	const rest = rows.slice(VISIBLE_PLACES);
+	if (rest.length === 0) return shown;
+	return html`${shown}
+<details class="account-more" data-id="account-places-more"><summary>${i18n.t("account.places.more", { count: rest.length })}</summary>
+<ul class="item-list">${rest}</ul></details>`;
+}
+
+/**
+ * "Where you are signed in": browsers and machines (Tunelo, native apps)
+ * in one list, since to the owner both are places their account is open.
+ */
+export function placesCard(view: AccountView): SafeHtml {
+	const { i18n } = view.page;
+	const rows = places(view).map((place) => place.row);
 	return accountCard({
 		id: "sessions",
 		icon: accountIcon("sessions"),
-		title: i18n.t("account.sessions.title"),
-		description: i18n.t("account.sessions.description"),
-		count: sessions.length,
+		title: i18n.t("account.places.title"),
+		description: i18n.t("account.places.description"),
+		count: rows.length,
 		body:
-			sessions.length === 0
+			rows.length === 0
 				? emptyState(i18n.t("account.sessions.empty"), "account-sessions-empty")
-				: itemList(
-						i18n.t("account.sessions.title"),
-						sessions.map((session) => sessionRow(view, session)),
-					),
+				: foldedList(view, rows),
 		footer:
-			sessions.length >= 2
+			view.sessions.length >= 2
 				? actionLink(
 						REVOKE_OTHER_SESSIONS_PATH,
 						i18n.t("account.sessions.signOutOthers"),
 						{ dataId: "sessions-revoke-others" },
 					)
 				: undefined,
-	});
-}
-
-function deviceRow(view: AccountView, device: DeviceGrant): SafeHtml {
-	const { i18n } = view.page;
-	const dates = i18n.t("account.devices.dates", {
-		granted: i18n.date(device.grantedAt),
-		expires: i18n.date(device.expiresAt),
-	});
-	return html`<li class="item-row" data-id="device-${device.grantId}">
-<div><b>${device.appName} · ${device.deviceName ?? i18n.t("device.unknownName")}</b>
-<p class="help">${dates}</p></div>
-${actionButton(`/account/devices/${device.grantId}/revoke`, view.csrf, i18n.t("account.devices.signOut"), { dataId: `device-revoke-${device.grantId}` })}
-</li>`;
-}
-
-export function devicesCard(view: AccountView): SafeHtml {
-	const { i18n } = view.page;
-	const { devices } = view;
-	return accountCard({
-		id: "devices",
-		icon: accountIcon("devices"),
-		title: i18n.t("account.devices.title"),
-		description: i18n.t("account.devices.description"),
-		count: devices.length,
-		body:
-			devices.length === 0
-				? emptyState(
-						i18n.rich("account.devices.empty", {
-							command: html`<code>tunelo login</code>`,
-						}),
-						"account-devices-empty",
-					)
-				: itemList(
-						i18n.t("account.devices.title"),
-						devices.map((device) => deviceRow(view, device)),
-					),
 	});
 }

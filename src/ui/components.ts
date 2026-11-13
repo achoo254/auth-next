@@ -96,7 +96,7 @@ export function actionButton(
 	csrf: string,
 	label: string,
 	options: {
-		readonly variant?: "primary" | "secondary" | "danger" | "danger-outline";
+		readonly variant?: ButtonVariant;
 		readonly dataId?: string;
 	} = {},
 ): SafeHtml {
