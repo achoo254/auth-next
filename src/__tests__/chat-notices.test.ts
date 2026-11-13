@@ -137,7 +137,7 @@ describe("/account switch for notices through Chat", () => {
 		expect(before).toContain('data-id="chat-notices-on"');
 
 		expect(await accountPost(browser, "/account/chat-notices/on")).toBe(
-			"/account?notice=chat-notices-on",
+			"/account?notice=chat-notices-on#account-telegram",
 		);
 		const on = await idp.services.accounts.findActiveById(account._id);
 		expect(on?.chatNotices?.locale).toEqual(expect.any(String));
@@ -165,7 +165,7 @@ describe("/account switch for notices through Chat", () => {
 		expect(delivered.map((notice) => notice.sub)).toContain(account._id);
 
 		expect(await accountPost(browser, "/account/chat-notices/off")).toBe(
-			"/account?notice=chat-notices-off",
+			"/account?notice=chat-notices-off#account-telegram",
 		);
 		const off = await idp.services.accounts.findActiveById(account._id);
 		expect(off?.chatNotices).toBeUndefined();
@@ -174,6 +174,29 @@ describe("/account switch for notices through Chat", () => {
 			type: "method.unlinked",
 		});
 		expect(unlinked?.data).toEqual({ method: "chat" });
+	});
+
+	it("turns on without a recent sign-in, but asks again before turning off", async () => {
+		const account = await createTestAccount(repositoryOf(idp));
+		const browser = await signedInBrowser(idp, account);
+		// The sign-in happened 11 minutes ago.
+		await idp.db
+			.collection("oidc_session")
+			.updateMany(
+				{ "payload.accountId": account._id },
+				{ $inc: { "payload.loginTs": -11 * 60 } },
+			);
+		expect(await accountPost(browser, "/account/chat-notices/on")).toBe(
+			"/account?notice=chat-notices-on#account-telegram",
+		);
+		const off = new URL(
+			await accountPost(browser, "/account/chat-notices/off"),
+			idp.issuer,
+		);
+		expect(off.pathname).toBe("/auth");
+		expect(off.searchParams.get("prompt")).toBe("login");
+		const after = await idp.services.accounts.findActiveById(account._id);
+		expect(after?.chatNotices).toBeDefined();
 	});
 
 	it("refuses a toggle without the page's CSRF token", async () => {

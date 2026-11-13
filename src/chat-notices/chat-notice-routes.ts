@@ -7,10 +7,15 @@ import { pageContext } from "../ui/page-context.js";
 /** Paths of the /account switch for security notices through Chat. */
 export const CHAT_NOTICES_PATH = "/account/chat-notices";
 
+/** Back on the security notices card, where the switch just changed. */
+const BACK_TO_CARD = "#account-telegram";
+
 /**
- * /account/chat-notices/on and /off (ADR 0017). Both are security changes
- * (off is what hiding an intrusion would do): CSRF and a recent sign-in.
- * Answers 404 while the channel is off (CHAT_NOTICES_URL unset).
+ * /account/chat-notices/on and /off (ADR 0017), both with CSRF. Off is what
+ * hiding an intrusion would do, so it needs a recent sign-in; on only sends
+ * more notices to the account's own owner, so it does not (a re-sign-in
+ * would drop the click: a posted form is never replayed). Answers 404 while
+ * the channel is off (CHAT_NOTICES_URL unset).
  */
 export function createChatNoticeRouter(services: AppServices): Router {
 	const router = Router();
@@ -29,9 +34,9 @@ export function createChatNoticeRouter(services: AppServices): Router {
 				// Notices speak the language of the page they were turned on from.
 				const { locale } = pageContext(req).i18n;
 				await services.accounts.links.setChatNotices(account._id, locale);
-				res.redirect(303, "/account?notice=chat-notices-on");
+				res.redirect(303, `/account?notice=chat-notices-on${BACK_TO_CARD}`);
 			},
-			{ csrf: true, recentLogin: true },
+			{ csrf: true },
 		),
 	);
 	router.post(
@@ -40,7 +45,7 @@ export function createChatNoticeRouter(services: AppServices): Router {
 			services,
 			async (_req, res, { account }) => {
 				await services.accounts.links.setChatNotices(account._id, undefined);
-				res.redirect(303, "/account?notice=chat-notices-off");
+				res.redirect(303, `/account?notice=chat-notices-off${BACK_TO_CARD}`);
 			},
 			{ csrf: true, recentLogin: true },
 		),
