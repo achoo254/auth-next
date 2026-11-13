@@ -48,7 +48,7 @@ Nếu lỗi giữa chừng:
 - **Sự kiện audit của `sub`:** chỉ còn loại sự kiện, thời điểm và các giá trị không định danh (ví dụ `method: "google"`, `clientId`). Sự kiện đã gửi sang Localman tự xoá sau 30 ngày; sự kiện chưa gửi nằm lại cho tới khi gửi được.
 - **Access token JWT** đã cấp cho resource (Localman, Tunelo) vẫn hợp lệ tới khi hết hạn, tối đa 15 phút, giống như khi đăng xuất.
 - **Backup database** trên máy chủ vẫn giữ bản cũ cho tới khi xoay vòng (14 ngày trên .65).
-- **Dữ liệu trong các app khác** (project Localman, tin nhắn Chat...) không bị xoá ở bước này; trang xác nhận nói rõ. `account.deleted` đi qua kênh audit sẵn có, để mỗi app tự quyết cách xử lý khi kênh đó được bật.
+- **Dữ liệu trong các app khác** (project Localman, tin nhắn Chat...): từ 13/11/2026 mọi app được báo bằng SET `account.deleted` và tự xoá dữ liệu của tài khoản (ADR 0018); trước đó dữ liệu ở app nằm lại.
 
 ### 4. Web `/account`
 

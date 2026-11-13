@@ -57,6 +57,29 @@ export const integrationEnvShape = {
 			return url !== null && !url.username && !url.password;
 		}, "must not contain credentials")
 		.optional(),
+	/**
+	 * Receivers told of every account deletion (ADR 0018): https URLs
+	 * separated by commas, e.g. https://chat.hoandat.com/api/idp/account-deleted.
+	 */
+	ACCOUNT_DELETED_URLS: z
+		.string()
+		.optional()
+		.transform((value) =>
+			(value ?? "")
+				.split(",")
+				.map((url) => url.trim())
+				.filter(Boolean),
+		)
+		.pipe(
+			z.array(
+				z
+					.url({ protocol: /^https?$/, error: "must be http(s) URLs" })
+					.refine((value) => {
+						const url = URL.parse(value);
+						return url !== null && !url.username && !url.password;
+					}, "must not contain credentials"),
+			),
+		),
 	...reviewLoginEnvShape,
 };
 

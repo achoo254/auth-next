@@ -19,6 +19,7 @@ const DATA_ACCESS_MODULES = new Set([
 	"src/oidc/client-seed.ts",
 	"src/account-portal/grant-directory.ts",
 	"src/account-portal/device-grants.ts",
+	"src/deletion-notices/deletion-notice-queue.ts",
 	"src/account-portal/session-directory.ts",
 	"src/account-portal/revoke-access.ts",
 	"src/account-portal/account-data-purge.ts",

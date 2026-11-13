@@ -5,6 +5,10 @@ import { createAuditDeliveryResolver } from "../audit/audit-delivery.js";
 import { AuditDispatcher } from "../audit/audit-dispatcher.js";
 import type { Env } from "../config/env.js";
 import { auditDeliveryConfig } from "../config/integrations-env.js";
+import {
+	DeletionNoticeDispatcher,
+	deletionNoticeSigner,
+} from "../deletion-notices/deletion-notice-dispatcher.js";
 import type { Logger } from "../logger.js";
 import type { SigningJwks } from "../oidc/jwks.js";
 import { type TenantRuntime, buildPrimaryRuntime } from "./tenant-runtime.js";
@@ -45,15 +49,24 @@ export function createServing(
 			}),
 		logger,
 	});
+	const deletionNoticeDispatcher = new DeletionNoticeDispatcher({
+		notices: primary.services.deletionNotices,
+		sign: deletionNoticeSigner({ issuer: primary.tenant.issuer, jwks }),
+		logger,
+	});
 	return {
 		primary,
 		app,
 		auditDispatcher,
 		start() {
 			auditDispatcher.start();
+			deletionNoticeDispatcher.start();
 		},
 		async stop() {
-			await auditDispatcher.stop();
+			await Promise.all([
+				auditDispatcher.stop(),
+				deletionNoticeDispatcher.stop(),
+			]);
 		},
 	};
 }

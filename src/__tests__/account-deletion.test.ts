@@ -56,7 +56,9 @@ async function leftovers(
 ): Promise<Record<string, number>> {
 	const counts: Record<string, number> = {};
 	for (const name of TENANT_COLLECTIONS) {
-		if (name === "audit_outbox") continue;
+		// Both keep the deleted sub on purpose: the audit trail and the
+		// notices telling every app of the deletion (ADR 0018).
+		if (name === "audit_outbox" || name === "deletion_notices") continue;
 		const count = await idp.db
 			.collection<{ _id: string }>(name)
 			.countDocuments({

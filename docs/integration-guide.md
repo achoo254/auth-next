@@ -370,6 +370,10 @@ Body là Security Event Token (RFC 8417), header `{alg: "ES256", kid, typ: "sece
 3. Bỏ trùng theo `jti` (bằng `Idempotency-Key`): IdP có thể gửi lại một sự kiện đã nhận nếu phản hồi lần trước bị mất; lần trùng vẫn trả 2xx.
 4. Trả `202` (hoặc 2xx bất kỳ) khi đã lưu. Mọi phản hồi khác làm IdP thử lại sau 5 giây, nhân đôi mỗi lần, trần 1 giờ, **không bao giờ bỏ** sự kiện; IdP không đọc body phản hồi.
 
+## 10b. Xoá tài khoản: mọi app phải nhận (ADR 0018)
+
+Xoá tài khoản chỉ có ở `/account` của IdP; app **không** được có nút, màn hay API xoá riêng, chỉ một dòng dẫn tới `https://auth.hoandat.com/account#account-delete`. Sau mỗi lần xoá, IdP `POST` tới URL nhận của từng app (khai trong `ACCOUNT_DELETED_URLS` của IdP) một SET `application/secevent+jwt`: header `alg: ES256`, `typ: secevent+jwt`, `kid`; claim `iss`, `aud` = đúng URL nhận, `sub` = tài khoản đã xoá, `jti` (giữ nguyên khi thử lại), `iat`, `exp` (+10 phút), `toe`, `events: {"urn:hoandat:auth:event:account.deleted": {}}`. Không Basic. App kiểm bằng JWKS, xoá dữ liệu của `sub` (idempotent; tài sản dùng chung chuyển cho thành viên còn lại có vai trò cao nhất, rồi người tham gia sớm nhất), rồi trả 2xx; `sub` lạ cũng 2xx; chữ ký hay `aud` sai thì `401`. IdP thử lại với backoff (tối đa 1 giờ giữa hai lần) tới khi nhận 2xx.
+
 ## 11. Một tenant (ADR 0013)
 
 Từ 24/10/2026 IdP chỉ phục vụ `hoandat.com` (ADR 0013, thay ADR 0006, 0007, 0012): không còn issuer `https://auth.<d>` cho domain khác, không còn API nội bộ trên loopback (`/internal/tenants/*`, cổng `4501`), không còn secret client suy từ khoá gốc hay key AI niêm phong cho Scribe. App giữ cấu hình tĩnh (issuer, audience, client secret từ env) như ở mục 1–10. Mọi token và sự kiện audit vẫn mang tenant `primary` ở phía IdP; app nào lưu `tenantId`/`tenant_id` thì giữ giá trị `primary`, không migrate.

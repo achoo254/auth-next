@@ -40,6 +40,10 @@ import {
 	type ReviewLoginConfig,
 	reviewLoginConfig,
 } from "./config/review-login-env.js";
+import {
+	DeletionNotices,
+	ensureDeletionNoticeIndexes,
+} from "./deletion-notices/deletion-notice-queue.js";
 import { type Csrf, createCsrf } from "./http/csrf.js";
 import type { Logger } from "./logger.js";
 import type { SigningJwks } from "./oidc/jwks.js";
@@ -87,6 +91,9 @@ export interface AppServices {
 	readonly pushSender?: PushSender;
 	/** Security notices through Chat (ADR 0017); undefined when off. */
 	readonly chatNotices?: ChatNoticeSender;
+	/** Apps to tell of each account deletion (ADR 0018), and the queue. */
+	readonly deletionNotices: DeletionNotices;
+	readonly accountDeletedUrls: readonly string[];
 }
 
 export interface ServiceDependencies {
@@ -182,6 +189,8 @@ export function createServices(deps: ServiceDependencies): AppServices {
 			deps.telegram ??
 			(telegramConfig ? createTelegramBot(telegramConfig) : undefined),
 		chatNotices: deps.chatNotices ?? envChatNotices(deps),
+		deletionNotices: new DeletionNotices(db, tenant),
+		accountDeletedUrls: env.ACCOUNT_DELETED_URLS,
 	};
 }
 
@@ -193,6 +202,7 @@ export async function ensureAccountLayerIndexes(db: Db): Promise<void> {
 		ensureAuditOutboxIndexes(db),
 		ensurePushDeviceIndexes(db),
 		ensureClientUsageIndexes(db),
+		ensureDeletionNoticeIndexes(db),
 		...[SESSION_META_COLLECTION, GRANT_META_COLLECTION].map((name) =>
 			db
 				.collection(name)

@@ -68,6 +68,11 @@ export async function deleteAccount(
 		throw error;
 	}
 	await services.audit.record("account.deleted", accountId, { source });
+	// Every app then removes its own data of the account (ADR 0018).
+	await services.deletionNotices.enqueue(
+		accountId,
+		services.accountDeletedUrls,
+	);
 	services.logger.info({ accountId, source }, "Account deleted");
 	return "deleted";
 }
