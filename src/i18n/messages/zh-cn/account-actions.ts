@@ -11,6 +11,8 @@ export const zhAccountActions: Translation<typeof enAccountActions> = {
 	"notice.unlinked": "已取消关联。",
 	"notice.lastMethod":
 		"无法取消关联：这是账号最后一种登录方式。请先关联另一种方式（Google、GitHub 或 Apple）。",
+	"notice.chatNoticesOn": "已开启通过 Chat 发送安全通知。",
+	"notice.chatNoticesOff": "已关闭通过 Chat 发送安全通知。",
 	"notice.telegramUnlinked": "已取消关联 Telegram。",
 	"notice.sessionRevoked": "已退出该会话。",
 	"notice.otherSessionsRevoked": "已退出其他所有会话。",

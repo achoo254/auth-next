@@ -1,5 +1,6 @@
 ---
 status: in-progress
+adr: docs/decisions/0017-account-notices-in-chat.md
 tier: M
 created: 2026-11-13
 ---
@@ -31,17 +32,12 @@ App iOS "Tài khoản" (đang dừng), `/api/account`.
 - Ô số liệu đầu trang: cách đăng nhập, nơi đang đăng nhập, app bên ngoài (khi có).
 - i18n vi/en/zh-cn, snapshot, e2e liên quan.
 
-## Phase 3: Nhận thông báo qua app Chat (L, liên repo auth-next + chat-next)
-Ngoài Telegram, tài khoản nhận thông báo qua app Chat; kênh bật thì auth-next tự có bot bên Chat để gửi.
-- Cùng chỗ với Telegram trong nhóm "Tài khoản": dòng "Thông báo qua Chat" với Bật/Tắt, chỉ hiện khi kênh được bật ở server.
-- Bot tự tạo: khi kênh bật (env, mặc định tắt), auth-next khởi động thì đảm bảo có một bot hệ thống của nó bên Chat (tạo nếu chưa có, idempotent), không cần ai vào BotAdmin tạo tay. Chat thêm một đường server-to-server cho việc này, xác thực như `POST /api/tunelo-agent/grants/revoke` (client credentials), chỉ quản bot hệ thống của chính auth-next.
-- Liên kết giống Telegram: mã một lần 10 phút → mở link bot trên Chat kèm mã → người dùng bấm Bắt đầu (luật consent chat riêng của Bot API) → webhook bot về auth-next xác nhận, lưu chat id theo tài khoản (đi qua `accountTokens`, `$inc securityVersion`, audit `method.linked`/`unlinked` kênh `chat`).
-- Gửi: `notifyTelegram` thành gửi tới mọi kênh đang bật (Telegram, Chat), chạy nền, lỗi một kênh không chặn thao tác bảo mật; bot bị chặn (403) thì đánh dấu kênh chưa kích hoạt như Telegram.
-- Không log mã liên kết, token bot, chat id cùng nội dung; collection mới (nếu có) vào `TENANT_COLLECTIONS` và `purgeAccountData`.
-- Ngoài phạm vi phase này: đưa chat id kênh Chat cho Localman qua claim như `telegram_chat_id` (làm sau nếu cần).
-- Câu hỏi mở: (1) bot token do Chat trả về mỗi lần "ensure" hay auth-next giữ trong secret mount sau lần tạo đầu; (2) cần ADR mới cho kênh liên lạc mới ở auth-next.
+## Phase 3: Thông báo qua app Chat (L, auth-next + chat-next) — đang làm
+Thiết kế chốt 13/11 (chủ sở hữu chọn "gửi theo mã tài khoản"): xem `docs/decisions/0017-account-notices-in-chat.md`. Không mã liên kết, không token bot, không webhook.
+- auth-next: env `CHAT_NOTICES_URL`; trường `chatNotices` trên tài khoản (bật/tắt qua `AccountLinks`, `$inc securityVersion`, audit `method: "chat"`); thẻ Telegram thành "Thông báo bảo mật" có thêm công tắc Chat; `notifyAccount` gửi bản dịch của push tới Chat bằng token tự ký.
+- chat-next: `POST /api/account-notices` kiểm token IdP (`VerifyAccessToken`, `client_id` + `scope`), tìm người dùng theo `idp_sub`, gửi qua bot trợ lý (như `NotifyModeration`); không có người dùng thì vẫn `204`.
 
 ## Tiêu chí xong
 - `pnpm lint && pnpm typecheck && pnpm check:tokens` sạch ở local, test liên quan chạy từng file; CI xanh.
 - Trang `/account` không còn thẻ "Thiết bị", "Phiên đang mở" riêng, không liệt kê app nhà.
-- Bật "Thông báo qua Chat" trên một tài khoản thật: bot của auth-next tự có bên Chat, bấm Bắt đầu xong thì một thay đổi bảo mật (liên kết provider) gửi tin tới cả Telegram và Chat; tắt thì ngừng gửi.
+- Bật "Gửi qua Chat" trên tài khoản thật: một thay đổi bảo mật gửi tin từ bot trợ lý trong Chat; tắt thì ngừng gửi.

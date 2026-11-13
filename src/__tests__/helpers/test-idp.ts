@@ -173,6 +173,7 @@ export async function startTestIdp(options: TestIdpOptions): Promise<TestIdp> {
 		accounts,
 		formPostsPerMinute: options.formPostsPerMinute ?? 1_000,
 		pushSender: options.pushSender,
+		chatNotices: options.chatNotices,
 		accountApiLimits: options.accountApiLimits ?? {
 			perIp: 10_000,
 			perAccount: 10_000,

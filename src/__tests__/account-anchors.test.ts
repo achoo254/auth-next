@@ -29,6 +29,7 @@ function page(
 		currentSessionUid: "session-1",
 		providers,
 		telegramEnabled: false,
+		chatNoticesEnabled: false,
 		sessions: [],
 		devices: [],
 		apps: [],

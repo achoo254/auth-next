@@ -1,4 +1,5 @@
 import type { AccountDocument } from "../accounts/user-model.js";
+import { CHAT_NOTICES_PATH } from "../chat-notices/chat-notice-routes.js";
 import {
 	externalAppBadge,
 	quotedClientName,
@@ -77,19 +78,37 @@ ${actionButton("/account/telegram/link", view.csrf, i18n.t("account.telegram.lin
 ${actionButton("/account/telegram/unlink", view.csrf, i18n.t("account.telegram.unlink"), { dataId: "telegram-unlink" })}`;
 }
 
-export function telegramCard(view: AccountView): SafeHtml {
+/** The Chat switch (ADR 0017): nothing to link, Chat knows the account. */
+function chatBody(view: AccountView): SafeHtml {
 	const { i18n } = view.page;
-	const status = !view.telegramEnabled
-		? i18n.t("account.telegram.statusOff")
-		: view.account.telegram
-			? i18n.t("account.telegram.statusLinked")
-			: i18n.t("account.telegram.statusNone");
+	const on = view.account.chatNotices !== undefined;
+	return html`<p class="help" data-id="chat-notices-status">${i18n.t(on ? "account.chat.on" : "account.chat.off")}</p>
+${actionButton(
+	`${CHAT_NOTICES_PATH}/${on ? "off" : "on"}`,
+	view.csrf,
+	i18n.t(on ? "account.chat.turnOff" : "account.chat.turnOn"),
+	{ dataId: on ? "chat-notices-off" : "chat-notices-on" },
+)}`;
+}
+
+/**
+ * Where security notices go: Telegram, and Chat when the server relays
+ * notices there. Keeps the "telegram" id that links point at.
+ */
+export function noticesCard(view: AccountView): SafeHtml {
+	const { i18n } = view.page;
+	const telegram = html`<h4 class="account-subtitle">${i18n.t("account.telegram.title")}</h4>
+${telegramBody(view)}`;
+	const chat = view.chatNoticesEnabled
+		? html`<h4 class="account-subtitle">${i18n.t("account.chat.title")}</h4>
+${chatBody(view)}`
+		: "";
 	return accountCard({
 		id: "telegram",
 		icon: accountIcon("telegram"),
-		title: i18n.t("account.telegram.title"),
-		description: i18n.t("account.telegram.description"),
-		count: status,
-		body: telegramBody(view),
+		title: i18n.t("account.notices.title"),
+		description: i18n.t("account.notices.description"),
+		body: html`${telegram}
+${chat}`,
 	});
 }

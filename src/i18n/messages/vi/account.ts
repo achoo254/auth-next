@@ -58,9 +58,16 @@ export const viAccount: Translation<typeof enAccount> = {
 	"account.apps.empty": "Chưa cho app bên ngoài nào dùng tài khoản.",
 	"account.apps.redirects": "Chuyển về: {hosts}",
 	"account.apps.remove": "Gỡ quyền của ứng dụng",
+	"account.notices.title": "Thông báo bảo mật",
+	"account.notices.description":
+		"Nơi bạn nhận tin khi tài khoản có thay đổi bảo mật (đăng nhập mới, thêm hoặc gỡ cách đăng nhập).",
+	"account.chat.title": "Chat",
+	"account.chat.on": "Đang gửi qua bot trợ lý trong app Chat.",
+	"account.chat.off":
+		"Bật để nhận thông báo từ bot trợ lý trong app Chat. Không cần liên kết thêm: Chat dùng chính tài khoản {brand} này.",
+	"account.chat.turnOn": "Gửi qua Chat",
+	"account.chat.turnOff": "Tắt gửi qua Chat",
 	"account.telegram.title": "Telegram",
-	"account.telegram.description":
-		"Thông báo bảo mật của tài khoản, gửi tới chat Telegram của bạn.",
 	"account.telegram.off": "Máy chủ này chưa bật thông báo qua Telegram.",
 	"account.telegram.empty":
 		"Liên kết để nhận thông báo bảo mật của tài khoản. Telegram không dùng để đăng nhập.",
@@ -72,7 +79,4 @@ export const viAccount: Translation<typeof enAccount> = {
 	"account.delete.description":
 		"Xoá vĩnh viễn tài khoản {brand} này cùng phiên, thiết bị và liên kết của nó.",
 	"account.delete.open": "Xoá tài khoản…",
-	"account.telegram.statusLinked": "đã liên kết",
-	"account.telegram.statusNone": "chưa liên kết",
-	"account.telegram.statusOff": "đang tắt",
 };

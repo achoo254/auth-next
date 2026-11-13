@@ -259,3 +259,14 @@
 	color: var(--c-primary);
 	font-weight: 600;
 }
+
+/* a channel inside the security notices card (Telegram, Chat) */
+.account-subtitle {
+	margin: var(--space-3) 0 var(--space-1);
+	font-size: 1rem;
+	font-weight: 600;
+}
+
+.account-subtitle:first-child {
+	margin-top: 0;
+}

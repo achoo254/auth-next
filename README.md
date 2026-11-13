@@ -19,12 +19,13 @@ Dựng trên [`oidc-provider`](https://github.com/panva/node-oidc-provider), Exp
 | Ghi tài khoản vào app nào để đo tăng trưởng (`client_usage`) | [0011](docs/decisions/0011-client-usage-metrics.md) |
 | Đơn tenant `hoandat.com`, vẫn giữ trường `tenantId` | [0013](docs/decisions/0013-single-tenant.md) |
 | Chat thu hồi grant `tunelo-agent` của máy bị xoá (claim `grant_id`); link điền sẵn mã của máy chỉ khi trùng IP | [0016](docs/decisions/0016-tunelo-agent-grant-revocation-and-prefilled-link.md) |
+| Thông báo bảo mật qua bot trợ lý của Chat, gửi theo mã tài khoản bằng token IdP tự ký, không bước liên kết | [0017](docs/decisions/0017-account-notices-in-chat.md) |
 
 ADR 0006 (tenant theo domain), 0007 (tenant tự host) và 0012 (Scribe trên tenant) đã bị ADR 0013 thay thế; chỉ còn giá trị lịch sử.
 
 Ràng buộc không suy ra được từ code:
 
-- **Không có kênh email.** Hệ sinh thái không gửi mail; IdP không có quên mật khẩu, xác minh qua mail hay thông báo mail. Thông báo bảo mật đi qua bot Telegram (khi người dùng liên kết) và push của app "Tài khoản".
+- **Không có kênh email.** Hệ sinh thái không gửi mail; IdP không có quên mật khẩu, xác minh qua mail hay thông báo mail. Thông báo bảo mật đi qua bot Telegram (khi người dùng liên kết), bot trợ lý của Chat (khi bật, ADR 0017) và push của app "Tài khoản".
 - **Không được để tài khoản mất cách đăng nhập.** Vì chỉ có Google/GitHub/Apple, khoá huỷ liên kết provider cuối cùng là yêu cầu an toàn, không phải tiện ích.
 - **Một tenant, nhưng dữ liệu vẫn mang `tenantId`.** ADR 0013 chọn không migrate; mọi truy vấn vẫn lọc theo tenant để giữ cô lập dữ liệu.
 

@@ -354,7 +354,7 @@ Body là Security Event Token (RFC 8417), header `{alg: "ES256", kid, typ: "sece
 |---|---|
 | `login.succeeded` | `methods` (amr: `fed`, đăng nhập qua Google/GitHub/Apple; `pwd` + `review`: đăng nhập cho người duyệt ứng dụng, ADR 0010) |
 | `login.failed` | `method` (`review`), `reason` (`unknown-email`, `wrong-password`). Chỉ từ đăng nhập cho người duyệt ứng dụng (ADR 0010); `sub` là tài khoản duyệt hoặc `review-login` |
-| `method.linked`, `method.unlinked` | `method` (`apple`, `google`, `github`, `telegram`). Liên kết lại sang chat Telegram khác cũng sinh `method.linked`; Localman đọc lại `userinfo` khi nhận sự kiện có `method: "telegram"` |
+| `method.linked`, `method.unlinked` | `method` (`apple`, `google`, `github`, `telegram`, `chat`: bật/tắt thông báo bảo mật qua Chat, ADR 0017). Liên kết lại sang chat Telegram khác cũng sinh `method.linked`; Localman đọc lại `userinfo` khi nhận sự kiện có `method: "telegram"` |
 | `email.reclaimed` | (tài khoản `sub` mất email chưa xác minh cho chủ đã xác minh) |
 | `account.deleted` | `source` (`web`, `app`). Tài khoản `sub` đã bị xoá vĩnh viễn (ADR 0009): `sub` không bao giờ quay lại; đăng nhập lại cùng Google/GitHub/Apple tạo `sub` mới. App nhận sự kiện nên xoá hoặc ẩn dữ liệu của `sub` theo chính sách của mình |
 | `grant.created` | `clientId`, `kind` (`device`: duyệt máy Tunelo, có `deviceName`; `third-party-app`: consent client MCP). App first-party đăng nhập không sinh sự kiện này |

@@ -67,6 +67,20 @@ function bodyOf(event: PushEvent): {
 	}
 }
 
+/** Title and text of one notice in `locale`: push and Chat say the same. */
+export function noticeText(
+	event: PushEvent,
+	locale: Locale,
+	brand: Brand,
+): { readonly title: string; readonly body: string } {
+	const i18n = translator(locale, brand);
+	const body = bodyOf(event);
+	return {
+		title: i18n.t(TITLES[event.kind]),
+		body: i18n.t(body.key, body.params),
+	};
+}
+
 /** The APNs JSON of one notice, in the phone's language. */
 export function pushPayload(
 	event: PushEvent,
@@ -74,14 +88,9 @@ export function pushPayload(
 	brand: Brand,
 	at: Date = new Date(),
 ): object {
-	const i18n = translator(locale, brand);
-	const body = bodyOf(event);
 	return {
 		aps: {
-			alert: {
-				title: i18n.t(TITLES[event.kind]),
-				body: i18n.t(body.key, body.params),
-			},
+			alert: noticeText(event, locale, brand),
 			sound: "default",
 			"thread-id": "account-security",
 		},

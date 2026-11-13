@@ -17,6 +17,8 @@ const NOTICES: Readonly<Record<string, Notice>> = {
 	unlinked: { tone: "success", text: "notice.unlinked" },
 	"last-method": { tone: "error", text: "notice.lastMethod" },
 	"telegram-unlinked": { tone: "success", text: "notice.telegramUnlinked" },
+	"chat-notices-on": { tone: "success", text: "notice.chatNoticesOn" },
+	"chat-notices-off": { tone: "success", text: "notice.chatNoticesOff" },
 	"session-revoked": { tone: "success", text: "notice.sessionRevoked" },
 	"sessions-revoked": { tone: "success", text: "notice.otherSessionsRevoked" },
 	"device-revoked": { tone: "success", text: "notice.deviceRevoked" },

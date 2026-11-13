@@ -54,9 +54,16 @@ export const enAccount = {
 	"account.apps.empty": "No outside app can use your account.",
 	"account.apps.redirects": "Returns to: {hosts}",
 	"account.apps.remove": "Remove app access",
+	"account.notices.title": "Security notices",
+	"account.notices.description":
+		"Where you hear about security changes to your account (new sign-ins, sign-in methods added or removed).",
+	"account.chat.title": "Chat",
+	"account.chat.on": "Sent by the assistant bot in the Chat app.",
+	"account.chat.off":
+		"Turn on to get notices from the assistant bot in the Chat app. Nothing to link: Chat uses this same {brand} account.",
+	"account.chat.turnOn": "Send to Chat",
+	"account.chat.turnOff": "Stop sending to Chat",
 	"account.telegram.title": "Telegram",
-	"account.telegram.description":
-		"Security notices for your account, sent to your Telegram chat.",
 	"account.telegram.off": "Telegram notices aren't available on this server.",
 	"account.telegram.empty":
 		"Link a chat to get security notices for your account. Telegram isn't used to sign in.",
@@ -68,7 +75,4 @@ export const enAccount = {
 	"account.delete.description":
 		"Permanently delete this {brand} account with its sessions, devices and links.",
 	"account.delete.open": "Delete account…",
-	"account.telegram.statusLinked": "linked",
-	"account.telegram.statusNone": "not linked",
-	"account.telegram.statusOff": "off",
 };

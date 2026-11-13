@@ -1,7 +1,7 @@
 import type { UpstreamProvider } from "../accounts/user-model.js";
 
 /** Ways to reach or vouch for an account that can be linked and unlinked. */
-export type LinkedMethod = UpstreamProvider | "telegram";
+export type LinkedMethod = UpstreamProvider | "telegram" | "chat";
 
 /** Why sessions or grants were revoked. */
 export type RevocationCause =

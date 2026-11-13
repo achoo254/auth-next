@@ -7,6 +7,10 @@ import { createAccountRouter } from "./account-portal/account-routes.js";
 import { createAppsRouter } from "./app-directory/apps-page.js";
 import { createAssetsRouter } from "./assets.js";
 import { createBrandInstallRouter } from "./brand-install.js";
+import {
+	CHAT_NOTICES_PATH,
+	createChatNoticeRouter,
+} from "./chat-notices/chat-notice-routes.js";
 import type { Env } from "./config/env.js";
 import { createAasaRouter } from "./http/apple-app-site-association.js";
 import { createErrorHandler } from "./http/error-handler.js";
@@ -91,6 +95,7 @@ export function createTenantApp(options: TenantAppOptions): Express {
 	);
 	app.use("/oauth", createUpstreamCallbackRouter(services));
 	app.use("/account/telegram", createTelegramLinkRouter(services));
+	app.use(CHAT_NOTICES_PATH, createChatNoticeRouter(services));
 	app.use("/account", createAccountRouter(services));
 	app.use(createTelegramWebhookRouter(services));
 

@@ -7,7 +7,7 @@ import { type SafeHtml, html } from "../ui/html.js";
 import { renderPage } from "../ui/layout.js";
 import type { PageContext } from "../ui/page-context.js";
 import { accountCard, accountGroup } from "./account-card.js";
-import { appsCard, telegramCard } from "./account-connection-cards.js";
+import { appsCard, noticesCard } from "./account-connection-cards.js";
 import { ACCOUNT_DELETE_PATH } from "./account-delete-page.js";
 import { accountIcon } from "./account-icons.js";
 import { profileCard, signInCard } from "./account-identity-cards.js";
@@ -31,6 +31,8 @@ export interface AccountView {
 	readonly currentSessionUid: string;
 	readonly providers: readonly UpstreamProvider[];
 	readonly telegramEnabled: boolean;
+	/** Notices through Chat are relayed (CHAT_NOTICES_URL set, ADR 0017). */
+	readonly chatNoticesEnabled: boolean;
 	readonly sessions: readonly OpenSession[];
 	readonly devices: readonly DeviceGrant[];
 	readonly apps: readonly AuthorizedApp[];
@@ -41,7 +43,7 @@ const CARDS: Readonly<Record<AccountCardId, (view: AccountView) => SafeHtml>> =
 	{
 		profile: profileCard,
 		"sign-in": signInCard,
-		telegram: telegramCard,
+		telegram: noticesCard,
 		sessions: placesCard,
 		apps: appsCard,
 	};

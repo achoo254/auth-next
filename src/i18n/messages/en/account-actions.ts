@@ -10,6 +10,8 @@ export const enAccountActions = {
 	"notice.unlinked": "Unlinked.",
 	"notice.lastMethod":
 		"Couldn't unlink: it's your account's last way to sign in. Link another one (Google, GitHub or Apple) first.",
+	"notice.chatNoticesOn": "Security notices through Chat are on.",
+	"notice.chatNoticesOff": "Security notices through Chat are off.",
 	"notice.telegramUnlinked": "Unlinked Telegram.",
 	"notice.sessionRevoked": "Signed out the session.",
 	"notice.otherSessionsRevoked": "Signed out every other session.",

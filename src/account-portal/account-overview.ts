@@ -28,7 +28,7 @@ export const ACCOUNT_SECTIONS: readonly {
 		cards: [
 			{ id: "profile", icon: "profile", title: "account.profile.title" },
 			{ id: "sign-in", icon: "signIn", title: "account.signIn.title" },
-			{ id: "telegram", icon: "telegram", title: "account.telegram.title" },
+			{ id: "telegram", icon: "telegram", title: "account.notices.title" },
 		],
 	},
 	{

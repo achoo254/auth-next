@@ -85,6 +85,7 @@ export function createAccountRouter(services: AppServices): Router {
 						currentSessionUid: portal.sessionUid,
 						providers: [...services.upstreams.keys()],
 						telegramEnabled: services.telegram !== undefined,
+						chatNoticesEnabled: services.chatNotices !== undefined,
 						sessions,
 						devices,
 						// Our own apps consent silently and leave with a sign-out;

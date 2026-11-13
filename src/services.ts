@@ -26,8 +26,15 @@ import {
 	forgetRevokedPushDevices,
 	recordClientUsage,
 } from "./audit/provider-events.js";
+import {
+	type ChatNoticeSender,
+	createChatNoticeSender,
+} from "./chat-notices/chat-notice-sender.js";
 import type { Env } from "./config/env.js";
-import { telegramBotConfig } from "./config/integrations-env.js";
+import {
+	chatNoticesEndpoint,
+	telegramBotConfig,
+} from "./config/integrations-env.js";
 import { apnsConfig, partialApnsSettings } from "./config/ios-env.js";
 import {
 	type ReviewLoginConfig,
@@ -78,6 +85,8 @@ export interface AppServices {
 	readonly pushDevices: PushDevices;
 	/** APNs; undefined when push is off (APNS_* unset). */
 	readonly pushSender?: PushSender;
+	/** Security notices through Chat (ADR 0017); undefined when off. */
+	readonly chatNotices?: ChatNoticeSender;
 }
 
 export interface ServiceDependencies {
@@ -97,6 +106,8 @@ export interface ServiceDependencies {
 	/** Replaces the env-derived APNs sender (tests). */
 	readonly pushSender?: PushSender;
 	readonly accountApiLimits?: AccountApiLimits;
+	/** Replaces the env-derived Chat notice sender (tests). */
+	readonly chatNotices?: ChatNoticeSender;
 }
 
 /** APNs, from APNS_*. */
@@ -110,6 +121,20 @@ function envPushSender(deps: ServiceDependencies): PushSender | undefined {
 	}
 	const config = apnsConfig(deps.env);
 	return config ? new ApnsClient(config, deps.logger) : undefined;
+}
+
+/** Chat notices, from CHAT_NOTICES_URL, signed with the tenant's key. */
+function envChatNotices(
+	deps: ServiceDependencies,
+): ChatNoticeSender | undefined {
+	const endpoint = chatNoticesEndpoint(deps.env);
+	return endpoint
+		? createChatNoticeSender({
+				endpoint,
+				issuer: deps.tenant.issuer,
+				jwks: deps.jwks,
+			})
+		: undefined;
 }
 
 export function createServices(deps: ServiceDependencies): AppServices {
@@ -156,6 +181,7 @@ export function createServices(deps: ServiceDependencies): AppServices {
 		telegram:
 			deps.telegram ??
 			(telegramConfig ? createTelegramBot(telegramConfig) : undefined),
+		chatNotices: deps.chatNotices ?? envChatNotices(deps),
 	};
 }
 

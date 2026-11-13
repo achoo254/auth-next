@@ -46,6 +46,17 @@ export const integrationEnvShape = {
 		.string()
 		.min(32, "must be at least 32 characters")
 		.optional(),
+	/**
+	 * Origin of the Chat app that relays security notices (ADR 0017), e.g.
+	 * https://chat.hoandat.com. Unset: no Chat notices, no toggle at /account.
+	 */
+	CHAT_NOTICES_URL: z
+		.url({ protocol: /^https?$/, error: "must be an http(s) URL" })
+		.refine((value) => {
+			const url = URL.parse(value);
+			return url !== null && !url.username && !url.password;
+		}, "must not contain credentials")
+		.optional(),
 	...reviewLoginEnvShape,
 };
 
@@ -142,4 +153,12 @@ export function auditDeliveryConfig(
 	return url && clientId && clientSecret
 		? { url, clientId, clientSecret }
 		: undefined;
+}
+
+/** Chat's notice endpoint (ADR 0017); undefined when the channel is off. */
+export function chatNoticesEndpoint(env: {
+	readonly CHAT_NOTICES_URL?: string | undefined;
+}): string | undefined {
+	const origin = env.CHAT_NOTICES_URL?.replace(/\/+$/, "");
+	return origin ? `${origin}/api/account-notices` : undefined;
 }

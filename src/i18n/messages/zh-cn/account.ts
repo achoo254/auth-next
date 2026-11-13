@@ -54,8 +54,16 @@ export const zhAccount: Translation<typeof enAccount> = {
 	"account.apps.empty": "没有外部应用可以使用你的账号。",
 	"account.apps.redirects": "返回到：{hosts}",
 	"account.apps.remove": "移除应用访问权限",
+	"account.notices.title": "安全通知",
+	"account.notices.description":
+		"账号发生安全变更（新登录、添加或移除登录方式）时你接收通知的地方。",
+	"account.chat.title": "Chat",
+	"account.chat.on": "由 Chat 应用中的助手机器人发送。",
+	"account.chat.off":
+		"开启后由 Chat 应用中的助手机器人发送通知。无需关联：Chat 使用同一个 {brand} 账号。",
+	"account.chat.turnOn": "发送到 Chat",
+	"account.chat.turnOff": "停止发送到 Chat",
 	"account.telegram.title": "Telegram",
-	"account.telegram.description": "账号的安全通知，发送到你的 Telegram 聊天。",
 	"account.telegram.off": "此服务器未开启 Telegram 通知。",
 	"account.telegram.empty":
 		"关联一个聊天以接收账号的安全通知。Telegram 不用于登录。",
@@ -66,7 +74,4 @@ export const zhAccount: Translation<typeof enAccount> = {
 	"account.delete.title": "删除账号",
 	"account.delete.description": "永久删除此 {brand} 账号及其会话、设备和关联。",
 	"account.delete.open": "删除账号…",
-	"account.telegram.statusLinked": "已关联",
-	"account.telegram.statusNone": "未关联",
-	"account.telegram.statusOff": "已关闭",
 };

@@ -87,6 +87,8 @@ export interface AccountDocument {
 	 * Not security-relevant, so changing it does not bump `securityVersion`.
 	 */
 	telegramLocale?: Locale;
+	/** Security notices through Chat are on (ADR 0017), in this language. */
+	chatNotices?: { locale: Locale; enabledAt: Date };
 	/** The unverified email this account lost to its verified owner. */
 	reclaimedEmail?: { email: string; at: Date };
 	createdAt: Date;

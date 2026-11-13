@@ -6,11 +6,11 @@ import { isStaticClientId } from "../oidc/clients.js";
 import type { AppServices } from "../services.js";
 import { notifyTelegram } from "../telegram/notify.js";
 import type { PushSender } from "./apns-client.js";
-import { type PushEvent, pushPayload } from "./push-payload.js";
+import { type PushEvent, noticeText, pushPayload } from "./push-payload.js";
 
 type NotifiedAccount = Pick<
 	AccountDocument,
-	"_id" | "username" | "telegram" | "telegramLocale"
+	"_id" | "username" | "telegram" | "telegramLocale" | "chatNotices"
 >;
 
 export interface NotifyOptions {
@@ -40,6 +40,28 @@ function telegramNotice(
 			provider: UPSTREAM_LABELS[event.provider],
 		});
 	}
+}
+
+/** Every notice push sends, also through Chat when the owner turned it on. */
+function chatNotice(
+	services: AppServices,
+	account: NotifiedAccount,
+	event: PushEvent,
+): void {
+	const sender = services.chatNotices;
+	const settings = account.chatNotices;
+	if (!sender || !settings) return;
+	const { title, body } = noticeText(
+		event,
+		settings.locale,
+		brandOf(services.tenant),
+	);
+	sender.send(account._id, `${title}\n${body}`).catch((error: unknown) => {
+		services.logger.warn(
+			{ err: error, accountId: account._id, kind: event.kind },
+			"Chat notice not sent",
+		);
+	});
 }
 
 /**
@@ -83,7 +105,8 @@ async function pushToDevices(
 
 /**
  * Tells the account owner about a security event: on Telegram as before,
- * and on the phones running the account app. In the background and best
+ * through Chat when turned on (ADR 0017), and on the phones running the
+ * account app. In the background and best
  * effort: neither ever delays or fails the change itself.
  */
 export function notifyAccount(
@@ -94,6 +117,7 @@ export function notifyAccount(
 ): void {
 	if (!account) return;
 	telegramNotice(services, account, event, options);
+	chatNotice(services, account, event);
 	const sender = services.pushSender;
 	if (!sender) return;
 	pushToDevices(

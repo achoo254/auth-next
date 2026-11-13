@@ -49,6 +49,7 @@ function accountView(locale: Locale): AccountView {
 		currentSessionUid: "s-1",
 		providers: ["google", "github"],
 		telegramEnabled: true,
+		chatNoticesEnabled: true,
 		sessions: [
 			{ uid: "s-1", loginAt: NOW, userAgent: "Chrome/1 Mac OS X" },
 			{ uid: "s-2", loginAt: NOW },

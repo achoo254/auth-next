@@ -190,4 +190,29 @@ export class AccountLinks {
 		);
 		return this.audited(id, "method.unlinked", "telegram", write);
 	}
+
+	/**
+	 * Turns security notices through Chat on (in `locale`) or off. Turning
+	 * them off is what hiding an intrusion would do, so both are audited.
+	 */
+	setChatNotices(
+		id: string,
+		locale: Locale | undefined,
+	): Promise<GuardedWrite> {
+		const write = writeWithVersion(
+			this.accounts,
+			this.scope,
+			id,
+			undefined,
+			{},
+			{
+				...(locale
+					? { $set: { chatNotices: { locale, enabledAt: new Date() } } }
+					: { $unset: { chatNotices: "" } }),
+				$inc: { securityVersion: 1 },
+			},
+		);
+		const change = locale ? "method.linked" : "method.unlinked";
+		return this.audited(id, change, "chat", write);
+	}
 }
