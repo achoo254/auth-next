@@ -170,7 +170,7 @@ describe("web /account and /api/account record the same audit events", () => {
 		await compare(
 			async (a) => {
 				expect(await webPost(a.browser, "/unlink/github")).toBe(
-					"/account?notice=unlinked",
+					"/account?notice=unlinked#account-notice",
 				);
 			},
 			async (b, ready) => {

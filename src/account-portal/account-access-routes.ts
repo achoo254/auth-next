@@ -9,6 +9,7 @@ import {
 	signOutSessions,
 	unlinkSignInProvider,
 } from "./account-actions.js";
+import { accountNoticePath } from "./notices.js";
 import type { PortalHandler } from "./portal-session.js";
 
 /**
@@ -52,7 +53,7 @@ export function registerAccessRoutes(
 			});
 			res.redirect(
 				303,
-				`/account?notice=${result === "unlinked" ? "unlinked" : "last-method"}`,
+				accountNoticePath(result === "unlinked" ? "unlinked" : "last-method"),
 			);
 		}),
 	);
@@ -68,7 +69,7 @@ export function registerAccessRoutes(
 			);
 			res.redirect(
 				303,
-				`/account?notice=${done > 0 ? "session-revoked" : "not-found"}`,
+				accountNoticePath(done > 0 ? "session-revoked" : "not-found"),
 			);
 		}),
 	);
@@ -84,7 +85,7 @@ export function registerAccessRoutes(
 			);
 			res.redirect(
 				303,
-				`/account?notice=${done ? "device-revoked" : "not-found"}`,
+				accountNoticePath(done ? "device-revoked" : "not-found"),
 			);
 		}),
 	);

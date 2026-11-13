@@ -22,6 +22,7 @@ import { registerDeleteRoutes } from "./account-delete-routes.js";
 import { renderAccountPage } from "./account-page.js";
 import { listDeviceGrants } from "./device-grants.js";
 import { listAuthorizedApps, listGrants } from "./grant-directory.js";
+import { accountNoticePath } from "./notices.js";
 import { ACCOUNT_SIGN_OUT_PATH } from "./portal-account-menu.js";
 import {
 	type PortalHandler,
@@ -129,7 +130,7 @@ export function createAccountRouter(services: AppServices): Router {
 		"/profile",
 		write(async (req, res, { account }) => {
 			await updateProfileName(services, account, formText(req, "name", 100));
-			res.redirect(303, "/account?notice=profile");
+			res.redirect(303, accountNoticePath("profile"));
 		}),
 	);
 

@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { accountNoticePath } from "../account-portal/notices.js";
 import { portalRoute } from "../account-portal/portal-session.js";
 import { formRateLimit, parseForm } from "../http/form.js";
 import type { AppServices } from "../services.js";
@@ -6,9 +7,6 @@ import { pageContext } from "../ui/page-context.js";
 
 /** Paths of the /account switch for security notices through Chat. */
 export const CHAT_NOTICES_PATH = "/account/chat-notices";
-
-/** Back on the security notices card, where the switch just changed. */
-const BACK_TO_CARD = "#account-telegram";
 
 /**
  * /account/chat-notices/on and /off (ADR 0017), both with CSRF. Off is what
@@ -34,7 +32,7 @@ export function createChatNoticeRouter(services: AppServices): Router {
 				// Notices speak the language of the page they were turned on from.
 				const { locale } = pageContext(req).i18n;
 				await services.accounts.links.setChatNotices(account._id, locale);
-				res.redirect(303, `/account?notice=chat-notices-on${BACK_TO_CARD}`);
+				res.redirect(303, accountNoticePath("chat-notices-on"));
 			},
 			{ csrf: true },
 		),
@@ -45,7 +43,7 @@ export function createChatNoticeRouter(services: AppServices): Router {
 			services,
 			async (_req, res, { account }) => {
 				await services.accounts.links.setChatNotices(account._id, undefined);
-				res.redirect(303, `/account?notice=chat-notices-off${BACK_TO_CARD}`);
+				res.redirect(303, accountNoticePath("chat-notices-off"));
 			},
 			{ csrf: true, recentLogin: true },
 		),

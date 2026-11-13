@@ -3,6 +3,7 @@ import {
 	type AccountView,
 	renderAccountPage,
 } from "../account-portal/account-page.js";
+import { NOTICE_ANCHOR, accountNoticePath } from "../account-portal/notices.js";
 import type { AccountDocument } from "../accounts/user-model.js";
 import { testPage } from "./helpers/test-page.js";
 
@@ -12,6 +13,7 @@ const ANCHORS = ["account-email", "account-sign-in", "account-apps"];
 function page(
 	account: Partial<AccountDocument>,
 	providers: AccountView["providers"],
+	notice?: string,
 ): string {
 	return renderAccountPage({
 		page: testPage(),
@@ -33,6 +35,7 @@ function page(
 		sessions: [],
 		devices: [],
 		apps: [],
+		...(notice ? { notice } : {}),
 	});
 }
 
@@ -76,5 +79,27 @@ describe("/account sign-in methods", () => {
 		expect(html).not.toContain('data-id="provider-unlink-google"');
 		expect(html).toContain('data-id="provider-unlink-github"');
 		expect(html).toContain("turned off for now");
+	});
+});
+
+describe("/account notices after an action", () => {
+	it("shows a card's notice just above that card, where the URL jumps", () => {
+		const html = page({}, [], "device-revoked");
+		const notice = html.indexOf(`id="${NOTICE_ANCHOR}"`);
+		expect(notice).toBeGreaterThan(html.indexOf('data-id="group-access"'));
+		expect(notice).toBeLessThan(html.indexOf('data-id="account-sessions"'));
+		expect(html.match(/data-id="alert-success"/g)).toHaveLength(1);
+		expect(accountNoticePath("device-revoked")).toBe(
+			`/account?notice=device-revoked#${NOTICE_ANCHOR}`,
+		);
+	});
+
+	it("keeps a notice of no card on top, without a jump", () => {
+		const html = page({}, [], "reauthed");
+		expect(html).not.toContain(`id="${NOTICE_ANCHOR}"`);
+		expect(html.indexOf('data-id="alert-info"')).toBeLessThan(
+			html.indexOf('data-id="group-account"'),
+		);
+		expect(accountNoticePath("reauthed")).toBe("/account?notice=reauthed");
 	});
 });

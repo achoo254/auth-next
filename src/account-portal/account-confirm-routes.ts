@@ -12,6 +12,7 @@ import {
 import { appRevokePath } from "./account-connection-cards.js";
 import { REVOKE_OTHER_SESSIONS_PATH } from "./account-sections.js";
 import { listAuthorizedApps, listGrants } from "./grant-directory.js";
+import { accountNoticePath } from "./notices.js";
 import {
 	type PortalContext,
 	type PortalHandler,
@@ -77,7 +78,7 @@ export function registerConfirmRoutes(
 			);
 			res.redirect(
 				303,
-				`/account?notice=${grants > 0 ? "app-revoked" : "not-found"}`,
+				accountNoticePath(grants > 0 ? "app-revoked" : "not-found"),
 			);
 		}),
 	);
@@ -116,7 +117,7 @@ export function registerConfirmRoutes(
 			});
 			res.redirect(
 				303,
-				`/account?notice=${count > 0 ? "sessions-revoked" : "not-found"}`,
+				accountNoticePath(count > 0 ? "sessions-revoked" : "not-found"),
 			);
 		}),
 	);

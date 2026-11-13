@@ -270,3 +270,8 @@
 .account-subtitle:first-child {
 	margin-top: 0;
 }
+
+/* a notice about the card below it, where the page opens after an action */
+.account-notice {
+	scroll-margin-top: var(--space-6);
+}

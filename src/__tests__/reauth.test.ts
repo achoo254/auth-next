@@ -101,7 +101,9 @@ describe("sensitive changes need a recent sign-in", () => {
 			`${idp.issuer}/account/unlink/github`,
 			{ form: { csrf: await csrfOf(browser) } },
 		);
-		expect(unlinked.headers.get("location")).toBe("/account?notice=unlinked");
+		expect(unlinked.headers.get("location")).toBe(
+			"/account?notice=unlinked#account-notice",
+		);
 		expect(
 			(await repositoryOf(idp).findActiveById(account._id))?.providers.github,
 		).toBeUndefined();
@@ -110,7 +112,9 @@ describe("sensitive changes need a recent sign-in", () => {
 		const last = await browser.request(`${idp.issuer}/account/unlink/google`, {
 			form: { csrf: await csrfOf(browser) },
 		});
-		expect(last.headers.get("location")).toBe("/account?notice=last-method");
+		expect(last.headers.get("location")).toBe(
+			"/account?notice=last-method#account-notice",
+		);
 		expect(
 			(await repositoryOf(idp).findActiveById(account._id))?.providers.google,
 		).toBe(account.providers.google);
@@ -174,7 +178,7 @@ describe("sensitive changes need a recent sign-in", () => {
 			form: { csrf: formField(page, "csrf") },
 		});
 		expect(done.headers.get("location")).toBe(
-			"/account?notice=sessions-revoked",
+			"/account?notice=sessions-revoked#account-notice",
 		);
 	});
 

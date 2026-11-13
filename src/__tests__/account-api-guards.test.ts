@@ -163,7 +163,9 @@ describe("bearer authentication", () => {
 			`${idp.issuer}/account/devices/${grantId}/revoke`,
 			{ form: { csrf: formField(page, "csrf") } },
 		);
-		expect(out.headers.get("location")).toBe("/account?notice=device-revoked");
+		expect(out.headers.get("location")).toBe(
+			"/account?notice=device-revoked#account-notice",
+		);
 		expect((await callApi(idp, "/", { token: app.accessToken })).status).toBe(
 			401,
 		);

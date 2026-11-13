@@ -137,7 +137,7 @@ describe("/account switch for notices through Chat", () => {
 		expect(before).toContain('data-id="chat-notices-on"');
 
 		expect(await accountPost(browser, "/account/chat-notices/on")).toBe(
-			"/account?notice=chat-notices-on#account-telegram",
+			"/account?notice=chat-notices-on#account-notice",
 		);
 		const on = await idp.services.accounts.findActiveById(account._id);
 		expect(on?.chatNotices?.locale).toEqual(expect.any(String));
@@ -165,7 +165,7 @@ describe("/account switch for notices through Chat", () => {
 		expect(delivered.map((notice) => notice.sub)).toContain(account._id);
 
 		expect(await accountPost(browser, "/account/chat-notices/off")).toBe(
-			"/account?notice=chat-notices-off#account-telegram",
+			"/account?notice=chat-notices-off#account-notice",
 		);
 		const off = await idp.services.accounts.findActiveById(account._id);
 		expect(off?.chatNotices).toBeUndefined();
@@ -187,7 +187,7 @@ describe("/account switch for notices through Chat", () => {
 				{ $inc: { "payload.loginTs": -11 * 60 } },
 			);
 		expect(await accountPost(browser, "/account/chat-notices/on")).toBe(
-			"/account?notice=chat-notices-on#account-telegram",
+			"/account?notice=chat-notices-on#account-notice",
 		);
 		const off = new URL(
 			await accountPost(browser, "/account/chat-notices/off"),

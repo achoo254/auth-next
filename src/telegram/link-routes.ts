@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { accountNoticePath } from "../account-portal/notices.js";
 import { portalRoute } from "../account-portal/portal-session.js";
 import type {
 	AccountTokenResult,
@@ -141,7 +142,7 @@ ${linkButton("/account", i18n.t("common.backToAccount"), "secondary", "telegram-
 			async (_req, res, { account }) => {
 				await services.accounts.links.unsetTelegram(account._id);
 				services.logger.info({ accountId: account._id }, "Telegram unlinked");
-				res.redirect(303, "/account?notice=telegram-unlinked");
+				res.redirect(303, accountNoticePath("telegram-unlinked"));
 			},
 			{ csrf: true, recentLogin: true },
 		),

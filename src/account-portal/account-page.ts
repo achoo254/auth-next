@@ -20,7 +20,7 @@ import {
 import { placesCard } from "./account-sections.js";
 import type { DeviceGrant } from "./device-grants.js";
 import type { AuthorizedApp } from "./grant-directory.js";
-import { ACCOUNT_NOTICES } from "./notices.js";
+import { ACCOUNT_NOTICES, NOTICE_ANCHOR } from "./notices.js";
 import { portalAccountMenu } from "./portal-account-menu.js";
 import type { OpenSession } from "./session-directory.js";
 
@@ -63,9 +63,22 @@ function deleteCard(view: AccountView): SafeHtml {
 	});
 }
 
+function currentNotice(view: AccountView) {
+	return view.notice ? ACCOUNT_NOTICES.get(view.notice) : undefined;
+}
+
+/** A notice about one card's action, just above that card (the URL's anchor). */
+function cardNotice(view: AccountView, card: AccountCardId): SafeHtml | "" {
+	const notice = currentNotice(view);
+	if (notice?.card !== card) return "";
+	return html`<div class="account-notice" id="${NOTICE_ANCHOR}">${alertBox(notice.tone, view.page.i18n.t(notice.text))}</div>`;
+}
+
+/** Notices on top: the reclaimed email, and those not tied to a card. */
 function alerts(view: AccountView): SafeHtml {
 	const { i18n } = view.page;
-	const notice = view.notice ? ACCOUNT_NOTICES.get(view.notice) : undefined;
+	const found = currentNotice(view);
+	const notice = found?.card ? undefined : found;
 	const reclaimed = view.account.reclaimedEmail;
 	return html`${
 		reclaimed
@@ -89,7 +102,9 @@ export function renderAccountPage(view: AccountView): string {
 		accountGroup(
 			section.group,
 			i18n.t(section.title),
-			section.cards.map((card) => CARDS[card.id](view)),
+			section.cards.map(
+				(card) => html`${cardNotice(view, card.id)}${CARDS[card.id](view)}`,
+			),
 		),
 	);
 	const body = html`${accountOverview(view)}

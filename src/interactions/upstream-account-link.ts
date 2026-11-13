@@ -1,4 +1,5 @@
 import type { Request, Response } from "express";
+import { accountNoticePath } from "../account-portal/notices.js";
 import { loadPortalContext } from "../account-portal/portal-session.js";
 import {
 	type UpstreamProfile,
@@ -80,5 +81,5 @@ export async function finishAccountLink(
 		{ accountId: portal.account._id, provider: profile.provider },
 		"Provider linked",
 	);
-	res.redirect(303, `/account?notice=linked-${profile.provider}`);
+	res.redirect(303, accountNoticePath(`linked-${profile.provider}`));
 }
