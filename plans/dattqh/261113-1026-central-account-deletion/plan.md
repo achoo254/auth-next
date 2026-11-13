@@ -1,5 +1,5 @@
 ---
-status: draft
+status: in-progress
 tier: XL
 created: 2026-11-13
 ---
@@ -32,9 +32,11 @@ Mọi việc xoá tài khoản đi qua một chỗ: `auth.hoandat.com/account`. 
 - Chat: gỡ "Tự xoá nếu không dùng" và màn "đang chờ xoá".
 - app-shell footer: link "Delete account" trỏ `auth.hoandat.com/account#account-delete`.
 
-## Quyết định cần chủ sở hữu
-1. Tài sản dùng chung của người bị xoá (nhóm/kênh Chat, workspace/project Localman).
-2. Thời gian giữ: auth xoá ngay; Chat đang giữ 30 ngày.
+## Quyết định
+1. Tài sản dùng chung: tự chuyển chủ (chủ sở hữu, 13/11).
+2. Thời gian giữ: xoá ngay mọi nơi, bỏ 30 ngày của Chat (chủ sở hữu, 13/11).
+3. Site Web Nhanh đang bị quản trị gỡ: xoá ngay như mọi thứ khác, báo cáo và nhật ký còn dạng chữ (Jev 0,93, `reports/jev-261113-webnhanh-takedown-*.json`).
+4. Phiên đăng nhập cũng chỉ quản lý ở auth: Chat gỡ trang "Phiên đăng nhập" (chủ sở hữu, 13/11).
 
 ## Tiêu chí xong
 - Không app nào còn nút/API xoá tài khoản; mọi chỗ trỏ về `auth.hoandat.com/account`.

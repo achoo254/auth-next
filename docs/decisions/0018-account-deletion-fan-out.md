@@ -21,6 +21,7 @@ Mỗi app từng có luồng xoá riêng (Chat giữ 30 ngày và bắt chuyển
 - Xoá mọi dữ liệu của người dùng mang `sub` đó, **bền và idempotent**: trả 2xx (khuyên `202`) chỉ khi đã xoá xong hoặc đã ghi việc xoá vào hàng đợi bền của app. `sub` không có trong app cũng trả 2xx. Chữ ký sai, `aud` sai, hết hạn trả `401`, để IdP thử lại khi cấu hình sai được sửa.
 - Tài sản dùng chung mà người bị xoá làm chủ (nhóm, kênh, workspace, project có người khác): chuyển chủ cho người còn lại có vai trò cao nhất, cùng vai trò thì người tham gia sớm nhất; không còn ai thì xoá. Nội dung người đó đã gửi vào chỗ chung xử lý như luồng xoá sẵn có của app (ví dụ Chat hiện "Tài khoản đã xoá").
 - Không log SET, `sub` cùng nội dung; chỉ log id nội bộ và kết quả.
+- Không có ngoại lệ giữ lại: kể cả website đang bị quản trị gỡ (Web Nhanh) cũng xoá ngay; báo cáo vi phạm và nhật ký quản trị còn lại dưới dạng chữ, id được đặt rỗng (Jev 13/11, 0,93).
 - Ngay sau khi nhận, đăng nhập lại bằng `sub` đó phải bị từ chối (IdP không bao giờ cấp lại `sub` cũ, ADR 0009 mục 1).
 
 ### Giao diện
