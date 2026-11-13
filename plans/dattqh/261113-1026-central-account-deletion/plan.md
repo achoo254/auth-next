@@ -1,5 +1,5 @@
 ---
-status: in-progress
+status: done
 tier: XL
 created: 2026-11-13
 ---
@@ -41,3 +41,10 @@ Mọi việc xoá tài khoản đi qua một chỗ: `auth.hoandat.com/account`. 
 ## Tiêu chí xong
 - Không app nào còn nút/API xoá tài khoản; mọi chỗ trỏ về `auth.hoandat.com/account`.
 - Xoá một tài khoản thử ở auth: mọi app nhận sự kiện và không còn dữ liệu của `sub` đó (trừ phần đã chọn giữ ở quyết định 1).
+
+## Kết quả (13/11)
+- 11 app nhận `account.deleted` trên prod: chat, localman (`/internal/account-deleted`), kb, miu, scribe, clip, lockin, tieude, truyen, tuvi, webnhanh; khai trong `ACCOUNT_DELETED_URLS` của IdP (bản cũ `/root/hoandat-auth.env.bak-20261113b`, iCloud đã chép).
+- Thử hợp đồng trên prod: 11 bản giao cho một `sub` không tồn tại, cả 11 được nhận (2xx) trong 25 giây, nghĩa là chữ ký, `aud`, `iss` đúng ở mọi app.
+- Chưa thử xoá một tài khoản thật có dữ liệu (cần một tài khoản Google/GitHub thử của chủ sở hữu).
+- Chat migration dùng số `0038`: việc dọn `machine_install_codes` của plan Tunelo 3.0 phải đổi sang `0039`.
+
