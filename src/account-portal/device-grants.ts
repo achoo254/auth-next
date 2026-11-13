@@ -106,7 +106,8 @@ export async function forgetDeviceGrants(
 /**
  * Older grants of the same account, client and machine name as `grantId`:
  * signing in again on a machine replaces its previous grant instead of
- * adding a second row at /account. Unnamed machines are never matched.
+ * adding a second row at /account. Unnamed machines are never matched;
+ * the caller only asks for device-flow machines, named by their host.
  */
 export async function replacedDeviceGrantIds(
 	{ db, tenant }: TenantDb,

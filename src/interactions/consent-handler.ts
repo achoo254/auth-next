@@ -80,12 +80,16 @@ export async function completeConsent(
 			// Device grants slide on every refresh; the metadata slides with them.
 			GRANT_IDLE_SECONDS,
 		);
-		await replaceOlderDeviceGrants(
-			services,
-			accountId,
-			{ clientId, deviceName, grantId },
-			auditContext(req),
-		);
+		// Only device-flow machines (Tunelo) send a real host name; phone
+		// apps send a User-Agent that two phones of one model can share.
+		if (interaction.deviceCode !== undefined) {
+			await replaceOlderDeviceGrants(
+				services,
+				accountId,
+				{ clientId, deviceName, grantId },
+				auditContext(req),
+			);
+		}
 		services.logger.info(
 			{ accountId, clientId, ip: clientIp(req) },
 			"Device approved",

@@ -37,7 +37,7 @@ export const enAccount = {
 	"account.places.title": "Where you're signed in",
 	"account.places.more": "Show {count} more",
 	"account.places.description":
-		"Browsers, Tunelo machines and phone apps using your {brand} account. A machine that signs in again replaces its old row.",
+		"Browsers, Tunelo machines and phone apps using your {brand} account. A Tunelo machine that signs in again replaces its old row.",
 	"account.sessions.empty": "No open sessions.",
 	"account.sessions.thisBrowser": "This browser",
 	"account.sessions.signedInAt": "Signed in {date}",

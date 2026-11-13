@@ -41,7 +41,7 @@ export const viAccount: Translation<typeof enAccount> = {
 	"account.places.title": "Nơi đang đăng nhập",
 	"account.places.more": "Xem thêm {count} nơi",
 	"account.places.description":
-		"Trình duyệt, máy Tunelo và app điện thoại đang dùng tài khoản {brand} của bạn. Máy đăng nhập lại sẽ thay dòng cũ.",
+		"Trình duyệt, máy Tunelo và app điện thoại đang dùng tài khoản {brand} của bạn. Máy Tunelo đăng nhập lại sẽ thay dòng cũ.",
 	"account.sessions.empty": "Không có phiên nào.",
 	"account.sessions.thisBrowser": "Trình duyệt này",
 	"account.sessions.signedInAt": "Đăng nhập {date}",

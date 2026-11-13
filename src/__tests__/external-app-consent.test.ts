@@ -125,7 +125,8 @@ describe("consent for an app registered through DCR", () => {
 		await verify(refreshed.access_token);
 		expect(refreshed.refresh_token).not.toBe(tokens.refresh_token);
 
-		// /account lists it as an external app; localman-web stays first-party.
+		// /account lists it as an external app; our own localman-web is not
+		// listed at all.
 		const { client_id } = config.clientMetadata();
 		const account = await (
 			await browser.request(`${idp.issuer}/account`)
@@ -135,8 +136,8 @@ describe("consent for an app registered through DCR", () => {
 		expect(account).not.toContain(
 			`data-id="app-external-${STATIC_CLIENT_IDS.localmanWeb}"`,
 		);
-		expect(account).toContain(
-			'<b>Localman</b> <span class="badge badge-neutral">hoandat.com</span>',
+		expect(account).not.toContain(
+			`data-id="app-${STATIC_CLIENT_IDS.localmanWeb}"`,
 		);
 	});
 

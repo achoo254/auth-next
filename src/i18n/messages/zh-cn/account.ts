@@ -37,7 +37,7 @@ export const zhAccount: Translation<typeof enAccount> = {
 	"account.places.title": "登录位置",
 	"account.places.more": "再显示 {count} 个",
 	"account.places.description":
-		"正在使用你 {brand} 账号的浏览器、Tunelo 机器和手机应用。同一台机器重新登录会替换旧的一行。",
+		"正在使用你 {brand} 账号的浏览器、Tunelo 机器和手机应用。同一台 Tunelo 机器重新登录会替换旧的一行。",
 	"account.sessions.empty": "没有已打开的会话。",
 	"account.sessions.thisBrowser": "此浏览器",
 	"account.sessions.signedInAt": "登录于 {date}",
