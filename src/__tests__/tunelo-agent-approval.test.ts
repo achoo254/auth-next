@@ -4,7 +4,7 @@ import { LOCALES, type Locale } from "../i18n/locales.js";
 import {
 	type DeviceApprovalView,
 	renderDeviceApproval,
-} from "../interactions/device-verify-page.js";
+} from "../interactions/device-approval-page.js";
 import { STATIC_CLIENT_IDS } from "../oidc/clients.js";
 import { TUNELO_AGENT_SCOPES } from "../oidc/tunelo-agent-client.js";
 import { discoverClient } from "./helpers/flows.js";

@@ -13,8 +13,8 @@ import { notifyAccount } from "../push/notify-account.js";
 import type { AppServices } from "../services.js";
 import { sendPage } from "../ui/send-page.js";
 import { renderConsent } from "./consent-page.js";
+import { renderDeviceApproval } from "./device-approval-page.js";
 import { approvedDevice, deviceCodeOf } from "./device-info.js";
-import { renderDeviceApproval } from "./device-verify-page.js";
 import { requestedScopes, saveConsentGrant } from "./grant-builder.js";
 import {
 	type Interaction,

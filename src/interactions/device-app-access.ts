@@ -96,11 +96,18 @@ export function appAccessBlock(
 		...app,
 		granted: scopes.filter((scope) => app.scopes.includes(scope)),
 	})).filter((app) => app.granted.length > 0);
-	return html`${scopeList(i18n, general, "device-scopes")}
+	return html`<div class="device-access">
+<section class="device-group" data-id="device-group-account">
+<p class="label">${i18n.t("device.approve.onAccount")}</p>
+${scopeList(i18n, general, "device-scopes")}
+</section>
 ${apps.map(
 	(app) =>
-		html`<p class="label" data-id="device-app-${app.id}">${i18n.t("device.approve.inApp", { app: app.name })}</p>
-${scopeList(i18n, app.granted, `device-app-${app.id}-scopes`)}`,
+		html`<section class="device-group" data-id="device-group-${app.id}">
+<p class="label" data-id="device-app-${app.id}">${i18n.t("device.approve.inApp", { app: app.name })}</p>
+${scopeList(i18n, app.granted, `device-app-${app.id}-scopes`)}
+</section>`,
 )}
+</div>
 ${alertBox("warning", html`<span data-id="device-agent-warning">${i18n.t("device.approve.agentWarning")}</span>`)}`;
 }

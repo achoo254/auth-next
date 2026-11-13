@@ -14,7 +14,7 @@ import {
 import { renderAppsPage } from "../app-directory/apps-page.js";
 import type { Locale } from "../i18n/locales.js";
 import { renderConsent } from "../interactions/consent-page.js";
-import { renderDeviceApproval } from "../interactions/device-verify-page.js";
+import { renderDeviceApproval } from "../interactions/device-approval-page.js";
 import { renderErrorPage } from "../interactions/error-page.js";
 import { renderLogin, renderSignup } from "../interactions/login-page.js";
 import { renderChooseUsername } from "../interactions/upstream-pages.js";

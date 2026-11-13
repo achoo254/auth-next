@@ -92,6 +92,7 @@ export const enConsent = {
 	"device.approve.origin": "Request sent from {machine}, IP {ip}.",
 	"device.approve.ipMismatch":
 		"This request came from IP {ip}, not from the network of the browser you are using now ({here}). If you did not start it yourself on that machine, deny it.",
+	"device.approve.onAccount": "With your account, it will be able to:",
 	"device.approve.inApp": "In {app}, it will be able to:",
 	"device.approve.agentWarning":
 		"Only approve if you just ran the command on your own machine. Once approved, this machine can open tunnels and act as you in Chat and Localman until you sign it out on your account page.",

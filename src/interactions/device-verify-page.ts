@@ -1,22 +1,11 @@
 import type { Client, KoaContextWithOIDC, UnknownObject } from "oidc-provider";
 import type { MessageKey } from "../i18n/dictionaries.js";
 import type { Translator } from "../i18n/translator.js";
-import {
-	alertBox,
-	csrfField,
-	pageTitle,
-	submitButton,
-} from "../ui/components.js";
+import { alertBox, pageTitle, submitButton } from "../ui/components.js";
 import { type SafeHtml, html } from "../ui/html.js";
 import { renderPage } from "../ui/layout.js";
-import { type PageContext, koaPageContext } from "../ui/page-context.js";
-import { describeScopes } from "./consent-page.js";
-import {
-	appAccessBlock,
-	isMachineAgent,
-	requestOrigin,
-	sameIp,
-} from "./device-app-access.js";
+import { koaPageContext } from "../ui/page-context.js";
+import { isMachineAgent, sameIp } from "./device-app-access.js";
 import { deviceClientLabel, deviceIpOf, deviceNameOf } from "./device-info.js";
 import { sendKoaPage, xsrfFromProviderForm } from "./koa-page.js";
 
@@ -37,7 +26,7 @@ function inputMessage(i18n: Translator, error: Error | undefined): SafeHtml {
 }
 
 /** "tunelo on <machine>", the machine bold. */
-function deviceLabel(
+export function deviceLabel(
 	i18n: Translator,
 	label: string,
 	machine: string | undefined,
@@ -49,7 +38,7 @@ function deviceLabel(
 }
 
 /** What approving the agent is for, in one sentence. */
-function agentPurpose(i18n: Translator): SafeHtml {
+export function agentPurpose(i18n: Translator): SafeHtml {
 	return html`<p data-id="device-agent-purpose">${i18n.t("device.agent.purpose")}</p>`;
 }
 
@@ -146,49 +135,4 @@ ${alertBox("success", i18n.t("device.success.alert"))}
 <p class="auth-foot"><a class="link" href="/account" data-id="device-success-account">${i18n.t("device.success.manage")}</a></p>`;
 	const title = i18n.t("device.success.pageTitle");
 	sendKoaPage(ctx, renderPage({ title, body, page }));
-}
-
-/** Stored codes are normalised (XXXXXXXX); show them as on the device. */
-function formatUserCode(code: string): string {
-	return code.length === 8 ? `${code.slice(0, 4)}-${code.slice(4)}` : code;
-}
-
-export interface DeviceApprovalView {
-	readonly page: PageContext;
-	readonly csrf: string;
-	readonly uid: string;
-	readonly clientId: string;
-	readonly clientName?: string;
-	readonly params: UnknownObject | undefined;
-	readonly deviceInfo: UnknownObject | undefined;
-	readonly userCode?: string;
-	readonly scopes: readonly string[];
-	readonly username: string;
-	/** IP of the browser approving, compared with the device's for the agent. */
-	readonly approverIp?: string;
-}
-
-/** The "Allow tunelo on …?" page, shown after sign-in. */
-export function renderDeviceApproval(view: DeviceApprovalView): string {
-	const { i18n } = view.page;
-	const label = deviceClientLabel(view.clientId, view.clientName);
-	const machine = deviceNameOf(view.params, view.deviceInfo);
-	const ip = deviceIpOf(view.deviceInfo);
-	const agent = isMachineAgent(view.clientId);
-	const title = i18n.t("device.approve.title");
-	const body = html`${pageTitle(title, i18n.rich("common.signedInAs", { username: html`<b>@${view.username}</b>` }))}
-<p class="device-question" data-id="device-question">${i18n.rich("device.approve.question", { device: deviceLabel(i18n, label, machine) })}</p>
-${agent ? agentPurpose(i18n) : ""}
-${agent ? requestOrigin(i18n, machine, ip, view.approverIp) : ""}
-${view.userCode ? html`<p class="help">${i18n.rich("device.approve.code", { code: html`<code data-id="device-approval-code">${formatUserCode(view.userCode)}</code>` })}${ip && !agent ? html` · ${i18n.rich("device.approve.ip", { ip: html`<code>${ip}</code>` })}` : ""}</p>` : ""}
-${
-	agent
-		? appAccessBlock(i18n, view.scopes)
-		: html`<ul class="scope-list">${describeScopes(i18n, view.scopes).map((text) => html`<li>${text}</li>`)}</ul>`
-}
-<div class="auth-form">
-<form method="post" action="/interaction/${view.uid}/consent">${csrfField(view.csrf)}${submitButton(i18n.t("consent.allow"), { block: true, dataId: "device-allow" })}</form>
-<form method="post" action="/interaction/${view.uid}/abort">${csrfField(view.csrf)}${submitButton(i18n.t("consent.deny"), { block: true, variant: "secondary", dataId: "device-deny" })}</form>
-</div>`;
-	return renderPage({ title, body, page: view.page });
 }

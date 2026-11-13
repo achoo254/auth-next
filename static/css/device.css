@@ -1,0 +1,62 @@
+/* Approval page of the machine agent (interaction device approval): a
+   wider card, the request in one panel, access grouped by app in columns.
+   Colours and spacing come from tokens.css. */
+
+.auth-card-wide:has(.device-approval) {
+	max-width: 880px;
+}
+.device-approval {
+	display: grid;
+	gap: var(--space-5);
+}
+.device-request {
+	display: grid;
+	gap: var(--space-2);
+	padding: var(--space-4) var(--space-5);
+	border: 1px solid var(--c-border-subtle);
+	border-radius: var(--radius-md);
+	background: var(--c-surface-subtle);
+}
+.device-request p {
+	margin: 0;
+	font-size: 14px;
+	line-height: 1.55;
+	color: var(--c-text-muted);
+}
+.device-request .device-question {
+	font-size: 18px;
+	color: var(--c-text);
+}
+.device-request b {
+	color: var(--c-text);
+}
+.device-access {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+	gap: var(--space-3);
+	align-items: start;
+}
+.device-group {
+	display: grid;
+	gap: var(--space-2);
+	padding: var(--space-3) var(--space-4);
+	border: 1px solid var(--c-border-subtle);
+	border-radius: var(--radius-md);
+}
+.device-group .scope-list {
+	font-size: 13px;
+	line-height: 1.5;
+	padding-left: var(--space-4);
+}
+.device-actions {
+	gap: var(--space-3);
+}
+@media (min-width: 640px) {
+	.device-actions {
+		grid-template-columns: 1fr 1fr;
+	}
+	/* Deny on the left, Allow (the primary action) on the right. */
+	.device-actions > form:first-child {
+		order: 2;
+	}
+}
