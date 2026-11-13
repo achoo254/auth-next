@@ -51,8 +51,7 @@ export const zhApps: Translation<typeof enApps> = {
 	"apps.webnhanhWeb.signIn": "在网站上选择登录，即可制作并发布网站。",
 	"apps.miuWeb.description": "边玩边学数学和越南语的 3D 世界，可与朋友一起玩。",
 	"apps.miuWeb.signIn": "在网站或 iPhone、Android 应用中选择登录。",
-	"apps.tieudeWeb.description":
-		"免费帮你写些小东西的 AI 机器人，靠自愿打赏维持运行。",
+	"apps.tieudeWeb.description": "免费帮你写些小东西的 AI 机器人。",
 	"apps.tieudeWeb.signIn": "在网站上选择登录，即可获得更多免费次数。",
 	"apps.tuviWeb.description":
 		"用越南语排紫微斗数命盘，并导出图片分享；仅供娱乐。",

@@ -181,7 +181,7 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <div class="app-card-heading"><h3 class="app-card-name">Tiểu Đệ</h3>
 <p class="app-card-meta"><span class="badge badge-neutral">Web app</span><span class="mono">tieude.hoandat.com</span></p></div>
 </div>
-<p class="app-card-desc">An AI bot that does small writing jobs for free and lives on voluntary tips.</p>
+<p class="app-card-desc">An AI bot that does small writing jobs for free.</p>
 <div class="app-card-how"><p class="app-card-how-label">How to sign in</p><p>Choose Sign in on the site to get more free uses.</p></div>
 <div class="app-card-foot"><a class="btn btn-secondary" href="https://tieude.hoandat.com" data-id="app-open-tieude-web">Open</a></div>
 </li><li class="app-card tone-violet" data-id="app-tuvi-web">
@@ -395,7 +395,7 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <div class="app-card-heading"><h3 class="app-card-name">Tiểu Đệ</h3>
 <p class="app-card-meta"><span class="badge badge-neutral">Ứng dụng web</span><span class="mono">tieude.hoandat.com</span></p></div>
 </div>
-<p class="app-card-desc">Bot AI làm giúp miễn phí các việc viết nhỏ, sống nhờ tiền ủng hộ tự nguyện.</p>
+<p class="app-card-desc">Bot AI làm giúp miễn phí các việc viết nhỏ.</p>
 <div class="app-card-how"><p class="app-card-how-label">Cách đăng nhập</p><p>Chọn Đăng nhập trên trang để có thêm lượt dùng miễn phí.</p></div>
 <div class="app-card-foot"><a class="btn btn-secondary" href="https://tieude.hoandat.com" data-id="app-open-tieude-web">Mở</a></div>
 </li><li class="app-card tone-violet" data-id="app-tuvi-web">
@@ -609,7 +609,7 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 <div class="app-card-heading"><h3 class="app-card-name">Tiểu Đệ</h3>
 <p class="app-card-meta"><span class="badge badge-neutral">网页应用</span><span class="mono">tieude.hoandat.com</span></p></div>
 </div>
-<p class="app-card-desc">免费帮你写些小东西的 AI 机器人，靠自愿打赏维持运行。</p>
+<p class="app-card-desc">免费帮你写些小东西的 AI 机器人。</p>
 <div class="app-card-how"><p class="app-card-how-label">登录方式</p><p>在网站上选择登录，即可获得更多免费次数。</p></div>
 <div class="app-card-foot"><a class="btn btn-secondary" href="https://tieude.hoandat.com" data-id="app-open-tieude-web">打开</a></div>
 </li><li class="app-card tone-violet" data-id="app-tuvi-web">
@@ -1629,7 +1629,7 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in en 
   "apps.steps.provider.title": "Continue with Google, GitHub or Apple",
   "apps.steps.title": "How sign-in works",
   "apps.subtitle": "Sign in once with Google, GitHub or Apple and use the same account in every app below.",
-  "apps.tieudeWeb.description": "An AI bot that does small writing jobs for free and lives on voluntary tips.",
+  "apps.tieudeWeb.description": "An AI bot that does small writing jobs for free.",
   "apps.tieudeWeb.signIn": "Choose Sign in on the site to get more free uses.",
   "apps.title": "One account for every hoandat.com app",
   "apps.trust.control": "You choose which apps get access",
@@ -2001,7 +2001,7 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in vi 
   "apps.steps.provider.title": "Tiếp tục với Google, GitHub hoặc Apple",
   "apps.steps.title": "Đăng nhập diễn ra thế nào",
   "apps.subtitle": "Đăng nhập một lần bằng Google, GitHub hoặc Apple, rồi dùng cùng tài khoản đó trong mọi ứng dụng bên dưới.",
-  "apps.tieudeWeb.description": "Bot AI làm giúp miễn phí các việc viết nhỏ, sống nhờ tiền ủng hộ tự nguyện.",
+  "apps.tieudeWeb.description": "Bot AI làm giúp miễn phí các việc viết nhỏ.",
   "apps.tieudeWeb.signIn": "Chọn Đăng nhập trên trang để có thêm lượt dùng miễn phí.",
   "apps.title": "Một tài khoản cho mọi ứng dụng hoandat.com",
   "apps.trust.control": "Bạn chọn ứng dụng nào được quyền truy cập",
@@ -2373,7 +2373,7 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in zh-
   "apps.steps.provider.title": "使用 Google、GitHub 或 Apple 继续",
   "apps.steps.title": "登录流程",
   "apps.subtitle": "用 Google、GitHub 或 Apple 登录一次，即可在下方所有应用中使用同一个账号。",
-  "apps.tieudeWeb.description": "免费帮你写些小东西的 AI 机器人，靠自愿打赏维持运行。",
+  "apps.tieudeWeb.description": "免费帮你写些小东西的 AI 机器人。",
   "apps.tieudeWeb.signIn": "在网站上选择登录，即可获得更多免费次数。",
   "apps.title": "一个账号，通用所有 hoandat.com 应用",
   "apps.trust.control": "由你决定哪些应用可以访问",

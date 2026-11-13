@@ -57,8 +57,7 @@ export const viApps: Translation<typeof enApps> = {
 		"Thế giới 3D vừa chơi vừa học Toán và Tiếng Việt, chơi cùng bạn bè.",
 	"apps.miuWeb.signIn":
 		"Chọn Đăng nhập trên trang hoặc trong app iPhone, Android.",
-	"apps.tieudeWeb.description":
-		"Bot AI làm giúp miễn phí các việc viết nhỏ, sống nhờ tiền ủng hộ tự nguyện.",
+	"apps.tieudeWeb.description": "Bot AI làm giúp miễn phí các việc viết nhỏ.",
 	"apps.tieudeWeb.signIn":
 		"Chọn Đăng nhập trên trang để có thêm lượt dùng miễn phí.",
 	"apps.tuviWeb.description":
