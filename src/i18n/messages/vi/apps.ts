@@ -73,6 +73,10 @@ export const viApps: Translation<typeof enApps> = {
 	"apps.lockinWeb.description": "Chốt kèo đi chơi với nhóm bạn bằng một link.",
 	"apps.lockinWeb.signIn":
 		"Chọn Đăng nhập trên trang để tạo kèo; bạn bè vào bằng link, không cần tài khoản.",
+	"apps.chuanhoWeb.description":
+		"Sân chùa nhỏ để thắp hương, gõ mõ theo nhạc lofi và thả lỏng.",
+	"apps.chuanhoWeb.signIn":
+		"Chơi ngay không cần tài khoản; chọn Đăng nhập trên trang để giữ công đức và phòng trên mọi máy.",
 	"apps.kbWeb.description":
 		"Kho tri thức song ngữ về đủ mọi chủ đề, xếp thành một vũ trụ để đọc, tìm và hỏi AI.",
 	"apps.kbWeb.signIn":

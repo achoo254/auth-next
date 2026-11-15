@@ -2,7 +2,7 @@ import { randomBytes } from "node:crypto";
 
 /*
  * Client secrets and local origins of the primary-tenant apps (Scribe, Miu
- * World, Tiểu Đệ, Tử Vi, Clip, Web Nhanh, Truyện, Lockin, Knowledge Base) in the test IdP: all their clients exist.
+ * World, Tiểu Đệ, Tử Vi, Clip, Web Nhanh, Truyện, Lockin, Chùa Nhỏ, Knowledge Base) in the test IdP: all their clients exist.
  */
 
 export const SCRIBE_WEB_SECRET = randomBytes(32).toString("base64url");
@@ -26,6 +26,8 @@ export const TRUYEN_WEB_SECRET = randomBytes(32).toString("base64url");
 export const TRUYEN_WEB_URL = "https://truyen.hoandat.com";
 export const LOCKIN_WEB_SECRET = randomBytes(32).toString("base64url");
 export const LOCKIN_WEB_URL = "https://lockin.hoandat.com";
+export const CHUANHO_WEB_SECRET = randomBytes(32).toString("base64url");
+export const CHUANHO_WEB_URL = "https://chuanho.hoandat.com";
 export const KB_WEB_SECRET = randomBytes(32).toString("base64url");
 export const KB_WEB_URL = "https://kb.hoandat.com";
 export const KB_WEB_DEV_SECRET = randomBytes(32).toString("base64url");
@@ -46,6 +48,8 @@ export const PRIMARY_APP_TEST_ENV = {
 	TRUYEN_WEB_CLIENT_SECRET: TRUYEN_WEB_SECRET,
 	LOCKIN_WEB_URL,
 	LOCKIN_WEB_CLIENT_SECRET: LOCKIN_WEB_SECRET,
+	CHUANHO_WEB_URL,
+	CHUANHO_WEB_CLIENT_SECRET: CHUANHO_WEB_SECRET,
 	KB_WEB_URL,
 	KB_WEB_CLIENT_SECRET: KB_WEB_SECRET,
 	KB_WEB_DEV_URL,

@@ -65,6 +65,10 @@ export const zhApps: Translation<typeof enApps> = {
 	"apps.lockinWeb.description": "用一个链接和朋友敲定出游计划。",
 	"apps.lockinWeb.signIn":
 		"在网站上选择登录，即可发起计划；朋友通过链接加入，无需账号。",
+	"apps.chuanhoWeb.description":
+		"一座小小的寺院庭院：上香、跟着 lofi 节奏敲木鱼、放松心情。",
+	"apps.chuanhoWeb.signIn":
+		"无需账号即可游玩；在网站上选择登录，即可在任何设备上保留功德和房间。",
 	"apps.kbWeb.description":
 		"涵盖各类主题的双语知识库，汇成一个宇宙，供你阅读、搜索并向 AI 提问。",
 	"apps.kbWeb.signIn":

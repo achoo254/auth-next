@@ -271,6 +271,33 @@ describe("app list page", () => {
 		);
 	});
 
+	it("lists Chùa Nhỏ as a fun app with its mark once its client is configured", () => {
+		const chuanho = "https://chuanho.staging.example";
+		const withChuanho = {
+			...STAGING,
+			webApps: { ...STAGING.webApps, chuanho },
+		};
+		const html = renderAppsPage(withChuanho, testPage("en", "/apps"));
+		expect(html).toContain('data-id="app-open-chuanho-web"');
+		expect(html).toContain(`href="${chuanho}"`);
+		expect(html).toContain("/assets/img/apps/chuanho-mark-128.webp");
+		expect(existsSync(`${STATIC_DIR}/img/apps/chuanho-mark-128.webp`)).toBe(
+			true,
+		);
+		expect(html).toContain("light incense, tap the wooden bell");
+		const fun = html.slice(html.indexOf('data-id="apps-group-fun"'));
+		expect(fun).toContain('data-id="app-chuanho-web"');
+		expect(renderAppsPage(withChuanho, testPage("vi", "/apps"))).toContain(
+			"Sân chùa nhỏ để thắp hương, gõ mõ theo nhạc lofi",
+		);
+		expect(renderAppsPage(withChuanho, testPage("zh-CN", "/apps"))).toContain(
+			"敲木鱼",
+		);
+		expect(renderAppsPage(STAGING, testPage("en", "/apps"))).not.toContain(
+			'data-id="app-chuanho-web"',
+		);
+	});
+
 	it("ends every page with the brand's home link and the privacy policy", () => {
 		const html = renderAppsPage(STAGING, testPage("vi", "/apps"));
 		expect(html).toContain(

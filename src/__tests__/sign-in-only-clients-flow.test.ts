@@ -17,6 +17,8 @@ import { createTestAccount, repositoryOf } from "./helpers/test-accounts.js";
 import type { TestAccount } from "./helpers/test-accounts.js";
 import type { TestBrowser } from "./helpers/test-browser.js";
 import {
+	CHUANHO_WEB_SECRET,
+	CHUANHO_WEB_URL,
 	CLIP_WEB_SECRET,
 	CLIP_WEB_URL,
 	LOCKIN_WEB_SECRET,
@@ -38,7 +40,7 @@ import { OTHER_TEST_TENANT } from "./helpers/test-tenant.js";
 const PROFILE_SCOPE = "openid profile email";
 
 /**
- * Tiểu Đệ, Tử Vi, Clip, Web Nhanh, Truyện and Lockin sign visitors in to
+ * Tiểu Đệ, Tử Vi, Clip, Web Nhanh, Truyện, Lockin and Chùa Nhỏ sign visitors in to
  * learn they have an account: a confidential web client, no refresh token, no API resource.
  * Tiểu Đệ asks for `openid` alone; the others also for the name, picture
  * and email of their account menu.
@@ -97,6 +99,15 @@ const APPS = [
 		url: LOCKIN_WEB_URL,
 		secret: LOCKIN_WEB_SECRET,
 		env: "LOCKIN",
+	},
+	{
+		app: "chuanho",
+		scope: PROFILE_SCOPE,
+		name: "Chùa Nhỏ",
+		clientId: STATIC_CLIENT_IDS.chuanhoWeb,
+		url: CHUANHO_WEB_URL,
+		secret: CHUANHO_WEB_SECRET,
+		env: "CHUANHO",
 	},
 ] as const;
 

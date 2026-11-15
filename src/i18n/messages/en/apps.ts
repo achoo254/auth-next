@@ -73,6 +73,10 @@ export const enApps = {
 		"Lock in hangout plans with your friends through one link.",
 	"apps.lockinWeb.signIn":
 		"Choose Sign in on the site to create a plan; friends join through the link without an account.",
+	"apps.chuanhoWeb.description":
+		"A small temple courtyard: light incense, tap the wooden bell to lofi beats and unwind.",
+	"apps.chuanhoWeb.signIn":
+		"Play as a guest; choose Sign in on the site to keep your merit and rooms on every device.",
 	"apps.kbWeb.description":
 		"Bilingual articles on all kinds of topics, laid out as one universe to read, search and ask AI.",
 	"apps.kbWeb.signIn":
