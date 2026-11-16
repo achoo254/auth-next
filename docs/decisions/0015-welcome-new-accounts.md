@@ -45,5 +45,6 @@ Ba thẻ cùng lúc ít người bấm, và Chat, Chùa Nhỏ, Clip, KB, Truyệ
    mới như cũ. Thẻ có câu giới thiệu riêng (`welcome.pitch.*`), app khác dùng câu của danh bạ app.
 3. Nút chính "Quay lại <app>" vẫn là POST có CSRF tới `finishLogin`, giữ nguyên luồng OIDC.
 4. Chỉ một lần: cờ `welcomedAt` trên tài khoản, đặt có điều kiện (`markWelcomed`) lúc giữ lần đăng nhập; đã có cờ
-   thì hoàn tất ngay. Bỏ qua màn này khi `WELCOME_PAGE_ENABLED=false`, khi tenant chưa cấu hình app được gợi ý, và ở
-   app điện thoại như trước.
+   thì hoàn tất ngay; ghi cờ lỗi (MongoDB) thì ghi log và hoàn tất ngay, tài khoản mới không bao giờ dừng ở trang lỗi.
+   Tenant chưa cấu hình app được ghép thì gợi ý Web Nhanh, rồi app đầu tiên đã cấu hình (không bao giờ chính app gốc).
+   Bỏ qua màn này khi `WELCOME_PAGE_ENABLED=false`, khi không còn app nào khác để gợi ý, và ở app điện thoại như trước.

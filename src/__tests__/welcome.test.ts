@@ -1,5 +1,5 @@
 import * as client from "openid-client";
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import { auditOutboxCollection } from "../audit/audit-outbox.js";
 import {
 	originAppOf,
@@ -249,13 +249,32 @@ describe("welcome page", () => {
 		expect(originAppOf(undefined)).toBeUndefined();
 	});
 
-	it("suggests nothing when the tenant has not configured the paired app", () => {
+	it("falls back to Web Nhanh, then the first configured app, never the origin", () => {
+		const webApps = idp.tenant.webApps;
 		expect(
 			welcomeSuggestion(
-				{ webApps: { ...idp.tenant.webApps, truyen: undefined } },
+				{ webApps: { ...webApps, truyen: undefined } },
 				"tuvi-web",
-			),
+			)?.key,
+		).toBe("webnhanh");
+		expect(
+			welcomeSuggestion(
+				{ webApps: { ...webApps, kb: undefined } },
+				"webnhanh-web",
+			)?.key,
+		).toBe("scribe");
+		const onlyTuvi = {
+			localman: webApps.localman,
+			tunelo: webApps.tunelo,
+			chat: webApps.chat,
+			tuvi: webApps.tuvi,
+		};
+		expect(
+			welcomeSuggestion({ webApps: onlyTuvi }, "tuvi-web"),
 		).toBeUndefined();
+		expect(welcomeSuggestion({ webApps: onlyTuvi }, "chat-web")?.key).toBe(
+			"tuvi",
+		);
 	});
 });
 
@@ -299,6 +318,42 @@ describe("welcome screen switched off", () => {
 			expect(account?.welcomedAt).toBeUndefined();
 		} finally {
 			await off.close();
+		}
+	});
+});
+
+describe("welcome flag that cannot be written", () => {
+	it("finishes the sign-in back to the app instead of failing", async () => {
+		const failing = vi
+			.spyOn(repositoryOf(idp), "markWelcomed")
+			.mockRejectedValueOnce(new Error("mongo down"));
+		try {
+			const { page, response } = await signInWith(idp, "google", {
+				id: "g-welcome-flag-error",
+				email: "welcome_flag_error@example.com",
+				emailVerified: true,
+			});
+			const posted = await page.browser.request(
+				`${idp.issuer}/interaction/${page.uid}/upstream/signup`,
+				{
+					form: {
+						csrf: formField(await response.text(), "csrf"),
+						username: "welcome_flag_error",
+					},
+				},
+			);
+			expect(posted.status).toBe(303);
+			expect(posted.headers.get("location")).not.toContain("/welcome");
+			expect(failing).toHaveBeenCalledOnce();
+			const account = await repositoryOf(idp).findByProvider(
+				"google",
+				"g-welcome-flag-error",
+			);
+			expect(await loginsOf(account?._id)).toEqual([
+				{ methods: ["fed", "google"] },
+			]);
+		} finally {
+			failing.mockRestore();
 		}
 	});
 });

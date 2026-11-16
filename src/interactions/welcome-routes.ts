@@ -42,13 +42,33 @@ async function signsInInAppSheet(
 }
 
 /**
+ * Sets the account's welcome flag; false (no welcome page) when it was set
+ * already or the write fails, which is logged without the account's data.
+ */
+async function markWelcomedOrSkip(
+	services: AppServices,
+	accountId: string,
+): Promise<boolean> {
+	try {
+		return await services.accounts.markWelcomed(accountId);
+	} catch (error) {
+		services.logger.warn(
+			{ accountId, err: error },
+			"Welcome flag not written; the sign-in finishes without the welcome page",
+		);
+		return false;
+	}
+}
+
+/**
  * Right after `accountId` was created in this interaction: holds its
  * sign-in server-side (keyed by the interaction uid, never by anything the
  * browser sends) and shows the welcome screen. Its button finishes the
  * sign-in through finishLogin. It finishes at once, as before, when the
  * page is switched off (WELCOME_PAGE_ENABLED=false), in our phone apps,
- * when the tenant has not configured the suggested app, and for an account
- * already welcomed (the `welcomedAt` flag, set here, so never twice).
+ * when the tenant has no other app to suggest, for an account already
+ * welcomed (the `welcomedAt` flag, set here, so never twice), and when that
+ * flag cannot be written: the new account must never end on an error.
  */
 export async function welcomeNewAccount(
 	services: AppServices,
@@ -62,7 +82,7 @@ export async function welcomeNewAccount(
 		!services.welcomePage ||
 		!welcomeSuggestion(services.tenant, interactionClientId(interaction)) ||
 		(await signsInInAppSheet(services, interaction)) ||
-		!(await services.accounts.markWelcomed(accountId))
+		!(await markWelcomedOrSkip(services, accountId))
 	) {
 		await finishUpstream(services, req, res, interaction, accountId, profile);
 		return;

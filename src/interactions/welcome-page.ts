@@ -1,4 +1,5 @@
 import {
+	CROSS_SELL_FALLBACK,
 	crossSellHref,
 	crossSellSuggestion,
 } from "@achoo254/app-switcher/cross-sell";
@@ -54,17 +55,25 @@ export interface WelcomeSuggestion {
 }
 
 /**
- * The app suggested to an account made from `clientId` (the shared
- * pairing of @achoo254/app-switcher), or undefined when this tenant has
- * not configured that app.
+ * The app suggested to an account made from `clientId`: the shared pairing
+ * of @achoo254/app-switcher; when this tenant has not configured that app,
+ * the shared fallback (Web Nhanh), then the first configured app. Never
+ * the origin app itself; undefined only when no other app is configured.
  */
 export function welcomeSuggestion(
 	tenant: Pick<Tenant, "webApps">,
 	clientId: string | undefined,
 ): WelcomeSuggestion | undefined {
 	const origin = originAppOf(clientId);
-	const key = crossSellSuggestion(origin);
-	const app = OPTIONAL_WEB_APPS.find((entry) => entry.key === key);
+	const preferred: readonly string[] = [
+		crossSellSuggestion(origin),
+		CROSS_SELL_FALLBACK,
+		...OPTIONAL_WEB_APPS.map((entry) => entry.key),
+	];
+	const app = preferred
+		.filter((key) => key !== origin)
+		.map((key) => OPTIONAL_WEB_APPS.find((entry) => entry.key === key))
+		.find((entry) => entry !== undefined && tenant.webApps[entry.key]);
 	const address = app ? tenant.webApps[app.key] : undefined;
 	if (!app || !address) return undefined;
 	return {
