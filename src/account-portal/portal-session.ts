@@ -1,5 +1,6 @@
 import { createHash, randomBytes, timingSafeEqual } from "node:crypto";
 import type { Request, RequestHandler, Response } from "express";
+import { signupUtmTags } from "../accounts/signup-source.js";
 import type { AccountDocument } from "../accounts/user-model.js";
 import { readCookie } from "../http/cookies.js";
 import {
@@ -75,6 +76,8 @@ export function redirectToPortalLogin(
 		readonly returnTo?: string;
 		/** A sign-up link (`/account?signup=1`, e.g. hoandat.com's "free account" button): open on making an account. */
 		readonly signUp?: boolean;
+		/** The sign-up link's `utm_*` tags, passed on so the new account records them. */
+		readonly signupTags?: Readonly<Record<string, string>>;
 	} = {},
 ): void {
 	const verifier = randomBytes(32).toString("base64url");
@@ -94,6 +97,7 @@ export function redirectToPortalLogin(
 				? { prompt: "create" }
 				: {}),
 		state: options.reauthenticate ? `${REAUTH_STATE_PREFIX}${nonce}` : nonce,
+		...(options.signUp && !options.reauthenticate ? options.signupTags : {}),
 	}).toString();
 	res.cookie(portalStateCookie(services), nonce, {
 		...portalStateCookieOptions(services),
@@ -154,6 +158,7 @@ export function portalRoute(
 					redirectToPortalLogin(services, res, {
 						returnTo,
 						signUp: req.query.signup === "1",
+						signupTags: signupUtmTags(req.query),
 					});
 				else
 					res.redirect(

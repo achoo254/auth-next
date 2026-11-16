@@ -2,6 +2,7 @@ import type { Router } from "express";
 import { AccountConflictError } from "../accounts/account-conflicts.js";
 import { decideUpstreamLogin } from "../accounts/account-linking.js";
 import { providerDetail } from "../accounts/provider-link.js";
+import { signupSourceOf } from "../accounts/signup-source.js";
 import { isValidUsername, normalizeUsername } from "../accounts/user-model.js";
 import { formText } from "../http/form.js";
 import type { MessageKey } from "../i18n/dictionaries.js";
@@ -91,6 +92,7 @@ export function registerUpstreamFinishRoutes(
 					providerDetails: { [profile.provider]: providerDetail(profile) },
 					name: profile.name,
 					picture: profile.picture,
+					signupSource: signupSourceOf(interaction.params),
 				});
 				services.logger.info(
 					{ accountId: account._id, provider: profile.provider },

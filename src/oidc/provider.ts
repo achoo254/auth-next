@@ -1,5 +1,6 @@
 import type { Db } from "mongodb";
 import Provider, { type Configuration } from "oidc-provider";
+import { SIGNUP_SOURCE_EXTRA_PARAMS } from "../accounts/signup-source.js";
 import { LOCALES } from "../i18n/locales.js";
 import { DEVICE_NAME_EXTRA_PARAM } from "../interactions/device-info.js";
 import { renderProviderError } from "../interactions/error-page.js";
@@ -176,8 +177,9 @@ export function buildProviderConfiguration(
 			prompt_values_supported: promptValuesSupported(policy),
 			ui_locales_supported: [...LOCALES],
 		},
-		// Tunelo CLI names the machine so the approval page can show it.
-		extraParams: DEVICE_NAME_EXTRA_PARAM,
+		// Tunelo CLI names the machine so the approval page can show it; apps
+		// may tag a sign-up with where it came from (never rejected).
+		extraParams: { ...DEVICE_NAME_EXTRA_PARAM, ...SIGNUP_SOURCE_EXTRA_PARAMS },
 		renderError: renderProviderError,
 		formats: {
 			customizers: {

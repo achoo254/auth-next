@@ -95,6 +95,19 @@ export interface AccountDocument {
 	disabledAt?: Date;
 	/** Made by the review-only password sign-in (ADR 0010), the only one it opens. */
 	reviewLogin?: true;
+	/**
+	 * Where the account was made (`signup-source.ts`); absent on accounts
+	 * made before it was recorded and on the review account.
+	 */
+	signupSource?: SignupSource;
+}
+
+/** The client whose authorization request made the account, and the tags it passed on. */
+export interface SignupSource {
+	client: string;
+	utmSource?: string;
+	utmMedium?: string;
+	utmCampaign?: string;
 }
 
 export const ACCOUNTS_COLLECTION = "accounts";
