@@ -98,6 +98,15 @@ describe("growth numbers", () => {
 			newLast7d: 2,
 			active14d: 2,
 			regular14d: 1,
+			signupSources: {
+				last7d: [
+					{ client: null, utmSource: null, utmCampaign: null, count: 2 },
+				],
+				last30d: [
+					{ client: null, utmSource: null, utmCampaign: null, count: 2 },
+				],
+			},
+			activation: { cohortSignedUp: 1, cohortActivated: 0, activatedTotal: 0 },
 		});
 	});
 
