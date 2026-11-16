@@ -34,3 +34,15 @@ Ba cách đã cân nhắc (Jev chọn, đại ca duyệt 31/10/2026):
 
 - Tiểu Đệ gọi `http://127.0.0.1:4500/internal/growth-numbers` với header `Host` của IdP mỗi ngày.
 - Sửa nginx trên `.65` cùng lần deploy có route (`infra/deploy.sh` không chép nginx; xem `docs/deployment-guide.md`).
+
+## Bổ sung 16/11/2026: nguồn đăng ký và kích hoạt
+
+Thêm trường (không đổi trường cũ; Tiểu Đệ kiểm chúng), cùng route, cùng hai lớp chặn (`src/usage/growth-funnel.ts`):
+
+- `signupSources.last7d` / `last30d`: tài khoản mới từ 00:00 Sài Gòn của 7 (30) ngày gần nhất, kể cả hôm nay, gộp theo
+  `{client, utmSource, utmCampaign, count}` từ `signupSource` của tài khoản (`src/accounts/signup-source.ts`); tài khoản
+  trước 16/11/2026 không có nguồn nên ra `null`.
+- `activation`: `cohortSignedUp`/`cohortActivated` cho tài khoản tạo trong khoảng 37 tới 7 ngày trước; `activatedTotal`
+  cho mọi tài khoản. Kích hoạt là có lượt vào app (không tính trang của IdP, như `regular14d`) ở ngày Sài Gòn thứ 1 tới 7
+  sau ngày tạo tài khoản. Người duyệt App Store bị loại. `client_usage` giữ 400 ngày nên `activatedTotal` không thấy
+  tài khoản cũ hơn thế.
