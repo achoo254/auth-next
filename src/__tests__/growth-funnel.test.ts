@@ -139,7 +139,7 @@ describe("activation", () => {
 	const app = "tuvi-web";
 
 	it("counts app use on Saigon day 1 to 7 after the sign-up day", async () => {
-		// 20:00 Saigon on 20 October, inside the cohort (10 Oct to 9 Nov).
+		// 20:00 Saigon on 20 October, inside the cohort (10 Oct to 8 Nov).
 		const made = at("2026-10-20T13:00:00Z");
 		// Later the same Saigon day: not activated.
 		const sameDay = await account(T, made);
@@ -178,6 +178,19 @@ describe("activation", () => {
 			cohortSignedUp: 6,
 			cohortActivated: 2,
 			activatedTotal: 4,
+		});
+	});
+
+	it("takes whole Saigon days into the cohort", async () => {
+		const B = { id: "t-funnel-bounds" };
+		// The cohort is 10 October 00:00 to 9 November 00:00 Saigon (exclusive).
+		await account(B, at("2026-10-09T16:30:00Z")); // 9 Oct 23:30: before it
+		await account(B, at("2026-10-09T17:30:00Z")); // 10 Oct 00:30: first day
+		await account(B, at("2026-11-08T16:30:00Z")); // 8 Nov 23:30: last day
+		// 9 Nov 00:30, under 7×24 h ago but its day 7 (16 Nov) is today: not yet.
+		await account(B, at("2026-11-08T17:30:00Z"));
+		expect(await activation({ db, tenant: B }, NOW)).toMatchObject({
+			cohortSignedUp: 2,
 		});
 	});
 

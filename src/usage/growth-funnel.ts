@@ -11,12 +11,15 @@ import { IDP_OWN_CLIENT_IDS } from "./usage-apps.js";
  * left out like everywhere in the growth numbers.
  */
 
-const DAY_MS = 24 * 60 * 60 * 1000;
 const OFFSET_MS = 7 * 60 * 60 * 1000;
 
 /** An account is activated by using an app on Saigon day 1 to 7 after the day it was made. */
 export const ACTIVATION_LAST_DAY = 7;
-/** The cohort: accounts made 37 to 7 days ago, so each had its whole week. */
+/**
+ * The cohort: accounts made on the 30 Saigon days that end 8 days ago
+ * (00:00 Saigon 37 days before today up to 00:00 Saigon 7 days before
+ * today, exclusive), so each had its whole week.
+ */
 export const ACTIVATION_COHORT_DAYS = 30;
 
 export interface SignupSourceCount {
@@ -119,15 +122,19 @@ const SAIGON_DAYS_AFTER_SIGNUP: Document = {
  * Activated: the account signed in to an app (not the IdP's own pages,
  * same rule as `regular14d`) on a Saigon day strictly after the day it was
  * made and at most ACTIVATION_LAST_DAY days after it. Counted for the
- * cohort made between 37 and 7 days ago and for every account ever.
+ * cohort and for every account whose use is still in `client_usage`
+ * (kept CLIENT_USAGE_RETENTION_DAYS days).
  */
 export async function activation(
 	tenantDb: TenantDb,
 	now: Date,
 ): Promise<Activation> {
-	const cohortTo = new Date(now.getTime() - ACTIVATION_LAST_DAY * DAY_MS);
-	const cohortFrom = new Date(
-		cohortTo.getTime() - ACTIVATION_COHORT_DAYS * DAY_MS,
+	// Whole Saigon days: the cohort's last sign-up day is 8 days ago, so its
+	// day 7 is yesterday at the latest and every account had its full week.
+	const cohortTo = saigonDaysStart(now, ACTIVATION_LAST_DAY + 1);
+	const cohortFrom = saigonDaysStart(
+		now,
+		ACTIVATION_LAST_DAY + 1 + ACTIVATION_COHORT_DAYS,
 	);
 	const [row] = await accountsCollection(tenantDb.db)
 		.aggregate<Activation>([
@@ -166,7 +173,7 @@ export async function activation(
 					cohort: {
 						$and: [
 							{ $gte: ["$createdAt", cohortFrom] },
-							{ $lte: ["$createdAt", cohortTo] },
+							{ $lt: ["$createdAt", cohortTo] },
 						],
 					},
 					activated: { $gt: [{ $size: "$activations" }, 0] },

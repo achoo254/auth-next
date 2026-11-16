@@ -41,8 +41,14 @@ Thêm trường (không đổi trường cũ; Tiểu Đệ kiểm chúng), cùng
 
 - `signupSources.last7d` / `last30d`: tài khoản mới từ 00:00 Sài Gòn của 7 (30) ngày gần nhất, kể cả hôm nay, gộp theo
   `{client, utmSource, utmCampaign, count}` từ `signupSource` của tài khoản (`src/accounts/signup-source.ts`); tài khoản
-  trước 16/11/2026 không có nguồn nên ra `null`.
-- `activation`: `cohortSignedUp`/`cohortActivated` cho tài khoản tạo trong khoảng 37 tới 7 ngày trước; `activatedTotal`
-  cho mọi tài khoản. Kích hoạt là có lượt vào app (không tính trang của IdP, như `regular14d`) ở ngày Sài Gòn thứ 1 tới 7
-  sau ngày tạo tài khoản. Người duyệt App Store bị loại. `client_usage` giữ 400 ngày nên `activatedTotal` không thấy
-  tài khoản cũ hơn thế.
+  trước 16/11/2026 không có nguồn nên ra `null`. `newLast7d` cũ vẫn tính 7×24 giờ lùi từ lúc gọi, nên tổng `count` của
+  `last7d` và `newLast7d` không nhất thiết khớp nhau.
+- `activation`: cohort là tài khoản tạo trong 30 ngày Sài Gòn trọn vẹn kết thúc 8 ngày trước (từ 00:00 ngày hôm nay − 37
+  tới trước 00:00 ngày hôm nay − 7), để ai trong cohort cũng đã qua đủ ngày thứ 7; `cohortSignedUp`/`cohortActivated`
+  đếm trên cohort đó, `activatedTotal` trên mọi tài khoản. Kích hoạt là có lượt vào app (không tính trang của IdP, như
+  `regular14d`) ở ngày Sài Gòn thứ 1 tới 7 sau ngày tạo tài khoản. Người duyệt App Store bị loại.
+- Giới hạn: kích hoạt đọc từ `client_usage`, mà TTL xoá lượt vào app sau 400 ngày (ADR 0011). Tài khoản kích hoạt hơn
+  400 ngày trước sẽ rơi khỏi `activatedTotal`; chấp nhận vì mục tiêu tính tới 31/12/2026 và `client_usage` mới có từ ADR 0011.
+  Cần số trọn đời thì lưu `activatedAt` trên tài khoản (chưa làm).
+- Thẻ UTM lặp lại trên chính authorization request bị `invalid_request` như mọi tham số lặp của `oidc-provider`;
+  `/account?signup=1` chỉ chuyển tiếp giá trị đầu tiên.

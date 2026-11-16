@@ -195,7 +195,7 @@ const TENANT_UNIQUE_KEYS = [
 ] as const;
 
 /**
- * Creates the per-tenant unique indexes. The global unique indexes of the
+ * Creates the per-tenant unique indexes and the creation-time index. The global unique indexes of the
  * single-tenant era are dropped by the startup migration
  * (tenant-migration.ts), once every account carries a `tenantId`.
  */
@@ -205,8 +205,8 @@ export async function ensureAccountIndexes(db: Db): Promise<void> {
 	// several accounts without an email; replace it with the partial one.
 	const legacy = await accounts.indexExists("email_1").catch(() => false);
 	if (legacy) await accounts.dropIndex("email_1");
-	await Promise.all(
-		TENANT_UNIQUE_KEYS.map(({ key, name }) =>
+	await Promise.all([
+		...TENANT_UNIQUE_KEYS.map(({ key, name }) =>
 			accounts.createIndex(
 				{ tenantId: 1, [key]: 1 },
 				key === "username"
@@ -218,5 +218,10 @@ export async function ensureAccountIndexes(db: Db): Promise<void> {
 						},
 			),
 		),
-	);
+		// New accounts in a time window (growth numbers, growth report).
+		accounts.createIndex(
+			{ tenantId: 1, createdAt: 1 },
+			{ name: "tenant_created_at" },
+		),
+	]);
 }
