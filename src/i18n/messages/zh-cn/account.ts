@@ -41,6 +41,7 @@ export const zhAccount: Translation<typeof enAccount> = {
 	"account.sessions.empty": "没有已打开的会话。",
 	"account.sessions.thisBrowser": "此浏览器",
 	"account.sessions.signedInAt": "登录于 {date}",
+	"account.sessions.refreshedAt": "最近续期于 {date}",
 	"account.sessions.signOutThis": "退出此浏览器",
 	"account.sessions.signOut": "退出",
 	"account.sessions.signOutOthers": "退出其他所有浏览器",

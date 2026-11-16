@@ -72,9 +72,12 @@ export function refreshTokenTtl(
  * revokes the grant), and a successful refresh slides the grant: it now
  * expires 30 days after this refresh, capped at 90 days after sign-in
  * (see `hasHardCap`; a device grant also slides its metadata).
+ * Every refresh of a device grant also stamps `lastRefreshAt` on its
+ * metadata, even when the expiry did not move, so /account shows which
+ * machine stopped renewing.
  * oidc-provider calls this after the presented token and its grant passed
  * validation and before the new token is issued, and awaits it, so the new
- * expiry is stored before the response. The update only touches a grant
+ * expiry is stored before the response. The updates only touch a grant
  * that still exists (no upsert), so a grant revoked meanwhile stays gone.
  */
 export function createRotateAndSlideGrant({
@@ -86,28 +89,34 @@ export function createRotateAndSlideGrant({
 	const scope = inTenant(tenant);
 	return async (ctx) => {
 		const grant = ctx.oidc.entities.Grant;
-		if (grant?.iat && grant.jti) {
-			const now = epochNow();
-			const capped = hasHardCap(grant.clientId);
-			const exp = now + slidingLifetime(grant.iat, now, capped);
-			if (exp > (grant.exp ?? 0)) {
-				const result = await grants.updateOne(
-					{ _id: grant.jti, ...scope },
-					{ $set: { "payload.exp": exp, expiresAt: new Date(exp * 1000) } },
-				);
-				if (result.matchedCount === 1) {
-					grant.exp = exp;
-					// The device name shown at /account and the phone's push
-					// token live as long as their grant.
-					if (hasDeviceMetadata(grant.clientId)) {
-						const expiresAt = new Date(exp * 1000);
-						await metas.updateOne(
-							{ _id: grant.jti, ...scope },
-							{ $set: { expiresAt } },
-						);
-						await slidePushDevices({ db, tenant }, grant.jti, expiresAt);
-					}
-				}
+		if (!grant?.iat || !grant.jti) return true;
+		const now = epochNow();
+		const capped = hasHardCap(grant.clientId);
+		const exp = now + slidingLifetime(grant.iat, now, capped);
+		let slidTo: Date | undefined;
+		if (exp > (grant.exp ?? 0)) {
+			const result = await grants.updateOne(
+				{ _id: grant.jti, ...scope },
+				{ $set: { "payload.exp": exp, expiresAt: new Date(exp * 1000) } },
+			);
+			if (result.matchedCount !== 1) return true;
+			grant.exp = exp;
+			slidTo = new Date(exp * 1000);
+		}
+		if (hasDeviceMetadata(grant.clientId)) {
+			// The device name shown at /account and the phone's push token
+			// live as long as their grant.
+			await metas.updateOne(
+				{ _id: grant.jti, ...scope },
+				{
+					$set: {
+						lastRefreshAt: new Date(),
+						...(slidTo ? { expiresAt: slidTo } : {}),
+					},
+				},
+			);
+			if (slidTo) {
+				await slidePushDevices({ db, tenant }, grant.jti, slidTo);
 			}
 		}
 		return true;

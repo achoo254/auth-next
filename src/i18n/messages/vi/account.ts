@@ -45,6 +45,7 @@ export const viAccount: Translation<typeof enAccount> = {
 	"account.sessions.empty": "Không có phiên nào.",
 	"account.sessions.thisBrowser": "Trình duyệt này",
 	"account.sessions.signedInAt": "Đăng nhập {date}",
+	"account.sessions.refreshedAt": "Gia hạn gần nhất {date}",
 	"account.sessions.signOutThis": "Đăng xuất trình duyệt này",
 	"account.sessions.signOut": "Đăng xuất",
 	"account.sessions.signOutOthers": "Đăng xuất mọi trình duyệt khác",

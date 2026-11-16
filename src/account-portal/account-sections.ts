@@ -86,9 +86,12 @@ function deviceRow(view: AccountView, device: DeviceGrant): SafeHtml {
 	const signedIn = i18n.t("account.sessions.signedInAt", {
 		date: i18n.date(device.grantedAt),
 	});
+	const refreshed = device.lastRefreshAt
+		? html` · <span data-id="device-refreshed-${device.grantId}">${i18n.t("account.sessions.refreshedAt", { date: i18n.date(device.lastRefreshAt) })}</span>`
+		: "";
 	return html`<li class="item-row" data-id="device-${device.grantId}">
 <div><b>${deviceLabel(view, device)}</b>
-<p class="help">${signedIn}</p></div>
+<p class="help">${signedIn}${refreshed}</p></div>
 ${actionButton(`/account/devices/${device.grantId}/revoke`, view.csrf, i18n.t("account.sessions.signOut"), { variant: "minimal", dataId: `device-revoke-${device.grantId}` })}
 </li>`;
 }

@@ -136,6 +136,7 @@ devices[]           per-device grants (DeviceGrant)
   deviceName        string?
   grantedAt         date?
   expiresAt         date?
+  lastRefreshAt     date?    latest refresh of the grant; null if none since it was recorded
   current           bool     grant of the access token making this request
 apps[]              other grants grouped per client (AuthorizedApp)
   clientId          string

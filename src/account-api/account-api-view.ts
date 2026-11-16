@@ -62,6 +62,7 @@ export interface AccountView {
 		readonly deviceName: string | null;
 		readonly grantedAt: string | null;
 		readonly expiresAt: string | null;
+		readonly lastRefreshAt: string | null;
 		readonly current: boolean;
 	}[];
 	readonly apps: readonly {
@@ -157,6 +158,7 @@ export function accountView(input: AccountViewInput): AccountView {
 			deviceName: device.deviceName ?? null,
 			grantedAt: iso(device.grantedAt),
 			expiresAt: iso(device.expiresAt),
+			lastRefreshAt: iso(device.lastRefreshAt),
 			current: device.grantId === input.currentGrantId,
 		})),
 		apps: input.apps.map((app) => ({

@@ -29,12 +29,16 @@ interface DeviceMetaDocument {
 	userAgent?: string;
 	createdAt: Date;
 	expiresAt: Date;
+	/** Set by every refresh of the grant (sliding-grants.ts); missing until the first. */
+	lastRefreshAt?: Date;
 }
 
 export interface DeviceGrant extends GrantSummary {
 	/** The client's display name (Tunelo CLI, Chat...). */
 	readonly appName: string;
 	readonly deviceName?: string;
+	/** The grant's most recent refresh; undefined if it never refreshed since recorded. */
+	readonly lastRefreshAt?: Date;
 }
 
 /**
@@ -43,7 +47,10 @@ export interface DeviceGrant extends GrantSummary {
  */
 export async function recordDeviceGrant(
 	{ db, tenant }: TenantDb,
-	meta: Omit<DeviceMetaDocument, "createdAt" | "expiresAt" | "tenantId">,
+	meta: Omit<
+		DeviceMetaDocument,
+		"createdAt" | "expiresAt" | "tenantId" | "lastRefreshAt"
+	>,
 	ttlSeconds: number,
 ): Promise<void> {
 	const now = new Date();
@@ -61,7 +68,7 @@ export async function recordDeviceGrant(
 
 /**
  * Per-device grants, one row per machine, with the device name captured at
- * approval.
+ * approval and the time of its latest refresh.
  */
 export async function listDeviceGrants(
 	{ db, tenant }: TenantDb,
@@ -74,7 +81,7 @@ export async function listDeviceGrants(
 		.collection<DeviceMetaDocument>(GRANT_META_COLLECTION)
 		.find({ _id: { $in: ids }, ...inTenant(tenant) })
 		.toArray();
-	const names = new Map(metas.map((meta) => [meta._id, meta.deviceName]));
+	const byGrant = new Map(metas.map((meta) => [meta._id, meta]));
 	const clientIds = [...new Set(devices.map((grant) => grant.clientId))];
 	const appNames = new Map(
 		await Promise.all(
@@ -87,7 +94,8 @@ export async function listDeviceGrants(
 	return devices.map((grant) => ({
 		...grant,
 		appName: appNames.get(grant.clientId) ?? grant.clientId,
-		deviceName: names.get(grant.grantId) ?? undefined,
+		deviceName: byGrant.get(grant.grantId)?.deviceName,
+		lastRefreshAt: byGrant.get(grant.grantId)?.lastRefreshAt,
 	}));
 }
 

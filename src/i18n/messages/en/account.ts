@@ -41,6 +41,7 @@ export const enAccount = {
 	"account.sessions.empty": "No open sessions.",
 	"account.sessions.thisBrowser": "This browser",
 	"account.sessions.signedInAt": "Signed in {date}",
+	"account.sessions.refreshedAt": "Last renewed {date}",
 	"account.sessions.signOutThis": "Sign out this browser",
 	"account.sessions.signOut": "Sign out",
 	"account.sessions.signOutOthers": "Sign out every other browser",
