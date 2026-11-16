@@ -20,6 +20,10 @@ module.exports = {
 			kill_timeout: 12000,
 			env: {
 				NODE_ENV: "production",
+				// IPv6 egress on the server is broken and IPv4 connects can take over 2 s, so Node's default
+				// happy eyeballs (250 ms per address) times out: try IPv4 first and give each address 2.5 s.
+				NODE_OPTIONS:
+					"--dns-result-order=ipv4first --network-family-autoselection-attempt-timeout=2500",
 			},
 		},
 	],

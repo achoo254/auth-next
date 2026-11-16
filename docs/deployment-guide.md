@@ -16,6 +16,12 @@ IdP chạy trên server dùng chung `<SERVER_65_IP>` theo quy ước của serve
 | Database | database `auth`, user `auth` chỉ có `readWrite` trên `auth` |
 | Backup | `infra/backup-auth-db.sh`, cron 02:30 hằng ngày, giữ 14 ngày trong `/var/www/hoandat-auth/backups` |
 
+**Kết nối ra ngoài ưu tiên IPv4.** IPv6 đi ra từ .65 không chạy và kết nối IPv4 đôi khi mất hơn 2 giây, nên với mặc
+định của Node 22 (happy eyeballs, 250 ms mỗi địa chỉ) lời gọi qua Cloudflare hay bên thứ ba hỏng với
+`AggregateError [ETIMEDOUT]`. Process chạy với `NODE_OPTIONS=--dns-result-order=ipv4first
+--network-family-autoselection-attempt-timeout=2500` (trong `infra/ecosystem.config.cjs`): thử IPv4 trước, đợi mỗi địa
+chỉ 2,5 giây. Kiểm: `tr '\0' '\n' < /proc/<pid>/environ | grep NODE_OPTIONS`.
+
 Access log của nginx che token trong đường dẫn `/reset/...` (link đặt lại mật khẩu cũ; route đã bỏ theo ADR 0004 nhưng link cũ còn trong chat Telegram).
 
 ## Lần đầu
