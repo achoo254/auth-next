@@ -6,8 +6,10 @@ import type { SignupSource } from "./user-model.js";
  * starts a sign-up (`utm_source`, `utm_medium`, `utm_campaign`), and to
  * `/account?signup=1`. Recorded once, on the new account, next to the
  * client that opened the flow, so the growth numbers can say where new
- * accounts come from. Never a reason to refuse a request: a bad value is
- * simply not recorded.
+ * accounts come from. A bad value never refuses a request, it is simply
+ * not recorded; a tag repeated on the authorization request itself is
+ * `invalid_request` like any repeated parameter, so `/account?signup=1`
+ * passes on only the first value and apps must send each tag once.
  */
 export const SIGNUP_UTM_PARAMS = [
 	"utm_source",
@@ -19,7 +21,7 @@ type SignupUtmParam = (typeof SIGNUP_UTM_PARAMS)[number];
 const TAG_MAX_LENGTH = 64;
 const CLIENT_MAX_LENGTH = 128;
 
-/** `extraParams` entries: oidc-provider keeps the tags on the interaction, whatever their value. */
+/** `extraParams` entries: oidc-provider keeps the tags on the interaction, whatever their value (sent once). */
 export const SIGNUP_SOURCE_EXTRA_PARAMS: Record<SignupUtmParam, () => void> = {
 	utm_source: () => undefined,
 	utm_medium: () => undefined,
@@ -49,7 +51,10 @@ export function signupUtmTags(
 ): Partial<Record<SignupUtmParam, string>> {
 	const tags: Partial<Record<SignupUtmParam, string>> = {};
 	for (const param of SIGNUP_UTM_PARAMS) {
-		const tag = sanitizeSourceTag(source?.[param]);
+		// A link may repeat a tag (`?utm_source=a&utm_source=b`): keep the first,
+		// since oidc-provider refuses a repeated parameter.
+		const value = source?.[param];
+		const tag = sanitizeSourceTag(Array.isArray(value) ? value[0] : value);
 		if (tag) tags[param] = tag;
 	}
 	return tags;

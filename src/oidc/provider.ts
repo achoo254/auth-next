@@ -178,7 +178,8 @@ export function buildProviderConfiguration(
 			ui_locales_supported: [...LOCALES],
 		},
 		// Tunelo CLI names the machine so the approval page can show it; apps
-		// may tag a sign-up with where it came from (never rejected).
+		// may tag a sign-up with where it came from (any value accepted; a
+		// repeated tag is invalid_request like every repeated parameter).
 		extraParams: { ...DEVICE_NAME_EXTRA_PARAM, ...SIGNUP_SOURCE_EXTRA_PARAMS },
 		renderError: renderProviderError,
 		formats: {

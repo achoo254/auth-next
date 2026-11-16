@@ -122,6 +122,24 @@ describe("signup source on a new account", () => {
 		});
 	});
 
+	it("refuses a tag repeated on the authorization request, like any parameter", async () => {
+		const config = await localmanWeb(idp);
+		const url = client.buildAuthorizationUrl(config, {
+			redirect_uri: LOCALMAN_CALLBACK,
+			code_challenge: await client.calculatePKCECodeChallenge(
+				client.randomPKCECodeVerifier(),
+			),
+			code_challenge_method: "S256",
+			state: client.randomState(),
+			scope: "openid",
+			prompt: "create",
+			utm_source: "fb",
+		});
+		url.searchParams.append("utm_source", "ig");
+		const landed = await new TestBrowser().navigate(url, {}, LOCALMAN_CALLBACK);
+		expect(landed.location?.searchParams.get("error")).toBe("invalid_request");
+	});
+
 	it("passes the sign-up link's tags on from /account?signup=1", async () => {
 		const response = await fetch(
 			`${idp.issuer}/account?signup=1&utm_source=Zalo&utm_campaign=tet&other=x`,
@@ -133,5 +151,14 @@ describe("signup source on a new account", () => {
 		expect(to.searchParams.get("utm_campaign")).toBe("tet");
 		expect(to.searchParams.has("utm_medium")).toBe(false);
 		expect(to.searchParams.has("other")).toBe(false);
+	});
+
+	it("passes on only the first value of a tag the link repeats", async () => {
+		const response = await fetch(
+			`${idp.issuer}/account?signup=1&utm_source=FB&utm_source=ig`,
+			{ redirect: "manual" },
+		);
+		const to = new URL(response.headers.get("location") ?? "", idp.issuer);
+		expect(to.searchParams.getAll("utm_source")).toEqual(["fb"]);
 	});
 });
