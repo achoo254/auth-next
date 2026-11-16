@@ -191,4 +191,13 @@ export class AccountRepository implements AccountStore {
 		);
 		return result.modifiedCount > 0;
 	}
+
+	/** Flags the account as welcomed; false when it already was (never twice). */
+	async markWelcomed(id: string): Promise<boolean> {
+		const result = await this.accounts.updateOne(
+			{ _id: id, ...this.scope, welcomedAt: { $exists: false } },
+			{ $set: { welcomedAt: new Date() } },
+		);
+		return result.modifiedCount > 0;
+	}
 }

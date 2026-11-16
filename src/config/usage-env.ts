@@ -10,4 +10,13 @@ export const usageEnvShape = {
 		.enum(["true", "false"], { error: "must be true or false" })
 		.default("true")
 		.transform((value) => value === "true"),
+	/**
+	 * The welcome page of a new account with its one suggested app (ADR
+	 * 0015). On by default; `WELCOME_PAGE_ENABLED=false` (then a restart)
+	 * sends new accounts straight back to their app.
+	 */
+	WELCOME_PAGE_ENABLED: z
+		.enum(["true", "false"], { error: "must be true or false" })
+		.default("true")
+		.transform((value) => value === "true"),
 };

@@ -100,6 +100,8 @@ export interface AccountDocument {
 	 * made before it was recorded and on the review account.
 	 */
 	signupSource?: SignupSource;
+	/** When the welcome page was shown (ADR 0015); it never shows again. */
+	welcomedAt?: Date;
 }
 
 /** The client whose authorization request made the account, and the tags it passed on. */

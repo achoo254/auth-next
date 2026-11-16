@@ -37,18 +37,29 @@ export const viSignIn: Translation<typeof enSignIn> = {
 		"Username cần 3–30 ký tự gồm chữ thường, số hoặc dấu gạch dưới.",
 	"username.emailTaken":
 		"Email này vừa được dùng cho một tài khoản khác. Hãy đăng nhập bằng tài khoản đó.",
-	"welcome.title": "Chào mừng đến với {brand}",
+	"welcome.title": "Xong rồi, chào bạn mới nha!",
 	"welcome.subtitle":
-		"Tài khoản của bạn đã sẵn sàng. Cùng tài khoản này, bạn dùng được cả các ứng dụng dưới đây:",
-	"welcome.benefit.tuvi":
-		"Lập lá số tử vi bằng tiếng Việt trong một phút, xuất ảnh để chia sẻ.",
-	"welcome.benefit.miu":
+		"Một tài khoản {brand} dùng được mọi app. Rảnh tay thì thử thêm app này:",
+	"welcome.subtitleFrom":
+		"Một tài khoản {brand} dùng được mọi app. Đã thích {app} thì chắc hợp gu app này:",
+	"welcome.suggested": "Gợi ý cho bạn",
+	"welcome.pitch.truyen":
+		"Truyện cổ tích kể lại gọn gàng, đọc năm phút giờ nghỉ trưa là vừa.",
+	"welcome.pitch.kb":
+		"Kho kiến thức song ngữ đủ chủ đề, có AI trả lời hộ khi sếp hỏi khó.",
+	"welcome.pitch.chuanho":
+		"Gõ mõ, thắp hương, xả stress sau deadline cho tâm bớt lag.",
+	"welcome.pitch.clip":
+		"Làm video dọc từ mẫu có sẵn, bắt trend mà không cần biết dựng.",
+	"welcome.pitch.tuvi":
+		"Lập lá số, xin quẻ mỗi sáng, xem cho vui trước giờ làm.",
+	"welcome.pitch.webnhanh":
+		"Làm website từ mẫu có sẵn, đăng ngay ở địa chỉ riêng, không cần code.",
+	"welcome.pitch.miu":
 		"Thế giới 3D cho bé vừa chơi vừa học Toán và Tiếng Việt.",
-	"welcome.benefit.webnhanh":
-		"Làm website từ mẫu có sẵn và đăng ngay ở địa chỉ riêng của bạn.",
 	"welcome.open": "Mở",
 	"welcome.newTab": "(mở trong tab mới)",
-	"welcome.continueTo": "Tiếp tục vào {app}",
+	"welcome.continueTo": "Quay lại {app}",
 	"welcome.continue": "Tiếp tục",
 	"upstream.expired":
 		"Phiên đăng nhập bằng {provider} đã hết hạn. Thử lại từ đầu.",

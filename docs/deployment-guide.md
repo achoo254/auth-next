@@ -197,6 +197,9 @@ Collection mới `push_devices` (có `tenantId`, unique `{tenantId, token}`, TTL
 
 Collection `client_usage` (có `tenantId`, TTL 400 ngày trên `at`) tự tạo chỉ mục khi khởi động, hoặc trước đó bằng `dist/create-indexes.mjs`. Cập nhật `/privacy` đi cùng bản này. Đọc số liệu trong `/var/www/hoandat-auth`: `node --env-file=.env dist/growth-report.mjs` (8 tuần và 28 ngày gần nhất, theo `tenantId`: chỉ còn `primary`), thêm `--weeks N` (tối đa 57), `--tenant <id>`, `--json`. Script chỉ đọc. Có sự cố thì đặt `CLIENT_USAGE_ENABLED=false` trong `.env` rồi `pm2 startOrReload infra/ecosystem.config.cjs --update-env`; dữ liệu đã ghi tự hết theo TTL.
 
+Màn chào mừng tài khoản mới (ADR 0015) bật mặc định; tắt bằng `WELCOME_PAGE_ENABLED=false` trong `.env` rồi khởi động
+lại, tài khoản mới về thẳng app.
+
 ## Đăng nhập cho người duyệt ứng dụng (ADR 0010)
 
 Tắt mặc định; chỉ bật trong thời gian App Store duyệt app (tài khoản demo theo Guideline 2.1).

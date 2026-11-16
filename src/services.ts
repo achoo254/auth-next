@@ -94,6 +94,8 @@ export interface AppServices {
 	/** Apps to tell of each account deletion (ADR 0018), and the queue. */
 	readonly deletionNotices: DeletionNotices;
 	readonly accountDeletedUrls: readonly string[];
+	/** The welcome page of new accounts (WELCOME_PAGE_ENABLED). */
+	readonly welcomePage: boolean;
 }
 
 export interface ServiceDependencies {
@@ -191,6 +193,7 @@ export function createServices(deps: ServiceDependencies): AppServices {
 		chatNotices: deps.chatNotices ?? envChatNotices(deps),
 		deletionNotices: new DeletionNotices(db, tenant),
 		accountDeletedUrls: env.ACCOUNT_DELETED_URLS,
+		welcomePage: env.WELCOME_PAGE_ENABLED,
 	};
 }
 

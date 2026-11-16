@@ -21,7 +21,7 @@ test("signs in, reads /account in English, then switches to 中文 without scrip
 	await page.getByLabel("Username").fill(user.username);
 	await page.locator('[data-id="upstream-signup-submit"]').click();
 	await expect(
-		page.getByRole("heading", { name: "Welcome to hoandat.com" }),
+		page.getByRole("heading", { name: "You're in. Welcome aboard!" }),
 	).toBeVisible();
 	// The account page is the IdP itself: a neutral "Continue".
 	await expect(page.locator('[data-id="welcome-continue"]')).toHaveText(
@@ -70,7 +70,7 @@ test("/account fits a 375 px phone without sideways scrolling", async ({
 	await page.getByLabel("Username").fill(user.username);
 	await page.locator('[data-id="upstream-signup-submit"]').click();
 	// The welcome screen fits the phone too.
-	await expect(page.locator('[data-id="welcome-apps"]')).toBeVisible();
+	await expect(page.locator('[data-id="welcome-app-webnhanh"]')).toBeVisible();
 	expect(
 		await page.evaluate(
 			() => document.documentElement.scrollWidth - window.innerWidth,

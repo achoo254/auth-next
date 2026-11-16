@@ -94,14 +94,18 @@ export async function signUp(page: Page, user: TestUser): Promise<void> {
 }
 
 /**
- * The new account's welcome screen: the three hero apps open in a new tab,
- * and "Continue" finishes the sign-in.
+ * The new account's welcome screen: one suggested app (Web Nhanh, paired
+ * with the IdP and with Localman) opens in a new tab with the cross-sell
+ * tags, and the button finishes the sign-in back to the app.
  */
 export async function continuePastWelcome(page: Page): Promise<void> {
-	await expect(page.locator('[data-id="welcome-apps"] > li')).toHaveCount(3);
-	await expect(page.locator('[data-id="welcome-open-tuvi"]')).toHaveAttribute(
-		"target",
-		"_blank",
+	const suggested = page.locator('[data-id^="welcome-open-"]');
+	await expect(suggested).toHaveCount(1);
+	await expect(suggested).toHaveAttribute("data-id", "welcome-open-webnhanh");
+	await expect(suggested).toHaveAttribute("target", "_blank");
+	await expect(suggested).toHaveAttribute(
+		"href",
+		/^https:\/\/webnhanh\.hoandat\.com\/\?utm_source=cross_sell&utm_medium=welcome&utm_campaign=\w+$/,
 	);
 	await page.locator('[data-id="welcome-continue"]').click();
 }

@@ -1,7 +1,11 @@
 import * as client from "openid-client";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { auditOutboxCollection } from "../audit/audit-outbox.js";
-import { heroApps, renderWelcome } from "../interactions/welcome-page.js";
+import {
+	originAppOf,
+	renderWelcome,
+	welcomeSuggestion,
+} from "../interactions/welcome-page.js";
 import {
 	accountIosConfig,
 	iosCallbackOf,
@@ -11,7 +15,6 @@ import { createTestAccount, repositoryOf } from "./helpers/test-accounts.js";
 import { TestBrowser, formField } from "./helpers/test-browser.js";
 import {
 	LOCALMAN_CALLBACK,
-	TUVI_WEB_URL,
 	type TestIdp,
 	WEBNHANH_WEB_URL,
 	startTestIdp,
@@ -62,7 +65,7 @@ async function signUpToWelcome(id: string, username: string) {
 }
 
 describe("welcome screen of a new account", () => {
-	it("shows the hero apps once, then Continue finishes the sign-in", async () => {
+	it("suggests the app paired with the origin once, then Back finishes the sign-in", async () => {
 		const { page, welcomeUrl, html } = await signUpToWelcome(
 			"g-welcome-1",
 			"welcome_one",
@@ -72,17 +75,15 @@ describe("welcome screen of a new account", () => {
 			"g-welcome-1",
 		);
 		expect(account?.username).toBe("welcome_one");
-		expect(html).toContain("Welcome to hoandat.com");
-		for (const [key, href] of [
-			["tuvi", TUVI_WEB_URL],
-			["miu", idp.tenant.webApps.miu ?? "missing"],
-			["webnhanh", WEBNHANH_WEB_URL],
-		]) {
-			expect(html).toContain(
-				`href="${href}" target="_blank" rel="noopener noreferrer" data-id="welcome-open-${key}"`,
-			);
-		}
-		expect(html).toContain("Continue to Localman");
+		expect(account?.welcomedAt).toBeInstanceOf(Date);
+		expect(html).toContain("You&#39;re in. Welcome aboard!");
+		// Localman is paired with no app: Web Nhanh, the fallback, is the one card.
+		expect(html.match(/data-id="welcome-open-/g)).toHaveLength(1);
+		expect(html).toContain(
+			`href="${WEBNHANH_WEB_URL}/?utm_source=cross_sell&amp;utm_medium=welcome&amp;utm_campaign=localman" target="_blank" rel="noopener noreferrer" data-id="welcome-open-webnhanh"`,
+		);
+		expect(html).toContain("If you like Localman");
+		expect(html).toContain("Back to Localman");
 		// Not signed in yet: the sign-in finishes only through the button.
 		expect(await loginsOf(account?._id)).toEqual([]);
 
@@ -95,6 +96,9 @@ describe("welcome screen of a new account", () => {
 		expect(await loginsOf(account?._id)).toEqual([
 			{ methods: ["fed", "google"] },
 		]);
+		// The finished interaction shows no welcome page any more.
+		const again = await page.browser.request(welcomeUrl);
+		expect(again.status).not.toBe(200);
 	});
 
 	it("rejects Continue without the form's CSRF token, and keeps the sign-in", async () => {
@@ -189,22 +193,112 @@ describe("welcome screen in our phone apps", () => {
 
 describe("welcome page", () => {
 	it("says a neutral Continue when the app has no name to show", () => {
+		const suggestion = welcomeSuggestion(idp.tenant, undefined);
+		if (!suggestion) throw new Error("no suggestion");
 		const html = renderWelcome({
 			page: testPage("vi"),
 			uid: "uid-1",
 			csrf: "token",
-			apps: heroApps(idp.tenant),
+			suggestion,
 		});
 		expect(html).toContain(">Tiếp tục</button>");
-		expect(html).not.toContain("Tiếp tục vào");
-		expect(html).toContain("Chào mừng đến với hoandat.com");
+		expect(html).not.toContain("Quay lại");
+		expect(html).toContain("Xong rồi, chào bạn mới nha!");
+		expect(html).toContain("Gợi ý cho bạn");
+		expect(html).toContain("utm_campaign=auth");
 	});
 
-	it("lists only the hero apps the tenant configured", () => {
+	it("goes back to the origin app by name, in Vietnamese", () => {
+		const suggestion = welcomeSuggestion(idp.tenant, "tuvi-web");
+		if (!suggestion) throw new Error("no suggestion");
+		const html = renderWelcome({
+			page: testPage("vi"),
+			uid: "uid-1",
+			csrf: "token",
+			suggestion,
+			clientName: "Tử Vi",
+		});
+		expect(html).toContain(">Quay lại Tử Vi</button>");
+		expect(html).toContain("Đã thích Tử Vi");
+		expect(html).toContain('data-id="welcome-open-truyen"');
+	});
+
+	it("suggests the shared pairing of the app the account came from", () => {
+		const suggested = (clientId: string | undefined) =>
+			welcomeSuggestion(idp.tenant, clientId)?.key;
+		expect(suggested("tuvi-web")).toBe("truyen");
+		expect(suggested("webnhanh-web")).toBe("kb");
+		expect(suggested("miu-web")).toBe("chuanho");
+		expect(suggested("chat-web")).toBe("clip");
+		expect(suggested("clip-web")).toBe("tuvi");
+		expect(suggested("kb-web")).toBe("webnhanh");
+		expect(suggested("truyen-web")).toBe("tuvi");
+		expect(suggested("chuanho-web")).toBe("miu");
+		expect(suggested("localman-web")).toBe("webnhanh");
+		expect(suggested("hoandat-account")).toBe("webnhanh");
+		expect(welcomeSuggestion(idp.tenant, "tuvi-web")?.href).toBe(
+			"https://truyen.hoandat.com/?utm_source=cross_sell&utm_medium=welcome&utm_campaign=tuvi",
+		);
+	});
+
+	it("maps clients to their app, the IdP itself to none", () => {
+		expect(originAppOf("tuvi-web")).toBe("tuvi");
+		expect(originAppOf("kb-web-dev")).toBe("kb");
+		expect(originAppOf("hoandat-account")).toBeUndefined();
+		expect(originAppOf("")).toBeUndefined();
+		expect(originAppOf(undefined)).toBeUndefined();
+	});
+
+	it("suggests nothing when the tenant has not configured the paired app", () => {
 		expect(
-			heroApps({
-				webApps: { ...idp.tenant.webApps, miu: undefined, tuvi: undefined },
-			}).map((app) => app.key),
-		).toEqual(["webnhanh"]);
+			welcomeSuggestion(
+				{ webApps: { ...idp.tenant.webApps, truyen: undefined } },
+				"tuvi-web",
+			),
+		).toBeUndefined();
+	});
+});
+
+describe("welcome flag on the account", () => {
+	it("is set once: a second try says the account was welcomed already", async () => {
+		const repository = repositoryOf(idp);
+		const account = await createTestAccount(repository);
+		expect(await repository.markWelcomed(account._id)).toBe(true);
+		expect(await repository.markWelcomed(account._id)).toBe(false);
+	});
+});
+
+describe("welcome screen switched off", () => {
+	it("sends a new account straight back to the app", async () => {
+		const off = await startTestIdp({
+			interactions: "real",
+			rateLimits: [],
+			env: { ...FAKE_UPSTREAM_ENV, WELCOME_PAGE_ENABLED: "false" },
+		});
+		try {
+			const { page, response } = await signInWith(off, "google", {
+				id: "g-welcome-off",
+				email: "welcome_off@example.com",
+				emailVerified: true,
+			});
+			const posted = await page.browser.request(
+				`${off.issuer}/interaction/${page.uid}/upstream/signup`,
+				{
+					form: {
+						csrf: formField(await response.text(), "csrf"),
+						username: "welcome_off",
+					},
+				},
+			);
+			expect(posted.status).toBe(303);
+			expect(posted.headers.get("location")).not.toContain("/welcome");
+			const account = await repositoryOf(off).findByProvider(
+				"google",
+				"g-welcome-off",
+			);
+			expect(account?.welcomedAt).toBeUndefined();
+		} finally {
+			await off.close();
+		}
 	});
 });

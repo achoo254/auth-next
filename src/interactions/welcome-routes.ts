@@ -19,7 +19,7 @@ import {
 	finishUpstream,
 	upstreamAmr,
 } from "./upstream-pending.js";
-import { heroApps, renderWelcome } from "./welcome-page.js";
+import { renderWelcome, welcomeSuggestion } from "./welcome-page.js";
 
 /** As long as the interaction itself lives (oidc-provider's Interaction TTL). */
 const WELCOME_TTL_SECONDS = 30 * 60;
@@ -45,8 +45,10 @@ async function signsInInAppSheet(
  * Right after `accountId` was created in this interaction: holds its
  * sign-in server-side (keyed by the interaction uid, never by anything the
  * browser sends) and shows the welcome screen. Its button finishes the
- * sign-in through finishLogin. Our phone apps and a tenant with no hero app
- * configured finish at once, as before.
+ * sign-in through finishLogin. It finishes at once, as before, when the
+ * page is switched off (WELCOME_PAGE_ENABLED=false), in our phone apps,
+ * when the tenant has not configured the suggested app, and for an account
+ * already welcomed (the `welcomedAt` flag, set here, so never twice).
  */
 export async function welcomeNewAccount(
 	services: AppServices,
@@ -57,8 +59,10 @@ export async function welcomeNewAccount(
 	profile: UpstreamProfile,
 ): Promise<void> {
 	if (
-		heroApps(services.tenant).length === 0 ||
-		(await signsInInAppSheet(services, interaction))
+		!services.welcomePage ||
+		!welcomeSuggestion(services.tenant, interactionClientId(interaction)) ||
+		(await signsInInAppSheet(services, interaction)) ||
+		!(await services.accounts.markWelcomed(accountId))
 	) {
 		await finishUpstream(services, req, res, interaction, accountId, profile);
 		return;
@@ -116,13 +120,23 @@ export function registerWelcomeRoutes(
 				res.redirect(303, `/interaction/${interaction.uid}`);
 				return;
 			}
+			const suggestion = welcomeSuggestion(
+				services.tenant,
+				interactionClientId(interaction),
+			);
+			if (!suggestion) {
+				// Held before the app's address went away: finish as if never held.
+				await services.tokens.take("welcome-pending", interaction.uid);
+				await finishLogin(services, req, res, held.accountId, held.amr);
+				return;
+			}
 			sendPage(
 				res,
 				renderWelcome({
 					page: interactionPage(req, interaction),
 					uid: interaction.uid,
 					csrf: services.csrf.token(req, res, csrfScope(interaction.uid)),
-					apps: heroApps(services.tenant),
+					suggestion,
 					clientName: await continueTarget(services, interaction),
 				}),
 			);

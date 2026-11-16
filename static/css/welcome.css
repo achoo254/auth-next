@@ -1,13 +1,10 @@
-/* Welcome screen of a new account (interaction /welcome): the hero apps as
-   cards, each a link that opens in a new tab. Colours come only from
-   tokens.css; each app's hue (--tone) comes from apps.css. */
+/* Welcome screen of a new account (interaction /welcome): the one app
+   suggested for the app the account came from, as a card that opens in a
+   new tab, then the button back to that app. Colours come only from
+   tokens.css; the app's hue (--tone) comes from apps.css. */
 
-.welcome-apps {
-	list-style: none;
-	margin: 0;
-	padding: 0;
-	display: grid;
-	gap: var(--space-3);
+.welcome-app {
+	margin-bottom: var(--space-4);
 }
 .welcome-app-link {
 	display: flex;
@@ -39,6 +36,13 @@
 	gap: var(--space-1);
 	min-width: 0;
 	flex: 1;
+}
+.welcome-app-tag {
+	font-size: 12px;
+	font-weight: 600;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	color: var(--tone-text);
 }
 .welcome-app-name {
 	font-weight: 600;
