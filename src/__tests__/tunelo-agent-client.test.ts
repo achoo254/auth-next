@@ -127,24 +127,24 @@ describe("tunelo-agent leaves every other client as it was", () => {
 		expect(holders).toEqual([AGENT]);
 	});
 
-	it("adds machines:write to the Chat and Localman MCP resources for the agent only", () => {
+	it("adds machines:write to the Chat MCP resource for the agent only", () => {
 		const policy = createResourcePolicy(RESOURCES);
 		const scopesOf = (resource: string, clientId?: string) =>
 			String(policy.resourceServerInfo(resource, clientId).scope).split(" ");
-		for (const resource of [RESOURCES.chatMcp, RESOURCES.localmanMcp]) {
-			expect(scopesOf(resource, AGENT)).toContain(MACHINES_WRITE_SCOPE);
-			for (const other of [
-				undefined,
-				STATIC_CLIENT_IDS.tuneloCli,
-				STATIC_CLIENT_IDS.localmanWeb,
-				"some-mcp-client",
-			]) {
-				expect(scopesOf(resource, other)).not.toContain(MACHINES_WRITE_SCOPE);
-			}
+		expect(scopesOf(RESOURCES.chatMcp, AGENT)).toContain(MACHINES_WRITE_SCOPE);
+		for (const other of [
+			undefined,
+			STATIC_CLIENT_IDS.tuneloCli,
+			STATIC_CLIENT_IDS.localmanWeb,
+			"some-mcp-client",
+		]) {
+			expect(scopesOf(RESOURCES.chatMcp, other)).not.toContain(
+				MACHINES_WRITE_SCOPE,
+			);
 		}
-		expect(scopesOf(RESOURCES.tunnel, AGENT)).not.toContain(
-			MACHINES_WRITE_SCOPE,
-		);
+		for (const resource of [RESOURCES.localmanMcp, RESOURCES.tunnel]) {
+			expect(scopesOf(resource, AGENT)).not.toContain(MACHINES_WRITE_SCOPE);
+		}
 		expect(SUPPORTED_SCOPES).toContain(MACHINES_WRITE_SCOPE);
 	});
 });

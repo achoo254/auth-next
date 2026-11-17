@@ -102,7 +102,7 @@ describe("one tunelo-agent grant, three resources", () => {
 			[
 				58,
 				localmanMcp,
-				"mock:read mock:write client:read client:write client:send machines:write",
+				"mock:read mock:write client:read client:write client:send",
 			],
 			[87, tunnel, "tunnels:open tunnels:read"],
 			// Past the 90-day cap of other clients: the device grant slides on.
