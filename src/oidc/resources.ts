@@ -39,15 +39,15 @@ export const BOTS_ADMIN_SCOPE = "bots:admin";
 
 /**
  * Lets the Tunelo machine agent add the machine it runs on to the user's
- * machines in Chat. Like `bots:admin`, it is kept out of every shared scope
- * list: only `TUNELO_AGENT_CLIENT_ID` holds it, and only on the Chat MCP
- * resource (`resourceServerInfo`).
+ * machines in Chat and Localman. Like `bots:admin`, it is kept out of every
+ * shared scope list: only `TUNELO_AGENT_CLIENT_ID` holds it, and only on
+ * the Chat and Localman MCP resources (`resourceServerInfo`).
  */
 export const MACHINES_WRITE_SCOPE = "machines:write";
 
 /**
  * The Tunelo machine agent (`tunelo-agent-client.ts`), the only client
- * whose Chat tokens may carry `machines:write`. Declared here
+ * whose Chat and Localman tokens may carry `machines:write`. Declared here
  * because scopes by resource are declared only in this file.
  */
 export const TUNELO_AGENT_CLIENT_ID = "tunelo-agent";
@@ -146,9 +146,13 @@ export function createResourcePolicy(
 		const value: unknown = client[ALLOWED_RESOURCES_PROPERTY];
 		return Array.isArray(value) ? value.filter(isResourceIndicator) : [];
 	};
+	const machineResources: ReadonlySet<string> = new Set([
+		resources.chatMcp,
+		resources.localmanMcp,
+	]);
 	const scopesOf = (resource: string, clientId?: string): string[] => {
 		const scopes = [...(scopesByResource.get(resource) ?? [])];
-		if (clientId === TUNELO_AGENT_CLIENT_ID && resource === resources.chatMcp) {
+		if (clientId === TUNELO_AGENT_CLIENT_ID && machineResources.has(resource)) {
 			scopes.push(MACHINES_WRITE_SCOPE);
 		}
 		return scopes;
