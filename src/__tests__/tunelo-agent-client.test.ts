@@ -162,6 +162,7 @@ describe("tunelo-agent client", () => {
 			[
 				"openid",
 				"offline_access",
+				"email",
 				"tunnels:open",
 				"tunnels:read",
 				"chat:read",

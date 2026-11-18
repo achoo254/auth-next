@@ -21,6 +21,7 @@ export interface ApprovedAgent {
 	/** The tunnel access token the device code was redeemed for. */
 	readonly accessToken: string;
 	readonly refreshToken: string;
+	readonly idToken: string;
 }
 
 /**
@@ -89,5 +90,6 @@ export async function approveAgentAs(
 		approvalPage,
 		accessToken: tokens.access_token,
 		refreshToken: tokens.refresh_token ?? "",
+		idToken: tokens.id_token ?? "",
 	};
 }

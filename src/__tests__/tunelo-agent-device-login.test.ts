@@ -19,6 +19,17 @@ afterAll(async () => {
 });
 
 describe("tunelo-agent device login on the real pages", () => {
+	it("puts the account's email in the ID token, for tunelo to show", async () => {
+		const { accountId, idToken } = await approveAgent(idp, "mac-mini");
+		const claims: unknown = JSON.parse(
+			Buffer.from(idToken.split(".")[1] ?? "", "base64url").toString("utf8"),
+		);
+		expect(claims).toMatchObject({
+			sub: accountId,
+			email: expect.stringMatching(/@example\.com$/),
+		});
+	});
+
 	it("shows the origin, refreshes for each app, and dies when revoked at /account", async () => {
 		const { browser, agent, approvalPage, refreshToken } = await approveAgent(
 			idp,

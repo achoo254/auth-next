@@ -29,11 +29,13 @@ export const TUNELO_AGENT_CLIENT_IDS = {
  * Written out instead of reusing the Chat and Localman MCP lists: the agent
  * never holds `bots:read`, `bots:write`, `bots:admin` or
  * `credentials:write`, and a scope added to those lists later does not
- * reach it.
+ * reach it. `email` puts the address in the ID token so `tunelo` can show
+ * which account the machine is signed in with.
  */
 export const TUNELO_AGENT_SCOPES: readonly string[] = [
 	"openid",
 	"offline_access",
+	"email",
 	...TUNNEL_SCOPES,
 	"chat:read",
 	"chat:write",
