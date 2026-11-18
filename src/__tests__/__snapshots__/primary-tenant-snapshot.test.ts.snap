@@ -1073,7 +1073,7 @@ exports[`primary tenant (hoandat.com) is unchanged > serves the same static clie
     "require_auth_time": false,
     "require_pushed_authorization_requests": false,
     "response_types": [],
-    "scope": "openid offline_access tunnels:open tunnels:read chat:read chat:write machines:write mock:read mock:write client:read client:write client:send",
+    "scope": "openid offline_access email tunnels:open tunnels:read chat:read chat:write machines:write mock:read mock:write client:read client:write client:send",
     "subject_type": "public",
     "token_endpoint_auth_method": "none",
   },
