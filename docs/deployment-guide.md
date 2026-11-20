@@ -130,9 +130,9 @@ Bật trên production (không in secret ra terminal):
 
 Rollback: xoá dòng `MIU_WEB_CLIENT_SECRET` rồi reload; IdP không còn client Miu (Miu sẽ báo đăng nhập không khả dụng).
 
-## Client của Tiểu Đệ, Tử Vi, Clip, Web Nhanh, Truyện, Lockin và Chùa Nhỏ
+## Client của Tiểu Đệ, Tử Vi, Clip, Web Nhanh, Lockin và Chùa Nhỏ
 
-Bảy app đăng nhập để biết khách có tài khoản dùng chung một kiểu client (`src/oidc/sign-in-only-clients.ts`): confidential, `client_secret_basic`, không refresh token, redirect `/auth/callback`. Tiểu Đệ chỉ có scope `openid`; Tử Vi, Clip, Web Nhanh, Truyện, Lockin và Chùa Nhỏ có `openid profile email` (tên, ảnh, email cho menu tài khoản trên header; Chùa Nhỏ chỉ xin `openid profile`).
+Sáu app đăng nhập để biết khách có tài khoản dùng chung một kiểu client (`src/oidc/sign-in-only-clients.ts`): confidential, `client_secret_basic`, không refresh token, redirect `/auth/callback`. Tiểu Đệ chỉ có scope `openid`; Tử Vi, Clip, Web Nhanh, Lockin và Chùa Nhỏ có `openid profile email` (tên, ảnh, email cho menu tài khoản trên header; Chùa Nhỏ chỉ xin `openid profile`).
 
 | App | Repo, origin | Client | Biến (đặt **cả hai**, secret ≥ 32 ký tự) | Secret phía app |
 |---|---|---|---|---|

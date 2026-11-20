@@ -2,7 +2,7 @@ import { randomBytes } from "node:crypto";
 
 /*
  * Client secrets and local origins of the primary-tenant apps (Scribe, Miu
- * World, Tiểu Đệ, Tử Vi, Clip, Web Nhanh, Truyện, Lockin, Chùa Nhỏ, Knowledge Base) in the test IdP: all their clients exist.
+ * World, Tiểu Đệ, Tử Vi, Clip, Web Nhanh, Lockin, Chùa Nhỏ, Knowledge Base) in the test IdP: all their clients exist.
  */
 
 export const SCRIBE_WEB_SECRET = randomBytes(32).toString("base64url");

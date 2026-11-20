@@ -38,7 +38,7 @@ import { OTHER_TEST_TENANT } from "./helpers/test-tenant.js";
 const PROFILE_SCOPE = "openid profile email";
 
 /**
- * Tiểu Đệ, Tử Vi, Clip, Web Nhanh, Truyện, Lockin and Chùa Nhỏ sign visitors in to
+ * Tiểu Đệ, Tử Vi, Clip, Web Nhanh, Lockin and Chùa Nhỏ sign visitors in to
  * learn they have an account: a confidential web client, no refresh token, no API resource.
  * Tiểu Đệ asks for `openid` alone; the others also for the name, picture
  * and email of their account menu.

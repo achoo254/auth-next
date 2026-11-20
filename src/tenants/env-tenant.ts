@@ -120,7 +120,7 @@ export function envScribeClients(
 }
 
 /**
- * The primary tenant's Tiểu Đệ, Tử Vi, Clip, Web Nhanh, Truyện, Lockin and
+ * The primary tenant's Tiểu Đệ, Tử Vi, Clip, Web Nhanh, Lockin and
  * Chùa Nhỏ clients, from the environment: an app is left out unless both its origin and its secret
  * are set (parseEnv rejects one alone).
  */

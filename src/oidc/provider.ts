@@ -94,7 +94,7 @@ export interface ProviderDependencies {
 	/** Scribe's and Miu World's clients; primary tenant only. */
 	readonly scribeClients?: PrimaryAppClientsConfig;
 	readonly miuClients?: PrimaryAppClientsConfig;
-	/** The sign-in-only apps' web clients (Tử Vi, Clip, Truyện...); primary tenant only. */
+	/** The sign-in-only apps' web clients (Tử Vi, Clip...); primary tenant only. */
 	readonly signInOnlyApps?: SignInOnlyApps;
 	/** Knowledge Base's web and development clients; primary tenant only. */
 	readonly kbClients?: KbClientsConfig;

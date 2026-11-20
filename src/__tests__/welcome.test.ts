@@ -220,14 +220,13 @@ describe("welcome page", () => {
 		});
 		expect(html).toContain(">Quay lại Tử Vi</button>");
 		expect(html).toContain("Đã thích Tử Vi");
-		expect(html).toContain('data-id="welcome-open-webnhanh"');
+		expect(html).toContain('data-id="welcome-open-clip"');
 	});
 
 	it("suggests the shared pairing of the app the account came from", () => {
 		const suggested = (clientId: string | undefined) =>
 			welcomeSuggestion(idp.tenant, clientId)?.key;
-		// The shared table still pairs Tử Vi with Truyện, which is no longer listed: the fallback applies.
-		expect(suggested("tuvi-web")).toBe("webnhanh");
+		expect(suggested("tuvi-web")).toBe("clip");
 		expect(suggested("webnhanh-web")).toBe("kb");
 		expect(suggested("miu-web")).toBe("chuanho");
 		expect(suggested("chat-web")).toBe("clip");
@@ -237,7 +236,7 @@ describe("welcome page", () => {
 		expect(suggested("localman-web")).toBe("webnhanh");
 		expect(suggested("hoandat-account")).toBe("webnhanh");
 		expect(welcomeSuggestion(idp.tenant, "tuvi-web")?.href).toBe(
-			"https://webnhanh.hoandat.com/?utm_source=cross_sell&utm_medium=welcome&utm_campaign=tuvi",
+			"https://clip.hoandat.com/?utm_source=cross_sell&utm_medium=welcome&utm_campaign=tuvi",
 		);
 	});
 

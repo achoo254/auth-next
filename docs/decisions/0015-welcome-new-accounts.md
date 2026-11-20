@@ -35,7 +35,7 @@ cũ. Tài khoản đã có không bao giờ thấy màn này.
 
 ## Sửa đổi 16/11/2026: một app gợi ý theo app gốc
 
-Ba thẻ cùng lúc ít người bấm, và Chat, Chùa Nhỏ, Clip, KB, Truyện chưa được giới thiệu. Màn chào mừng giờ:
+Ba thẻ cùng lúc ít người bấm, và Chat, Chùa Nhỏ, Clip, KB chưa được giới thiệu. Màn chào mừng giờ:
 
 1. Gợi ý **đúng một app** ghép với app gốc theo bảng cố định `CROSS_SELL_PAIRS` của `@achoo254/app-switcher`
    (import entry không có React `@achoo254/app-switcher/cross-sell`); thanh chuyển app dùng cùng bảng cho nhãn "Gợi ý",
