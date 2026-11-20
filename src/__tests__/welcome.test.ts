@@ -220,24 +220,24 @@ describe("welcome page", () => {
 		});
 		expect(html).toContain(">Quay lại Tử Vi</button>");
 		expect(html).toContain("Đã thích Tử Vi");
-		expect(html).toContain('data-id="welcome-open-truyen"');
+		expect(html).toContain('data-id="welcome-open-webnhanh"');
 	});
 
 	it("suggests the shared pairing of the app the account came from", () => {
 		const suggested = (clientId: string | undefined) =>
 			welcomeSuggestion(idp.tenant, clientId)?.key;
-		expect(suggested("tuvi-web")).toBe("truyen");
+		// The shared table still pairs Tử Vi with Truyện, which is no longer listed: the fallback applies.
+		expect(suggested("tuvi-web")).toBe("webnhanh");
 		expect(suggested("webnhanh-web")).toBe("kb");
 		expect(suggested("miu-web")).toBe("chuanho");
 		expect(suggested("chat-web")).toBe("clip");
 		expect(suggested("clip-web")).toBe("tuvi");
 		expect(suggested("kb-web")).toBe("webnhanh");
-		expect(suggested("truyen-web")).toBe("tuvi");
 		expect(suggested("chuanho-web")).toBe("miu");
 		expect(suggested("localman-web")).toBe("webnhanh");
 		expect(suggested("hoandat-account")).toBe("webnhanh");
 		expect(welcomeSuggestion(idp.tenant, "tuvi-web")?.href).toBe(
-			"https://truyen.hoandat.com/?utm_source=cross_sell&utm_medium=welcome&utm_campaign=tuvi",
+			"https://webnhanh.hoandat.com/?utm_source=cross_sell&utm_medium=welcome&utm_campaign=tuvi",
 		);
 	});
 
@@ -251,12 +251,6 @@ describe("welcome page", () => {
 
 	it("falls back to Web Nhanh, then the first configured app, never the origin", () => {
 		const webApps = idp.tenant.webApps;
-		expect(
-			welcomeSuggestion(
-				{ webApps: { ...webApps, truyen: undefined } },
-				"tuvi-web",
-			)?.key,
-		).toBe("webnhanh");
 		expect(
 			welcomeSuggestion(
 				{ webApps: { ...webApps, kb: undefined } },

@@ -40,7 +40,6 @@ const FUN_APP_IDS: ReadonlySet<string> = new Set([
 	STATIC_CLIENT_IDS.tieudeWeb,
 	STATIC_CLIENT_IDS.tuviWeb,
 	STATIC_CLIENT_IDS.clipWeb,
-	STATIC_CLIENT_IDS.truyenWeb,
 	STATIC_CLIENT_IDS.lockinWeb,
 	STATIC_CLIENT_IDS.chuanhoWeb,
 ]);

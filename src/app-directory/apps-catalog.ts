@@ -197,15 +197,6 @@ export const OPTIONAL_WEB_APPS = [
 		signIn: "apps.clipWeb.signIn",
 	},
 	{
-		key: "truyen",
-		id: STATIC_CLIENT_IDS.truyenWeb,
-		name: "Truyện",
-		tone: "red",
-		icon: "truyen",
-		description: "apps.truyenWeb.description",
-		signIn: "apps.truyenWeb.signIn",
-	},
-	{
 		key: "lockin",
 		id: STATIC_CLIENT_IDS.lockinWeb,
 		name: "Lockin",
@@ -240,7 +231,6 @@ export const OPTIONAL_WEB_APPS = [
 		| "tieude"
 		| "tuvi"
 		| "clip"
-		| "truyen"
 		| "lockin"
 		| "chuanho"
 		| "kb";

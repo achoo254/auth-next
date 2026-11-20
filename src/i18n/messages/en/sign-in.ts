@@ -41,8 +41,6 @@ export const enSignIn = {
 	"welcome.subtitleFrom":
 		"One {brand} account works in every app. If you like {app}, this one is your vibe too:",
 	"welcome.suggested": "Picked for you",
-	"welcome.pitch.truyen":
-		"Folk tales retold short and sweet: a five-minute read for your lunch break.",
 	"welcome.pitch.kb":
 		"Bilingual explainers on everything, plus an AI that answers when the boss asks something hard.",
 	"welcome.pitch.chuanho":

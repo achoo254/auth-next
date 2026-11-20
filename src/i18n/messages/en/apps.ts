@@ -65,10 +65,6 @@ export const enApps = {
 	"apps.clipWeb.description":
 		"Pick a template, type a few lines and add photos to get a short vertical video.",
 	"apps.clipWeb.signIn": "Choose Sign in on the site to make videos.",
-	"apps.truyenWeb.description":
-		"Vietnamese and world folk tales, retold in fresh words.",
-	"apps.truyenWeb.signIn":
-		"Choose Sign in on the site to save your favourite tales and keep reading on any device.",
 	"apps.lockinWeb.description":
 		"Lock in hangout plans with your friends through one link.",
 	"apps.lockinWeb.signIn":

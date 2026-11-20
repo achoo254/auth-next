@@ -12,7 +12,6 @@ export type AppIconName =
 	| "tieude"
 	| "tuvi"
 	| "clip"
-	| "truyen"
 	| "lockin"
 	| "chuanho"
 	| "kb"
@@ -33,7 +32,6 @@ const ICON_FILES: Readonly<Record<AppIconName, string>> = {
 	tieude: "tieude-mark-128.webp",
 	tuvi: "tuvi-mark-128.webp",
 	clip: "clip-mark-128.webp",
-	truyen: "truyen-mark-128.webp",
 	lockin: "lockin-mark-128.webp",
 	chuanho: "chuanho-mark-128.webp",
 	kb: "kb-mark-128.webp",

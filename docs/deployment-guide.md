@@ -140,11 +140,10 @@ Bảy app đăng nhập để biết khách có tài khoản dùng chung một k
 | Tử Vi | `tu-vi-next`, `https://tuvi.hoandat.com` | `tuvi-web` | `TUVI_WEB_URL`, `TUVI_WEB_CLIENT_SECRET` | `AUTH_CLIENT_SECRET` trong `/var/www/tuvi/.env` |
 | Clip | `clip-next`, `https://clip.hoandat.com` | `clip-web` | `CLIP_WEB_URL`, `CLIP_WEB_CLIENT_SECRET` | `AUTH_CLIENT_SECRET` trong `/var/www/clip/.env` |
 | Web Nhanh | `webnhanh-next`, `https://webnhanh.hoandat.com` | `webnhanh-web` | `WEBNHANH_WEB_URL`, `WEBNHANH_WEB_CLIENT_SECRET` | `AUTH_CLIENT_SECRET` trong `/etc/webnhanh/production.env` |
-| Truyện | `truyen-next`, `https://truyen.hoandat.com` | `truyen-web` | `TRUYEN_WEB_URL`, `TRUYEN_WEB_CLIENT_SECRET` | `AUTH_CLIENT_SECRET` trong `.env` của Truyện |
 | Lockin | `lockin-next`, `https://lockin.hoandat.com` | `lockin-web` | `LOCKIN_WEB_URL`, `LOCKIN_WEB_CLIENT_SECRET` | `AUTH_CLIENT_SECRET` trong `.env` của Lockin |
 | Chùa Nhỏ | `chuanho-next`, `https://chuanho.hoandat.com` | `chuanho-web` | `CHUANHO_WEB_URL`, `CHUANHO_WEB_CLIENT_SECRET` | `AUTH_CLIENT_SECRET` trong `.env` của Chùa Nhỏ |
 
-Khi đã bật, app hiện trên `/apps` (Tiểu Đệ, Tử Vi, Clip, Truyện, Lockin và Chùa Nhỏ ở nhóm giải trí).
+Khi đã bật, app hiện trên `/apps` (Tiểu Đệ, Tử Vi, Clip, Lockin và Chùa Nhỏ ở nhóm giải trí).
 
 Mỗi app này cũng nhận sự kiện xoá tài khoản (ADR 0018): thêm URL nhận của nó vào `ACCOUNT_DELETED_URLS` của IdP, ví dụ Chùa Nhỏ là `https://chuanho.hoandat.com/api/idp/account-deleted`.
 

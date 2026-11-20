@@ -22,8 +22,6 @@ export const CLIP_WEB_SECRET = randomBytes(32).toString("base64url");
 export const CLIP_WEB_URL = "https://clip.hoandat.com";
 export const WEBNHANH_WEB_SECRET = randomBytes(32).toString("base64url");
 export const WEBNHANH_WEB_URL = "https://webnhanh.hoandat.com";
-export const TRUYEN_WEB_SECRET = randomBytes(32).toString("base64url");
-export const TRUYEN_WEB_URL = "https://truyen.hoandat.com";
 export const LOCKIN_WEB_SECRET = randomBytes(32).toString("base64url");
 export const LOCKIN_WEB_URL = "https://lockin.hoandat.com";
 export const CHUANHO_WEB_SECRET = randomBytes(32).toString("base64url");
@@ -44,8 +42,6 @@ export const PRIMARY_APP_TEST_ENV = {
 	CLIP_WEB_CLIENT_SECRET: CLIP_WEB_SECRET,
 	WEBNHANH_WEB_URL,
 	WEBNHANH_WEB_CLIENT_SECRET: WEBNHANH_WEB_SECRET,
-	TRUYEN_WEB_URL,
-	TRUYEN_WEB_CLIENT_SECRET: TRUYEN_WEB_SECRET,
 	LOCKIN_WEB_URL,
 	LOCKIN_WEB_CLIENT_SECRET: LOCKIN_WEB_SECRET,
 	CHUANHO_WEB_URL,

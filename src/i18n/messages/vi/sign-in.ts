@@ -43,8 +43,6 @@ export const viSignIn: Translation<typeof enSignIn> = {
 	"welcome.subtitleFrom":
 		"Một tài khoản {brand} dùng được mọi app. Đã thích {app} thì chắc hợp gu app này:",
 	"welcome.suggested": "Gợi ý cho bạn",
-	"welcome.pitch.truyen":
-		"Truyện cổ tích kể lại gọn gàng, đọc năm phút giờ nghỉ trưa là vừa.",
 	"welcome.pitch.kb":
 		"Kho kiến thức song ngữ đủ chủ đề, có AI trả lời hộ khi sếp hỏi khó.",
 	"welcome.pitch.chuanho":

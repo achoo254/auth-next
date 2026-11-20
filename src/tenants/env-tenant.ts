@@ -17,7 +17,7 @@ export const PRIMARY_TENANT_ID = "primary";
  * `TENANT_DOMAIN` (resources and audiences follow from it), its web apps
  * `LOCALMAN_WEB_URL`, `TUNELO_WEB_URL`, `CHAT_WEB_URL` and, once their client
  * secrets are set, `SCRIBE_WEB_URL`, `MIU_WEB_URL`, `TIEUDE_WEB_URL`,
- * `TUVI_WEB_URL`, `CLIP_WEB_URL`, `WEBNHANH_WEB_URL`, `TRUYEN_WEB_URL`,
+ * `TUVI_WEB_URL`, `CLIP_WEB_URL`, `WEBNHANH_WEB_URL`,
  * `LOCKIN_WEB_URL`, `CHUANHO_WEB_URL` and `KB_WEB_URL`.
  */
 export function envTenant(
@@ -41,8 +41,6 @@ export function envTenant(
 		| "CLIP_WEB_CLIENT_SECRET"
 		| "WEBNHANH_WEB_URL"
 		| "WEBNHANH_WEB_CLIENT_SECRET"
-		| "TRUYEN_WEB_URL"
-		| "TRUYEN_WEB_CLIENT_SECRET"
 		| "LOCKIN_WEB_URL"
 		| "LOCKIN_WEB_CLIENT_SECRET"
 		| "CHUANHO_WEB_URL"
@@ -137,8 +135,6 @@ export function envSignInOnlyApps(
 		| "CLIP_WEB_CLIENT_SECRET"
 		| "WEBNHANH_WEB_URL"
 		| "WEBNHANH_WEB_CLIENT_SECRET"
-		| "TRUYEN_WEB_URL"
-		| "TRUYEN_WEB_CLIENT_SECRET"
 		| "LOCKIN_WEB_URL"
 		| "LOCKIN_WEB_CLIENT_SECRET"
 		| "CHUANHO_WEB_URL"
@@ -152,7 +148,6 @@ export function envSignInOnlyApps(
 		tuvi: app(env.TUVI_WEB_URL, env.TUVI_WEB_CLIENT_SECRET),
 		clip: app(env.CLIP_WEB_URL, env.CLIP_WEB_CLIENT_SECRET),
 		webnhanh: app(env.WEBNHANH_WEB_URL, env.WEBNHANH_WEB_CLIENT_SECRET),
-		truyen: app(env.TRUYEN_WEB_URL, env.TRUYEN_WEB_CLIENT_SECRET),
 		lockin: app(env.LOCKIN_WEB_URL, env.LOCKIN_WEB_CLIENT_SECRET),
 		chuanho: app(env.CHUANHO_WEB_URL, env.CHUANHO_WEB_CLIENT_SECRET),
 	};
@@ -166,7 +161,7 @@ function signInOnlyOrigins(
 	apps: SignInOnlyApps,
 ): Pick<
 	Tenant["webApps"],
-	"tieude" | "tuvi" | "clip" | "webnhanh" | "truyen" | "lockin" | "chuanho"
+	"tieude" | "tuvi" | "clip" | "webnhanh" | "lockin" | "chuanho"
 > {
 	return Object.fromEntries(
 		Object.entries(apps).map(([key, app]) => [key, app.url]),

@@ -40,7 +40,6 @@ export const zhSignIn: Translation<typeof enSignIn> = {
 	"welcome.subtitleFrom":
 		"一个 {brand} 账号通用于所有应用。喜欢 {app} 的话，这个应该也合你胃口：",
 	"welcome.suggested": "为你推荐",
-	"welcome.pitch.truyen": "重述的民间故事，午休五分钟刚好读完一篇。",
 	"welcome.pitch.kb": "各类主题的双语知识库，老板问难题时让 AI 帮你答。",
 	"welcome.pitch.chuanho": "敲木鱼、点炷香，赶完截止日期放松一下。",
 	"welcome.pitch.clip": "用模板做竖屏短视频，不会剪辑也能跟上热点。",

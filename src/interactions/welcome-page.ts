@@ -26,7 +26,6 @@ export const WELCOME_UNKNOWN_ORIGIN = "auth";
  * falls back to its line on the app directory.
  */
 const PITCHES: Partial<Record<WelcomeAppKey, MessageKey>> = {
-	truyen: "welcome.pitch.truyen",
 	kb: "welcome.pitch.kb",
 	chuanho: "welcome.pitch.chuanho",
 	clip: "welcome.pitch.clip",
