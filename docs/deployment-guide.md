@@ -38,12 +38,12 @@ Access log của nginx che token trong đường dẫn `/reset/...` (link đặt
 
 ## Các lần sau
 
-**Bình thường: push `main`.** CI (`ci.yml`) xanh thì `.github/workflows/deploy.yml` build, đóng gói
+**Deploy khi gọi (từ 25/11/2026):** push lên `main` chỉ chạy `ci`. Xong một việc thì chạy `tools/deploy-prod.sh` của workspace `hoandat-app` (hoặc `gh workflow run deploy.yml`); mỗi tối 22:00 workflow tự chạy nếu `main` đi trước lần deploy thành công gần nhất. Workflow lấy đầu `main`, chờ `ci` của commit đó xanh rồi `.github/workflows/deploy.yml` build, đóng gói
 ([`infra/pack-release.sh`](../infra/pack-release.sh): `dist/ static/ brand/ infra/ package.json pnpm-lock.yaml
 pnpm-workspace.yaml`), upload bằng user `hoandat-auth-deploy` vào `/var/www/hoandat-auth/ci-incoming/<id>` rồi chạy
 `sudo /usr/local/sbin/hoandat-auth-activate-incoming <id>` ([`infra/activate-incoming.sh`](../infra/activate-incoming.sh)),
-cuối cùng kiểm từ ngoài: discovery trả đúng `issuer`, `/healthz` 200. Theo dõi bằng `gh run watch`. auth-next đứng đầu
-thứ tự deploy giữa các repo: khi đổi hợp đồng, đợi deploy này xanh rồi mới push repo sau. Quy tắc chung:
+cuối cùng kiểm từ ngoài: discovery trả đúng `issuer`, `/healthz` 200. auth-next đứng đầu
+thứ tự deploy giữa các repo: khi đổi hợp đồng, đợi deploy này xanh rồi mới deploy repo sau. Quy tắc chung:
 `docs/deploy-standard.md` của workspace `hoandat-app`.
 
 Activate (root, `flock` trên `/run/hoandat-auth-activate.lock`):
