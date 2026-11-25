@@ -228,7 +228,9 @@ describe("app list page", () => {
 		expect(html).toContain(`href="${kb}"`);
 		expect(html).toContain("/assets/img/apps/kb-mark-128.webp");
 		expect(existsSync(`${STATIC_DIR}/img/apps/kb-mark-128.webp`)).toBe(true);
-		expect(html).toContain("Bilingual articles on infrastructure and software engineering");
+		expect(html).toContain(
+			"Bilingual articles on infrastructure and software engineering",
+		);
 		const work = html.slice(
 			html.indexOf('data-id="apps-group-work"'),
 			html.indexOf('data-id="apps-group-fun"'),
