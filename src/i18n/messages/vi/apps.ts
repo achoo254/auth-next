@@ -74,7 +74,7 @@ export const viApps: Translation<typeof enApps> = {
 	"apps.chuanhoWeb.signIn":
 		"Chơi ngay không cần tài khoản; chọn Đăng nhập trên trang để giữ công đức và phòng trên mọi máy.",
 	"apps.kbWeb.description":
-		"Kho tri thức song ngữ về đủ mọi chủ đề, xếp thành một vũ trụ để đọc, tìm và hỏi AI.",
+		"Kho tri thức song ngữ về hạ tầng và kỹ thuật phần mềm, xếp thành một vũ trụ để đọc, tìm và hỏi AI.",
 	"apps.kbWeb.signIn":
 		"Chọn Đăng nhập trên trang để đọc Universe và hỏi AI về nó.",
 	"apps.steps.title": "Đăng nhập diễn ra thế nào",
