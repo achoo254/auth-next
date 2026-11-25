@@ -6,7 +6,7 @@ import { type TestIdp, startTestIdp } from "./helpers/test-idp.js";
 import { RESOURCES } from "./helpers/test-tenant.js";
 import { approveAgent } from "./helpers/tunelo-agent-login.js";
 
-const { tunnel, chatMcp, localmanMcp } = RESOURCES;
+const { tunnel, chatMcp, localmanMcp, kbMcp } = RESOURCES;
 
 let idp: TestIdp;
 
@@ -45,10 +45,11 @@ describe("tunelo-agent device login on the real pages", () => {
 		expect(approvalPage).not.toContain('data-id="device-ip-mismatch"');
 		expect(approvalPage).toContain('data-id="device-agent-warning"');
 		expect(approvalPage).toContain('data-id="device-app-localman"');
+		expect(approvalPage).toContain('data-id="device-app-kb"');
 
-		// The real consent page granted all three resources.
+		// The real consent page granted all four resources.
 		let latest = refreshToken;
-		for (const resource of [chatMcp, localmanMcp, tunnel]) {
+		for (const resource of [chatMcp, localmanMcp, kbMcp, tunnel]) {
 			const next = await client.refreshTokenGrant(agent, latest, {
 				resource,
 			});

@@ -58,8 +58,8 @@ export async function approveAgentAs(
 		scope: TUNELO_AGENT_SCOPES.join(" "),
 		device_name: deviceName,
 	});
-	const { tunnel, chatMcp, localmanMcp } = RESOURCES;
-	for (const resource of [tunnel, chatMcp, localmanMcp]) {
+	const { tunnel, chatMcp, localmanMcp, kbMcp } = RESOURCES;
+	for (const resource of [tunnel, chatMcp, localmanMcp, kbMcp]) {
 		body.append("resource", resource);
 	}
 	const device = await client.initiateDeviceAuthorization(agent, body);

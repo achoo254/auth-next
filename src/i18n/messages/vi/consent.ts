@@ -53,6 +53,10 @@ export const viConsent: Translation<typeof enConsent> = {
 		"Đặt hoặc gỡ webhook, cấp lại token và xoá bot của bạn trên Chat",
 	"scope.scribeRead":
 		"Đọc bản ghi và tệp của bạn trên Scribe: bản chép lời, biên bản, bản dịch, người nói và dấu mốc, tìm kiếm và đặt câu hỏi trên chúng (chỉ đọc)",
+	"scope.kbRead":
+		"Đọc và tìm bài trên Knowledge Base mà bạn được đọc, kể cả bài riêng tư của bạn",
+	"scope.kbWrite":
+		"Lưu ghi chú riêng tư vào Knowledge Base với tư cách của bạn",
 	"scope.machinesWrite":
 		"Thêm máy này vào danh sách máy của bạn trên Chat và Localman",
 	"scope.unknown": "Quyền “{scope}”",

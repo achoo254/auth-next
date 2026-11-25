@@ -33,7 +33,7 @@ import {
 	type TestIdp,
 	startTestIdp,
 } from "./helpers/test-idp.js";
-import { RESOURCES } from "./helpers/test-tenant.js";
+import { PRIMARY_TEST_TENANT, RESOURCES } from "./helpers/test-tenant.js";
 
 let idp: TestIdp;
 
@@ -68,7 +68,12 @@ async function deviceAuthorization(
 		.catch((error: { error?: string }) => error.error ?? "error");
 }
 
-const THREE = [RESOURCES.tunnel, RESOURCES.chatMcp, RESOURCES.localmanMcp];
+const FOUR = [
+	RESOURCES.tunnel,
+	RESOURCES.chatMcp,
+	RESOURCES.localmanMcp,
+	RESOURCES.kbMcp,
+];
 
 describe("tunelo-agent leaves every other client as it was", () => {
 	it("keeps the DCR scopes and the scopes of tunelo-cli, tunelo-web, chat-web, localman-web", async () => {
@@ -150,13 +155,13 @@ describe("tunelo-agent leaves every other client as it was", () => {
 });
 
 describe("tunelo-agent client", () => {
-	it("is a public device client for tunnel, Chat MCP and Localman MCP with an explicit scope list", async () => {
+	it("is a public device client for tunnel, Chat, Localman and Knowledge Base MCP with an explicit scope list", async () => {
 		const metadata = await metadataOf(AGENT);
 		expect(metadata).toMatchObject({
 			application_type: "native",
 			token_endpoint_auth_method: "none",
 			grant_types: [DEVICE_CODE_GRANT, "refresh_token"],
-			allowed_resources: THREE,
+			allowed_resources: FOUR,
 		});
 		expect(String(metadata.scope).split(" ").sort()).toEqual(
 			[
@@ -173,7 +178,24 @@ describe("tunelo-agent client", () => {
 				"client:read",
 				"client:write",
 				"client:send",
+				"kb:read",
+				"kb:write",
 			].sort(),
+		);
+	});
+
+	it("gets kb:read and kb:write, and nothing else, on the Knowledge Base MCP resource", () => {
+		const policy = createResourcePolicy(RESOURCES);
+		expect(RESOURCES.kbMcp).toBe(
+			`https://kb.${PRIMARY_TEST_TENANT.domain}/mcp`,
+		);
+		expect(policy.resourceServerInfo(RESOURCES.kbMcp, AGENT)).toMatchObject({
+			scope: "kb:read kb:write",
+			audience: RESOURCES.kbMcp,
+			accessTokenFormat: "jwt",
+		});
+		expect(SUPPORTED_SCOPES).toEqual(
+			expect.arrayContaining(["kb:read", "kb:write"]),
 		);
 	});
 
@@ -183,12 +205,22 @@ describe("tunelo-agent client", () => {
 		expect(hasHardCap(AGENT)).toBe(false);
 	});
 
-	it("starts a device login for the three resources", async () => {
+	it("starts a device login for the four resources", async () => {
+		expect(
+			await deviceAuthorization(
+				AGENT,
+				"openid offline_access tunnels:open chat:read machines:write mock:read kb:read kb:write",
+				FOUR,
+			),
+		).toBe("accepted");
+	});
+
+	it("still starts the device login of an agent that does not know Knowledge Base", async () => {
 		expect(
 			await deviceAuthorization(
 				AGENT,
 				"openid offline_access tunnels:open chat:read machines:write mock:read",
-				THREE,
+				FOUR.slice(0, 3),
 			),
 		).toBe("accepted");
 	});
@@ -197,7 +229,7 @@ describe("tunelo-agent client", () => {
 		"refuses %s",
 		async (scope) => {
 			expect(
-				await deviceAuthorization(AGENT, `openid chat:read ${scope}`, THREE),
+				await deviceAuthorization(AGENT, `openid chat:read ${scope}`, FOUR),
 			).toBe("invalid_scope");
 		},
 	);
@@ -223,6 +255,22 @@ describe("tunelo-agent client", () => {
 				[RESOURCES.tunnel],
 			),
 		).toBe("invalid_scope");
+	});
+
+	it("refuses kb scopes to a dynamically registered client", async () => {
+		await expect(
+			client.dynamicClientRegistration(
+				new URL(idp.issuer),
+				{
+					redirect_uris: ["http://127.0.0.1:33418/callback"],
+					token_endpoint_auth_method: "none",
+					grant_types: ["authorization_code", "refresh_token"],
+					scope: "chat:read kb:read",
+				},
+				client.None(),
+				{ execute: [client.allowInsecureRequests] },
+			),
+		).rejects.toMatchObject({ error: "invalid_client_metadata" });
 	});
 
 	it("refuses machines:write to a dynamically registered client", async () => {

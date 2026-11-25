@@ -50,6 +50,9 @@ export const zhConsent: Translation<typeof enConsent> = {
 		"在 Chat 上设置或移除 webhook、重新签发 token 并删除你的机器人",
 	"scope.scribeRead":
 		"读取你在 Scribe 上的录音和文件：文字稿、会议纪要、翻译、说话人和书签，并可搜索和就其提问（只读）",
+	"scope.kbRead":
+		"阅读和搜索你在 Knowledge Base 上可读的文章，包括你的私密文章",
+	"scope.kbWrite": "以你的身份将私密笔记保存到 Knowledge Base",
 	"scope.machinesWrite": "将这台电脑添加到你在 Chat 和 Localman 的电脑列表",
 	"scope.unknown": "权限“{scope}”",
 	"device.input.title": "设备登录",

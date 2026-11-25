@@ -37,6 +37,8 @@ const SCOPE_TEXT: ReadonlyMap<string, MessageKey> = new Map([
 	["bots:write", "scope.botsWrite"],
 	[BOTS_ADMIN_SCOPE, "scope.botsAdmin"],
 	["scribe:read", "scope.scribeRead"],
+	["kb:read", "scope.kbRead"],
+	["kb:write", "scope.kbWrite"],
 	[MACHINES_WRITE_SCOPE, "scope.machinesWrite"],
 ]);
 

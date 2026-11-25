@@ -7,6 +7,7 @@ import type {
 import type { TenantResources } from "../tenants/tenant-resources.js";
 import {
 	ALLOWED_RESOURCES_PROPERTY,
+	KB_MCP_SCOPES,
 	LOCALMAN_SCOPES,
 	MACHINES_WRITE_SCOPE,
 	TUNELO_AGENT_CLIENT_ID,
@@ -15,9 +16,12 @@ import {
 
 /**
  * The Tunelo machine agent (`tunelo`, repo chat-next): one device
- * login gives the machine one refresh token for three resources (tunnel,
- * Chat MCP, Localman MCP); each refresh names the resource it wants a
- * 15-minute token for. Its grant belongs to the device (`refreshesPerDevice`).
+ * login gives the machine one refresh token for four resources (tunnel,
+ * Chat MCP, Localman MCP, Knowledge Base MCP); each refresh names the
+ * resource it wants a 15-minute token for. A grant from before Knowledge
+ * Base was added keeps its three resources: refreshing it for Knowledge
+ * Base is refused (`invalid_target`, spending the refresh token), so the
+ * agent asks only for resources its device login named. Its grant belongs to the device (`refreshesPerDevice`).
  * Removing the machine in Chat revokes that grant
  * (`src/oidc/agent-grant-revocation.ts`).
  */
@@ -41,6 +45,7 @@ export const TUNELO_AGENT_SCOPES: readonly string[] = [
 	"chat:write",
 	MACHINES_WRITE_SCOPE,
 	...LOCALMAN_SCOPES,
+	...KB_MCP_SCOPES,
 ];
 
 export function buildTuneloAgentClients(
@@ -64,6 +69,7 @@ export function buildTuneloAgentClients(
 				resources.tunnel,
 				resources.chatMcp,
 				resources.localmanMcp,
+				resources.kbMcp,
 			],
 		},
 	];

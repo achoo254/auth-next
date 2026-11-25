@@ -1,6 +1,7 @@
 import type { Translator } from "../i18n/translator.js";
 import {
 	CHAT_MCP_SCOPES,
+	KB_MCP_SCOPES,
 	LOCALMAN_MCP_SCOPES,
 	TUNELO_AGENT_CLIENT_ID,
 	TUNNEL_SCOPES,
@@ -18,6 +19,7 @@ const APPS: readonly {
 	{ id: "tunelo", name: "Tunelo", scopes: TUNNEL_SCOPES },
 	{ id: "chat", name: "Chat", scopes: CHAT_MCP_SCOPES },
 	{ id: "localman", name: "Localman", scopes: LOCALMAN_MCP_SCOPES },
+	{ id: "kb", name: "Knowledge Base", scopes: KB_MCP_SCOPES },
 ];
 
 const APP_SCOPES: ReadonlySet<string> = new Set(
@@ -25,8 +27,8 @@ const APP_SCOPES: ReadonlySet<string> = new Set(
 );
 
 /**
- * The Tunelo agent gets one grant for tunnels, Chat and Localman, so
- * approving a code someone else started would hand them all three. Its
+ * The Tunelo agent gets one grant for tunnels, Chat, Localman and Knowledge
+ * Base, so approving a code someone else started would hand them all four. Its
  * device login is guarded harder: the link with the code filled in only
  * works from the IP that asked for the code (elsewhere the user types the
  * code shown in the machine's terminal), and the approval page lists access

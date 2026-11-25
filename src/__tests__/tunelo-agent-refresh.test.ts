@@ -18,8 +18,8 @@ import { RESOURCES } from "./helpers/test-tenant.js";
 const AGENT = STATIC_CLIENT_IDS.tuneloAgent;
 const DAY_MS = 24 * 60 * 60 * 1000;
 const SCOPE =
-	"openid offline_access tunnels:open tunnels:read chat:read chat:write machines:write mock:read mock:write client:read client:write client:send";
-const { tunnel, chatMcp, localmanMcp } = RESOURCES;
+	"openid offline_access tunnels:open tunnels:read chat:read chat:write machines:write mock:read mock:write client:read client:write client:send kb:read kb:write";
+const { tunnel, chatMcp, localmanMcp, kbMcp } = RESOURCES;
 
 let idp: TestIdp;
 
@@ -51,7 +51,10 @@ async function grantIdOf(refreshToken: string): Promise<string | undefined> {
 }
 
 /** The agent signs in "now" for `resources`; the token is for the tunnel. */
-async function agentLogin(resources: readonly string[]): Promise<{
+async function agentLogin(
+	resources: readonly string[],
+	scope: string = SCOPE,
+): Promise<{
 	config: client.Configuration;
 	tokens: client.TokenEndpointResponse;
 	start: number;
@@ -59,7 +62,7 @@ async function agentLogin(resources: readonly string[]): Promise<{
 	const start = Date.now();
 	vi.useFakeTimers({ toFake: ["Date"], now: start });
 	const config = await discoverClient(idp, AGENT, client.None());
-	const body = new URLSearchParams({ scope: SCOPE });
+	const body = new URLSearchParams({ scope });
 	for (const resource of resources) body.append("resource", resource);
 	const authorization = await client.initiateDeviceAuthorization(config, body);
 	const page = await approveDevice(
@@ -134,6 +137,54 @@ describe("one tunelo-agent grant, three resources", () => {
 		const grant = await grantDocs.findOne({ _id: grantId ?? "" });
 		expect(grant?.expiresAt?.getTime()).toBeGreaterThan(
 			start + (116 + 30) * DAY_MS - 2_000,
+		);
+	});
+
+	it("refreshes into a Knowledge Base token carrying kb:read and kb:write only", async () => {
+		const { config, tokens } = await agentLogin([
+			tunnel,
+			chatMcp,
+			localmanMcp,
+			kbMcp,
+		]);
+		const next = await client.refreshTokenGrant(
+			config,
+			tokens.refresh_token ?? "",
+			{ resource: kbMcp },
+		);
+		expect(claimsOf(next.access_token)).toEqual({
+			aud: kbMcp,
+			scope: "kb:read kb:write",
+		});
+		const chat = await client.refreshTokenGrant(
+			config,
+			next.refresh_token ?? "",
+			{ resource: chatMcp },
+		);
+		expect(claimsOf(chat.access_token).aud).toBe(chatMcp);
+	});
+
+	// A machine signed in before Knowledge Base existed holds a grant for the
+	// three older resources: it keeps refreshing them, and Knowledge Base is
+	// refused until the machine signs in again.
+	it("keeps an older three-resource login working and refuses it Knowledge Base", async () => {
+		const older =
+			"openid offline_access tunnels:open tunnels:read chat:read chat:write machines:write mock:read mock:write client:read client:write client:send";
+		const { config, tokens } = await agentLogin(
+			[tunnel, chatMcp, localmanMcp],
+			older,
+		);
+		const chat = await client.refreshTokenGrant(
+			config,
+			tokens.refresh_token ?? "",
+			{ resource: chatMcp },
+		);
+		expect(claimsOf(chat.access_token)).toEqual({
+			aud: chatMcp,
+			scope: expect.stringContaining("chat:read"),
+		});
+		expect(await refreshOutcome(config, chat.refresh_token ?? "", kbMcp)).toBe(
+			"invalid_target",
 		);
 	});
 

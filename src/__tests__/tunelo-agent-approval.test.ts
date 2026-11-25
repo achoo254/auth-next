@@ -48,7 +48,7 @@ function agentApproval(
 
 describe("tunelo-agent approval page", () => {
 	it.each(LOCALES)(
-		"lists the three apps, the requesting machine and IP, and the warning in %s",
+		"lists the four apps, the requesting machine and IP, and the warning in %s",
 		(locale) => {
 			const page = agentApproval(locale, { approverIp: MACHINE_IP });
 			expect(page).toContain("<code>tunelo</code>");
@@ -60,9 +60,11 @@ describe("tunelo-agent approval page", () => {
 			expect(page).toContain('data-id="device-agent-warning"');
 			expect(page).toContain(shown("device.approve.agentWarning", locale));
 			expect(page).toContain(shown("device.agent.purpose", locale));
-			for (const app of ["tunelo", "chat", "localman"]) {
+			for (const app of ["tunelo", "chat", "localman", "kb"]) {
 				expect(page).toContain(`data-id="device-app-${app}"`);
 			}
+			expect(page).toContain(shown("scope.kbRead", locale));
+			expect(page).toContain(shown("scope.kbWrite", locale));
 			expect(page).toContain(shown("scope.machinesWrite", locale));
 			expect(page).not.toContain(shown("scope.botsAdmin", locale));
 			// The origin sits right under the question, before the access lists.

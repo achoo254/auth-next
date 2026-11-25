@@ -11,6 +11,8 @@ export interface TenantResources {
 	readonly tunnel: string;
 	readonly chatMcp: string;
 	readonly scribeMcp: string;
+	/** Knowledge Base MCP; only the Tunelo agent may target it. */
+	readonly kbMcp: string;
 }
 
 export function resourcesFor(domain: string): TenantResources {
@@ -21,6 +23,7 @@ export function resourcesFor(domain: string): TenantResources {
 		tunnel: `https://${hosts.tunnel}`,
 		chatMcp: `https://${hosts.chat}/mcp`,
 		scribeMcp: `https://${hosts.scribe}/mcp`,
+		kbMcp: `https://${hosts.kb}/mcp`,
 	};
 }
 

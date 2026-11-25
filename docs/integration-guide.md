@@ -36,7 +36,7 @@ ID token mặc định ký **ES256**. Discovery quảng bá `id_token_signing_al
 |---|---|---|---|---|---|
 | `localman-web` | confidential (`client_secret_basic`) | Code + PKCE, refresh (gắn phiên IdP), **token exchange** | `openid profile email telegram` + scope API Localman (không có `offline_access`) | `https://localman.hoandat.com` (chỉ khi xin scope API); đổi được token `https://tunnel.hoandat.com` | `https://localman.hoandat.com/auth/backchannel-logout` |
 | `tunelo-cli` | public (`none`) | Device flow, refresh | `openid offline_access tunnels:open tunnels:read` | `https://tunnel.hoandat.com` | không |
-| `tunelo-agent` | public, native (`none`) | Device flow, refresh (theo thiết bị, không trần 90 ngày; mục 7) | `openid offline_access tunnels:open tunnels:read chat:read chat:write machines:write mock:read mock:write client:read client:write client:send` (không bao giờ có `bots:*`, `credentials:write`) | một trong ba, theo `resource` của từng lần refresh: `https://tunnel.hoandat.com`, `https://chat.hoandat.com/mcp`, `https://localman.hoandat.com/mcp` | không |
+| `tunelo-agent` | public, native (`none`) | Device flow, refresh (theo thiết bị, không trần 90 ngày; mục 7) | `openid offline_access tunnels:open tunnels:read chat:read chat:write machines:write mock:read mock:write client:read client:write client:send kb:read kb:write` (không bao giờ có `bots:*`, `credentials:write`) | một trong bốn, theo `resource` của từng lần refresh: `https://tunnel.hoandat.com`, `https://chat.hoandat.com/mcp`, `https://localman.hoandat.com/mcp`, `https://kb.hoandat.com/mcp` | không |
 | `tunelo-web` | confidential (`client_secret_basic`) | Code + PKCE, refresh (gắn phiên IdP) | `openid profile email tunnels:open tunnels:read` (không có `offline_access`; trang web Tunelo xin `openid profile`) | `https://tunnel.hoandat.com` | `https://tunnel.hoandat.com/auth/backchannel-logout` |
 | `chat-web` | confidential (`client_secret_basic`) | Code + PKCE, refresh (gắn phiên IdP) | `openid profile email` (không có `offline_access`) | không có: access token opaque chỉ dùng cho userinfo | `https://chat.hoandat.com/auth/backchannel-logout` |
 | `chat-mobile` | public, native (`none`) | Code + PKCE qua trình duyệt hệ thống, refresh (theo thiết bị, mục 8) | `openid profile email` | không có | không |
@@ -64,6 +64,7 @@ Redirect URI: `${LOCALMAN_WEB_URL}/auth/callback`, `${TUNELO_WEB_URL}/auth/callb
 | API Tunelo | `https://tunnel.hoandat.com` | `tunnels:open`, `tunnels:read` |
 | MCP của Chat | `https://chat.hoandat.com/mcp` | `chat:read`, `chat:write`, `bots:read`, `bots:write`, `bots:admin`; `machines:write` chỉ cho `tunelo-agent` |
 | MCP của Scribe | `https://scribe.hoandat.com/mcp` | `scribe:read` (chỉ đọc) |
+| MCP của Knowledge Base | `https://kb.hoandat.com/mcp` | `kb:read`, `kb:write`; chỉ `tunelo-agent` được xin (client MCP đăng ký động không có) |
 
 **Scope API và câu hiện trên trang consent** (nguồn: `SCOPE_TEXT` trong `src/interactions/consent-page.ts`; danh sách "Ứng dụng đã cấp quyền" ở `/account` dùng cùng câu):
 
@@ -84,6 +85,8 @@ Redirect URI: `${LOCALMAN_WEB_URL}/auth/callback`, `${TUNELO_WEB_URL}/auth/callb
 | `bots:admin` | MCP của Chat | **không** | Đặt hoặc gỡ webhook, cấp lại token và xoá bot của bạn trên Chat; kèm cảnh báo đỏ "Cho phép chuyển mọi tin gửi tới bot sang địa chỉ khác (webhook), cấp lại token và xoá bot. Chỉ cấp cho ứng dụng bạn tin tưởng." |
 | `scribe:read` | MCP của Scribe | có | Đọc bản ghi và tệp của bạn trên Scribe: bản chép lời, biên bản, bản dịch, người nói và dấu mốc, tìm kiếm và đặt câu hỏi trên chúng (chỉ đọc) |
 | `machines:write` | MCP của Chat và của Localman | **không** (chỉ `tunelo-agent`, không client nào khác hay DCR xin được) | Thêm máy này vào danh sách máy của bạn trên Chat và Localman |
+| `kb:read` | MCP của Knowledge Base | **không** (chỉ `tunelo-agent`) | Đọc và tìm bài trên Knowledge Base mà bạn được đọc, kể cả bài riêng tư của bạn |
+| `kb:write` | MCP của Knowledge Base | **không** (chỉ `tunelo-agent`) | Lưu ghi chú riêng tư vào Knowledge Base với tư cách của bạn |
 
 `credentials:write` (tool MCP tạo PAT, tạo/xoay secret service account, tạo access key) không bao giờ được cấp ngầm: client MCP phải khai nó trong `scope` lúc đăng ký (client đăng ký không khai `scope` chỉ nhận các scope mặc định, xin thêm thì bị `invalid_scope`), rồi xin nó trong authorization request; user thấy cảnh báo đỏ trên trang consent. `localman-web` không có scope này. Endpoint MCP phải kiểm `credentials:write` trong `scope` của access token trước khi chạy các tool đó. `bots:admin` (đặt/gỡ webhook, cấp lại token, xoá bot) theo đúng quy tắc đó, với cảnh báo đỏ riêng; endpoint MCP của Chat phải kiểm nó.
 
@@ -252,18 +255,19 @@ const tokens = await oidc.pollDeviceAuthorizationGrant(cli, device);
 - Trang duyệt luôn hỏi "Cho phép `tunelo` trên máy <device_name>?"; đã đăng nhập IdP thì không phải đăng nhập lại. Mỗi máy một grant, thu hồi từng máy ở `/account`.
 - Lưu refresh token với quyền file `0600`. `tunelo logout`: gọi `revocation_endpoint` với refresh token rồi xoá file.
 
-**Tiến trình máy Tunelo (`tunelo-agent`)**: một device login cho ba tài nguyên, một refresh token.
+**Tiến trình máy Tunelo (`tunelo-agent`)**: một device login cho bốn tài nguyên, một refresh token.
 
 ```ts
 const TUNNEL = "https://tunnel.hoandat.com";
 const CHAT = "https://chat.hoandat.com/mcp";
 const LOCALMAN = "https://localman.hoandat.com/mcp";
+const KB = "https://kb.hoandat.com/mcp";
 const agent = await oidc.discovery(new URL(ISSUER), "tunelo-agent", {}, oidc.None());
 const body = new URLSearchParams({
-	scope: "openid offline_access tunnels:open tunnels:read chat:read chat:write machines:write mock:read mock:write client:read client:write client:send",
+	scope: "openid offline_access tunnels:open tunnels:read chat:read chat:write machines:write mock:read mock:write client:read client:write client:send kb:read kb:write",
 	device_name: os.hostname().slice(0, 64),
 });
-for (const r of [TUNNEL, CHAT, LOCALMAN]) body.append("resource", r);
+for (const r of [TUNNEL, CHAT, LOCALMAN, KB]) body.append("resource", r);
 const device = await oidc.initiateDeviceAuthorization(agent, body);
 // Mở verification_uri_complete trong trình duyệt của chính máy này; luôn in user_code cho trường hợp khác IP (SSH).
 console.log(`Mở ${device.verification_uri_complete} hoặc ${device.verification_uri} và nhập mã ${device.user_code}`);
@@ -273,9 +277,9 @@ const tokens = await oidc.pollDeviceAuthorizationGrant(agent, device, { resource
 const chat = await oidc.refreshTokenGrant(agent, tokens.refresh_token, { resource: CHAT });
 ```
 
-- Device authorization gửi **đủ ba** `resource` và scope ở bảng mục 2. Refresh chỉ đổi được sang tài nguyên đã nằm trong device login; thiếu thì phải đăng nhập lại.
-- **Mọi request ở token endpoint phải có `resource`**, cả lần đổi `device_code` lẫn mỗi lần refresh. Grant có ba tài nguyên nên request không có `resource` không chọn được tài nguyên nào (kể cả khi chỉ xin `scope` của một tài nguyên) và nhận `invalid_target`. Lỗi đó **vẫn tiêu token**: `device_code` đã được duyệt bị đốt (lần đổi sau nhận `invalid_grant`, người dùng phải duyệt lại), refresh token bị đốt (lần sau nhận `invalid_grant`, máy phải đăng nhập lại). Tài nguyên ngoài device login hay ngoài danh sách cũng vậy. Chỉ xin đúng ba tài nguyên trên.
-- Mỗi refresh nhận JWT 15 phút có đúng `aud` đã xin, scope lọc theo tài nguyên (`machines:write` chỉ có trong token Chat và Localman).
+- Device authorization gửi **đủ bốn** `resource` và scope ở bảng mục 2. Refresh chỉ đổi được sang tài nguyên đã nằm trong device login; thiếu thì phải đăng nhập lại. Máy đăng nhập trước khi có Knowledge Base (25/11/2026) giữ grant ba tài nguyên: tunnel, Chat, Localman vẫn refresh như cũ, còn refresh sang `KB` bị `invalid_target` **và đốt refresh token**. Agent phải nhớ những tài nguyên đã xin lúc device login và chỉ refresh sang `KB` khi có nó; thiếu thì báo người dùng chạy `tunelo login`, không thử refresh.
+- **Mọi request ở token endpoint phải có `resource`**, cả lần đổi `device_code` lẫn mỗi lần refresh. Grant có nhiều tài nguyên nên request không có `resource` không chọn được tài nguyên nào (kể cả khi chỉ xin `scope` của một tài nguyên) và nhận `invalid_target`. Lỗi đó **vẫn tiêu token**: `device_code` đã được duyệt bị đốt (lần đổi sau nhận `invalid_grant`, người dùng phải duyệt lại), refresh token bị đốt (lần sau nhận `invalid_grant`, máy phải đăng nhập lại). Tài nguyên ngoài device login hay ngoài danh sách cũng vậy. Chỉ xin đúng các tài nguyên trên.
+- Mỗi refresh nhận JWT 15 phút có đúng `aud` đã xin, scope lọc theo tài nguyên (`machines:write` chỉ có trong token Chat và Localman; token Knowledge Base chỉ có `kb:read kb:write`).
 - Một refresh token dùng chung cho mọi tài nguyên nên mọi refresh đi qua một khoá duy nhất (mục 8); hai refresh song song cho hai tài nguyên sẽ thu hồi cả grant.
 - Link điền sẵn mã chỉ dùng được từ cùng IP: response device authorization của `tunelo-agent` có `verification_uri_complete` như client khác, nhưng trang mở từ link chỉ nhận mã điền sẵn khi IP trình duyệt trùng IP máy đã xin mã (dạng `::ffff:` của IPv4 coi là một). Khác IP (máy qua SSH, link bị gửi sang người khác) thì trang hiện ô gõ mã kèm câu "Mã đang hiện trong terminal của máy bạn muốn kết nối", nên agent luôn phải in `user_code`. Lý do: grant này là quyền mạnh nhất hệ thống (tunnel, Chat, Localman, thêm máy); link điền sẵn bị chuyển tiếp không được trao nó. Cùng NAT (cùng mạng gia đình/công ty) vẫn lọt: chấp nhận.
 - Mọi access token JWT của `tunelo-agent` mang claim `grant_id` (id grant của lần đăng nhập đó, giữ nguyên qua các lần refresh). Không phải credential; Chat đọc nó cùng `sub` khi máy đăng ký.

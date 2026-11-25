@@ -70,6 +70,13 @@ export const CHAT_MCP_SCOPES = [
 export const SCRIBE_MCP_SCOPES = ["scribe:read"] as const;
 
 /**
+ * Scopes the Knowledge Base MCP endpoint accepts: read the documents the
+ * user may read (private ones included) and save a private note. Only the
+ * Tunelo agent may target this resource; DCR clients cannot.
+ */
+export const KB_MCP_SCOPES = ["kb:read", "kb:write"] as const;
+
+/**
  * The linked Telegram chat, at userinfo only; just `localman-web` may ask
  * (its own bot sends the user's notifications there).
  */
@@ -94,6 +101,7 @@ export const SUPPORTED_SCOPES = [
 	...TUNNEL_SCOPES,
 	...CHAT_MCP_SCOPES,
 	...SCRIBE_MCP_SCOPES,
+	...KB_MCP_SCOPES,
 	MACHINES_WRITE_SCOPE,
 ];
 
@@ -139,6 +147,7 @@ export function createResourcePolicy(
 		[resources.tunnel, TUNNEL_SCOPES],
 		[resources.chatMcp, CHAT_MCP_SCOPES],
 		[resources.scribeMcp, SCRIBE_MCP_SCOPES],
+		[resources.kbMcp, KB_MCP_SCOPES],
 	]);
 	const isResourceIndicator = (value: unknown): value is string =>
 		typeof value === "string" && scopesByResource.has(value);

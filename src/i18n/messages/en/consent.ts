@@ -50,6 +50,9 @@ export const enConsent = {
 		"Set or remove webhooks, issue new tokens and delete your bots on Chat",
 	"scope.scribeRead":
 		"Read your Scribe recordings and files: their transcripts, summaries, translations, speakers and bookmarks, search them and ask questions about them (read only)",
+	"scope.kbRead":
+		"Read and search the Knowledge Base documents you can read, your private ones included",
+	"scope.kbWrite": "Save private notes to Knowledge Base as you",
 	"scope.machinesWrite":
 		"Add this machine to your machines in Chat and Localman",
 	"scope.unknown": "Permission “{scope}”",
