@@ -1,0 +1,41 @@
+{
+ "model": "jev-latest",
+ "state": {
+  "project": "auth-next (IdP OIDC auth.hoandat.com, Express+MongoDB) và chat-next (app Chat, Go server, có Bot API kiểu Telegram) trong hệ *-next của một người vận hành + AI agent; chưa có người dùng ngoài chủ.",
+  "feature": "Phase 3 plan /account: ngoài Telegram, tài khoản nhận thông báo bảo mật qua app Chat. Kênh bật bằng env (mặc định tắt); khi bật, auth-next tự đảm bảo có một bot hệ thống của nó bên Chat (tạo nếu chưa có, idempotent) qua một đường server-to-server mới của Chat, xác thực bằng client credentials (giống POST /api/tunelo-agent/grants/revoke mà Chat gọi sang auth-next). Liên kết như Telegram: mã một lần 10 phút -> người dùng bấm Bắt đầu với bot trên Chat -> webhook về auth-next lưu chat id.",
+  "facts": [
+   "Bot token của Chat hiện chỉ lộ ra lúc CreateBot hoặc ResetBotToken (BotAdminService); ResetBotToken làm token cũ chết.",
+   "auth-next giữ secret ở file mount read-only (/run/secrets/signing-keys.json); CLAUDE.md cấm log token, cấm commit secrets/.env; env production nằm trên iCloud, không trong repo.",
+   "auth-next có ADR cho mọi quyết định kiến trúc (0001-0016), có ADR riêng cho Apple sign-in, Telegram scope claim, review-login, thu hồi grant tunelo-agent; CLAUDE.md nói 'Claim liên lạc mới nào cũng theo cách đó' (chỉ ra ở userinfo).",
+   "Localman hiện đọc telegram_chat_id từ userinfo (scope telegram chỉ cho localman-web) và gửi thông báo tunnel/mời bằng bot Telegram riêng; Telegram chat id dùng chung cho mọi bot, còn chat id riêng của Chat thì gắn theo cặp bot-người dùng (bot của Localman sẽ có chat khác bot của auth-next).",
+   "Mục tiêu hệ sinh thái: kéo người dùng, một người vận hành, ưu tiên ít việc tay; đã bỏ npm, bỏ email."
+  ]
+ },
+ "questions": {
+  "token": {
+   "type": "choice",
+   "instructions": "Bot token của bot hệ thống auth-next bên Chat lấy thế nào?",
+   "criteria": {
+    "ensure_returns_token": "Mỗi lần auth-next khởi động gọi 'ensure' của Chat, Chat trả token (tạo bot nếu chưa có, còn có thì xoay token mới và trả); auth-next chỉ giữ token trong bộ nhớ. Không có secret tay nào, nhưng mỗi lần restart token cũ chết và Chat phải lưu/xoay token theo yêu cầu server-to-server.",
+    "secret_mount_after_first": "Lần đầu tạo bot (ensure trả token một lần), sau đó token nằm trong file secret mount như signing keys (env production trên iCloud); khởi động sau chỉ kiểm bot còn sống. Theo đúng cách giữ secret hiện có, nhưng có một bước tay khi tạo lần đầu hoặc khi token mất.",
+    "no_token_chat_side_send": "auth-next không giữ bot token: Chat thêm endpoint server-to-server 'gửi thông báo hệ thống tới user X qua bot của client này' xác thực bằng client credentials; auth-next không cần webhook bot riêng. Ít secret nhất nhưng Chat phải có thêm API gửi riêng ngoài Bot API."
+   }
+  },
+  "adr": {
+   "type": "choice",
+   "instructions": "Có viết ADR mới trong auth-next cho kênh thông báo qua Chat không?",
+   "criteria": {
+    "new_adr": "Viết ADR mới (0017) ghi kênh liên lạc thứ hai, đường server-to-server mới với Chat, cách giữ token, phạm vi (chỉ thông báo bảo mật của auth-next).",
+    "extend_existing": "Không ADR mới; ghi vào docs hiện có (README/integration-guide/CLAUDE.md) như một mở rộng của luồng Telegram."
+   }
+  },
+  "localman": {
+   "type": "choice",
+   "instructions": "Có làm luôn cho Localman nhận thông báo qua Chat (như telegram_chat_id) trong phase này không?",
+   "criteria": {
+    "later": "Để ngoài phase này: chỉ thông báo bảo mật của auth-next đi qua Chat; Localman làm sau khi kênh chạy ổn và có nhu cầu thật (mỗi app cần bot/chat id riêng vì chat id Chat gắn theo cặp bot-người dùng).",
+    "now": "Làm luôn trong phase này: thêm claim/scope chat cho localman-web và để Localman gửi tunnel/mời qua Chat."
+   }
+  }
+ }
+}

@@ -1,0 +1,37 @@
+{
+ "model": "jev-1.14.0",
+ "answers": {
+  "token": {
+   "type": "choice",
+   "choice": "secret_mount_after_first",
+   "confidence": 0.72,
+   "probabilities": {
+    "ensure_returns_token": 0.08,
+    "secret_mount_after_first": 0.81,
+    "no_token_chat_side_send": 0.11
+   }
+  },
+  "adr": {
+   "type": "choice",
+   "choice": "new_adr",
+   "confidence": 0.76,
+   "probabilities": {
+    "new_adr": 0.88,
+    "extend_existing": 0.12
+   }
+  },
+  "localman": {
+   "type": "choice",
+   "choice": "later",
+   "confidence": 0.96,
+   "probabilities": {
+    "later": 0.98,
+    "now": 0.02
+   }
+  }
+ },
+ "usage": {
+  "input_tokens": 1324,
+  "output_tokens": 113
+ }
+}
