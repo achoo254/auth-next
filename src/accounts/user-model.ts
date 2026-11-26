@@ -102,6 +102,12 @@ export interface AccountDocument {
 	signupSource?: SignupSource;
 	/** When the welcome page was shown (ADR 0015); it never shows again. */
 	welcomedAt?: Date;
+	/**
+	 * Tunnels this account may hold open at once, sent to Tunelo as the
+	 * `max_tunnels` claim (tunnel-quota-claim.ts). Set by hand in MongoDB, no
+	 * page edits it; absent means Tunelo's default (3).
+	 */
+	maxTunnels?: number;
 }
 
 /** The client whose authorization request made the account, and the tags it passed on. */
@@ -178,6 +184,9 @@ export function toAccountProfile(account: AccountDocument): AccountProfile {
 							: {}),
 					},
 				}
+			: {}),
+		...(account.maxTunnels !== undefined
+			? { maxTunnels: account.maxTunnels }
 			: {}),
 	};
 }

@@ -22,6 +22,8 @@ export interface AccountProfile {
 	};
 	/** The linked Google account's `sub` (`google_sub`, Miu World only). */
 	readonly googleSub?: string;
+	/** Tunnel quota for Tunelo's access tokens (`max_tunnels`, tunnel-quota-claim.ts). */
+	readonly maxTunnels?: number;
 }
 
 /**

@@ -45,6 +45,7 @@ import {
 } from "./sliding-grants.js";
 import { addActorClaims, enableTokenExchange } from "./token-exchange.js";
 import { addAgentGrantClaim } from "./tunelo-agent-client.js";
+import { addTunnelQuotaClaim } from "./tunnel-quota-claim.js";
 
 /**
  * Endpoint paths, declared once so the HTTP layer (rate limits) and the
@@ -184,9 +185,15 @@ export function buildProviderConfiguration(
 		renderError: renderProviderError,
 		formats: {
 			customizers: {
-				jwt: (ctx, token, parts) => {
+				jwt: async (ctx, token, parts) => {
 					addActorClaims(ctx, token, parts);
 					addAgentGrantClaim(token, parts);
+					await addTunnelQuotaClaim(
+						accountStore,
+						resources.resources.tunnel,
+						token,
+						parts,
+					);
 				},
 			},
 		},
