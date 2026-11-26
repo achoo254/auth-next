@@ -55,7 +55,7 @@ cp .env.example .env         # điền secret theo chú thích trong file
 pnpm dev
 ```
 
-Hoặc chạy cả MongoDB lẫn IdP bằng [`docker-compose.yml`](docker-compose.yml). Danh sách lệnh ở `scripts` của [`package.json`](package.json); cổng kiểm tra trước khi báo xong và giới hạn chạy test trên máy dev ở [`CLAUDE.md`](CLAUDE.md).
+Hoặc chạy cả MongoDB lẫn IdP bằng [`docker-compose.yml`](docker-compose.yml). Danh sách lệnh ở `scripts` của [`package.json`](package.json); cổng kiểm tra trước khi báo xong và giới hạn chạy test trên máy dev ở [`AGENTS.md`](AGENTS.md).
 
 ## Cấu hình và vận hành
 
