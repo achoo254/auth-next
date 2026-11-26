@@ -67,7 +67,7 @@ Bản deploy phải chứa commit có ADR 0008. Lần khởi động đầu tạ
 
 ## 5. Private Email Relay
 
-Người dùng chọn "Ẩn email" thì IdP nhận địa chỉ dạng `…@privaterelay.appleid.com`. IdP **không gửi email** (CLAUDE.md), nên không cần đăng ký gì. Nếu một app (Localman, Scribe…) muốn gửi mail tới các địa chỉ đó: Certificates, Identifiers & Profiles → Services → **Sign in with Apple for Email Communication** → Configure → thêm domain hoặc địa chỉ gửi, domain phải có SPF (và nên có DKIM). Địa chỉ chuyển tiếp giống nhau cho mọi app cùng team, giới hạn 100 mail/ngày. Tài liệu: [Configure Private Email Relay Service](https://developer.apple.com/help/account/configure-app-capabilities/configure-private-email-relay-service), [Communicating using the private email relay service](https://developer.apple.com/documentation/signinwithapple/communicating-using-the-private-email-relay-service).
+Người dùng chọn "Ẩn email" thì IdP nhận địa chỉ dạng `…@privaterelay.appleid.com`. IdP **không gửi email** (AGENTS.md), nên không cần đăng ký gì. Nếu một app (Localman, Scribe…) muốn gửi mail tới các địa chỉ đó: Certificates, Identifiers & Profiles → Services → **Sign in with Apple for Email Communication** → Configure → thêm domain hoặc địa chỉ gửi, domain phải có SPF (và nên có DKIM). Địa chỉ chuyển tiếp giống nhau cho mọi app cùng team, giới hạn 100 mail/ngày. Tài liệu: [Configure Private Email Relay Service](https://developer.apple.com/help/account/configure-app-capabilities/configure-private-email-relay-service), [Communicating using the private email relay service](https://developer.apple.com/documentation/signinwithapple/communicating-using-the-private-email-relay-service).
 
 ## 6. Kiểm thử sau khi bật
 

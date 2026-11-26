@@ -25,7 +25,7 @@ if ! git merge-base --is-ancestor HEAD origin/main; then
 	echo "HEAD $(git rev-parse --short HEAD) is not on origin/main: push it first" >&2
 	exit 1
 fi
-# The full test suite runs only in CI (CLAUDE.md): this commit's ci run must be green.
+# The full test suite runs only in CI (AGENTS.md): this commit's ci run must be green.
 sha="$(git rev-parse HEAD)"
 ci="$(gh run list --workflow ci.yml --commit "$sha" --json status,conclusion --jq '.[0] | "\(.status) \(.conclusion)"')"
 if [ "$ci" != "completed success" ]; then
