@@ -3,7 +3,7 @@ import { z } from "zod";
 import type { OAuthAppCredentials } from "../config/integrations-env.js";
 import type { UpstreamProfile } from "./account-linking.js";
 import { callbackUrl } from "./upstream-callback-url.js";
-import { type UpstreamClient, isFreshAuthTime } from "./upstream-client.js";
+import type { UpstreamClient } from "./upstream-client.js";
 
 /**
  * Google's OpenID Provider metadata, pinned rather than discovered so that
@@ -25,15 +25,6 @@ const googleClaims = z.object({
 	email_verified: z.boolean().optional(),
 	name: z.string().max(200).optional(),
 	picture: z.url().max(2048).optional(),
-	auth_time: z.number().optional(),
-});
-
-/**
- * Asks Google to put `auth_time` in the ID token: per Google's docs it is
- * only sent when requested as an essential claim.
- */
-const AUTH_TIME_CLAIMS = JSON.stringify({
-	id_token: { auth_time: { essential: true } },
 });
 
 /**
@@ -65,11 +56,7 @@ export function createGoogleUpstream(
 					checks.codeVerifier,
 				),
 				code_challenge_method: "S256",
-				// A fresh authentication: Google asks for the credentials
-				// again instead of reusing its session.
-				...(checks.freshLogin
-					? { prompt: "login", max_age: "0", claims: AUTH_TIME_CLAIMS }
-					: { prompt: "select_account" }),
+				prompt: "select_account",
 			});
 		},
 		async fetchProfile(query, checks): Promise<UpstreamProfile> {
@@ -91,11 +78,6 @@ export function createGoogleUpstream(
 					claims.email_verified === true ? claims.email : undefined,
 				name: claims.name,
 				picture: claims.picture,
-				// Proven only by a just-made auth_time; without one the sign-in
-				// completes without amr "reauth" (fails closed for the client).
-				...(checks.freshLogin && isFreshAuthTime(claims.auth_time)
-					? { freshAuth: true }
-					: {}),
 			};
 		},
 	};

@@ -21,31 +21,6 @@ export interface UpstreamChecks {
 	readonly codeVerifier: string;
 	/** OIDC providers only (Google, Apple): bound into the ID token. */
 	readonly nonce: string;
-	/**
-	 * The sign-in must be a fresh authentication (`freshLoginRequired`):
-	 * Google is asked for `prompt=login` + `max_age=0` and `auth_time`; Apple
-	 * has no parameter. The profile's `freshAuth` then says whether the
-	 * provider's `auth_time` proved it (`isFreshAuthTime`).
-	 */
-	readonly freshLogin: boolean;
-}
-
-/**
- * How recent a provider's `auth_time` must be to count as the fresh
- * authentication a `freshLogin` asked for (it is made just before the
- * provider redirects back; this leaves room for clock skew).
- */
-const FRESH_AUTH_WINDOW_SECONDS = 120;
-
-/**
- * Whether `authTime` (the provider ID token's claim) proves a fresh
- * authentication. A missing or stale value proves nothing: the sign-in
- * still completes, only without `amr` "reauth" (fails closed for the client).
- */
-export function isFreshAuthTime(authTime: unknown, now = Date.now()): boolean {
-	if (typeof authTime !== "number") return false;
-	const age = Math.floor(now / 1000) - authTime;
-	return age >= -FRESH_AUTH_WINDOW_SECONDS && age <= FRESH_AUTH_WINDOW_SECONDS;
 }
 
 /** One external sign-in provider, hiding the OAuth library behind it. */

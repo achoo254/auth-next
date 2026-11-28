@@ -116,7 +116,6 @@ export function registerAppLinkStart(
 				state,
 				codeVerifier: verifier,
 				nonce,
-				freshLogin: false,
 			});
 			res.cookie(stateCookieName(services), state, {
 				...stateCookieOptions(services),

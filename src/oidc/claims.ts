@@ -1,5 +1,4 @@
 import type { Account, AccountClaims, FindAccount } from "oidc-provider";
-import { MIU_CLIENT_IDS } from "./miu-clients.js";
 
 /** What the IdP knows about one account, independent of storage. */
 export interface AccountProfile {
@@ -20,8 +19,6 @@ export interface AccountProfile {
 		readonly chatId: string;
 		readonly username?: string;
 	};
-	/** The linked Google account's `sub` (`google_sub`, Miu World only). */
-	readonly googleSub?: string;
 	/** Tunnel quota for Tunelo's access tokens (`max_tunnels`, tunnel-quota-claim.ts). */
 	readonly maxTunnels?: number;
 }
@@ -36,14 +33,14 @@ export interface AccountStore {
 
 /**
  * Scope → claims released for it; `openid` always yields `sub`, and `amr`
- * (how the session signed in: "fed", the provider, "reauth" after a proven
- * fresh authentication; upstream-pending.ts) for the ID token. oidc-provider
- * only puts `amr` there when a granted scope lists it.
+ * (how the session signed in: "fed" and the provider; upstream-pending.ts)
+ * for the ID token. oidc-provider only puts `amr` there when a granted
+ * scope lists it.
  */
 export const CLAIMS_BY_SCOPE = {
 	openid: ["sub", "amr"],
 	profile: ["preferred_username", "name", "picture", "telegram_linked"],
-	email: ["email", "email_verified", "google_sub"],
+	email: ["email", "email_verified"],
 	telegram: ["telegram_chat_id", "telegram_username"],
 } as const;
 
@@ -51,19 +48,7 @@ export const CLAIMS_BY_SCOPE = {
  * Claims released only at the userinfo endpoint, never in an ID token
  * (which travels through the browser and client logs).
  */
-const USERINFO_ONLY_CLAIMS = new Set([
-	...CLAIMS_BY_SCOPE.telegram,
-	"google_sub",
-]);
-
-/**
- * Clients that receive `google_sub`: Miu World matches it against the
- * Google id of parents from its former direct Google sign-in before linking
- * them (docs/integration-guide.md). No other client ever gets it.
- */
-const GOOGLE_SUB_CLIENTS: ReadonlySet<string> = new Set(
-	Object.values(MIU_CLIENT_IDS),
-);
+const USERINFO_ONLY_CLAIMS = new Set(CLAIMS_BY_SCOPE.telegram);
 
 /**
  * Every claim value this issuer can release for an account and `use`; the
@@ -73,8 +58,6 @@ export function profileToClaims(
 	profile: AccountProfile,
 	/** oidc-provider's `use`: "id_token" or "userinfo". */
 	use = "userinfo",
-	/** The client asking; `google_sub` is only ever for GOOGLE_SUB_CLIENTS. */
-	clientId?: string,
 ): AccountClaims {
 	const claims: AccountClaims = {
 		sub: profile.sub,
@@ -87,10 +70,6 @@ export function profileToClaims(
 		telegram_linked: profile.telegramLinked,
 		telegram_chat_id: profile.telegram?.chatId,
 		telegram_username: profile.telegram?.username,
-		google_sub:
-			clientId !== undefined && GOOGLE_SUB_CLIENTS.has(clientId)
-				? profile.googleSub
-				: undefined,
 	};
 	if (use !== "userinfo") {
 		for (const claim of USERINFO_ONLY_CLAIMS) delete claims[claim];
@@ -103,13 +82,12 @@ export function profileToClaims(
  * the returned claims down to the granted scopes and claims.
  */
 export function createFindAccount(store: AccountStore): FindAccount {
-	return async (ctx, sub): Promise<Account | undefined> => {
+	return async (_ctx, sub): Promise<Account | undefined> => {
 		const profile = await store.findAccount(sub);
 		if (!profile) return undefined;
-		const clientId = ctx.oidc.client?.clientId;
 		return {
 			accountId: profile.sub,
-			claims: (use) => profileToClaims(profile, use, clientId),
+			claims: (use) => profileToClaims(profile, use),
 		};
 	};
 }

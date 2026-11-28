@@ -22,11 +22,6 @@ export interface UpstreamProfile {
 	 * authorization at Apple when it is unlinked. Never logged.
 	 */
 	readonly revocationToken?: string;
-	/**
-	 * The provider proved a fresh authentication, asked for by the client
-	 * (`UpstreamChecks.freshLogin`; Google and Apple only): `amr` "reauth".
-	 */
-	readonly freshAuth?: boolean;
 }
 
 export type UpstreamLoginDecision =
