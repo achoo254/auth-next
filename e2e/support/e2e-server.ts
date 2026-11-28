@@ -28,7 +28,6 @@ import {
 import {
 	envClientSecrets,
 	envKbClients,
-	envMiuClients,
 	envScribeClients,
 	envSignInOnlyApps,
 	envTenant,
@@ -69,7 +68,6 @@ const env = parseEnv({
 	// The hero apps a new account is welcomed with (links only, never opened).
 	TUVI_WEB_URL: "https://tuvi.hoandat.com",
 	TUVI_WEB_CLIENT_SECRET: randomBytes(32).toString("base64url"),
-	MIU_WEB_CLIENT_SECRET: randomBytes(32).toString("base64url"),
 	WEBNHANH_WEB_URL: "https://webnhanh.hoandat.com",
 	WEBNHANH_WEB_CLIENT_SECRET: randomBytes(32).toString("base64url"),
 	LOG_LEVEL: process.env.E2E_LOG_LEVEL ?? "warn",
@@ -90,7 +88,6 @@ const provider = createProvider({
 	cookieKeys: env.COOKIE_KEYS,
 	chatMobileRedirectUri: env.CHAT_MOBILE_REDIRECT_URI,
 	scribeClients: envScribeClients(env),
-	miuClients: envMiuClients(env),
 	signInOnlyApps: envSignInOnlyApps(env),
 	kbClients: envKbClients(env),
 	clientSecrets: envClientSecrets(env),

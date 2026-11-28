@@ -5,7 +5,6 @@ import { createLogger } from "../logger.js";
 import {
 	envClientSecrets,
 	envKbClients,
-	envMiuClients,
 	envScribeClients,
 	envSignInOnlyApps,
 	envTenant,
@@ -15,7 +14,6 @@ import { createInMemoryAccountStore } from "./claims.js";
 import { STATIC_CLIENT_IDS, TOKEN_EXCHANGE_GRANT } from "./clients.js";
 import { RSA_ID_TOKEN_ALG, SIGNING_ALG, type SigningJwks } from "./jwks.js";
 import { isKbClientId } from "./kb-clients.js";
-import { isMiuClientId } from "./miu-clients.js";
 import { collectionNameFor } from "./mongo-adapter.js";
 import { createProvider } from "./provider.js";
 import { isScribeClientId } from "./scribe-clients.js";
@@ -59,7 +57,6 @@ function text(value: unknown): string {
 function isOptionalClientId(clientId: string): boolean {
 	return (
 		isScribeClientId(clientId) ||
-		isMiuClientId(clientId) ||
 		isSignInOnlyClientId(clientId) ||
 		isKbClientId(clientId)
 	);
@@ -85,7 +82,6 @@ export async function inspectStaticClients(deps: {
 		cookieKeys: deps.env.COOKIE_KEYS,
 		chatMobileRedirectUri: deps.env.CHAT_MOBILE_REDIRECT_URI,
 		scribeClients: envScribeClients(deps.env),
-		miuClients: envMiuClients(deps.env),
 		signInOnlyApps: envSignInOnlyApps(deps.env),
 		kbClients: envKbClients(deps.env),
 		clientSecrets: envClientSecrets(deps.env),
@@ -95,7 +91,7 @@ export async function inspectStaticClients(deps: {
 	const clients: StaticClientSummary[] = [];
 	for (const clientId of Object.values(STATIC_CLIENT_IDS)) {
 		const client = await provider.Client.find(clientId);
-		// Scribe's, Miu's, Knowledge Base's and the sign-in-only apps' exist only
+		// Scribe's, Knowledge Base's and the sign-in-only apps' exist only
 		// when configured.
 		if (!client && isOptionalClientId(clientId)) continue;
 		if (!client) throw new Error(`Static client ${clientId} is missing`);

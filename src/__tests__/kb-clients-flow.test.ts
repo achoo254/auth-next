@@ -34,7 +34,7 @@ import { OTHER_TEST_TENANT } from "./helpers/test-tenant.js";
  * `openid profile email`, keeps its own session (no refresh token) and
  * learns of IdP sign-outs by back-channel. oidc-provider refuses outgoing
  * calls to special-use addresses, so the back-channel logout is checked on
- * the IdP side, as in miu-clients-flow.test.ts.
+ * the IdP side.
  */
 const KB_URL = "http://127.0.0.1:9";
 const KB_CALLBACK = `${KB_URL}/auth/callback`;

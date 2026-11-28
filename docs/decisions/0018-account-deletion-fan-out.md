@@ -32,3 +32,5 @@ Mỗi app từng có luồng xoá riêng (Chat giữ 30 ngày và bắt chuyển
 - Thêm app mới thì phải có endpoint nhận và thêm URL vào `ACCOUNT_DELETED_URLS`; thiếu thì dữ liệu app đó nằm lại (như trước ADR này).
 - App ngừng chạy lâu thì bản giao nằm chờ trong outbox của IdP; không mất.
 - Mất đường lùi 30 ngày của Chat: đây là lựa chọn có chủ ý (một luật cho mọi app).
+
+Ghi chú 28/11/2026: Miu World đã ngừng và client của nó đã gỡ; URL nhận của Miu phải bỏ khỏi `ACCOUNT_DELETED_URLS`.

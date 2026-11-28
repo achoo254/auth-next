@@ -9,7 +9,6 @@ import { type AppServices, createServices } from "../services.js";
 import {
 	envClientSecrets,
 	envKbClients,
-	envMiuClients,
 	envScribeClients,
 	envSignInOnlyApps,
 	envTenant,
@@ -46,7 +45,6 @@ export function buildPrimaryRuntime(
 		cookieKeys: env.COOKIE_KEYS,
 		chatMobileRedirectUri: env.CHAT_MOBILE_REDIRECT_URI,
 		scribeClients: envScribeClients(env),
-		miuClients: envMiuClients(env),
 		signInOnlyApps: envSignInOnlyApps(env),
 		kbClients: envKbClients(env),
 		clientSecrets: envClientSecrets(env),

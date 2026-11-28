@@ -46,7 +46,6 @@ export const zhSignIn: Translation<typeof enSignIn> = {
 	"welcome.pitch.tuvi": "排命盘、每天早上求一支签，上班前看着玩。",
 	"welcome.pitch.webnhanh":
 		"用现成模板做网站，马上发布到你自己的地址，无需写代码。",
-	"welcome.pitch.miu": "让孩子边玩边学数学和越南语的 3D 世界。",
 	"welcome.open": "打开",
 	"welcome.newTab": "（在新标签页中打开）",
 	"welcome.continueTo": "返回 {app}",

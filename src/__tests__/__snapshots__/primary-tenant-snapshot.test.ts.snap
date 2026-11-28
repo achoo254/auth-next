@@ -166,16 +166,7 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 </li></ul>
 </section><section class="apps-section apps-group" aria-labelledby="apps-group-fun" data-id="apps-group-fun">
 <div class="apps-group-head"><h2 class="apps-group-title" id="apps-group-fun">Apps for fun</h2><p class="apps-group-lead">Play, learn and have fun with the same account.</p></div>
-<ul class="apps-grid" data-id="app-list-fun"><li class="app-card tone-cyan" data-id="app-miu-web">
-<div class="app-card-head">
-<span class="app-card-icon"><img class="app-mark" src="/assets/img/apps/miu-mark-128.webp" width="44" height="44" alt=""></span>
-<div class="app-card-heading"><h3 class="app-card-name">Miu World</h3>
-<p class="app-card-meta"><span class="badge badge-neutral">Web app</span><span class="mono">miu.hoandat.com</span></p></div>
-</div>
-<p class="app-card-desc">A 3D world to play and learn maths and Vietnamese with friends.</p>
-<div class="app-card-how"><p class="app-card-how-label">How to sign in</p><p>Choose Sign in on the site or in the iPhone or Android app.</p></div>
-<div class="app-card-foot"><a class="btn btn-secondary" href="https://miu.hoandat.com" data-id="app-open-miu-web">Open</a></div>
-</li><li class="app-card tone-amber" data-id="app-tieude-web">
+<ul class="apps-grid" data-id="app-list-fun"><li class="app-card tone-amber" data-id="app-tieude-web">
 <div class="app-card-head">
 <span class="app-card-icon"><img class="app-mark" src="/assets/img/apps/tieude-mark-128.webp" width="44" height="44" alt=""></span>
 <div class="app-card-heading"><h3 class="app-card-name">Tiểu Đệ</h3>
@@ -380,16 +371,7 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 </li></ul>
 </section><section class="apps-section apps-group" aria-labelledby="apps-group-fun" data-id="apps-group-fun">
 <div class="apps-group-head"><h2 class="apps-group-title" id="apps-group-fun">Ứng dụng giải trí</h2><p class="apps-group-lead">Chơi, học và giải trí với cùng một tài khoản.</p></div>
-<ul class="apps-grid" data-id="app-list-fun"><li class="app-card tone-cyan" data-id="app-miu-web">
-<div class="app-card-head">
-<span class="app-card-icon"><img class="app-mark" src="/assets/img/apps/miu-mark-128.webp" width="44" height="44" alt=""></span>
-<div class="app-card-heading"><h3 class="app-card-name">Miu World</h3>
-<p class="app-card-meta"><span class="badge badge-neutral">Ứng dụng web</span><span class="mono">miu.hoandat.com</span></p></div>
-</div>
-<p class="app-card-desc">Thế giới 3D vừa chơi vừa học Toán và Tiếng Việt, chơi cùng bạn bè.</p>
-<div class="app-card-how"><p class="app-card-how-label">Cách đăng nhập</p><p>Chọn Đăng nhập trên trang hoặc trong app iPhone, Android.</p></div>
-<div class="app-card-foot"><a class="btn btn-secondary" href="https://miu.hoandat.com" data-id="app-open-miu-web">Mở</a></div>
-</li><li class="app-card tone-amber" data-id="app-tieude-web">
+<ul class="apps-grid" data-id="app-list-fun"><li class="app-card tone-amber" data-id="app-tieude-web">
 <div class="app-card-head">
 <span class="app-card-icon"><img class="app-mark" src="/assets/img/apps/tieude-mark-128.webp" width="44" height="44" alt=""></span>
 <div class="app-card-heading"><h3 class="app-card-name">Tiểu Đệ</h3>
@@ -594,16 +576,7 @@ exports[`primary tenant (hoandat.com) is unchanged > renders /apps the same way 
 </li></ul>
 </section><section class="apps-section apps-group" aria-labelledby="apps-group-fun" data-id="apps-group-fun">
 <div class="apps-group-head"><h2 class="apps-group-title" id="apps-group-fun">娱乐应用</h2><p class="apps-group-lead">用同一个账号玩、学、娱乐。</p></div>
-<ul class="apps-grid" data-id="app-list-fun"><li class="app-card tone-cyan" data-id="app-miu-web">
-<div class="app-card-head">
-<span class="app-card-icon"><img class="app-mark" src="/assets/img/apps/miu-mark-128.webp" width="44" height="44" alt=""></span>
-<div class="app-card-heading"><h3 class="app-card-name">Miu World</h3>
-<p class="app-card-meta"><span class="badge badge-neutral">网页应用</span><span class="mono">miu.hoandat.com</span></p></div>
-</div>
-<p class="app-card-desc">边玩边学数学和越南语的 3D 世界，可与朋友一起玩。</p>
-<div class="app-card-how"><p class="app-card-how-label">登录方式</p><p>在网站或 iPhone、Android 应用中选择登录。</p></div>
-<div class="app-card-foot"><a class="btn btn-secondary" href="https://miu.hoandat.com" data-id="app-open-miu-web">打开</a></div>
-</li><li class="app-card tone-amber" data-id="app-tieude-web">
+<ul class="apps-grid" data-id="app-list-fun"><li class="app-card tone-amber" data-id="app-tieude-web">
 <div class="app-card-head">
 <span class="app-card-icon"><img class="app-mark" src="/assets/img/apps/tieude-mark-128.webp" width="44" height="44" alt=""></span>
 <div class="app-card-heading"><h3 class="app-card-name">Tiểu Đệ</h3>
@@ -840,7 +813,6 @@ exports[`primary tenant (hoandat.com) is unchanged > serves the same discovery d
     "telegram_linked",
     "email",
     "email_verified",
-    "google_sub",
     "telegram_chat_id",
     "telegram_username",
     "sid",
@@ -1212,83 +1184,6 @@ exports[`primary tenant (hoandat.com) is unchanged > serves the same static clie
   },
   {
     "allowed_resources": [],
-    "application_type": "web",
-    "backchannel_logout_session_required": true,
-    "backchannel_logout_uri": "https://miu.hoandat.com/api/auth/backchannel-logout",
-    "client_id": "miu-web",
-    "client_name": "Miu World",
-    "dpop_bound_access_tokens": false,
-    "grant_types": [
-      "authorization_code",
-    ],
-    "id_token_signed_response_alg": "ES256",
-    "post_logout_redirect_uris": [
-      "https://miu.hoandat.com/",
-    ],
-    "redirect_uris": [
-      "https://miu.hoandat.com/api/auth/callback",
-    ],
-    "require_auth_time": false,
-    "require_pushed_authorization_requests": false,
-    "response_types": [
-      "code",
-    ],
-    "scope": "openid email",
-    "subject_type": "public",
-    "token_endpoint_auth_method": "client_secret_basic",
-  },
-  {
-    "allowed_resources": [],
-    "application_type": "native",
-    "backchannel_logout_session_required": false,
-    "client_id": "miu-mobile",
-    "client_name": "Miu World",
-    "dpop_bound_access_tokens": false,
-    "grant_types": [
-      "authorization_code",
-    ],
-    "id_token_signed_response_alg": "ES256",
-    "post_logout_redirect_uris": [],
-    "redirect_uris": [
-      "com.hoandat.miu:/auth/callback",
-    ],
-    "require_auth_time": false,
-    "require_pushed_authorization_requests": false,
-    "response_types": [
-      "code",
-    ],
-    "scope": "openid email",
-    "subject_type": "public",
-    "token_endpoint_auth_method": "none",
-  },
-  {
-    "allowed_resources": [],
-    "application_type": "web",
-    "backchannel_logout_session_required": false,
-    "client_id": "miu-web-dev",
-    "client_name": "Miu World",
-    "dpop_bound_access_tokens": false,
-    "grant_types": [
-      "authorization_code",
-    ],
-    "id_token_signed_response_alg": "ES256",
-    "post_logout_redirect_uris": [
-      "http://localhost:5173/",
-    ],
-    "redirect_uris": [
-      "http://localhost:5173/api/auth/callback",
-    ],
-    "require_auth_time": false,
-    "require_pushed_authorization_requests": false,
-    "response_types": [
-      "code",
-    ],
-    "scope": "openid email",
-    "subject_type": "public",
-    "token_endpoint_auth_method": "client_secret_basic",
-  },
-  {
-    "allowed_resources": [],
     "application_type": "native",
     "backchannel_logout_session_required": false,
     "client_id": "account-ios",
@@ -1645,8 +1540,6 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in en 
   "apps.lockinWeb.description": "Lock in hangout plans with your friends through one link.",
   "apps.lockinWeb.signIn": "Choose Sign in on the site to create a plan; friends join through the link without an account.",
   "apps.manage": "To see or remove the apps that can access your account, open {account}.",
-  "apps.miuWeb.description": "A 3D world to play and learn maths and Vietnamese with friends.",
-  "apps.miuWeb.signIn": "Choose Sign in on the site or in the iPhone or Android app.",
   "apps.open": "Open",
   "apps.scribeMcp.description": "Lets AI tools such as Claude Code read, search and ask about your recordings and transcripts on Scribe.",
   "apps.scribeMcp.signIn": "Add {address} to your AI tool as an MCP server, then approve what it may do on the consent page.",
@@ -1921,7 +1814,6 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in en 
   "welcome.pitch.chuanho": "Tap the wooden fish, light some incense, let the deadline stress go.",
   "welcome.pitch.clip": "Vertical videos from a template, trend-ready without learning to edit.",
   "welcome.pitch.kb": "Bilingual explainers on everything, plus an AI that answers when the boss asks something hard.",
-  "welcome.pitch.miu": "A 3D world where kids play their way through maths and Vietnamese.",
   "welcome.pitch.tuvi": "Your horoscope chart and a fortune stick every morning, just for fun before work.",
   "welcome.pitch.webnhanh": "A website from a template, live at your own address, zero code.",
   "welcome.subtitle": "One hoandat.com account works in every app. Got a minute? Give this one a spin:",
@@ -2025,8 +1917,6 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in vi 
   "apps.lockinWeb.description": "Chốt kèo đi chơi với nhóm bạn bằng một link.",
   "apps.lockinWeb.signIn": "Chọn Đăng nhập trên trang để tạo kèo; bạn bè vào bằng link, không cần tài khoản.",
   "apps.manage": "Để xem hoặc gỡ các ứng dụng đang có quyền vào tài khoản, mở trang {account}.",
-  "apps.miuWeb.description": "Thế giới 3D vừa chơi vừa học Toán và Tiếng Việt, chơi cùng bạn bè.",
-  "apps.miuWeb.signIn": "Chọn Đăng nhập trên trang hoặc trong app iPhone, Android.",
   "apps.open": "Mở",
   "apps.scribeMcp.description": "Cho công cụ AI như Claude Code đọc, tìm và hỏi đáp trên bản ghi và bản chép lời của bạn trên Scribe.",
   "apps.scribeMcp.signIn": "Thêm {address} vào công cụ AI làm MCP server, rồi duyệt những gì nó được làm ở trang cấp quyền.",
@@ -2301,7 +2191,6 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in vi 
   "welcome.pitch.chuanho": "Gõ mõ, thắp hương, xả stress sau deadline cho tâm bớt lag.",
   "welcome.pitch.clip": "Làm video dọc từ mẫu có sẵn, bắt trend mà không cần biết dựng.",
   "welcome.pitch.kb": "Kho kiến thức song ngữ đủ chủ đề, có AI trả lời hộ khi sếp hỏi khó.",
-  "welcome.pitch.miu": "Thế giới 3D cho bé vừa chơi vừa học Toán và Tiếng Việt.",
   "welcome.pitch.tuvi": "Lập lá số, xin quẻ mỗi sáng, xem cho vui trước giờ làm.",
   "welcome.pitch.webnhanh": "Làm website từ mẫu có sẵn, đăng ngay ở địa chỉ riêng, không cần code.",
   "welcome.subtitle": "Một tài khoản hoandat.com dùng được mọi app. Rảnh tay thì thử thêm app này:",
@@ -2405,8 +2294,6 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in zh-
   "apps.lockinWeb.description": "用一个链接和朋友敲定出游计划。",
   "apps.lockinWeb.signIn": "在网站上选择登录，即可发起计划；朋友通过链接加入，无需账号。",
   "apps.manage": "如需查看或移除可以访问你账号的应用，请打开{account}页面。",
-  "apps.miuWeb.description": "边玩边学数学和越南语的 3D 世界，可与朋友一起玩。",
-  "apps.miuWeb.signIn": "在网站或 iPhone、Android 应用中选择登录。",
   "apps.open": "打开",
   "apps.scribeMcp.description": "让 Claude Code 等 AI 工具读取、搜索你在 Scribe 上的录音和文字稿，并就其提问。",
   "apps.scribeMcp.signIn": "在 AI 工具中把 {address} 添加为 MCP 服务器，然后在授权页面批准它可以执行的操作。",
@@ -2681,7 +2568,6 @@ exports[`primary tenant (hoandat.com) is unchanged > shows the same texts in zh-
   "welcome.pitch.chuanho": "敲木鱼、点炷香，赶完截止日期放松一下。",
   "welcome.pitch.clip": "用模板做竖屏短视频，不会剪辑也能跟上热点。",
   "welcome.pitch.kb": "各类主题的双语知识库，老板问难题时让 AI 帮你答。",
-  "welcome.pitch.miu": "让孩子边玩边学数学和越南语的 3D 世界。",
   "welcome.pitch.tuvi": "排命盘、每天早上求一支签，上班前看着玩。",
   "welcome.pitch.webnhanh": "用现成模板做网站，马上发布到你自己的地址，无需写代码。",
   "welcome.subtitle": "一个 hoandat.com 账号通用于所有应用。有空的话，试试这个：",

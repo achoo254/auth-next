@@ -63,3 +63,5 @@ Ngày 24/10/2026 lúc 21:00, user quyết định: bỏ đa tenant, giữ trư�
 - Bề mặt vận hành của IdP nhỏ lại: một process, một cổng, không timer root, không file nginx dùng chung theo tenant, `.env` không còn khoá gốc nào ngoài khoá ký, cookie và secret client.
 - Discovery, client tĩnh, cookie và `kid` của JWKS ở `auth.hoandat.com` không đổi: test `primary-tenant-snapshot` giữ nguyên snapshot, chỉ bỏ khỏi phần chụp chữ những chuỗi mà tenant chính chưa bao giờ hiện.
 - `growth-report` vẫn đọc theo `tenantId` và giờ chỉ thấy `primary`.
+
+Ghi chú 28/11/2026: Miu World (`miu-world-next`) đã ngừng; client của nó đã gỡ khỏi IdP.

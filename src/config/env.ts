@@ -12,7 +12,6 @@ import {
 } from "./integrations-env.js";
 import { iosEnvShape } from "./ios-env.js";
 import { KB_URL_KEYS, checkKbGroups, kbEnvShape } from "./kb-env.js";
-import { checkMiuDevGroup, miuEnvShape } from "./miu-env.js";
 import { checkScribeDevGroup, scribeEnvShape } from "./scribe-env.js";
 import {
 	SIGN_IN_ONLY_URL_KEYS,
@@ -52,7 +51,6 @@ const PRODUCTION_URLS = [
 	"TUNELO_WEB_URL",
 	"CHAT_WEB_URL",
 	"SCRIBE_WEB_URL",
-	"MIU_WEB_URL",
 ] as const;
 
 /** Optional URLs that, when set in production, must be public https. */
@@ -157,7 +155,6 @@ const envSchema = z
 		...integrationEnvShape,
 		...appleEnvShape,
 		...scribeEnvShape,
-		...miuEnvShape,
 		...signInOnlyEnvShape,
 		...kbEnvShape,
 		...iosEnvShape,
@@ -167,7 +164,6 @@ const envSchema = z
 		checkIntegrationGroups(env, ctx);
 		checkAppleGroup(env, ctx);
 		checkScribeDevGroup(env, ctx);
-		checkMiuDevGroup(env, ctx);
 		checkSignInOnlyGroups(env, ctx);
 		checkKbGroups(env, ctx);
 		if (env.NODE_ENV !== "production") return;

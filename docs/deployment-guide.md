@@ -110,26 +110,6 @@ App Scribe (repo `scribe-next`, thư mục local `one-scribe`, `https://scribe.h
 
 Kiểm từ ngoài (cùng cách như chat): `for c in scribe-web scribe-mobile scribe-web-dev; do curl -s -o /dev/null -w "$c %{redirect_url}\n" "https://auth.hoandat.com/auth?client_id=$c&response_type=code&scope=openid" | cut -d'?' -f1; done`.
 
-## Client của Miu World
-
-Miu World (repo `miu-world-next`, `https://miu.hoandat.com`, game cho mọi lứa tuổi, phụ huynh đăng nhập) dùng `miu-web` (confidential, BFF: server Miu đổi code rồi cấp phiên riêng của Miu), `miu-mobile` (public native cho app iPhone/Android, scheme `com.hoandat.miu`) và `miu-web-dev` (tuỳ chọn, chỉ cho dev local) — `src/oidc/miu-clients.ts`. Scope chỉ `openid email`, chỉ grant `authorization_code`: không có refresh token, Miu không giữ token nào của IdP sau khi đăng nhập.
-
-| Biến | Ý nghĩa |
-|---|---|
-| `MIU_WEB_URL` | origin của Miu, mặc định `https://miu.hoandat.com`; redirect `/api/auth/callback`, back-channel `/api/auth/backchannel-logout`, post-logout `/` |
-| `MIU_WEB_CLIENT_SECRET` | tuỳ chọn, ≥ 32 ký tự; có thì bật `miu-web` + `miu-mobile` và thẻ Miu World ở `/apps`; thiếu thì không có client Miu và IdP vẫn khởi động. Cùng giá trị ở env server Miu (`OIDC_WEB_CLIENT_SECRET` phía Miu) |
-| `MIU_MOBILE_REDIRECT_URI` | tuỳ chọn, mặc định `com.hoandat.miu:/auth/callback`; phải trùng `urlScheme` trong `brand.config.json` của Miu |
-| `MIU_WEB_DEV_URL` + `MIU_WEB_DEV_CLIENT_SECRET` | đặt cả hai hoặc không: bật `miu-web-dev` (redirect loopback cổng khớp chính xác, vd `http://localhost:5173/api/auth/callback` qua proxy Vite, không back-channel) và `miu-mobile` |
-
-Bật trên production (không in secret ra terminal):
-
-1. Backup như mục "Các lần sau", deploy commit có `miu-clients.ts`.
-2. Sinh secret thẳng vào `.env` của IdP: `printf 'MIU_WEB_CLIENT_SECRET=%s\n' "$(openssl rand -base64 48 | tr -d '\n')" >> /var/www/hoandat-auth/.env` (kiểm chỉ có một dòng `MIU_WEB_CLIENT_SECRET`: `grep -c '^MIU_WEB_CLIENT_SECRET=' .env`). Chép cùng giá trị sang env của server Miu (đọc tệp, không echo) và lưu bản sao ở iCloud access-tokens.
-3. `pm2 startOrReload infra/ecosystem.config.cjs --update-env`, `curl -fsS https://auth.hoandat.com/healthz`, `pnpm seed:clients` (phải liệt kê `miu-web "Miu World"`, back-channel `https://miu.hoandat.com/api/auth/backchannel-logout`, `miu-mobile` redirect `com.hoandat.miu:/auth/callback`).
-4. Kiểm từ ngoài (như Scribe): `for c in miu-web miu-mobile; do curl -s -o /dev/null -w "$c %{redirect_url}\n" "https://auth.hoandat.com/auth?client_id=$c&response_type=code&scope=openid" | cut -d'?' -f1; done` phải in `https://miu.hoandat.com/api/auth/callback` và `com.hoandat.miu:/auth/callback`.
-
-Rollback: xoá dòng `MIU_WEB_CLIENT_SECRET` rồi reload; IdP không còn client Miu (Miu sẽ báo đăng nhập không khả dụng).
-
 ## Client của Tiểu Đệ, Tử Vi, Clip, Web Nhanh, Lockin, Chùa Nhỏ và Hành Trình
 
 Bảy app đăng nhập để biết khách có tài khoản dùng chung một kiểu client (`src/oidc/sign-in-only-clients.ts`): confidential, `client_secret_basic`, không refresh token, redirect `/auth/callback`. Tiểu Đệ chỉ có scope `openid`; Tử Vi, Clip, Web Nhanh, Lockin, Chùa Nhỏ và Hành Trình có `openid profile email` (tên, ảnh, email cho menu tài khoản trên header; Chùa Nhỏ chỉ xin `openid profile`).
@@ -161,7 +141,7 @@ Knowledge Base (repo `kb-next`, `https://kb.hoandat.com`, knowledge base song ng
 | `KB_WEB_URL` + `KB_WEB_CLIENT_SECRET` | đặt cả hai hoặc không (secret ≥ 32 ký tự; production bắt buộc https công khai): bật `kb-web` và thẻ Knowledge Base ở `/apps` (nhóm app chính). Cùng secret là `AUTH_CLIENT_SECRET` trong `.env` của Knowledge Base |
 | `KB_WEB_DEV_URL` + `KB_WEB_DEV_CLIENT_SECRET` | đặt cả hai hoặc không: bật `kb-web-dev` (redirect loopback cổng khớp chính xác, vd `http://localhost:5321/auth/callback`, không back-channel vì IdP không gọi được máy dev) |
 
-Bật trên production: sinh secret thẳng vào `.env` của IdP như Miu (`printf 'KB_WEB_CLIENT_SECRET=%s\n' "$(openssl rand -base64 48 | tr -d '\n')" >> /var/www/hoandat-auth/.env`, thêm dòng `KB_WEB_URL=https://kb.hoandat.com`), chép secret sang `.env` của Knowledge Base, `pm2 startOrReload infra/ecosystem.config.cjs --update-env`, rồi `pnpm seed:clients` phải liệt kê `kb-web "Knowledge Base"` với back-channel `https://kb.hoandat.com/auth/backchannel-logout`.
+Bật trên production: sinh secret thẳng vào `.env` của IdP (`printf 'KB_WEB_CLIENT_SECRET=%s\n' "$(openssl rand -base64 48 | tr -d '\n')" >> /var/www/hoandat-auth/.env`, thêm dòng `KB_WEB_URL=https://kb.hoandat.com`), chép secret sang `.env` của Knowledge Base, `pm2 startOrReload infra/ecosystem.config.cjs --update-env`, rồi `pnpm seed:clients` phải liệt kê `kb-web "Knowledge Base"` với back-channel `https://kb.hoandat.com/auth/backchannel-logout`.
 
 Rollback: xoá hai dòng `KB_WEB_*` rồi reload; nút đăng nhập của Knowledge Base trả lỗi, thẻ Knowledge Base rời `/apps`.
 

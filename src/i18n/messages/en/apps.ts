@@ -52,10 +52,6 @@ export const enApps = {
 		"Make a website from a template and publish it at its own address; developers deploy from a git link or a zip.",
 	"apps.webnhanhWeb.signIn":
 		"Choose Sign in on the site to make and publish websites.",
-	"apps.miuWeb.description":
-		"A 3D world to play and learn maths and Vietnamese with friends.",
-	"apps.miuWeb.signIn":
-		"Choose Sign in on the site or in the iPhone or Android app.",
 	"apps.tieudeWeb.description":
 		"An AI bot that does small writing jobs for free.",
 	"apps.tieudeWeb.signIn": "Choose Sign in on the site to get more free uses.",

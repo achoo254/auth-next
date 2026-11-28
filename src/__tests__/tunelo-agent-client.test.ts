@@ -21,7 +21,6 @@ import { hasHardCap } from "../oidc/sliding-grants.js";
 import {
 	envClientSecrets,
 	envKbClients,
-	envMiuClients,
 	envScribeClients,
 	envSignInOnlyApps,
 	envTenant,
@@ -114,7 +113,6 @@ describe("tunelo-agent leaves every other client as it was", () => {
 			envClientSecrets(env),
 			env.CHAT_MOBILE_REDIRECT_URI,
 			envScribeClients(env),
-			envMiuClients(env),
 			envSignInOnlyApps(env),
 			envKbClients(env),
 		);

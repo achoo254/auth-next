@@ -62,7 +62,7 @@ describe("app list page", () => {
 				webApps: {
 					...STAGING.webApps,
 					scribe: "https://scribe.staging.example",
-					miu: "https://miu.staging.example",
+					tuvi: "https://tuvi.staging.example",
 					tieude: "https://tieude.staging.example",
 				},
 			},
@@ -73,7 +73,7 @@ describe("app list page", () => {
 				/(?:src|href)="\/assets\/img\/(apps\/[a-z0-9-]+\.webp)"/g,
 			),
 		].map((match) => match[1]);
-		// Localman, Tunelo, Chat, Scribe, Miu World, Tiểu Đệ: web apps only.
+		// Localman, Tunelo, Chat, Scribe, Tử Vi, Tiểu Đệ: web apps only.
 		expect(new Set(marks).size).toBe(6);
 		for (const mark of marks) {
 			expect(existsSync(`${STATIC_DIR}/img/${mark}`), mark).toBe(true);
@@ -122,28 +122,6 @@ describe("app list page", () => {
 
 		const unconfigured = renderAppsPage(STAGING, testPage("en", "/apps"));
 		expect(unconfigured).not.toContain('data-id="app-scribe-web"');
-	});
-
-	it("lists Miu World once its client is configured", () => {
-		const miu = "https://miu.staging.example";
-		const withMiu = { ...STAGING, webApps: { ...STAGING.webApps, miu } };
-		const html = renderAppsPage(withMiu, testPage("en", "/apps"));
-		expect(html).toContain('data-id="app-open-miu-web"');
-		expect(html).toContain(`href="${miu}"`);
-		// Apps for fun are listed in their own group, not drawn in the work diagram.
-		expect(html).not.toContain(">Miu World</text>");
-		expect(html).toContain("signs you in to Localman, Tunelo, and Chat.");
-		const fun = html.slice(html.indexOf('data-id="apps-group-fun"'));
-		expect(fun).toContain('data-id="app-miu-web"');
-		expect(html.indexOf('data-id="apps-group-work"')).toBeLessThan(
-			html.indexOf('data-id="apps-group-fun"'),
-		);
-		const vi = renderAppsPage(withMiu, testPage("vi", "/apps"));
-		expect(vi).toContain("vừa chơi vừa học Toán và Tiếng Việt");
-
-		const unconfigured = renderAppsPage(STAGING, testPage("en", "/apps"));
-		expect(unconfigured).not.toContain('data-id="app-miu-web"');
-		expect(unconfigured).not.toContain(miu);
 	});
 
 	it("lists Tiểu Đệ with its mark once its client is configured", () => {

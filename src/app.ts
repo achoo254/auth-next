@@ -42,7 +42,6 @@ export interface TenantAppOptions {
 		| "TRUST_PROXY"
 		| "CHAT_MOBILE_REDIRECT_URI"
 		| "SCRIBE_MOBILE_REDIRECT_URI"
-		| "MIU_MOBILE_REDIRECT_URI"
 		| "IOS_APP_ID"
 	>;
 	/**
@@ -115,7 +114,6 @@ export interface AppOptions extends TenantAppOptions {
 		| "ALLOWED_HOSTS"
 		| "CHAT_MOBILE_REDIRECT_URI"
 		| "SCRIBE_MOBILE_REDIRECT_URI"
-		| "MIU_MOBILE_REDIRECT_URI"
 		| "IOS_APP_ID"
 	>;
 	readonly rateLimits?: readonly RateLimitRule[];

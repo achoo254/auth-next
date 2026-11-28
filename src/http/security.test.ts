@@ -165,13 +165,8 @@ describe("form-action", () => {
 		const schemes = nativeRedirectSchemes({
 			CHAT_MOBILE_REDIRECT_URI: "com.hoandat.chat:/auth/callback",
 			SCRIBE_MOBILE_REDIRECT_URI: "com.hoandat.scribe:/auth/callback",
-			MIU_MOBILE_REDIRECT_URI: "com.hoandat.miu:/auth/callback",
 		});
-		expect(schemes).toEqual([
-			"com.hoandat.chat:",
-			"com.hoandat.scribe:",
-			"com.hoandat.miu:",
-		]);
+		expect(schemes).toEqual(["com.hoandat.chat:", "com.hoandat.scribe:"]);
 		const app = express();
 		app.use(securityHeaders("https://auth.example.com", schemes));
 		app.get("/", (_req, res) => {
@@ -185,6 +180,5 @@ describe("form-action", () => {
 			.find((d) => d.trim().startsWith("form-action"));
 		expect(formAction).toContain("com.hoandat.scribe:");
 		expect(formAction).toContain("com.hoandat.chat:");
-		expect(formAction).toContain("com.hoandat.miu:");
 	});
 });

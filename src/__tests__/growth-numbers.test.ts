@@ -71,7 +71,7 @@ beforeAll(async () => {
 	await clientUsageCollection(db).insertMany([
 		// Three different days in the window: a regular user.
 		use(regular, "tuvi-web", daysAgo(1)),
-		use(regular, "miu-web", daysAgo(4)),
+		use(regular, "clip-web", daysAgo(4)),
 		use(regular, "tuvi-web", daysAgo(9)),
 		// Twice the same day, and the IdP's own pages: active, not regular.
 		use(fresh, "clip-web", daysAgo(0.2)),

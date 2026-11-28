@@ -23,9 +23,6 @@ const APP_OF_STATIC_CLIENT: Readonly<Record<string, string>> = {
 	[ids.scribeWeb]: "scribe",
 	[ids.scribeMobile]: "scribe",
 	[ids.scribeWebDev]: "scribe",
-	[ids.miuWeb]: "miu",
-	[ids.miuMobile]: "miu",
-	[ids.miuWebDev]: "miu",
 	[ids.tieudeWeb]: "tieude",
 	[ids.tuviWeb]: "tuvi",
 	[ids.clipWeb]: "clip",
@@ -38,13 +35,27 @@ const APP_OF_STATIC_CLIENT: Readonly<Record<string, string>> = {
 };
 
 /**
+ * Clients of retired apps. They are no longer static, but their past usage
+ * still sits in `client_usage` and belongs to the retired app, not to the
+ * dynamically registered clients that every other unknown id is.
+ */
+const APP_OF_RETIRED_CLIENT: Readonly<Record<string, string>> = {
+	"miu-web": "miu",
+	"miu-mobile": "miu",
+	"miu-web-dev": "miu",
+	"truyen-web": "truyen",
+};
+
+/**
  * The app a client belongs to, or undefined for the IdP's own clients.
- * Every client that is not static registered itself (DCR) for Localman's
- * MCP resource, so it is Localman. A static client added later without an
- * entry above counts as an app named after its client id.
+ * Every client that is neither static nor retired registered itself (DCR)
+ * for Localman's MCP resource, so it is Localman. A static client added later
+ * without an entry above counts as an app named after its client id.
  */
 export function appOfClient(clientId: string): string | undefined {
 	if (IDP_OWN_CLIENT_IDS.includes(clientId)) return undefined;
+	const retired = APP_OF_RETIRED_CLIENT[clientId];
+	if (retired !== undefined) return retired;
 	if (!isStaticClientId(clientId)) return "localman";
 	return APP_OF_STATIC_CLIENT[clientId] ?? clientId;
 }

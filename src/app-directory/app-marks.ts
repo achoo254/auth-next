@@ -8,7 +8,6 @@ export type AppIconName =
 	| "tunnel"
 	| "chat"
 	| "scribe"
-	| "miu"
 	| "tieude"
 	| "tuvi"
 	| "clip"
@@ -28,7 +27,6 @@ const ICON_FILES: Readonly<Record<AppIconName, string>> = {
 	tunnel: "tunelo-mark-128.webp",
 	chat: "chat-mark-128.webp",
 	scribe: "scribe-mark-128.webp",
-	miu: "miu-mark-128.webp",
 	tieude: "tieude-mark-128.webp",
 	tuvi: "tuvi-mark-128.webp",
 	clip: "clip-mark-128.webp",

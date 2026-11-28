@@ -4,7 +4,7 @@ import type { Tenant } from "../tenants/tenant.js";
 import { ALLOWED_RESOURCES_PROPERTY } from "./resources.js";
 
 /**
- * Apps served for the primary tenant only (Scribe, Miu World) share one
+ * Apps served for the primary tenant only (Scribe) share one
  * shape: a confidential web client used by the app's server (BFF), a public
  * native client with a private-use scheme redirect, and an optional web
  * client for a developer's own machine (loopback).

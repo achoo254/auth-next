@@ -31,7 +31,6 @@ const PITCHES: Partial<Record<WelcomeAppKey, MessageKey>> = {
 	clip: "welcome.pitch.clip",
 	tuvi: "welcome.pitch.tuvi",
 	webnhanh: "welcome.pitch.webnhanh",
-	miu: "welcome.pitch.miu",
 };
 
 /**

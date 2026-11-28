@@ -11,7 +11,6 @@ import {
 	type KbClientsConfig,
 	buildKbClients,
 } from "./kb-clients.js";
-import { MIU_CLIENT_IDS, buildMiuClients } from "./miu-clients.js";
 import type { PrimaryAppClientsConfig } from "./primary-app-clients.js";
 import {
 	ALLOWED_RESOURCES_PROPERTY,
@@ -51,7 +50,6 @@ export const STATIC_CLIENT_IDS = {
 	accountPortal: "hoandat-account",
 	...CHAT_CLIENT_IDS,
 	...SCRIBE_CLIENT_IDS,
-	...MIU_CLIENT_IDS,
 	...ACCOUNT_IOS_CLIENT_IDS,
 	...SIGN_IN_ONLY_CLIENT_IDS,
 	...KB_CLIENT_IDS,
@@ -116,7 +114,6 @@ export const CLIENTS_WITHOUT_RESOURCES: ReadonlySet<string> = new Set([
 	STATIC_CLIENT_IDS.accountPortal,
 	...Object.values(CHAT_CLIENT_IDS),
 	...Object.values(SCRIBE_CLIENT_IDS),
-	...Object.values(MIU_CLIENT_IDS),
 	...Object.values(ACCOUNT_IOS_CLIENT_IDS),
 	...Object.values(SIGN_IN_ONLY_CLIENT_IDS),
 	...Object.values(KB_CLIENT_IDS),
@@ -132,7 +129,7 @@ function appUrl(base: string, path: string): string {
 
 /**
  * The first-party clients of the tenant: origins, resources, names and
- * secrets the tenant's. Scribe's, Miu World's, Tiểu Đệ's, Tử Vi's, Clip's,
+ * secrets the tenant's. Scribe's, Tiểu Đệ's, Tử Vi's, Clip's,
  * Web Nhanh's, Lockin's, Chùa Nhỏ's, Knowledge Base's and the iOS
  * account app's exist only when configured, on the primary tenant only.
  */
@@ -142,7 +139,6 @@ export function buildStaticClients(
 	secrets: StaticClientSecrets,
 	chatMobileRedirectUri: string,
 	scribe?: PrimaryAppClientsConfig,
-	miu?: PrimaryAppClientsConfig,
 	signInOnlyApps: SignInOnlyApps = {},
 	kb?: KbClientsConfig,
 ): ClientMetadata[] {
@@ -218,7 +214,6 @@ export function buildStaticClients(
 			chatMobileRedirectUri,
 		),
 		...buildScribeClients(tenant, scribe),
-		...buildMiuClients(tenant, miu),
 		...buildAccountIosClients(tenant),
 		...buildSignInOnlyClients(tenant, signInOnlyApps),
 		...buildKbClients(tenant, kb),

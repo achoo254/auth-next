@@ -48,3 +48,5 @@ Ba thẻ cùng lúc ít người bấm, và Chat, Chùa Nhỏ, Clip, KB chưa đ
    thì hoàn tất ngay; ghi cờ lỗi (MongoDB) thì ghi log và hoàn tất ngay, tài khoản mới không bao giờ dừng ở trang lỗi.
    Tenant chưa cấu hình app được ghép thì gợi ý Web Nhanh, rồi app đầu tiên đã cấu hình (không bao giờ chính app gốc).
    Bỏ qua màn này khi `WELCOME_PAGE_ENABLED=false`, khi không còn app nào khác để gợi ý, và ở app điện thoại như trước.
+
+Ghi chú 28/11/2026: Miu World đã ngừng; thẻ và câu giới thiệu của nó đã gỡ khỏi màn chào mừng.

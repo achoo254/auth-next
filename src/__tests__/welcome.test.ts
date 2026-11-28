@@ -228,11 +228,10 @@ describe("welcome page", () => {
 			welcomeSuggestion(idp.tenant, clientId)?.key;
 		expect(suggested("tuvi-web")).toBe("clip");
 		expect(suggested("webnhanh-web")).toBe("kb");
-		expect(suggested("miu-web")).toBe("chuanho");
 		expect(suggested("chat-web")).toBe("clip");
 		expect(suggested("clip-web")).toBe("tuvi");
 		expect(suggested("kb-web")).toBe("webnhanh");
-		expect(suggested("chuanho-web")).toBe("miu");
+		expect(suggested("chuanho-web")).toBe("tuvi");
 		expect(suggested("localman-web")).toBe("webnhanh");
 		expect(suggested("hoandat-account")).toBe("webnhanh");
 		expect(welcomeSuggestion(idp.tenant, "tuvi-web")?.href).toBe(

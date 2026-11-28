@@ -49,8 +49,6 @@ export const zhApps: Translation<typeof enApps> = {
 	"apps.webnhanhWeb.description":
 		"用现成模板制作网站，并发布到专属地址；开发者可通过 git 链接或上传 zip 部署。",
 	"apps.webnhanhWeb.signIn": "在网站上选择登录，即可制作并发布网站。",
-	"apps.miuWeb.description": "边玩边学数学和越南语的 3D 世界，可与朋友一起玩。",
-	"apps.miuWeb.signIn": "在网站或 iPhone、Android 应用中选择登录。",
 	"apps.tieudeWeb.description": "免费帮你写些小东西的 AI 机器人。",
 	"apps.tieudeWeb.signIn": "在网站上选择登录，即可获得更多免费次数。",
 	"apps.tuviWeb.description":

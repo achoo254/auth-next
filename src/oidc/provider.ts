@@ -92,9 +92,8 @@ export interface ProviderDependencies {
 	readonly clientSecrets: StaticClientSecrets;
 	/** Redirect of the chat mobile app; one value for every tenant. */
 	readonly chatMobileRedirectUri: string;
-	/** Scribe's and Miu World's clients; primary tenant only. */
+	/** Scribe's clients; primary tenant only. */
 	readonly scribeClients?: PrimaryAppClientsConfig;
-	readonly miuClients?: PrimaryAppClientsConfig;
 	/** The sign-in-only apps' web clients (Tử Vi, Clip...); primary tenant only. */
 	readonly signInOnlyApps?: SignInOnlyApps;
 	/** Knowledge Base's web and development clients; primary tenant only. */
@@ -146,7 +145,6 @@ export function buildProviderConfiguration(
 			deps.clientSecrets,
 			deps.chatMobileRedirectUri,
 			deps.scribeClients,
-			deps.miuClients,
 			deps.signInOnlyApps ?? {},
 			deps.kbClients,
 		),

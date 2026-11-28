@@ -16,7 +16,7 @@ export const PRIMARY_TENANT_ID = "primary";
  * before (any shape, so the conformance harness keeps working), its domain
  * `TENANT_DOMAIN` (resources and audiences follow from it), its web apps
  * `LOCALMAN_WEB_URL`, `TUNELO_WEB_URL`, `CHAT_WEB_URL` and, once their client
- * secrets are set, `SCRIBE_WEB_URL`, `MIU_WEB_URL`, `TIEUDE_WEB_URL`,
+ * secrets are set, `SCRIBE_WEB_URL`, `TIEUDE_WEB_URL`,
  * `TUVI_WEB_URL`, `CLIP_WEB_URL`, `WEBNHANH_WEB_URL`,
  * `LOCKIN_WEB_URL`, `CHUANHO_WEB_URL`, `HANHTRINH_WEB_URL` and `KB_WEB_URL`.
  */
@@ -31,8 +31,6 @@ export function envTenant(
 		| "CHAT_WEB_URL"
 		| "SCRIBE_WEB_URL"
 		| "SCRIBE_WEB_CLIENT_SECRET"
-		| "MIU_WEB_URL"
-		| "MIU_WEB_CLIENT_SECRET"
 		| "TIEUDE_WEB_URL"
 		| "TIEUDE_WEB_CLIENT_SECRET"
 		| "TUVI_WEB_URL"
@@ -61,7 +59,6 @@ export function envTenant(
 			tunelo: env.TUNELO_WEB_URL,
 			chat: env.CHAT_WEB_URL,
 			...(env.SCRIBE_WEB_CLIENT_SECRET ? { scribe: env.SCRIBE_WEB_URL } : {}),
-			...(env.MIU_WEB_CLIENT_SECRET ? { miu: env.MIU_WEB_URL } : {}),
 			...signInOnlyOrigins(envSignInOnlyApps(env)),
 			...(env.KB_WEB_URL && env.KB_WEB_CLIENT_SECRET
 				? { kb: env.KB_WEB_URL }
@@ -170,26 +167,6 @@ function signInOnlyOrigins(
 > {
 	return Object.fromEntries(
 		Object.entries(apps).map(([key, app]) => [key, app.url]),
-	);
-}
-
-/** The primary tenant's Miu World clients, from the environment. */
-export function envMiuClients(
-	env: Pick<
-		Env,
-		| "MIU_WEB_URL"
-		| "MIU_WEB_CLIENT_SECRET"
-		| "MIU_MOBILE_REDIRECT_URI"
-		| "MIU_WEB_DEV_URL"
-		| "MIU_WEB_DEV_CLIENT_SECRET"
-	>,
-): PrimaryAppClientsConfig {
-	return appClients(
-		env.MIU_WEB_URL,
-		env.MIU_WEB_CLIENT_SECRET,
-		env.MIU_MOBILE_REDIRECT_URI,
-		env.MIU_WEB_DEV_URL,
-		env.MIU_WEB_DEV_CLIENT_SECRET,
 	);
 }
 

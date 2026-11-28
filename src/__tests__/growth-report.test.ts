@@ -112,7 +112,7 @@ beforeAll(async () => {
 	used(reviewer, "localman-web", LAST_WEEK);
 	// Two apps 29 days before NOW: outside the last 28 days and both weeks.
 	used(lapsed, "chat-web", new Date("2026-09-25T05:00:00Z"));
-	used(lapsed, "miu-web", new Date("2026-09-25T06:00:00Z"));
+	used(lapsed, "tuvi-web", new Date("2026-09-25T06:00:00Z"));
 	await clientUsageCollection(db).insertMany(usage);
 });
 

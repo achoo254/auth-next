@@ -51,8 +51,6 @@ export const enSignIn = {
 		"Your horoscope chart and a fortune stick every morning, just for fun before work.",
 	"welcome.pitch.webnhanh":
 		"A website from a template, live at your own address, zero code.",
-	"welcome.pitch.miu":
-		"A 3D world where kids play their way through maths and Vietnamese.",
 	"welcome.open": "Open",
 	"welcome.newTab": "(opens in a new tab)",
 	"welcome.continueTo": "Back to {app}",

@@ -53,10 +53,6 @@ export const viApps: Translation<typeof enApps> = {
 		"Làm website từ mẫu có sẵn và đăng ngay ở địa chỉ riêng; lập trình viên gắn link git hoặc tải file zip lên.",
 	"apps.webnhanhWeb.signIn":
 		"Chọn Đăng nhập trên trang để làm và đăng website.",
-	"apps.miuWeb.description":
-		"Thế giới 3D vừa chơi vừa học Toán và Tiếng Việt, chơi cùng bạn bè.",
-	"apps.miuWeb.signIn":
-		"Chọn Đăng nhập trên trang hoặc trong app iPhone, Android.",
 	"apps.tieudeWeb.description": "Bot AI làm giúp miễn phí các việc viết nhỏ.",
 	"apps.tieudeWeb.signIn":
 		"Chọn Đăng nhập trên trang để có thêm lượt dùng miễn phí.",

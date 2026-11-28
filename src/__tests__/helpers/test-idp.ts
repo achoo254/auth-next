@@ -25,7 +25,6 @@ import {
 import {
 	envClientSecrets,
 	envKbClients,
-	envMiuClients,
 	envScribeClients,
 	envSignInOnlyApps,
 	envTenant,
@@ -153,7 +152,6 @@ export async function startTestIdp(options: TestIdpOptions): Promise<TestIdp> {
 		cookieKeys: env.COOKIE_KEYS,
 		chatMobileRedirectUri: env.CHAT_MOBILE_REDIRECT_URI,
 		scribeClients: envScribeClients(env),
-		miuClients: envMiuClients(env),
 		signInOnlyApps: envSignInOnlyApps(env),
 		kbClients: envKbClients(env),
 		clientSecrets: envClientSecrets(env),

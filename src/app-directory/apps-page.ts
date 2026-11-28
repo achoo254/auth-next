@@ -36,7 +36,6 @@ const hasHomePage = (app: ListedApp): boolean => app.kind === "apps.kind.web";
 
 /** Apps for fun; every other app is listed under work. */
 const FUN_APP_IDS: ReadonlySet<string> = new Set([
-	STATIC_CLIENT_IDS.miuWeb,
 	STATIC_CLIENT_IDS.tieudeWeb,
 	STATIC_CLIENT_IDS.tuviWeb,
 	STATIC_CLIENT_IDS.clipWeb,

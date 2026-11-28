@@ -53,8 +53,6 @@ export const viSignIn: Translation<typeof enSignIn> = {
 		"Lập lá số, xin quẻ mỗi sáng, xem cho vui trước giờ làm.",
 	"welcome.pitch.webnhanh":
 		"Làm website từ mẫu có sẵn, đăng ngay ở địa chỉ riêng, không cần code.",
-	"welcome.pitch.miu":
-		"Thế giới 3D cho bé vừa chơi vừa học Toán và Tiếng Việt.",
 	"welcome.open": "Mở",
 	"welcome.newTab": "(mở trong tab mới)",
 	"welcome.continueTo": "Quay lại {app}",

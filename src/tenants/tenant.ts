@@ -22,8 +22,6 @@ export interface Tenant {
 		readonly chat: string;
 		/** Scribe, once its client secret is configured. */
 		readonly scribe?: string;
-		/** Miu World, once its client secret is configured. */
-		readonly miu?: string;
 		/** Tiểu Đệ, Tử Vi, Clip, Web Nhanh, Lockin and Chùa Nhỏ, each once its URL and secret are configured. */
 		readonly tieude?: string;
 		readonly tuvi?: string;
