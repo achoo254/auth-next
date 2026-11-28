@@ -22,12 +22,11 @@ export interface Tenant {
 		readonly chat: string;
 		/** Scribe, once its client secret is configured. */
 		readonly scribe?: string;
-		/** Tiểu Đệ, Tử Vi, Clip, Web Nhanh, Lockin and Chùa Nhỏ, each once its URL and secret are configured. */
+		/** Tiểu Đệ, Tử Vi, Clip, Web Nhanh, Chùa Nhỏ and Hành Trình, each once its URL and secret are configured. */
 		readonly tieude?: string;
 		readonly tuvi?: string;
 		readonly clip?: string;
 		readonly webnhanh?: string;
-		readonly lockin?: string;
 		readonly chuanho?: string;
 		readonly hanhtrinh?: string;
 		/** Knowledge Base, once its URL and secret are configured. */

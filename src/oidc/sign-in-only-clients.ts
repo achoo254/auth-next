@@ -12,7 +12,7 @@ const PROFILE_SCOPE = "openid profile email";
 /**
  * Apps whose visitors sign in only to prove they have an account: Tiểu Đệ
  * (repo tieu-de-next), Tử Vi (tu-vi-next), Clip (clip-next), Web Nhanh
- * (webnhanh-next), Lockin (lockin-next), Chùa Nhỏ (chuanho-next) and Hành Trình
+ * (webnhanh-next), Chùa Nhỏ (chuanho-next) and Hành Trình
  * (hanhtrinh-next). Each
  * has one confidential web client and no mobile or development client. All but Tiểu Đệ read the name,
  * picture and email (userinfo) to show the signed-in account in their
@@ -27,7 +27,6 @@ export const SIGN_IN_ONLY_APPS = {
 		name: "Web Nhanh",
 		scope: PROFILE_SCOPE,
 	},
-	lockin: { clientId: "lockin-web", name: "Lockin", scope: PROFILE_SCOPE },
 	chuanho: { clientId: "chuanho-web", name: "Chùa Nhỏ", scope: PROFILE_SCOPE },
 	hanhtrinh: {
 		clientId: "hanhtrinh-web",
@@ -43,7 +42,6 @@ export const SIGN_IN_ONLY_CLIENT_IDS = {
 	tuviWeb: SIGN_IN_ONLY_APPS.tuvi.clientId,
 	clipWeb: SIGN_IN_ONLY_APPS.clip.clientId,
 	webnhanhWeb: SIGN_IN_ONLY_APPS.webnhanh.clientId,
-	lockinWeb: SIGN_IN_ONLY_APPS.lockin.clientId,
 	chuanhoWeb: SIGN_IN_ONLY_APPS.chuanho.clientId,
 	hanhtrinhWeb: SIGN_IN_ONLY_APPS.hanhtrinh.clientId,
 } as const;

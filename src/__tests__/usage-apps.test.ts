@@ -8,6 +8,7 @@ describe("appOfClient", () => {
 		expect(appOfClient("miu-mobile")).toBe("miu");
 		expect(appOfClient("miu-web-dev")).toBe("miu");
 		expect(appOfClient("truyen-web")).toBe("truyen");
+		expect(appOfClient("lockin-web")).toBe("lockin");
 	});
 
 	it("still counts any other unknown client as a Localman MCP client", () => {

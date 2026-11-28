@@ -130,7 +130,7 @@ function appUrl(base: string, path: string): string {
 /**
  * The first-party clients of the tenant: origins, resources, names and
  * secrets the tenant's. Scribe's, Tiểu Đệ's, Tử Vi's, Clip's,
- * Web Nhanh's, Lockin's, Chùa Nhỏ's, Knowledge Base's and the iOS
+ * Web Nhanh's, Chùa Nhỏ's, Knowledge Base's and the iOS
  * account app's exist only when configured, on the primary tenant only.
  */
 export function buildStaticClients(

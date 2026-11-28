@@ -57,9 +57,6 @@ export const zhApps: Translation<typeof enApps> = {
 	"apps.clipWeb.description":
 		"选一个模板，写几行字，加几张照片，生成竖屏短视频。",
 	"apps.clipWeb.signIn": "在网站上选择登录，即可制作视频。",
-	"apps.lockinWeb.description": "用一个链接和朋友敲定出游计划。",
-	"apps.lockinWeb.signIn":
-		"在网站上选择登录，即可发起计划；朋友通过链接加入，无需账号。",
 	"apps.chuanhoWeb.description":
 		"一座小小的寺院庭院：上香、跟着 lofi 节奏敲木鱼、放松心情。",
 	"apps.chuanhoWeb.signIn":

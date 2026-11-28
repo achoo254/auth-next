@@ -27,7 +27,6 @@ const APP_OF_STATIC_CLIENT: Readonly<Record<string, string>> = {
 	[ids.tuviWeb]: "tuvi",
 	[ids.clipWeb]: "clip",
 	[ids.webnhanhWeb]: "webnhanh",
-	[ids.lockinWeb]: "lockin",
 	[ids.chuanhoWeb]: "chuanho",
 	[ids.hanhtrinhWeb]: "hanhtrinh",
 	[ids.kbWeb]: "kb",
@@ -44,6 +43,7 @@ const APP_OF_RETIRED_CLIENT: Readonly<Record<string, string>> = {
 	"miu-mobile": "miu",
 	"miu-web-dev": "miu",
 	"truyen-web": "truyen",
+	"lockin-web": "lockin",
 };
 
 /**

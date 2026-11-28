@@ -23,8 +23,6 @@ import {
 	CLIP_WEB_URL,
 	HANHTRINH_WEB_SECRET,
 	HANHTRINH_WEB_URL,
-	LOCKIN_WEB_SECRET,
-	LOCKIN_WEB_URL,
 	TIEUDE_WEB_SECRET,
 	TIEUDE_WEB_URL,
 	TUVI_WEB_SECRET,
@@ -40,7 +38,7 @@ import { OTHER_TEST_TENANT } from "./helpers/test-tenant.js";
 const PROFILE_SCOPE = "openid profile email";
 
 /**
- * Tiểu Đệ, Tử Vi, Clip, Web Nhanh, Lockin and Chùa Nhỏ sign visitors in to
+ * Tiểu Đệ, Tử Vi, Clip, Web Nhanh and Chùa Nhỏ sign visitors in to
  * learn they have an account: a confidential web client, no refresh token, no API resource.
  * Tiểu Đệ asks for `openid` alone; the others also for the name, picture
  * and email of their account menu.
@@ -81,15 +79,6 @@ const APPS = [
 		url: WEBNHANH_WEB_URL,
 		secret: WEBNHANH_WEB_SECRET,
 		env: "WEBNHANH",
-	},
-	{
-		app: "lockin",
-		scope: PROFILE_SCOPE,
-		name: "Lockin",
-		clientId: STATIC_CLIENT_IDS.lockinWeb,
-		url: LOCKIN_WEB_URL,
-		secret: LOCKIN_WEB_SECRET,
-		env: "LOCKIN",
 	},
 	{
 		app: "chuanho",

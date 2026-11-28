@@ -110,9 +110,9 @@ App Scribe (repo `scribe-next`, thư mục local `one-scribe`, `https://scribe.h
 
 Kiểm từ ngoài (cùng cách như chat): `for c in scribe-web scribe-mobile scribe-web-dev; do curl -s -o /dev/null -w "$c %{redirect_url}\n" "https://auth.hoandat.com/auth?client_id=$c&response_type=code&scope=openid" | cut -d'?' -f1; done`.
 
-## Client của Tiểu Đệ, Tử Vi, Clip, Web Nhanh, Lockin, Chùa Nhỏ và Hành Trình
+## Client của Tiểu Đệ, Tử Vi, Clip, Web Nhanh, Chùa Nhỏ và Hành Trình
 
-Bảy app đăng nhập để biết khách có tài khoản dùng chung một kiểu client (`src/oidc/sign-in-only-clients.ts`): confidential, `client_secret_basic`, không refresh token, redirect `/auth/callback`. Tiểu Đệ chỉ có scope `openid`; Tử Vi, Clip, Web Nhanh, Lockin, Chùa Nhỏ và Hành Trình có `openid profile email` (tên, ảnh, email cho menu tài khoản trên header; Chùa Nhỏ chỉ xin `openid profile`).
+Sáu app đăng nhập để biết khách có tài khoản dùng chung một kiểu client (`src/oidc/sign-in-only-clients.ts`): confidential, `client_secret_basic`, không refresh token, redirect `/auth/callback`. Tiểu Đệ chỉ có scope `openid`; Tử Vi, Clip, Web Nhanh, Chùa Nhỏ và Hành Trình có `openid profile email` (tên, ảnh, email cho menu tài khoản trên header; Chùa Nhỏ chỉ xin `openid profile`).
 
 | App | Repo, origin | Client | Biến (đặt **cả hai**, secret ≥ 32 ký tự) | Secret phía app |
 |---|---|---|---|---|
@@ -120,11 +120,10 @@ Bảy app đăng nhập để biết khách có tài khoản dùng chung một k
 | Tử Vi | `tu-vi-next`, `https://tuvi.hoandat.com` | `tuvi-web` | `TUVI_WEB_URL`, `TUVI_WEB_CLIENT_SECRET` | `AUTH_CLIENT_SECRET` trong `/var/www/tuvi/.env` |
 | Clip | `clip-next`, `https://clip.hoandat.com` | `clip-web` | `CLIP_WEB_URL`, `CLIP_WEB_CLIENT_SECRET` | `AUTH_CLIENT_SECRET` trong `/var/www/clip/.env` |
 | Web Nhanh | `webnhanh-next`, `https://webnhanh.hoandat.com` | `webnhanh-web` | `WEBNHANH_WEB_URL`, `WEBNHANH_WEB_CLIENT_SECRET` | `AUTH_CLIENT_SECRET` trong `/etc/webnhanh/production.env` |
-| Lockin | `lockin-next`, `https://lockin.hoandat.com` | `lockin-web` | `LOCKIN_WEB_URL`, `LOCKIN_WEB_CLIENT_SECRET` | `AUTH_CLIENT_SECRET` trong `.env` của Lockin |
 | Chùa Nhỏ | `chuanho-next`, `https://chuanho.hoandat.com` | `chuanho-web` | `CHUANHO_WEB_URL`, `CHUANHO_WEB_CLIENT_SECRET` | `AUTH_CLIENT_SECRET` trong `.env` của Chùa Nhỏ |
 | Hành Trình | `hanhtrinh-next`, `https://hanhtrinh.hoandat.com` | `hanhtrinh-web` | `HANHTRINH_WEB_URL`, `HANHTRINH_WEB_CLIENT_SECRET` | `AUTH_CLIENT_SECRET` trong `/etc/hanhtrinh/production.env` |
 
-Khi đã bật, app hiện trên `/apps` (Tiểu Đệ, Tử Vi, Clip, Lockin và Chùa Nhỏ ở nhóm giải trí).
+Khi đã bật, app hiện trên `/apps` (Tiểu Đệ, Tử Vi, Clip và Chùa Nhỏ ở nhóm giải trí).
 
 Mỗi app này cũng nhận sự kiện xoá tài khoản (ADR 0018): thêm URL nhận của nó vào `ACCOUNT_DELETED_URLS` của IdP, ví dụ Chùa Nhỏ là `https://chuanho.hoandat.com/api/idp/account-deleted`.
 

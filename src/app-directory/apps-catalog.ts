@@ -139,7 +139,7 @@ function scribeMcp(tenant: AppDirectoryTenant, i18n: Translator): ListedApp {
 /**
  * Web apps listed only once their client is configured (their `webApps`
  * entry is set from the environment): Scribe, Web Nhanh, Tiểu Đệ,
- * Tử Vi, Clip, Lockin, Chùa Nhỏ, Knowledge Base.
+ * Tử Vi, Clip, Chùa Nhỏ, Knowledge Base.
  */
 export const OPTIONAL_WEB_APPS = [
 	{
@@ -188,15 +188,6 @@ export const OPTIONAL_WEB_APPS = [
 		signIn: "apps.clipWeb.signIn",
 	},
 	{
-		key: "lockin",
-		id: STATIC_CLIENT_IDS.lockinWeb,
-		name: "Lockin",
-		tone: "amber",
-		icon: "lockin",
-		description: "apps.lockinWeb.description",
-		signIn: "apps.lockinWeb.signIn",
-	},
-	{
 		key: "chuanho",
 		id: STATIC_CLIENT_IDS.chuanhoWeb,
 		name: "Chùa Nhỏ",
@@ -221,7 +212,6 @@ export const OPTIONAL_WEB_APPS = [
 		| "tieude"
 		| "tuvi"
 		| "clip"
-		| "lockin"
 		| "chuanho"
 		| "kb";
 	readonly id: string;

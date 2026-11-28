@@ -2,7 +2,7 @@ import type { z } from "zod";
 import { appClientSecret, appOrigin, checkDevPair } from "./primary-app-env.js";
 
 /**
- * Tiểu Đệ, Tử Vi, Clip, Web Nhanh, Lockin and Chùa Nhỏ (primary tenant only). Each is
+ * Tiểu Đệ, Tử Vi, Clip, Web Nhanh, Chùa Nhỏ and Hành Trình (primary tenant only). Each is
  * optional and all-or-nothing: the IdP registers an app's web client only when both its
  * origin and its client secret are set, and boots as before when neither is.
  */
@@ -15,8 +15,6 @@ export const signInOnlyEnvShape = {
 	CLIP_WEB_CLIENT_SECRET: appClientSecret.optional(),
 	WEBNHANH_WEB_URL: appOrigin,
 	WEBNHANH_WEB_CLIENT_SECRET: appClientSecret.optional(),
-	LOCKIN_WEB_URL: appOrigin,
-	LOCKIN_WEB_CLIENT_SECRET: appClientSecret.optional(),
 	CHUANHO_WEB_URL: appOrigin,
 	CHUANHO_WEB_CLIENT_SECRET: appClientSecret.optional(),
 	HANHTRINH_WEB_URL: appOrigin,
@@ -29,7 +27,6 @@ export const SIGN_IN_ONLY_URL_KEYS = [
 	"TUVI_WEB_URL",
 	"CLIP_WEB_URL",
 	"WEBNHANH_WEB_URL",
-	"LOCKIN_WEB_URL",
 	"CHUANHO_WEB_URL",
 	"HANHTRINH_WEB_URL",
 ] as const;
@@ -43,7 +40,6 @@ export function checkSignInOnlyGroups(
 	checkDevPair(env, "TUVI_WEB_URL", "TUVI_WEB_CLIENT_SECRET", ctx);
 	checkDevPair(env, "CLIP_WEB_URL", "CLIP_WEB_CLIENT_SECRET", ctx);
 	checkDevPair(env, "WEBNHANH_WEB_URL", "WEBNHANH_WEB_CLIENT_SECRET", ctx);
-	checkDevPair(env, "LOCKIN_WEB_URL", "LOCKIN_WEB_CLIENT_SECRET", ctx);
 	checkDevPair(env, "CHUANHO_WEB_URL", "CHUANHO_WEB_CLIENT_SECRET", ctx);
 	checkDevPair(env, "HANHTRINH_WEB_URL", "HANHTRINH_WEB_CLIENT_SECRET", ctx);
 }

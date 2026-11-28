@@ -61,10 +61,6 @@ export const enApps = {
 	"apps.clipWeb.description":
 		"Pick a template, type a few lines and add photos to get a short vertical video.",
 	"apps.clipWeb.signIn": "Choose Sign in on the site to make videos.",
-	"apps.lockinWeb.description":
-		"Lock in hangout plans with your friends through one link.",
-	"apps.lockinWeb.signIn":
-		"Choose Sign in on the site to create a plan; friends join through the link without an account.",
 	"apps.chuanhoWeb.description":
 		"A small temple courtyard: light incense, tap the wooden bell to lofi beats and unwind.",
 	"apps.chuanhoWeb.signIn":

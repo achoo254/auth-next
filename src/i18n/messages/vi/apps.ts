@@ -62,9 +62,6 @@ export const viApps: Translation<typeof enApps> = {
 	"apps.clipWeb.description":
 		"Chọn mẫu, gõ vài dòng, thêm ảnh để có video dọc ngắn.",
 	"apps.clipWeb.signIn": "Chọn Đăng nhập trên trang để làm video.",
-	"apps.lockinWeb.description": "Chốt kèo đi chơi với nhóm bạn bằng một link.",
-	"apps.lockinWeb.signIn":
-		"Chọn Đăng nhập trên trang để tạo kèo; bạn bè vào bằng link, không cần tài khoản.",
 	"apps.chuanhoWeb.description":
 		"Sân chùa nhỏ để thắp hương, gõ mõ theo nhạc lofi và thả lỏng.",
 	"apps.chuanhoWeb.signIn":

@@ -18,7 +18,7 @@ export const PRIMARY_TENANT_ID = "primary";
  * `LOCALMAN_WEB_URL`, `TUNELO_WEB_URL`, `CHAT_WEB_URL` and, once their client
  * secrets are set, `SCRIBE_WEB_URL`, `TIEUDE_WEB_URL`,
  * `TUVI_WEB_URL`, `CLIP_WEB_URL`, `WEBNHANH_WEB_URL`,
- * `LOCKIN_WEB_URL`, `CHUANHO_WEB_URL`, `HANHTRINH_WEB_URL` and `KB_WEB_URL`.
+ * `CHUANHO_WEB_URL`, `HANHTRINH_WEB_URL` and `KB_WEB_URL`.
  */
 export function envTenant(
 	env: Pick<
@@ -39,8 +39,6 @@ export function envTenant(
 		| "CLIP_WEB_CLIENT_SECRET"
 		| "WEBNHANH_WEB_URL"
 		| "WEBNHANH_WEB_CLIENT_SECRET"
-		| "LOCKIN_WEB_URL"
-		| "LOCKIN_WEB_CLIENT_SECRET"
 		| "CHUANHO_WEB_URL"
 		| "CHUANHO_WEB_CLIENT_SECRET"
 		| "HANHTRINH_WEB_URL"
@@ -119,8 +117,8 @@ export function envScribeClients(
 }
 
 /**
- * The primary tenant's Tiểu Đệ, Tử Vi, Clip, Web Nhanh, Lockin and
- * Chùa Nhỏ clients, from the environment: an app is left out unless both its origin and its secret
+ * The primary tenant's Tiểu Đệ, Tử Vi, Clip, Web Nhanh, Chùa Nhỏ and
+ * Hành Trình clients, from the environment: an app is left out unless both its origin and its secret
  * are set (parseEnv rejects one alone).
  */
 export function envSignInOnlyApps(
@@ -134,8 +132,6 @@ export function envSignInOnlyApps(
 		| "CLIP_WEB_CLIENT_SECRET"
 		| "WEBNHANH_WEB_URL"
 		| "WEBNHANH_WEB_CLIENT_SECRET"
-		| "LOCKIN_WEB_URL"
-		| "LOCKIN_WEB_CLIENT_SECRET"
 		| "CHUANHO_WEB_URL"
 		| "CHUANHO_WEB_CLIENT_SECRET"
 		| "HANHTRINH_WEB_URL"
@@ -149,7 +145,6 @@ export function envSignInOnlyApps(
 		tuvi: app(env.TUVI_WEB_URL, env.TUVI_WEB_CLIENT_SECRET),
 		clip: app(env.CLIP_WEB_URL, env.CLIP_WEB_CLIENT_SECRET),
 		webnhanh: app(env.WEBNHANH_WEB_URL, env.WEBNHANH_WEB_CLIENT_SECRET),
-		lockin: app(env.LOCKIN_WEB_URL, env.LOCKIN_WEB_CLIENT_SECRET),
 		chuanho: app(env.CHUANHO_WEB_URL, env.CHUANHO_WEB_CLIENT_SECRET),
 		hanhtrinh: app(env.HANHTRINH_WEB_URL, env.HANHTRINH_WEB_CLIENT_SECRET),
 	};
@@ -163,7 +158,7 @@ function signInOnlyOrigins(
 	apps: SignInOnlyApps,
 ): Pick<
 	Tenant["webApps"],
-	"tieude" | "tuvi" | "clip" | "webnhanh" | "lockin" | "chuanho" | "hanhtrinh"
+	"tieude" | "tuvi" | "clip" | "webnhanh" | "chuanho" | "hanhtrinh"
 > {
 	return Object.fromEntries(
 		Object.entries(apps).map(([key, app]) => [key, app.url]),
