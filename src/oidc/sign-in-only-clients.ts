@@ -12,7 +12,8 @@ const PROFILE_SCOPE = "openid profile email";
 /**
  * Apps whose visitors sign in only to prove they have an account: Tiểu Đệ
  * (repo tieu-de-next), Tử Vi (tu-vi-next), Clip (clip-next), Web Nhanh
- * (webnhanh-next), Lockin (lockin-next) and Chùa Nhỏ (chuanho-next). Each
+ * (webnhanh-next), Lockin (lockin-next), Chùa Nhỏ (chuanho-next) and Hành Trình
+ * (hanhtrinh-next). Each
  * has one confidential web client and no mobile or development client. All but Tiểu Đệ read the name,
  * picture and email (userinfo) to show the signed-in account in their
  * header; Tiểu Đệ needs nothing but `sub`.
@@ -28,6 +29,11 @@ export const SIGN_IN_ONLY_APPS = {
 	},
 	lockin: { clientId: "lockin-web", name: "Lockin", scope: PROFILE_SCOPE },
 	chuanho: { clientId: "chuanho-web", name: "Chùa Nhỏ", scope: PROFILE_SCOPE },
+	hanhtrinh: {
+		clientId: "hanhtrinh-web",
+		name: "Hành Trình",
+		scope: PROFILE_SCOPE,
+	},
 } as const;
 
 export type SignInOnlyAppKey = keyof typeof SIGN_IN_ONLY_APPS;
@@ -39,6 +45,7 @@ export const SIGN_IN_ONLY_CLIENT_IDS = {
 	webnhanhWeb: SIGN_IN_ONLY_APPS.webnhanh.clientId,
 	lockinWeb: SIGN_IN_ONLY_APPS.lockin.clientId,
 	chuanhoWeb: SIGN_IN_ONLY_APPS.chuanho.clientId,
+	hanhtrinhWeb: SIGN_IN_ONLY_APPS.hanhtrinh.clientId,
 } as const;
 
 /** Where each app's server receives the authorization code. */

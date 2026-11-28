@@ -130,9 +130,9 @@ Bật trên production (không in secret ra terminal):
 
 Rollback: xoá dòng `MIU_WEB_CLIENT_SECRET` rồi reload; IdP không còn client Miu (Miu sẽ báo đăng nhập không khả dụng).
 
-## Client của Tiểu Đệ, Tử Vi, Clip, Web Nhanh, Lockin và Chùa Nhỏ
+## Client của Tiểu Đệ, Tử Vi, Clip, Web Nhanh, Lockin, Chùa Nhỏ và Hành Trình
 
-Sáu app đăng nhập để biết khách có tài khoản dùng chung một kiểu client (`src/oidc/sign-in-only-clients.ts`): confidential, `client_secret_basic`, không refresh token, redirect `/auth/callback`. Tiểu Đệ chỉ có scope `openid`; Tử Vi, Clip, Web Nhanh, Lockin và Chùa Nhỏ có `openid profile email` (tên, ảnh, email cho menu tài khoản trên header; Chùa Nhỏ chỉ xin `openid profile`).
+Bảy app đăng nhập để biết khách có tài khoản dùng chung một kiểu client (`src/oidc/sign-in-only-clients.ts`): confidential, `client_secret_basic`, không refresh token, redirect `/auth/callback`. Tiểu Đệ chỉ có scope `openid`; Tử Vi, Clip, Web Nhanh, Lockin, Chùa Nhỏ và Hành Trình có `openid profile email` (tên, ảnh, email cho menu tài khoản trên header; Chùa Nhỏ chỉ xin `openid profile`).
 
 | App | Repo, origin | Client | Biến (đặt **cả hai**, secret ≥ 32 ký tự) | Secret phía app |
 |---|---|---|---|---|
@@ -142,6 +142,7 @@ Sáu app đăng nhập để biết khách có tài khoản dùng chung một ki
 | Web Nhanh | `webnhanh-next`, `https://webnhanh.hoandat.com` | `webnhanh-web` | `WEBNHANH_WEB_URL`, `WEBNHANH_WEB_CLIENT_SECRET` | `AUTH_CLIENT_SECRET` trong `/etc/webnhanh/production.env` |
 | Lockin | `lockin-next`, `https://lockin.hoandat.com` | `lockin-web` | `LOCKIN_WEB_URL`, `LOCKIN_WEB_CLIENT_SECRET` | `AUTH_CLIENT_SECRET` trong `.env` của Lockin |
 | Chùa Nhỏ | `chuanho-next`, `https://chuanho.hoandat.com` | `chuanho-web` | `CHUANHO_WEB_URL`, `CHUANHO_WEB_CLIENT_SECRET` | `AUTH_CLIENT_SECRET` trong `.env` của Chùa Nhỏ |
+| Hành Trình | `hanhtrinh-next`, `https://hanhtrinh.hoandat.com` | `hanhtrinh-web` | `HANHTRINH_WEB_URL`, `HANHTRINH_WEB_CLIENT_SECRET` | `AUTH_CLIENT_SECRET` trong `/etc/hanhtrinh/production.env` |
 
 Khi đã bật, app hiện trên `/apps` (Tiểu Đệ, Tử Vi, Clip, Lockin và Chùa Nhỏ ở nhóm giải trí).
 

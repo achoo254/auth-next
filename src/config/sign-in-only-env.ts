@@ -19,6 +19,8 @@ export const signInOnlyEnvShape = {
 	LOCKIN_WEB_CLIENT_SECRET: appClientSecret.optional(),
 	CHUANHO_WEB_URL: appOrigin,
 	CHUANHO_WEB_CLIENT_SECRET: appClientSecret.optional(),
+	HANHTRINH_WEB_URL: appOrigin,
+	HANHTRINH_WEB_CLIENT_SECRET: appClientSecret.optional(),
 };
 
 /** The origin variables, which must be public https in production. */
@@ -29,6 +31,7 @@ export const SIGN_IN_ONLY_URL_KEYS = [
 	"WEBNHANH_WEB_URL",
 	"LOCKIN_WEB_URL",
 	"CHUANHO_WEB_URL",
+	"HANHTRINH_WEB_URL",
 ] as const;
 
 /** Reports an app of which only the URL or the secret is set. */
@@ -42,4 +45,5 @@ export function checkSignInOnlyGroups(
 	checkDevPair(env, "WEBNHANH_WEB_URL", "WEBNHANH_WEB_CLIENT_SECRET", ctx);
 	checkDevPair(env, "LOCKIN_WEB_URL", "LOCKIN_WEB_CLIENT_SECRET", ctx);
 	checkDevPair(env, "CHUANHO_WEB_URL", "CHUANHO_WEB_CLIENT_SECRET", ctx);
+	checkDevPair(env, "HANHTRINH_WEB_URL", "HANHTRINH_WEB_CLIENT_SECRET", ctx);
 }

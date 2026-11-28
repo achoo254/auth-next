@@ -26,6 +26,8 @@ export const LOCKIN_WEB_SECRET = randomBytes(32).toString("base64url");
 export const LOCKIN_WEB_URL = "https://lockin.hoandat.com";
 export const CHUANHO_WEB_SECRET = randomBytes(32).toString("base64url");
 export const CHUANHO_WEB_URL = "https://chuanho.hoandat.com";
+export const HANHTRINH_WEB_SECRET = randomBytes(32).toString("base64url");
+export const HANHTRINH_WEB_URL = "https://hanhtrinh.hoandat.com";
 export const KB_WEB_SECRET = randomBytes(32).toString("base64url");
 export const KB_WEB_URL = "https://kb.hoandat.com";
 export const KB_WEB_DEV_SECRET = randomBytes(32).toString("base64url");
@@ -46,6 +48,8 @@ export const PRIMARY_APP_TEST_ENV = {
 	LOCKIN_WEB_CLIENT_SECRET: LOCKIN_WEB_SECRET,
 	CHUANHO_WEB_URL,
 	CHUANHO_WEB_CLIENT_SECRET: CHUANHO_WEB_SECRET,
+	HANHTRINH_WEB_URL,
+	HANHTRINH_WEB_CLIENT_SECRET: HANHTRINH_WEB_SECRET,
 	KB_WEB_URL,
 	KB_WEB_CLIENT_SECRET: KB_WEB_SECRET,
 	KB_WEB_DEV_URL,

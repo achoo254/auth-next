@@ -31,6 +31,7 @@ export interface Tenant {
 		readonly webnhanh?: string;
 		readonly lockin?: string;
 		readonly chuanho?: string;
+		readonly hanhtrinh?: string;
 		/** Knowledge Base, once its URL and secret are configured. */
 		readonly kb?: string;
 	};

@@ -18,7 +18,7 @@ export const PRIMARY_TENANT_ID = "primary";
  * `LOCALMAN_WEB_URL`, `TUNELO_WEB_URL`, `CHAT_WEB_URL` and, once their client
  * secrets are set, `SCRIBE_WEB_URL`, `MIU_WEB_URL`, `TIEUDE_WEB_URL`,
  * `TUVI_WEB_URL`, `CLIP_WEB_URL`, `WEBNHANH_WEB_URL`,
- * `LOCKIN_WEB_URL`, `CHUANHO_WEB_URL` and `KB_WEB_URL`.
+ * `LOCKIN_WEB_URL`, `CHUANHO_WEB_URL`, `HANHTRINH_WEB_URL` and `KB_WEB_URL`.
  */
 export function envTenant(
 	env: Pick<
@@ -45,6 +45,8 @@ export function envTenant(
 		| "LOCKIN_WEB_CLIENT_SECRET"
 		| "CHUANHO_WEB_URL"
 		| "CHUANHO_WEB_CLIENT_SECRET"
+		| "HANHTRINH_WEB_URL"
+		| "HANHTRINH_WEB_CLIENT_SECRET"
 		| "KB_WEB_URL"
 		| "KB_WEB_CLIENT_SECRET"
 	>,
@@ -139,6 +141,8 @@ export function envSignInOnlyApps(
 		| "LOCKIN_WEB_CLIENT_SECRET"
 		| "CHUANHO_WEB_URL"
 		| "CHUANHO_WEB_CLIENT_SECRET"
+		| "HANHTRINH_WEB_URL"
+		| "HANHTRINH_WEB_CLIENT_SECRET"
 	>,
 ): SignInOnlyApps {
 	const app = (url?: string, secret?: string) =>
@@ -150,6 +154,7 @@ export function envSignInOnlyApps(
 		webnhanh: app(env.WEBNHANH_WEB_URL, env.WEBNHANH_WEB_CLIENT_SECRET),
 		lockin: app(env.LOCKIN_WEB_URL, env.LOCKIN_WEB_CLIENT_SECRET),
 		chuanho: app(env.CHUANHO_WEB_URL, env.CHUANHO_WEB_CLIENT_SECRET),
+		hanhtrinh: app(env.HANHTRINH_WEB_URL, env.HANHTRINH_WEB_CLIENT_SECRET),
 	};
 	return Object.fromEntries(
 		Object.entries(apps).filter(([, value]) => value !== undefined),
@@ -161,7 +166,7 @@ function signInOnlyOrigins(
 	apps: SignInOnlyApps,
 ): Pick<
 	Tenant["webApps"],
-	"tieude" | "tuvi" | "clip" | "webnhanh" | "lockin" | "chuanho"
+	"tieude" | "tuvi" | "clip" | "webnhanh" | "lockin" | "chuanho" | "hanhtrinh"
 > {
 	return Object.fromEntries(
 		Object.entries(apps).map(([key, app]) => [key, app.url]),

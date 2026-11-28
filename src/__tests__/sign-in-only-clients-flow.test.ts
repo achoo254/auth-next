@@ -21,6 +21,8 @@ import {
 	CHUANHO_WEB_URL,
 	CLIP_WEB_SECRET,
 	CLIP_WEB_URL,
+	HANHTRINH_WEB_SECRET,
+	HANHTRINH_WEB_URL,
 	LOCKIN_WEB_SECRET,
 	LOCKIN_WEB_URL,
 	TIEUDE_WEB_SECRET,
@@ -97,6 +99,15 @@ const APPS = [
 		url: CHUANHO_WEB_URL,
 		secret: CHUANHO_WEB_SECRET,
 		env: "CHUANHO",
+	},
+	{
+		app: "hanhtrinh",
+		scope: PROFILE_SCOPE,
+		name: "Hành Trình",
+		clientId: STATIC_CLIENT_IDS.hanhtrinhWeb,
+		url: HANHTRINH_WEB_URL,
+		secret: HANHTRINH_WEB_SECRET,
+		env: "HANHTRINH",
 	},
 ] as const;
 

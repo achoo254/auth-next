@@ -32,6 +32,7 @@ const APP_OF_STATIC_CLIENT: Readonly<Record<string, string>> = {
 	[ids.webnhanhWeb]: "webnhanh",
 	[ids.lockinWeb]: "lockin",
 	[ids.chuanhoWeb]: "chuanho",
+	[ids.hanhtrinhWeb]: "hanhtrinh",
 	[ids.kbWeb]: "kb",
 	[ids.kbWebDev]: "kb",
 };
